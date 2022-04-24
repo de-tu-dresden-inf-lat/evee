@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<B> = <D>",
+  "inferences" : [ {
+    "conclusion" : "<B> = <D>",
+    "ruleName" : "generic",
+    "premises" : [ "<r> <r <s>", "<s> <r <r>", "E<s>.<A> <= <B>", "<B> <= E<s>.<A>", "<C> <= <A>", "<A> <= <C>", "<A> <= <C>", "<C> <= <A>", "E<r>.<C> <= <D>", "<D> <= E<r>.<C>", "<s> <r <r>", "<r> <r <s>" ]
+  } ]
+}

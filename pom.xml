@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.tu-dresden.inf.lat</groupId>
+    <artifactId>evee</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+
+
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>owlapi4</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
+                <module>evee-data/evee-data-owlapi4</module>
+<!--                <module>LETHE/LETHE-core</module>-->
+<!--                <module>LETHE/LETHE-owlapi4</module>-->
+                <module>elimination-proofs/elimination-proofs-core-owlapi4</module>
+                <module>elimination-proofs/elimination-proofs-fame-owlapi4</module>
+                <module>elimination-proofs/elimination-proofs-lethe-owlapi4</module>
+                <module>lethe-proof-extractor/lethe-proof-extractor-owlapi4</module>
+                <module>elk-proof-extractor/elk-proof-extractor-owlapi4</module>
+                <module>evee-protege</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>complete</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>lat-scala-dl-tools</module>
+                <module>evee-data</module>
+<!--                <module>LETHE</module>-->
+                <module>elimination-proofs</module>
+                <module>lethe-proof-extractor</module>
+                <module>elk-proof-extractor</module>
+                <module>evee-protege</module>
+            </modules>
+        </profile>
+    </profiles>
+
+
+
+</project>

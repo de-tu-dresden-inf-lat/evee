@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>FamePlus</groupId>
+  <artifactId>FamePlus</artifactId>
+  <version>1-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20220424.211818</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20220424211818</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1-20220424.211818-1</value>
+        <updated>20220424211818</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1-20220424.211818-1</value>
+        <updated>20220424211818</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

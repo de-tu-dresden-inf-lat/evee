@@ -1,0 +1,30 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <!-- <file> log-${byDay}.txt </file> -->
+        <file> log.txt </file>
+        <append>false</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="off">
+        <appender-ref ref="STDOUT" />
+    </root>
+    <logger name="uk.ac.man.cs.lethe.internal.dl.AbstractMappedReasoner" level="off"/>
+    <logger name="uk.ac.man.cs.lethe.internal.dl.HermitMappedReasoner" level="off"/>
+    <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxSingleRoleForgetter" level="off"/>
+    <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxForgetter" level="off"/>
+    <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxSingleConceptForgetter" level="off"/>
+    <logger name="de.tu_dresden.inf.lat.forgettingBasedProofs.minimal.SymbolMinimalForgettingBasedProofGenerator"
+    level="off"/>
+</configuration>

@@ -1,0 +1,3 @@
+[submodule "lat-scala-dl-tools"]
+	path = lat-scala-dl-tools
+	url = https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools.git

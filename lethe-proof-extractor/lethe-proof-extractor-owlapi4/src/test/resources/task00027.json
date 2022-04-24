@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<A> <= <B>",
+  "inferences" : [ {
+    "conclusion" : "<A> <= <B>",
+    "ruleName" : "generic",
+    "premises" : [ "<C> <= <D>", "<D> <= <B>", "<C> = A<r>.<E>", "domain(<r>) = <B>" ]
+  } ]
+}
