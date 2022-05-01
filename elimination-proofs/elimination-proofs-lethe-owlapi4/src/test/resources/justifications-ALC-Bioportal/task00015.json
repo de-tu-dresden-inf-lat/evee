@@ -1,8 +1,0 @@
-{
-  "finalConclusion" : "<A> <= <B>",
-  "inferences" : [ {
-    "conclusion" : "<A> <= <B>",
-    "ruleName" : "generic",
-    "premises" : [ "<B> = (<K> n E<r>.(<H> n E<w>.(<F> u <L>) n E<u>.E<v>.<D> n E<w>.(E<s>.(E<y>.<C> n <E>) n <J> n (E<x>.<G> u E<t>.<I>))))", "<A> = (<K> n E<r>.(<H> n E<w>.(<F> n E<z>.(E<w>.<N> n <M>)) n E<u>.E<v>.<D> n E<w>.(E<s>.(E<y>.<C> n <E>) n <J> n (E<x>.<G> u E<t>.<I>))))" ]
-  } ]
-}

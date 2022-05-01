@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<A> <= <B>",
+  "inferences" : [ {
+    "conclusion" : "<A> <= <B>",
+    "ruleName" : "generic",
+    "premises" : [ "<A> <= <C>", "<C> <= (E<s>.<D> n E<r>.<E>)", "<F> = (<C> n E<r>.(E<t>.<G> n <E>))", "disjoint(<A>, <F>)", "<B> = (<C> n E<r>.(-E<t>.<G> n <E>))", "<A> = (<C> n E<r>.(<H> n <E> n E<t>.<I>))" ]
+  } ]
+}

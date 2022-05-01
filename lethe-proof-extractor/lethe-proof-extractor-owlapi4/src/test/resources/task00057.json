@@ -1,8 +1,0 @@
-{
-  "finalConclusion" : "<A> = <B>",
-  "inferences" : [ {
-    "conclusion" : "<A> = <B>",
-    "ruleName" : "generic",
-    "premises" : [ "<A> = (<F> u <D> u <G> u <C> u <H> u <E>)", "<B> = (<F> u <D> u <G> u <C> u <H> u <E>)", "<A> = <B>" ]
-  } ]
-}

@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.tu-dresden.inf.lat</groupId>
+    <groupId>de.tu-dresden.inf.lat.evee</groupId>
     <artifactId>evee-data-owlapi5</artifactId>
     <version>0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -39,7 +39,7 @@
 
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lat-scala-dl-tools-owlapi5</artifactId>
+            <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
             <version>0.4-SNAPSHOT</version>
         </dependency>
 

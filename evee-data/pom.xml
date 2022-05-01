@@ -6,9 +6,9 @@
 
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat</groupId>
+        <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>evee-data</artifactId>

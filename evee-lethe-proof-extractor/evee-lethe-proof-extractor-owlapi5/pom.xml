@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.tu-dresden.inf.lat.evee</groupId>
+    <artifactId>evee-lethe-proof-extractor-owlapi5</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <repositories>
+        <repository>
+            <id>EveeLocalMavenRepository</id>
+            <name>EveeLocalMavenRepository</name>
+            <url>file:${project.basedir}/../../lib</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.2</version>
+        </dependency>
+        <!--    owlapi + hermit basics -->
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-distribution</artifactId>
+            <version>5.1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>org.semanticweb.hermit</artifactId>
+            <version>1.4.3.517</version>
+        </dependency>
+        <!--        de.tu-dresden.inf.lat -->
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>lethe-core_2.12</artifactId>
+            <version>0.8-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>lethe-owlapi5_2.12</artifactId>
+            <version>0.8-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-data-owlapi5</artifactId>
+            <version>0.4-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
+            <version>0.4-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M6</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.1</version>
+
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.basedir}/target/src/main/java</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>test-sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.basedir}/target/src/test/java</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>test-resources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.basedir}/target/src/test/resources</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-test-resource</id>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/target/src/test/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <sourceDirectory>${project.basedir}/target/src/main/java</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/target/src/test/java</testSourceDirectory>
+
+    </build>
+
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <skipTests>true</skipTests>
+    </properties>
+
+</project>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <artifactId>evee-elimination-proofs</artifactId>
+        <version>0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>evee-elimination-proofs-fame-owlapi4</artifactId>
+
+    <repositories>
+        <repository>
+            <id>EveeLocalMavenRepository</id>
+            <name>EveeLocalMavenRepository</name>
+            <url>file:${project.basedir}/../../lib</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0-rc3</version>
+        </dependency>
+        <dependency>
+            <groupId>FamePlus</groupId>
+            <artifactId>FamePlus</artifactId>
+            <version>1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-elimination-proofs-core-owlapi4</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>${project.basedir}/src/main/scala</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test</testSourceDirectory>
+    </build>
+
+
+</project>

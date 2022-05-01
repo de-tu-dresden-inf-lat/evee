@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.tu-dresden.inf.lat</groupId>
+    <groupId>de.tu-dresden.inf.lat.evee</groupId>
     <artifactId>evee</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
 
 
 
@@ -28,13 +28,11 @@
             <modules>
                 <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
                 <module>evee-data/evee-data-owlapi4</module>
-<!--                <module>LETHE/LETHE-core</module>-->
-<!--                <module>LETHE/LETHE-owlapi4</module>-->
-                <module>elimination-proofs/elimination-proofs-core-owlapi4</module>
-                <module>elimination-proofs/elimination-proofs-fame-owlapi4</module>
-                <module>elimination-proofs/elimination-proofs-lethe-owlapi4</module>
-                <module>lethe-proof-extractor/lethe-proof-extractor-owlapi4</module>
-                <module>elk-proof-extractor/elk-proof-extractor-owlapi4</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-core-owlapi4</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-fame-owlapi4</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-lethe-owlapi4</module>
+                <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
+                <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
                 <module>evee-protege</module>
             </modules>
         </profile>
@@ -46,10 +44,9 @@
             <modules>
                 <module>lat-scala-dl-tools</module>
                 <module>evee-data</module>
-<!--                <module>LETHE</module>-->
-                <module>elimination-proofs</module>
-                <module>lethe-proof-extractor</module>
-                <module>elk-proof-extractor</module>
+                <module>evee-elimination-proofs</module>
+                <module>evee-lethe-proof-extractor</module>
+                <module>evee-elk-proof-extractor</module>
                 <module>evee-protege</module>
             </modules>
         </profile>

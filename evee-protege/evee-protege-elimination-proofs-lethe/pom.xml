@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <artifactId>evee-protege</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>evee-protege-elimination-proofs-lethe</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>EveeLocalMavenRepository</id>
+            <name>EveeLocalMavenRepository</name>
+            <url>file:${project.basedir}/../../lib</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-protege-core</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-elimination-proofs-lethe-owlapi4</artifactId>
+            <version>0.2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.5.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
+                        <Import-Package>
+                            sun.misc.*;resolution:=optional,
+                            org.apache.batik.transcoder.*;resolution:=optional,
+                            org.apache.tools.ant.*;resolution:=optional,
+                            org.graalvm.polyglot.*;resolution:=optional,
+                            de.tu_dresden.inf.lat.proofs.*,
+                            de.tu_dresden.inf.lat.protege.abstractProofService.*,
+                            scala.swing.*;resolution:=optional,
+                            *
+                        </Import-Package>
+                        <Private-Package>
+                            de.tu_dresden.inf.lat.forgettingBasedProofs.*;-split-package:=merge-last,
+                            org.apache.commons.exec.*,
+                            uk.ac.man.cs.lethe.forgetting.*,
+                            <!--                            dl.*,-->
+                            uk.ac.man.cs.lethe.internal.dl.*;-split-package:=merge-last,
+                            uk.ac.man.cs.lethe.internal.application.benchmarks.*,
+                            uk.ac.man.cs.lethe.internal.forgetting.*,
+                            uk.ac.man.cs.lethe.internal.tools.*;-split-package:=merge-last,
+                            guru.nidi.graphviz.attribute.*,
+                            guru.nidi.graphviz.engine.*,
+                            guru.nidi.graphviz.model.*,
+                            guru.nidi.graphviz.service.*,
+                            com.eclipsesource.v8.*,
+                            com.kitfox.svg.*,
+                            com.google.common.collect.*;-split-package:=merge-last,
+                            com.google.common.base.*;-split-package:=merge-last,
+                            com.google.common.math.*;-split-package:=merge-last,
+                            com.google.common.primitives.*;-split-package:=merge-last,
+                        </Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
