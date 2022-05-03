@@ -25,6 +25,6 @@
     <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxSingleRoleForgetter" level="off"/>
     <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxForgetter" level="off"/>
     <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxSingleConceptForgetter" level="off"/>
-    <logger name="de.tu_dresden.inf.lat.forgettingBasedProofs.minimal.SymbolMinimalForgettingBasedProofGenerator"
+    <logger name="de.tu_dresden.inf.lat.evee.forgettingBasedProofs.minimal.SymbolMinimalForgettingBasedProofGenerator"
     level="off"/>
 </configuration>

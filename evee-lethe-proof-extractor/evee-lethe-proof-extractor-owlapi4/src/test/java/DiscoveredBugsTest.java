@@ -1,7 +1,7 @@
 import java.io.File;
 import java.util.HashSet;
 
-import de.tu_dresden.inf.lat.proofs.tools.evaluators.CorrectnessEvaluator;
+import de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.CorrectnessEvaluator;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -11,13 +11,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import de.tu_dresden.inf.lat.proofs.data.exceptions.ProofGenerationException;
-import de.tu_dresden.inf.lat.proofs.interfaces.IInference;
-import de.tu_dresden.inf.lat.proofs.interfaces.IProof;
-import de.tu_dresden.inf.lat.proofs.interfaces.IProofGenerator;
-import de.tu_dresden.inf.lat.proofs.json.JsonProofParser;
-import de.tu_dresden.inf.lat.proofs.lethe.LetheProofGenerator;
-import de.tu_dresden.inf.lat.proofs.proofGenerators.MinimalTreeProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofParser;
+import de.tu_dresden.inf.lat.evee.proofs.lethe.LetheProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.MinimalTreeProofGenerator;
 
 import static org.junit.Assert.assertEquals;
 

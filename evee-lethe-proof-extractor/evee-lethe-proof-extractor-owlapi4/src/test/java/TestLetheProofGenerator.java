@@ -1,5 +1,5 @@
-import de.tu_dresden.inf.lat.proofs.lethe.LetheProofGenerator;
-import de.tu_dresden.inf.lat.proofs.tools.BasicProgressBar;
+import de.tu_dresden.inf.lat.evee.proofs.lethe.LetheProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.tools.BasicProgressBar;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,8 +23,8 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.PrefixManager;
 
-import de.tu_dresden.inf.lat.proofs.data.exceptions.ReasonerNotSupportedException;
-import de.tu_dresden.inf.lat.proofs.data.exceptions.ProofGenerationCancelledException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ReasonerNotSupportedException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException;
 
 /**
  * Test individual (& public) functions of the LetheProofGenerator class.

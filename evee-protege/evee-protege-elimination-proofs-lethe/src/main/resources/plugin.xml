@@ -4,38 +4,38 @@
 
     <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof (LETHE)" />
-        <class value="de.tu_dresden.inf.lat.protege.letheBasedProofService.EveeLetheBasedHeuristicProofService" />
+        <class value="de.tu_dresden.inf.lat.evee.protege.letheBasedProofService.EveeLetheBasedHeuristicProofService" />
     </extension>
     <extension id="evee.proof.preferences" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof (LETHE)"/>
-        <class value="de.tu_dresden.inf.lat.protege.letheBasedProofService.EveeLetheBasedHeuristicPreferences"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.letheBasedProofService.EveeLetheBasedHeuristicPreferences"/>
     </extension>
 
     <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for size (LETHE)" />
-        <class value="de.tu_dresden.inf.lat.protege.letheBasedProofService.EveeLetheBasedSizeMinimalProofService" />
+        <class value="de.tu_dresden.inf.lat.evee.protege.letheBasedProofService.EveeLetheBasedSizeMinimalProofService" />
     </extension>
     <extension id="evee.proof.preferences" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof, optimized for size (LETHE)"/>
-        <class value="de.tu_dresden.inf.lat.protege.letheBasedProofService.EveeLetheBasedSizeMinimalPreferences"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.letheBasedProofService.EveeLetheBasedSizeMinimalPreferences"/>
     </extension>
 
     <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for eliminated names (LETHE)" />
-        <class value="de.tu_dresden.inf.lat.protege.letheBasedProofService.EveeLetheBasedSymbolMinimalProofService" />
+        <class value="de.tu_dresden.inf.lat.evee.protege.letheBasedProofService.EveeLetheBasedSymbolMinimalProofService" />
     </extension>
     <extension id="evee.proof.preferences" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof, optimized for eliminated names (LETHE)"/>
-        <class value="de.tu_dresden.inf.lat.protege.letheBasedProofService.EveeLetheBasedSymbolMinimalPreferences"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.letheBasedProofService.EveeLetheBasedSymbolMinimalPreferences"/>
     </extension>
 
     <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for weighted size (LETHE)" />
-        <class value="de.tu_dresden.inf.lat.protege.letheBasedProofService.EveeLetheBasedWeightedSizeMinimalProofService" />
+        <class value="de.tu_dresden.inf.lat.evee.protege.letheBasedProofService.EveeLetheBasedWeightedSizeMinimalProofService" />
     </extension>
     <extension id="evee.proof.preferences" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof, optimized for weighted size (LETHE)"/>
-        <class value="de.tu_dresden.inf.lat.protege.letheBasedProofService.EveeLetheBasedWeightedSizeMinimalPreferences"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.letheBasedProofService.EveeLetheBasedWeightedSizeMinimalPreferences"/>
     </extension>
 
 </plugin>

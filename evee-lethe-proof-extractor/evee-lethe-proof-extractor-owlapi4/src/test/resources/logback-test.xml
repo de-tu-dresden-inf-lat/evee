@@ -26,5 +26,5 @@
     <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxForgetter" level="trace"/>
     <logger name="uk.ac.man.cs.lethe.internal.dl.proofs.InferenceLogger" level="trace"/>
     <logger name="uk.ac.man.cs.lethe.internal.dl.proofs.InferenceLogger$" level="trace"/>
-    <logger name="de.tu_dresden.inf.lat.proofs.lethe.LetheProofGenerator" level="trace"/>
+    <logger name="de.tu_dresden.inf.lat.evee.proofs.lethe.LetheProofGenerator" level="trace"/>
 </configuration>
