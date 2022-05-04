@@ -24,7 +24,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.PrefixManager;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ReasonerNotSupportedException;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 
 /**
  * Test individual (& public) functions of the LetheProofGenerator class.
@@ -109,7 +109,7 @@ public class TestLetheProofGenerator {
 
             assertNull(generator.proveSubsumption(A, B));
         }
-        catch (ProofGenerationCancelledException e){
+        catch (ProofGenerationException e){
             System.out.println("Test failed: " + e);
         }
     }
@@ -124,7 +124,7 @@ public class TestLetheProofGenerator {
         try{
             assertNotNull(generator.proveEquivalence(A, C));
         }
-        catch (ProofGenerationCancelledException e){
+        catch (ProofGenerationException e){
             System.out.println("Test failed: " + e);
         }
     }

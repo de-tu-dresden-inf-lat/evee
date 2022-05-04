@@ -1,6 +1,6 @@
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.FormattingException;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.lethe.LetheProofGenerator;
@@ -49,7 +49,7 @@ public class TestProofGeneration {
             IProof<OWLAxiom> proof = proofGenerator.proveSubsumption(A, C);
             ProofUtils.showProof(proof);
         }
-        catch (ProofGenerationCancelledException e){
+        catch (ProofGenerationException e){
             System.out.println("Test failed: " + e);
         }
 

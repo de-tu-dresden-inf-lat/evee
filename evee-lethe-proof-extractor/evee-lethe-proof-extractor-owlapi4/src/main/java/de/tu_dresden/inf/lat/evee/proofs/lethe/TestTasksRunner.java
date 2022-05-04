@@ -20,7 +20,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofParser;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 
 public class TestTasksRunner {
 
@@ -58,7 +58,7 @@ public class TestTasksRunner {
                 return proofGenerator.proveSubsumption((OWLClass) conclusionAxiom.getSubClass(),
                         (OWLClass) conclusionAxiom.getSuperClass());
             }
-            catch (ProofGenerationCancelledException e){
+            catch (ProofGenerationException e){
                 System.out.println(e);
                 return null;
             }
@@ -68,7 +68,7 @@ public class TestTasksRunner {
             try{
                 return proofGenerator.proveEquivalence((OWLClass) classes.get(0), (OWLClass) classes.get(1));
             }
-            catch (ProofGenerationCancelledException e){
+            catch (ProofGenerationException e){
                 System.out.println(e);
                 return null;
             }

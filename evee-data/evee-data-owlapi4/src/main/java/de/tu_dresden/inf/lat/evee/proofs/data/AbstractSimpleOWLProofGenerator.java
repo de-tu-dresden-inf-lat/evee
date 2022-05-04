@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.evee.proofs.data;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ReasonerNotSupportedException;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.ISimpleProofGenerator;
@@ -38,7 +38,7 @@ public abstract class AbstractSimpleOWLProofGenerator
     }
 
     @Override
-    public IProof<OWLAxiom> getProof(OWLAxiom axiom) throws ProofGenerationCancelledException {
+    public IProof<OWLAxiom> getProof(OWLAxiom axiom) throws ProofGenerationException {
         // Patrick: I made this non-final as I wanted to be able to use a simple owl proof generator
         // with my own getProof method, working the other way around as intended here
         if (! supportsProof(axiom)){

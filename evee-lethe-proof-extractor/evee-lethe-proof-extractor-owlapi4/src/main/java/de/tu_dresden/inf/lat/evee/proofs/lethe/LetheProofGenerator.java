@@ -7,7 +7,9 @@ import de.tu_dresden.inf.lat.evee.proofs.data.AbstractSimpleOWLProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ReasonerNotSupportedException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
@@ -105,7 +107,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     }
 
     @Override
-    public IProof<OWLAxiom> proveSubsumption(OWLClass owlClass, OWLClass owlClass1) throws ProofGenerationCancelledException {
+    public IProof<OWLAxiom> proveSubsumption(OWLClass owlClass, OWLClass owlClass1) throws ProofGenerationException {
         computationStart();
         // blocking call - cancel() might get called in the meantime
         //OWLOntology interpolant = findInterpolant(interpolator, owlClass, owlClass1);
@@ -143,12 +145,11 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         }
         logger.debug("Subsumption doesn't hold.");
 
-//        todo: what about this case? throw ProofGenerationFailedException or similar?
-        return null;
+        throw new ProofGenerationFailedException("Proof not supported");
     }
 
     @Override
-    public IProof<OWLAxiom> proveEquivalence(OWLClass owlClassA, OWLClass owlClassB) throws ProofGenerationCancelledException {
+    public IProof<OWLAxiom> proveEquivalence(OWLClass owlClassA, OWLClass owlClassB) throws ProofGenerationException {
         computationStart();
 
         // blocking call - cancel() might get called in the meantime
@@ -201,8 +202,8 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             return result;
         }
         System.out.println("Equivalence doesn't hold.");
-//        todo: what about this case? throw ProofGenerationFailedException or similar?
-        return null;
+
+        throw new ProofGenerationFailedException("Proof not supported");
     }
 
     @Override
