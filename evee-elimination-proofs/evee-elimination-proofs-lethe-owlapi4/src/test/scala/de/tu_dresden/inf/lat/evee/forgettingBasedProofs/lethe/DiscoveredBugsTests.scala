@@ -13,7 +13,7 @@ class DiscoveredLetheBugsTests {
 
     val manager = OWLManager.createOWLOntologyManager()
     val factory = manager.getOWLDataFactory()
-    val ontStream = getClass.getClassLoader.getResourceAsStream("univ-bench.owl.xml")
+    val ontStream = getClass.getClassLoader.getResourceAsStream("univ-bench.owl")
     val ontology = manager.loadOntologyFromOntologyDocument(ontStream)
 
     val axiom = factory.getOWLSubClassOfAxiom(
@@ -40,7 +40,7 @@ class DiscoveredLetheBugsTests {
 
     val manager = OWLManager.createOWLOntologyManager()
     val factory = manager.getOWLDataFactory()
-    val ontStream = getClass.getClassLoader.getResourceAsStream("univ-bench.owl.xml")
+    val ontStream = getClass.getClassLoader.getResourceAsStream("univ-bench.owl")
     val ontology = manager.loadOntologyFromOntologyDocument(ontStream)
 
     val axiom = factory.getOWLSubClassOfAxiom(
