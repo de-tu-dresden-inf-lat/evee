@@ -10,7 +10,7 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>evee-elimination-proofs</artifactId>
+    <artifactId>evee-elimination-proofs_2.12</artifactId>
     <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 

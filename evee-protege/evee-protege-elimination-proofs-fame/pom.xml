@@ -38,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-elimination-proofs-fame-owlapi4</artifactId>
+            <artifactId>evee-elimination-proofs-fame-owlapi4_2.12</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>

@@ -4,11 +4,11 @@
 
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
-        <artifactId>evee-elimination-proofs</artifactId>
+        <artifactId>evee-elimination-proofs_2.12</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>evee-elimination-proofs-lethe-owlapi5</artifactId>
+    <artifactId>evee-elimination-proofs-lethe-owlapi5_2.12</artifactId>
 
     <repositories>
         <repository>
@@ -31,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-elimination-proofs-core-owlapi5</artifactId>
+            <artifactId>evee-elimination-proofs-core-owlapi5_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
