@@ -12,6 +12,7 @@
 
     <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
 
+<!--
     <repositories>
         <repository>
             <id>EveeLocalMavenRepository</id>
@@ -19,15 +20,15 @@
             <url>file:${project.basedir}/../../lib</url>
         </repository>
     </repositories>
-
+-->
     <dependencies>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lethe-core_2.12</artifactId>
             <version>0.8-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lethe-owlapi4_2.12</artifactId>
             <version>0.8-SNAPSHOT</version>
         </dependency>
