@@ -289,11 +289,11 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         assertOntologySet();
         logger.trace("Ontology:");
         logger.trace(SimpleOWLFormatter.format(ontology));
-        Set<OWLEntity> targetSignature = axiom.getSignature();
-        OWLOntology justification = justify(axiom);
+        ontology = justify(axiom);
         logger.trace("Justification:");
-        logger.trace(SimpleOWLFormatter.format(justification));
-        return interpolator.uniformInterpolant(justification, targetSignature);
+        logger.trace(SimpleOWLFormatter.format(ontology));
+        Set<OWLEntity> targetSignature = axiom.getSignature();
+        return interpolator.uniformInterpolant(ontology, targetSignature);
     }
 
     private OWLOntology justify(OWLAxiom axiom) {
