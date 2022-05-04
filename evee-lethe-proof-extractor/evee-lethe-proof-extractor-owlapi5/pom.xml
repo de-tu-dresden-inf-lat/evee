@@ -25,6 +25,11 @@
         <!--    owlapi + hermit basics -->
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-distribution</artifactId>
+            <version>5.1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>org.semanticweb.hermit</artifactId>
             <version>1.4.3.517</version>
         </dependency>
@@ -44,6 +49,12 @@
             <artifactId>evee-data-owlapi5</artifactId>
             <version>0.4-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
+            <version>0.4-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>

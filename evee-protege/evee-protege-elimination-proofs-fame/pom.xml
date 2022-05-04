@@ -41,6 +41,11 @@
             <artifactId>evee-elimination-proofs-fame-owlapi4_2.12</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>FamePlus</groupId>
+            <artifactId>FamePlus</artifactId>
+            <version>1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 
