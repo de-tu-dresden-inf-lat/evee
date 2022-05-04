@@ -111,7 +111,8 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         computationStart();
         // blocking call - cancel() might get called in the meantime
         //OWLOntology interpolant = findInterpolant(interpolator, owlClass, owlClass1);
-        OWLOntology interpolant = findInterpolant(interpolator, dataFactory.getOWLSubClassOfAxiom(owlClass,owlClass1));
+        OWLAxiom targetAxiom = dataFactory.getOWLSubClassOfAxiom(owlClass,owlClass1);
+        OWLOntology interpolant = findInterpolant(interpolator, targetAxiom);
 
 
         if (cancelled) {
@@ -132,9 +133,8 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             }
 
             inferences.addAll(getSubsumptionWeakeningInferences(interpolant, owlClass, owlClass1));
-            OWLAxiom provenAxiom = dataFactory.getOWLSubClassOfAxiom(owlClass, owlClass1);
 
-            Proof<OWLAxiom> result =  new Proof<>(provenAxiom, inferences);
+            Proof<OWLAxiom> result =  new Proof<>(targetAxiom, inferences);
             addMissingInferences(result);
 
             if (cancelled) {
@@ -154,7 +154,8 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
 
         // blocking call - cancel() might get called in the meantime
         //OWLOntology interpolant = findInterpolant(interpolator, owlClassA, owlClassB);
-        OWLOntology interpolant = findInterpolant(interpolator, dataFactory.getOWLEquivalentClassesAxiom(owlClassA,owlClassB));
+        OWLAxiom targetAxiom = dataFactory.getOWLEquivalentClassesAxiom(owlClassA,owlClassB);
+        OWLOntology interpolant = findInterpolant(interpolator, targetAxiom);
 
         if (cancelled) {
             computationEnd();
@@ -181,16 +182,13 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             inferences.addAll(getSubsumptionWeakeningInferences(interpolant, owlClassA, owlClassB));
             inferences.addAll(getSubsumptionWeakeningInferences(interpolant, owlClassB, owlClassA));
 
-            OWLAxiom provenAxiom = dataFactory.getOWLEquivalentClassesAxiom(owlClassA, owlClassB);
-
-
-            inferences.add(new Inference<>(provenAxiom,
+            inferences.add(new Inference<>(targetAxiom,
                 EQUIVALENCE_RULE,
                 Arrays.asList(dataFactory.getOWLSubClassOfAxiom(owlClassA, owlClassB),
                               dataFactory.getOWLSubClassOfAxiom(owlClassB, owlClassA))
             ));
 
-            Proof<OWLAxiom> result =  new Proof<>(provenAxiom, inferences);
+            Proof<OWLAxiom> result =  new Proof<>(targetAxiom, inferences);
 
             addMissingInferences(result); // adds tautologies that are not always derived by LETHE, such as BOTTOM <= A
 
