@@ -80,7 +80,7 @@
                             *
                         </Import-Package>
                         <Private-Package>
-                            de.tu_dresden.inf.lat.evee.forgettingBasedProofs.*;-split-package:=merge-last,
+                            de.tu_dresden.inf.lat.evee.eliminationProofs.*;-split-package:=merge-last,
                             org.apache.commons.exec.*,
                             uk.ac.man.cs.lethe.forgetting.*,
                             <!--                            dl.*,-->

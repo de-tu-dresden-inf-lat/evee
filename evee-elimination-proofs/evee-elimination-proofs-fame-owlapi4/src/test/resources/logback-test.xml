@@ -23,10 +23,10 @@
     <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxForgetter" level="off"/>
     <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.AbstractABoxClauseForgetter" level="off"/>
     <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxSingleConceptForgetter" level="off"/>
-    <logger name="de.tu_dresden.inf.lat.evee.forgettingBasedProofs.minimal.MinimalForgettingBasedProofGenerator"
+    <logger name="de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.MinimalForgettingBasedProofGenerator"
     level="trace"/>
-    <logger name="de.tu_dresden.inf.lat.evee.forgettingBasedProofs.ForgettingBasedProofGenerator"
+    <logger name="de.tu_dresden.inf.lat.evee.eliminationProofs.ForgettingBasedProofGenerator"
             level="trace"/>
-    <logger name="de.tu_dresden.inf.lat.evee.forgettingBasedProofs.tools.TidyForgettingBasedProofs"
+    <logger name="de.tu_dresden.inf.lat.evee.eliminationProofs.tools.TidyForgettingBasedProofs"
             level="trace"/>
 </configuration>

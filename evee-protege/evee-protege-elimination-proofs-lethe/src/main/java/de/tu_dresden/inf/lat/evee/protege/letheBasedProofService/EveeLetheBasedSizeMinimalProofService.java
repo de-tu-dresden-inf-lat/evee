@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.forgettingBasedProofs.LetheBasedSizeMinimalProofGenerator;
+import de.tu_dresden.inf.lat.evee.eliminationProofs.LetheBasedSizeMinimalProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.CachingProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofService;
 
