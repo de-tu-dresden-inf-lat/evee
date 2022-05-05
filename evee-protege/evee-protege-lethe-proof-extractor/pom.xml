@@ -75,29 +75,15 @@
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             de.tu_dresden.inf.lat.dltools.*,
                             scala.swing.*;resolution:=optional,
-                            <!--                            org.protege.editor.core.ui.preferences.*;version="4.3",-->
-                            <!--                            org.protege.editor.owl.ui.preferences.*;version="4.3",-->
-                            <!--                            org.protege.editor.core.prefs.*;version="4.3",-->
                             *
                         </Import-Package>
                         <Private-Package>
                             de.tu_dresden.inf.lat.evee.proofs.lethe.*,
-                            <!--                            de.tu_dresden.inf.lat.forgettingBasedProofs.*;-split-package:=merge-last,-->
-                            <!--                            org.apache.commons.exec.*,-->
-                            <!--                            uk.ac.man.cs.lethe.forgetting.*,-->
-                            <!--                            dl.*,-->
                             uk.ac.man.cs.lethe.internal.dl.*;-split-package:=merge-last,
                             uk.ac.man.cs.lethe.internal.application.benchmarks.*,
                             uk.ac.man.cs.lethe.internal.forgetting.*,
                             uk.ac.man.cs.lethe.internal.tools.*;-split-package:=merge-last,
                             uk.ac.man.cs.lethe.interpolation.*,
-                            <!--                            guru.nidi.graphviz.attribute.*,-->
-                            <!--                            guru.nidi.graphviz.engine.*,-->
-                            <!--                            guru.nidi.graphviz.model.*,-->
-                            <!--                            guru.nidi.graphviz.service.*,-->
-                            <!--                            com.eclipsesource.v8.*,-->
-                            <!--                            com.kitfox.svg.*,-->
-<!--                            scala.swing.*,-->
                             com.google.common.collect.*;-split-package:=merge-last,
                             com.google.common.base.*;-split-package:=merge-last,
                             com.google.common.math.*;-split-package:=merge-last,

@@ -38,7 +38,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>evee-elimination-proofs-core-owlapi4</artifactId>
+                                    <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
@@ -46,7 +46,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>evee-elimination-proofs-core-owlapi4</artifactId>
+                                    <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>main-resources</classifier>
                                     <overWrite>false</overWrite>

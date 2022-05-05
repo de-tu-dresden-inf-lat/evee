@@ -71,9 +71,6 @@
                         <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
                             sun.misc.*;resolution:=optional,
-                            <!--                            org.apache.batik.transcoder.*;resolution:=optional,-->
-                            <!--                            org.apache.tools.ant.*;resolution:=optional,-->
-                            <!--                            org.graalvm.polyglot.*;resolution:=optional,-->
                             de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             com.ibm.uvm.tools.*;resolution:=optional,
@@ -89,7 +86,6 @@
                             de.tu_dresden.inf.lat.evee.data.*,
                             de.tu_dresden.inf.lat.evee.inOut.*,
                             de.tu_dresden.inf.lat.evee.tools.*,
-                            <!--                            de.tu_dresden.inf.lat.forgettingBasedProofs.*;-split-package:=merge-last,-->
                             org.apache.log4j.*;-split-package:=merge-last,
                             javax.mail.*,
                             javax.activation.*,
@@ -97,42 +93,6 @@
                             org.apache.geronimo.osgi.locator.*;-split-package:=merge-last,
                             org.liveontologies.owlapi.proof.*,
                             org.semanticweb.elk.*;-split-package:=merge-last,
-                            <!--                            org.semanticweb.elk.owlapi.*,-->
-                            <!--                            org.semanticweb.elk.exceptions.*,-->
-                            <!--                            org.semanticweb.elk.loading.*,-->
-                            <!--                            org.semanticweb.elk.owl.iris.*,-->
-                            <!--                            org.semanticweb.elk.owl.inferences.*,-->
-                            <!--                            org.semanticweb.elk.matching.*,-->
-                            <!--                            org.semanticweb.elk.owl.implementation.*,-->
-                            <!--                            org.semanticweb.elk.owl.interfaces.*,-->
-                            <!--                            org.semanticweb.elk.owl.managers.*,-->
-                            <!--                            org.semanticweb.elk.owl.parsing.*,-->
-                            <!--                            org.semanticweb.elk.owl.predefined.*,-->
-                            <!--                            org.semanticweb.elk.owl.comparison.*,-->
-                            <!--                            org.semanticweb.elk.owl.printers.*,-->
-                            <!--                            org.osgi.service.log.*,-->
-                            <!--                            org.apache.commons.lang3.*,-->
-                            <!--                            org.apache.commons.exec.*,-->
-                            <!--                            org.apache.env.*,-->
-                            <!--                            forgetting.*,-->
-                            <!--                            checkfrequency.*,-->
-                            <!--                            checkreducedform.*,-->
-                            <!--                            checkexistence.*,-->
-                            <!--                            concepts.*,-->
-                            <!--                            connectives.*,-->
-                            <!--                            converter.*,-->
-                            <!--                            extractor.*,-->
-                            <!--                            formula.*,-->
-                            <!--                            individual.*,-->
-                            <!--                            inferencing.*,-->
-                            <!--                            preprocessing.*,-->
-                            <!--                            roles.*,-->
-                            <!--                            guru.nidi.graphviz.attribute.*,-->
-                            <!--                            guru.nidi.graphviz.engine.*,-->
-                            <!--                            guru.nidi.graphviz.model.*,-->
-                            <!--                            guru.nidi.graphviz.service.*,-->
-                            <!--                            com.eclipsesource.v8.*,-->
-                            <!--                            com.kitfox.svg.*,-->
                             com.google.common.collect.*;-split-package:=merge-last,
                             com.google.common.base.*;-split-package:=merge-last,
                             com.google.common.math.*;-split-package:=merge-last,

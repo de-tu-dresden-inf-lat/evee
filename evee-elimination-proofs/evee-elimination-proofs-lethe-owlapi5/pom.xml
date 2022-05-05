@@ -49,7 +49,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>evee-elimination-proofs-lethe-owlapi4</artifactId>
+                                    <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
@@ -57,7 +57,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>evee-elimination-proofs-lethe-owlapi4</artifactId>
+                                    <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-sources</classifier>
                                     <overWrite>false</overWrite>
@@ -65,7 +65,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>evee-elimination-proofs-lethe-owlapi4</artifactId>
+                                    <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-resources</classifier>
                                     <overWrite>false</overWrite>
