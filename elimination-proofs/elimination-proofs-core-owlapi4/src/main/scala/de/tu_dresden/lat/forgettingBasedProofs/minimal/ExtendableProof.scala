@@ -19,7 +19,12 @@ class ExtendableProof[T](conclusion: T) extends Proof[T](conclusion) {
     this.addInferences(proof.getInferences)
   }
 
-  def inferencesForPremise(premise: T) = {
+  /**
+   * Returns all inferences that have the given premise
+   * @param premise
+   * @return
+   */
+  def inferencesWithPremise(premise: T) = {
     getInferences().asScala.toSet[IInference[T]].filter(_.getPremises().contains(premise))
   }
 

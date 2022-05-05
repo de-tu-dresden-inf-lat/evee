@@ -1,10 +1,9 @@
 package de.tu_dresden.inf.lat.forgettingBasedProofs
 
 import java.io.File
-
-import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter
+import de.tu_dresden.inf.lat.prettyPrinting.formatting.{Formatter, SimpleOWLFormatter}
 import de.tu_dresden.inf.lat.proofs.interfaces.{IInference, IProof}
-import org.semanticweb.owlapi.model.OWLAxiom
+import org.semanticweb.owlapi.model.{OWLAxiom, OWLObject}
 import guru.nidi.graphviz.attribute.Color
 import guru.nidi.graphviz.attribute.Label
 import guru.nidi.graphviz.attribute.Shape
@@ -73,6 +72,8 @@ object ProofTreeVisualiser {
 
   var nodeId = 0
 
+  private var formatter: Formatter[OWLObject] = SimpleOWLFormatter
+
   def drawProof(proof: IProof[OWLAxiom], fileName: String): Unit = {
 
     val graph = Factory.mutGraph(fileName).setDirected(true)
@@ -90,7 +91,7 @@ object ProofTreeVisualiser {
       Style.FILLED, Color.rgb(0, 191, 255), Shape.RECTANGLE)
     edgeId += 1
 
-    val conclusionNode = Factory.mutNode("node"+nodeId.toString).add(Label.of(SimpleOWLFormatter.format(conclusion))).add(Shape.RECTANGLE)
+    val conclusionNode = Factory.mutNode("node"+nodeId.toString).add(Label.of(formatter.format(conclusion))).add(Shape.RECTANGLE)
     nodeId+=1
 
     g.add(hyperConnection.addLink(to(conclusionNode)))

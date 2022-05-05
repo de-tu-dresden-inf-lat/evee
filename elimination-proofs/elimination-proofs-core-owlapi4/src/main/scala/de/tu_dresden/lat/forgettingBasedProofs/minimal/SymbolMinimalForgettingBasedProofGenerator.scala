@@ -164,7 +164,7 @@ class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
             currentBound = Some(bestPair._1.size) // note: x_1
             logger.trace(s"nextBound: ${currentBound}")
             logger.trace(s"nextBestProof: ${currentBestProof.map(_._2)}")
-            if(!oldBound.forall(_>currentBound.get))
+            if(oldBound.exists(_<currentBound.get))
               throw new AssertionError("bound increased!")
         }
         // increment by current level size when coming back from search:

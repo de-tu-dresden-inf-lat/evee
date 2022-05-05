@@ -26,7 +26,7 @@ class TidyForgettingBasedProofs(formatter: SimpleOWLFormatterCl) {
 
   def tidy(inference: IInference[OWLAxiom]): IInference[OWLAxiom] = {
 
-    if(inference.getRuleName.equals(ASSERTED_RULE))
+    if(inference.getRuleName.equals(ASSERTED_RULE) || true)
       return inference
 
     if(!inference.getRuleName.startsWith(ELIMINATE_PREFIX))

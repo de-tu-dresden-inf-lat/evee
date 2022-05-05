@@ -134,12 +134,11 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
 
     var proof = _proof
 
-
     if(skipSteps) {
       var remove = List[IInference[OWLAxiom]]()
       var add = List[IInference[OWLAxiom]]()
       _proof.getPremises().foreach { premise =>
-          _proof.inferencesForPremise(premise).foreach(inference => {
+          _proof.inferencesWithPremise(premise).foreach(inference => {
             val altPremises = justifier.justify(axioms, inference.getConclusion)
             val forgotten = formatter.format(name)
             val ruleName =
@@ -292,7 +291,7 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
     //})
     //println("****************************************************************")
     if (bestProofs.contains(justification)) {
-      //   println("I have already found a proof for this!")
+      //   println("I have already found a proof from this!")
       /*    println("It is: ")
           println(bestProofs(justification))
           println("--------------------- that was the one!")*/
@@ -371,7 +370,7 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
       var previousProgress = progressTrackers.getProgress()
       progressTrackers.increment()
 
-      // wer need to search for the next best proof
+      // we need to search for the next best proof
 
       var bestProof: Option[ExtendableProof[OWLAxiom]] = None
       var bestBound = bound //.map(_-minStepCost)//stepCost)
@@ -399,10 +398,13 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
                 //println("found a better proof via "+SimpleOWLFormatter.format(pair._2)+": ")
                 //println(proof)
                 //println("the size is: "+measure.evaluate(proof))
-                bestProof = Some(proof)
-                bestBound = Some(measure.evaluate(proof))
-                //println("next bound: "+bestBound)
-                bestName = Some(pair._2)
+                val value = measure.evaluate(proof)
+                if(bestBound.isEmpty || bestBound.exists(_>value)) {
+                  bestProof = Some(proof)
+                  bestBound = Some(measure.evaluate(proof))
+                  //println("next bound: "+bestBound)
+                  bestName = Some(pair._2)
+                }
             }
           }
 

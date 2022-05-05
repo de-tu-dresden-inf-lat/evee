@@ -3,6 +3,19 @@
   "inferences" : [ {
     "conclusion" : "<A> <= <B>",
     "ruleName" : "generic",
-    "premises" : [ "<C> <= <D>", "<D> <= <E>", "<E> <= <B>", "<F> <= <A>", "<A> <= <G>", "<H> <= <E>", "<I> <= <A>", "<J> <= <A>", "<K> = (<C> n <H>)", "domain(<r>) = <A>", "domain(<s>) = <B>", "<L> = A<s>.<M>", "<N> <= A<t>.<A>", "<L> <= <K>" ]
+    "premises" : [ "<C> <= <D>",
+      "<D> <= <E>",
+      "<E> <= <B>",
+      "<F> <= <A>",
+      "<A> <= <G>",
+      "<H> <= <E>",
+      "<I> <= <A>",
+      "<J> <= <A>",
+      "<K> = (<C> n <H>)",
+      "domain(<r>) = <A>",
+      "domain(<s>) = <B>",
+      "<L> = A<s>.<M>",
+      "<N> <= A<t>.<A>",
+      "<L> <= <K>" ]
   } ]
 }
