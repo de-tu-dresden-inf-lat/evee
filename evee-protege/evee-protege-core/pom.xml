@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>de.tu-dresden.inf.lat</groupId>
+        <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee-protege</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>evee-protege-core</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -44,7 +44,7 @@
         </dependency>
         <!--		de.tu-dresden.inf.lat-->
         <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-data-owlapi4</artifactId>
             <version>0.4-SNAPSHOT</version>
         </dependency>
@@ -129,12 +129,12 @@
                         </Import-Package>
                         <Export-Package>
                             com.fasterxml.jackson.*,
-                            de.tu_dresden.inf.lat.proofs.*,
+                            de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.dltools.*,
                             de.tu_dresden.inf.lat.prettyPrinting.*,
                             com.typesafe.scalalogging.*,
                             scala.*,
-                            de.tu_dresden.inf.lat.protege.abstractProofService.*,
+                            de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             com.google.errorprone.annotations.concurrent.*,
                         </Export-Package>
                         <Private-Package>

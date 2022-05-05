@@ -1,3 +1,9 @@
 target/
 *.iml
 .idea/
+socrates-proof.json
+log.txt
+temp/
+.settings
+.classpath
+.project

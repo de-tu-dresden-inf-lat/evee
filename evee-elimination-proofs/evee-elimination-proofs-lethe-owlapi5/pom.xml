@@ -1,0 +1,104 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <artifactId>evee-elimination-proofs_2.12</artifactId>
+        <version>0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>evee-elimination-proofs-lethe-owlapi5_2.12</artifactId>
+
+    <repositories>
+        <repository>
+            <id>EveeLocalMavenRepository</id>
+            <name>EveeLocalMavenRepository</name>
+            <url>file:${project.basedir}/../../lib</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lethe-core_2.12</artifactId>
+            <version>0.8-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lethe-owlapi5_2.12</artifactId>
+            <version>0.8-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-elimination-proofs-core-owlapi5_2.12</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>evee-elimination-proofs-lethe-owlapi4</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.basedir}/target/src/main/scala</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>evee-elimination-proofs-lethe-owlapi4</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>test-sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.basedir}/target/src/test/scala</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>evee-elimination-proofs-lethe-owlapi4</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>test-resources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.basedir}/target/src/test/resources</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-test-resource</id>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/target/src/test/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <sourceDirectory>${project.basedir}/target/src/main/scala</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/target/src/test</testSourceDirectory>
+    </build>
+
+</project>

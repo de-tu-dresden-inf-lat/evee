@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat</groupId>
+        <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>evee-protege</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <name>evee-protege</name>
 
     <packaging>pom</packaging>
@@ -38,10 +38,10 @@
 
     <modules>
         <module>evee-protege-core</module>
-        <module>evee-elimination-proofs-fame-protege</module>
-        <module>evee-elimination-proofs-lethe-protege</module>
-        <module>evee-lethe-proof-extractor-protege</module>
-        <module>evee-elk-proof-extractor-protege</module>
+        <module>evee-protege-elimination-proofs-fame</module>
+        <module>evee-protege-elimination-proofs-lethe</module>
+        <module>evee-protege-lethe-proof-extractor</module>
+        <module>evee-protege-elk-proof-extractor</module>
     </modules>
 
 </project>
