@@ -34,6 +34,7 @@
                 <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
                 <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
                 <module>evee-protege</module>
+                <module>evee-libs</module>
             </modules>
         </profile>
         <profile>
@@ -48,6 +49,7 @@
                 <module>evee-lethe-proof-extractor</module>
                 <module>evee-elk-proof-extractor</module>
                 <module>evee-protege</module>
+                <module>evee-libs</module>
             </modules>
         </profile>
     </profiles>
