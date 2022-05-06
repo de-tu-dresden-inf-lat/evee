@@ -23,7 +23,38 @@
         <profile>
             <id>owlapi4</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
+                <module>evee-data/evee-data-owlapi4</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-core-owlapi4</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-fame-owlapi4</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-lethe-owlapi4</module>
+                <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
+                <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
+                <module>evee-libs/evee-libs-owlapi4</module>
+            </modules>
+        </profile>
+        <profile>
+<!--            todo: remove owlapi4-submodules from compilation-process -->
+            <id>owlapi5</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>lat-scala-dl-tools</module>
+                <module>evee-data</module>
+                <module>evee-elimination-proofs</module>
+                <module>evee-lethe-proof-extractor</module>
+                <module>evee-elk-proof-extractor</module>
+                <module>evee-libs/evee-libs-owlapi5</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>protege</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <modules>
                 <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
@@ -34,13 +65,12 @@
                 <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
                 <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
                 <module>evee-protege</module>
-                <module>evee-libs</module>
             </modules>
         </profile>
         <profile>
             <id>complete</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
                 <module>lat-scala-dl-tools</module>
