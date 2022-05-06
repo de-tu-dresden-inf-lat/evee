@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>de.tu-dresden.inf.lat</groupId>
+  <artifactId>lethe-core_2.12</artifactId>
+  <versioning>
+    <versions>
+      <version>0.8-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20220506143156</lastUpdated>
+  </versioning>
+</metadata>

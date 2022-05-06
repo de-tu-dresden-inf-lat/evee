@@ -36,11 +36,6 @@
         <!--        de.tu-dresden.inf.lat-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lethe-core_2.12</artifactId>
-            <version>0.8-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lethe-owlapi4_2.12</artifactId>
             <version>0.8-SNAPSHOT</version>
         </dependency>
