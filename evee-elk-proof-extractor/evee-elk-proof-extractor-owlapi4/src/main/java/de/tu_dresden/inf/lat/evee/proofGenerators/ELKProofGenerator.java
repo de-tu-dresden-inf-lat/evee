@@ -256,9 +256,7 @@ public class ELKProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>
 
 	@Override
 	public boolean supportsProof(OWLAxiom axiom) {
-
 		return reasoner.isEntailed(axiom); // since this is elk, this should do the job
-		//return AxiomChecker.isInEL(axiom);
 	}
 
 	@Override
