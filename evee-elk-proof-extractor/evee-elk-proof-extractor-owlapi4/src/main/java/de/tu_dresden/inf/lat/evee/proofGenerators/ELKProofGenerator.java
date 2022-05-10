@@ -87,48 +87,6 @@ public class ELKProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>
 		return reasoner;
 	}
 
-//	/**
-//	 * Extract all proofs provided by elk for the input conclusion, and return the
-//	 * result as a list of objects
-//	 * <p>
-//	 * Note: The result of this function is used to generate an output file in Json
-//	 * format
-//	 * <p>
-//	 * 
-//	 * @param conclusionAxiom
-//	 * @param proof
-//	 * @return {@code List<Object>}
-//	 */
-//	private static List<Object> getProofsAsJson(OWLAxiom conclusionAxiom, DynamicProof<ElkOwlInference> proof) {
-//
-//		// get all inferences that led to the conclusion axiom
-//		Collection<? extends ElkOwlInference> inferences = proof.getInferences(conclusionAxiom);
-//
-//		List<Object> proofs = new LinkedList<>();
-//
-//		for (ElkOwlInference inference : inferences) {
-//			explored.add(conclusionAxiom);
-//			List<? extends OWLAxiom> premAxioms = inference.getPremises();
-//
-//			Map<Map<OWLAxiom, String>, Object> inferenceDetails = new HashMap<>();
-//			Map<OWLAxiom, String> inferenceName = new HashMap<>();
-//
-//			List<Object> values = new LinkedList<>();
-//
-//			for (OWLAxiom x : premAxioms) {
-//				if (!explored.contains(x)) {
-//					values.addAll(getProofsAsJson(x, proof));
-//				}
-//			}
-//			inferenceName.put(conclusionAxiom, inference.getName());
-//			inferenceDetails.put(inferenceName, values);
-//
-//			proofs.add(inferenceDetails);
-//
-//		}
-//		return proofs;
-//	}
-
 	public void resetExploredAxiomsSet() {
 		this.explored = new HashSet<>();
 	}
@@ -180,39 +138,6 @@ public class ELKProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>
 		}
 		return proofs;
 	}
-
-	/**
-	 * Returns a collection of tree proofs of type {@link ProofType}
-	 * 
-	 * @param proofs
-	 * @param type
-	 * @return
-	 */
-//	public Collection<IProof<OWLAxiom>> getTreeProofs(Collection<IProof<OWLAxiom>> proofs, ProofType type) {
-//
-//		Set<IProof<OWLAxiom>> result = new HashSet<>();
-//		proofs.forEach(p -> {
-//			result.add(getTreeProof(p, type, null));
-//		});
-//		return result;
-//	}
-
-	/**
-	 * Return a collection of signature-based condensed proofs
-	 * 
-	 * @param proofs
-	 * @param signature
-	 * @return
-	 */
-//	public Collection<IProof<OWLAxiom>> getTreeProofs(Collection<IProof<OWLAxiom>> proofs,
-//			Collection<OWLEntity> signature) {
-//
-//		Set<IProof<OWLAxiom>> result = new HashSet<>();
-//		proofs.forEach(p -> {
-//			result.add(getTreeProof(p, ProofType.CondensedTree, signature));
-//		});
-//		return result;
-//	}
 
 	/**
 	 * Extract a tree proof of type {@link ProofType}
@@ -282,50 +207,6 @@ public class ELKProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>
 		return MinimalHypergraphProofExtractor.makeUnique(myProof);
 	}
 
-	// private static int sameBranch = 0;
-
-	/**
-	 * Extract all proofs provided by elk for the input conclusion. Proofs are
-	 * stored in the provided list of proofs
-	 * <p>
-	 * Note: The result of this function is used to generate an output file in
-	 * human-readable-DL format
-	 * <p>
-	 * 
-	 * @param myProofs
-	 * @param myProof
-	 * @param conclusionAxiom
-	 * @param proof
-	 */
-//	private void createFlatProofs(List<IProof> myProofs, Proof myProof, OWLAxiom conclusionAxiom,
-//			DynamicProof<ElkOwlInference> proof) {
-//
-//		Collection<? extends ElkOwlInference> inferences = proof.getInferences(conclusionAxiom);
-//		List<ElkOwlInference> inferencesList = Lists.newLinkedList(inferences);
-//
-//		for (int i = 0; i < inferencesList.size(); i++) {
-//			explored.add(conclusionAxiom);
-//			ElkOwlInference inf = inferencesList.get(i);
-//
-//			Proof p = new Proof(conclusionAxiom);
-//			p.addInferences(myProof.getInferences());
-//			myProof.addInference(new Inference(conclusionAxiom, inf.getName(), inf.getPremises()));
-//
-//			sameBranch += inf.getPremises().size();
-//			for (OWLAxiom x : inf.getPremises()) {
-//				if (!explored.contains(x)) {
-//					createFlatProofs(myProofs, myProof, x, proof);
-//				}
-//				sameBranch--;
-//			}
-//
-//			if (sameBranch == 0) {
-//				myProofs.add(myProof);
-//				myProof = new Proof(conclusionAxiom);
-//			}
-//		}
-//	}
-
 	/**
 	 * Generate a derivation structure that contains all proofs the provided
 	 * conclusion axiom
@@ -372,50 +253,6 @@ public class ELKProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>
 			}
 		}
 	}
-
-//	@Override
-//	public IProof<OWLAxiom> proveSubsumption(OWLClass lhs, OWLClass rhs) {
-//		OWLAxiom conclusionAxiom = oWLTools.getOWLSubClassOfAxiom(lhs, rhs);
-//
-//		explored = new HashSet<>();
-//
-//		DynamicProof<ElkOwlInference> proof = ElkOwlProof.create(reasoner, conclusionAxiom);
-//
-//		// return getFlatProofs(conclusionAxiom, proof).iterator().next();
-//		return getDerivationStructure(conclusionAxiom, proof);
-//	}
-//
-//	public IProof<OWLAxiom> proveSubsumption(OWLClassExpression lhs, OWLClassExpression rhs) {
-//		OWLAxiom conclusionAxiom = oWLTools.getOWLSubClassOfAxiom(lhs, rhs);
-//
-//		explored = new HashSet<>();
-//
-//		DynamicProof<ElkOwlInference> proof = ElkOwlProof.create(reasoner, conclusionAxiom);
-//
-//		return getDerivationStructure(conclusionAxiom, proof);
-//	}
-
-//	@Override
-//	public IProof<OWLAxiom> proveEquivalence(OWLClass lhs, OWLClass rhs) {
-//		OWLAxiom conclusionAxiom = oWLTools.getOWLEquivalenceAxiom(lhs, rhs);
-//
-//		explored = new HashSet<>();
-//
-//		DynamicProof<ElkOwlInference> proof = ElkOwlProof.create(reasoner, conclusionAxiom);
-//
-//		// return getFlatProofs(conclusionAxiom, proof).iterator().next();
-//		return getDerivationStructure(conclusionAxiom, proof);
-//	}
-//
-//	public IProof<OWLAxiom> proveEquivalence(OWLClassExpression lhs, OWLClassExpression rhs) {
-//		OWLAxiom conclusionAxiom = oWLTools.getOWLEquivalenceAxiom(lhs, rhs);
-//
-//		explored = new HashSet<>();
-//
-//		DynamicProof<ElkOwlInference> proof = ElkOwlProof.create(reasoner, conclusionAxiom);
-//
-//		return getDerivationStructure(conclusionAxiom, proof);
-//	}
 
 	@Override
 	public boolean supportsProof(OWLAxiom axiom) {
