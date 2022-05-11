@@ -11,7 +11,7 @@ Evee was developed at the [chair of automata theory at TU Dresden](https://tu-dr
 
 Although logic-based ontology languages offer the inherent possibility of explaining the process of deriving implicit knowledge, explaining complex Description Logic (DL) entailments to users is still a challenging task.
 So far, the ontology editor Protégé supports only (black-box) justifications and (glass-box) proofs for lightweight OWL 2 EL ontologies via the proof facilities of the reasoner [Elk](https://github.com/liveontologies/elk-reasoner "https://github.com/liveontologies/elk-reasoner").
-Here we present Evee, a new library for computing proofs that includes proof generation algorithms for DLs up to ALCH. It includes a recently developed technique for computing black-box *elimination proofs* as well as a glass-box technique based on the resolution calculus of *Lethe*, a tool for computing uniform interpolants.
+Evee is a library for computing proofs that includes proof generation algorithms for DLs up to ALCH. It includes a recently developed technique for computing black-box *elimination proofs* as well as a glass-box technique based on the resolution calculus of *Lethe*, a tool for computing uniform interpolants.
 Additionally, it provides methods to optimize proofs that are generated via other methods according to various measures of proof quality. The Evee library is used by two frontends: a collection of Protégé plugins of the same name and the standalone tool [*Evonne*](https://imld.de/en/research/research-projects/evonne/ "https://imld.de/en/research/research-projects/evonne/"), which supports more varied ways of displaying and interacting with proofs.
 
 ## Using the Evee plugins
