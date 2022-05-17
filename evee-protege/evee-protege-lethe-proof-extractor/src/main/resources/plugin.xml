@@ -2,12 +2,12 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-    <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="evee.proof.detailedProof" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Detailed Proof" />
         <class value="de.tu_dresden.inf.lat.evee.protege.letheProofExtractorBasedProofService.EveeLetheBasedProofService" />
     </extension>
 
-    <extension id="evee.proof.preferences" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="evee.proof.preferences.detailedProof" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Detailed Proof"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.letheProofExtractorBasedProofService.EveeLetheBasedProofPreferences"/>
     </extension>

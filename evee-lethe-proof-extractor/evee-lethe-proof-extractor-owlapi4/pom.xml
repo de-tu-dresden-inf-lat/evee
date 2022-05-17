@@ -4,9 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.tu-dresden.inf.lat.evee</groupId>
     <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
-    <version>0.1-SNAPSHOT</version>
+
+    <parent>
+        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <artifactId>evee-lethe-proof-extractor</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
 
     <repositories>
         <repository>

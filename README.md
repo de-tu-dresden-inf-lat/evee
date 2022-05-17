@@ -58,12 +58,17 @@ Evee internally relies on the libraries FamePlus and Lethe (consisting of lethe-
 All these libraries have been pre-installed to a maven-repository in the directory [lib](lib).
 If you only want to use the Evee plugins for Protégé, no further steps are required.
 However, if you want to use Evee anywhere else (e.g. as part of your own project), these libraries are required for Evee to function.
-In this case, you need to install these libraries to your local maven repository.
-For this, please use the following Maven command: `mvn install:install-file -Dfile="Path/To/The/Jar" -DpomFile="Path/To/The/Pom"`
-Note that the install-file command of Maven always requires a .jar file and the groupId, artifactId, and version that are mentioned in the .pom file inside this .jar file need to match the groupId, artifactId and version specified in the .pom file used in the Maven command.
-However, for the library [lethe_2.12-0.8-SNAPSHOT](lib/de/tu-dresden/inf/lat/lethe_2.12/0.8-SNAPSHOT), no .jar file exists, as this is only the parent .pom file for the other Lethe .jar files.
-To install this library, use any of the other .jar files found in the directory [lib](lib) in the maven command mentioned above.
-This will install a corrupted .pom file to your local maven repository, which you can then replace with [lethe_2.12-0.8-SNAPSHOT.pom](lethe_2.12-0.8-SNAPSHOT.pom) to correctly resolve the dependencies between the Lethe .jar files.
+In this case, please declare the directory [lib](lib) as a repository in your pom like this:
+
+```xml
+<repository>
+    <name>de.tu-dresden.inf.lat</name>
+    <id>de.tu-dresden.inf.lat</id>
+    <url>file:path/to/lib</url>
+</repository>
+```
+
+In this declaration, `path/to/lib` should be replaced by the path to the directory [lib](lib).
 
 ## Disclaimer
 
