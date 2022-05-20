@@ -57,13 +57,13 @@ The Protégé plugins were developed for and tested with Protégé version 5.5.0
 Evee internally relies on the libraries FamePlus and Lethe (consisting of lethe-core, lethe-owlapi4 and lethe-owlapi4).
 All these libraries have been pre-installed to a maven-repository in the directory [lib](lib).
 If you only want to use the Evee plugins for Protégé, no further steps are required.
-However, if you want to use Evee anywhere else (e.g. as part of your own project), these libraries are required for Evee to function.
+However, if you want to use Evee anywhere else (e.g. as part of your own project), Lethe and Fame are required for some functionalities of Evee.
 In this case, please declare the directory [lib](lib) as a repository in your pom like this:
 
 ```xml
 <repository>
-    <name>de.tu-dresden.inf.lat</name>
-    <id>de.tu-dresden.inf.lat</id>
+    <name>localRepository</name>
+    <id>localRepository</id>
     <url>file:path/to/lib</url>
 </repository>
 ```
