@@ -1,7 +1,5 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
-import org.protege.editor.core.prefs.Preferences;
-import org.protege.editor.core.prefs.PreferencesManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class EveeDynamicProofUIWindow implements ItemListener {
+public class EveeDynamicProofLoadingUI implements ItemListener {
 
     private JFrame frame;
     private JPanel panel;
@@ -24,18 +22,16 @@ public class EveeDynamicProofUIWindow implements ItemListener {
     private boolean proofGenerationFinished;
     private final EveeDynamicProofAdapter proofAdapter;
     private final OWLEditorKit editorKit;
-    private final String SET_ID, PREFERENCE_ID, PREFERENCE_KEY;
-    private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofUIWindow.class);
+    private final AbstractEveeProofPreferencesManager proofPreferencesManager;
+    private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofLoadingUI.class);
 
-    public EveeDynamicProofUIWindow(EveeDynamicProofAdapter proofAdapter, String uiTitle, OWLEditorKit editorKit, String setId, String preferenceId, String preferenceKey){
+    public EveeDynamicProofLoadingUI(EveeDynamicProofAdapter proofAdapter, String uiTitle, OWLEditorKit editorKit, AbstractEveeProofPreferencesManager proofPreferencesManager){
         this.showLoadingScreen = false;
         this.showCancelScreen = false;
         this.proofGenerationFinished = false;
         this.proofAdapter = proofAdapter;
         this.editorKit = editorKit;
-        this.SET_ID = setId;
-        this.PREFERENCE_ID = preferenceId;
-        this.PREFERENCE_KEY = preferenceKey;
+        this.proofPreferencesManager = proofPreferencesManager;
         SwingUtilities.invokeLater(() -> {
             this.frame = new JFrame(uiTitle);
             this.panel = new JPanel(new GridLayout(3, 1, 5, 5));
@@ -170,8 +166,7 @@ public class EveeDynamicProofUIWindow implements ItemListener {
     }
 
     public void showSubOptimalProofMessage(){
-        Preferences preferences = PreferencesManager.getInstance().getPreferencesForSet(this.SET_ID, this.PREFERENCE_ID);
-        if (preferences.getBoolean(this.PREFERENCE_KEY, false)){
+        if (this.proofPreferencesManager.getProtegeShowSuboptimalProofMessage()){
             return;
         }
         SwingUtilities.invokeLater(() -> {
@@ -205,7 +200,6 @@ public class EveeDynamicProofUIWindow implements ItemListener {
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        Preferences preferences = PreferencesManager.getInstance().getPreferencesForSet(this.SET_ID, this.PREFERENCE_ID);
-        preferences.putBoolean(this.PREFERENCE_KEY, true);
+        this.proofPreferencesManager.setProtegeShowSuboptimalProofMessage(true);
     }
 }

@@ -29,17 +29,16 @@ public class EveeDynamicProofAdapter implements DynamicProof<Inference<? extends
     protected String errorMsg = "";
     protected final Logger logger = LoggerFactory.getLogger(EveeDynamicProofAdapter.class);
     protected HashSet<ChangeListener> inferenceChangeListener = new HashSet<>();
-    protected String uiTitle, setId, preferenceId, preferenceKey;
-    protected EveeDynamicProofUIWindow uiWindow;
+    protected String uiTitle;
+    private final AbstractEveeProofPreferencesManager proofPreferencesManager;
+    protected EveeDynamicProofLoadingUI uiWindow;
 
-    public EveeDynamicProofAdapter(OWLOntology ontology, OWLReasoner reasoner, IProofGenerator<OWLAxiom, OWLOntology> iProofGen, String uiTitle, String setId, String preferenceId, String preferenceKey){
+    public EveeDynamicProofAdapter(OWLOntology ontology, OWLReasoner reasoner, IProofGenerator<OWLAxiom, OWLOntology> iProofGen, String uiTitle, AbstractEveeProofPreferencesManager proofPreferencesManager){
         this.iProofGen = iProofGen;
         this.ontology = ontology;
         this.reasoner = reasoner;
         this.uiTitle = uiTitle;
-        this.setId = setId;
-        this.preferenceId = preferenceId;
-        this.preferenceKey = preferenceKey;
+        this.proofPreferencesManager = proofPreferencesManager;
         this.logger.debug("DynamicProofAdapter created");
     }
 
@@ -82,6 +81,18 @@ public class EveeDynamicProofAdapter implements DynamicProof<Inference<? extends
         else{
             return this.createPlaceholderInference(this.LOADING, (OWLAxiom) o);
         }
+    }
+
+    protected boolean isActive(){
+        return this.proofPreferencesManager.getProtegeIsActive();
+    }
+
+    protected boolean showSuboptimalProofMessage(){
+        return this.proofPreferencesManager.getProtegeShowSuboptimalProofMessage();
+    }
+
+    public void setDefaultIsActive(boolean value){
+        this.proofPreferencesManager.setDefaultIsActive(value);
     }
 
     protected void proofGenerationSuccess(IProof<OWLAxiom> newProof) {
@@ -167,7 +178,7 @@ public class EveeDynamicProofAdapter implements DynamicProof<Inference<? extends
     }
 
     public void createUI(OWLEditorKit editorKit){
-        this.uiWindow = new EveeDynamicProofUIWindow(this, this.uiTitle, editorKit, this.setId, this.preferenceId, this.preferenceKey);
+        this.uiWindow = new EveeDynamicProofLoadingUI(this, this.uiTitle, editorKit, this.proofPreferencesManager);
         this.uiWindow.updateMessage(this.LOADING);
     }
 

@@ -8,11 +8,12 @@ import org.slf4j.LoggerFactory;
 
 public class EveeElkBasedDepthMinimalProofService extends AbstractEveeProofService {
 
-    private Logger logger = LoggerFactory.getLogger(EveeElkBasedDepthMinimalProofService.class);
+    private final Logger logger = LoggerFactory.getLogger(EveeElkBasedDepthMinimalProofService.class);
+    private final static String identifier = "ELK Proof, optimized for depth";
 
     public EveeElkBasedDepthMinimalProofService(){
         super(new CachingProofGenerator<>(new ESPGMinimalDepth()),
-                "ELK Proof, optimized for depth", "ELK Proof, optimized for depth", "de.tu_dresden.inf.lat.EveeElkBasedDepthMinimalProofService", "ELK Proof, optimized for depth_DoNotShowAgain");
+                identifier, new EveeElkBasedExtractorProofPreferencesManager(identifier));
     }
 
 }

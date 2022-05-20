@@ -9,9 +9,12 @@ import org.slf4j.LoggerFactory;
 public class EveeFameBasedWeightedSizeMinimalProofService extends AbstractEveeProofService {
 
     private Logger logger = LoggerFactory.getLogger(EveeFameBasedWeightedSizeMinimalProofService.class);
+    private final static String identifier = "Elimination Proof, optimized for weighted size (FAME)";
 
     public EveeFameBasedWeightedSizeMinimalProofService(){
-        super(new CachingProofGenerator<>(new FameBasedWeightedSizeMinimalProofGenerator()), "Elimination Proof, optimized for weighted size (FAME)", "Elimination Proof, optimized for weighted size (FAME)", "de.tu_dresden.inf.lat.EveeFameBasedWeightedSizeMinimalProofService", "Elimination Proof, optimized for weighted size (FAME)_DoNotShowAgain");
+        super(new CachingProofGenerator<>(new FameBasedWeightedSizeMinimalProofGenerator()),
+                identifier, new EveeFameBasedEliminationProofPreferencesManager(identifier));
+        this.proofAdapter.setDefaultIsActive(false);
     }
 
 }

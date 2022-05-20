@@ -21,14 +21,13 @@ public abstract class AbstractEveeProofService extends ProofService implements O
     protected EveeDynamicProofAdapter proofAdapter;
     protected Logger logger = LoggerFactory.getLogger(AbstractEveeProofService.class);
 
-    protected AbstractEveeProofService(IProofGenerator<OWLAxiom,OWLOntology> iProofGen, String uiTitle, String setId, String preferenceId, String preferenceKey){
-        this.proofAdapter = new EveeDynamicProofAdapter(this.ontology, this.reasoner, iProofGen, uiTitle, setId, preferenceId, preferenceKey);
+    protected AbstractEveeProofService(IProofGenerator<OWLAxiom,OWLOntology> iProofGen, String uiTitle, AbstractEveeProofPreferencesManager proofPreferencesManager){
+        this.proofAdapter = new EveeDynamicProofAdapter(this.ontology, this.reasoner, iProofGen, uiTitle, proofPreferencesManager);
     }
 
-//    todo: whats the status here!?
     @Override
     public boolean hasProof(OWLAxiom owlAxiom) {
-        return true;
+        return this.proofAdapter.isActive();
     }
 
     @Override
