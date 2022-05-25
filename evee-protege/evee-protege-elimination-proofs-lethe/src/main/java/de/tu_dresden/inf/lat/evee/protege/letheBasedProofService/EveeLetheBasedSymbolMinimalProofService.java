@@ -8,13 +8,12 @@ import org.slf4j.LoggerFactory;
 
 public class EveeLetheBasedSymbolMinimalProofService extends AbstractEveeProofService {
 
-    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedSymbolMinimalProofService.class);
-    private static final String identifier = "Elimination Proof, optimized for eliminated names (LETHE)";
-
     public EveeLetheBasedSymbolMinimalProofService(){
         super(new CachingProofGenerator<>(new LetheBasedSymbolMinimalProofGenerator()),
-                identifier, new EveeLetheBasedEliminationProofPreferencesManager(identifier));
-        this.proofAdapter.setDefaultIsActive(false);
+                EveeLetheBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL,
+                new EveeLetheBasedEliminationProofPreferencesManager(
+                        EveeLetheBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL
+                ));
     }
 
 }

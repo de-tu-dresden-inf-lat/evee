@@ -8,12 +8,11 @@ import org.slf4j.LoggerFactory;
 
 public class EveeFameBasedHeuristicProofService extends AbstractEveeProofService {
 
-    private Logger logger = LoggerFactory.getLogger(EveeFameBasedHeuristicProofService.class);
-    private static final String identifier = "Elimination Proof (FAME)";
-
     public EveeFameBasedHeuristicProofService(){
         super(new CachingProofGenerator<>(new FameBasedHeuristicProofGenerator()),
-                identifier, new EveeFameBasedEliminationProofPreferencesManager(identifier));
+                EveeFameBasedEliminationProofPreferencesManager.HEURISTIC,
+                new EveeFameBasedEliminationProofPreferencesManager(
+                        EveeFameBasedEliminationProofPreferencesManager.HEURISTIC));
     }
 
 }

@@ -1,11 +1,11 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
-public class EveeProofPreferenceBoolean extends AbstractEveeProofPreference {
+public class EveeBooleanProofPreference extends AbstractEveeProofPreference {
 
     private boolean defaultValue;
 
-    public EveeProofPreferenceBoolean(String proofServiceName, String preferenceName, boolean defaultValue, String uiLabel, String uiToolTip){
-        super(proofServiceName, preferenceName, uiLabel, uiToolTip);
+    public EveeBooleanProofPreference(boolean defaultValue, String uiLabel, String uiToolTip){
+        super(uiLabel, uiToolTip);
         this.defaultValue = defaultValue;
     }
 

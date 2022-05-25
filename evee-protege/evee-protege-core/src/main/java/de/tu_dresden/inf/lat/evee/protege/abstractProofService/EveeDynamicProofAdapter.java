@@ -7,6 +7,7 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 
 import org.liveontologies.puli.DynamicProof;
 import org.liveontologies.puli.Inference;
+import org.protege.editor.core.prefs.Preferences;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -41,8 +42,6 @@ public class EveeDynamicProofAdapter implements DynamicProof<Inference<? extends
         this.proofPreferencesManager = proofPreferencesManager;
         this.logger.debug("DynamicProofAdapter created");
     }
-
-
 
     public void setOntology(OWLOntology ontology){
         this.ontology = ontology;
@@ -84,15 +83,7 @@ public class EveeDynamicProofAdapter implements DynamicProof<Inference<? extends
     }
 
     protected boolean isActive(){
-        return this.proofPreferencesManager.getProtegeIsActive();
-    }
-
-    protected boolean showSuboptimalProofMessage(){
-        return this.proofPreferencesManager.getProtegeShowSuboptimalProofMessage();
-    }
-
-    public void setDefaultIsActive(boolean value){
-        this.proofPreferencesManager.setDefaultIsActive(value);
+        return this.proofPreferencesManager.loadIsActive();
     }
 
     protected void proofGenerationSuccess(IProof<OWLAxiom> newProof) {
@@ -201,6 +192,7 @@ public class EveeDynamicProofAdapter implements DynamicProof<Inference<? extends
         this.uiWindow.showWindow();
     }
 
+//    currently not in use as iProofGen.supportsProof is too expensive for Protege
     public boolean hasProof(OWLAxiom entailment){
         if(this.ontologyChanged) {
             this.iProofGen.setOntology(this.ontology);

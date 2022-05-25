@@ -8,11 +8,10 @@ import org.slf4j.LoggerFactory;
 
 public class EveeElkBasedWeightedSizeMinimalProofService extends AbstractEveeProofService {
 
-    private final Logger logger = LoggerFactory.getLogger(EveeElkBasedWeightedSizeMinimalProofService.class);
-    private static final String identifier = "ELK Proof, optimized for weighted size";
-
     public EveeElkBasedWeightedSizeMinimalProofService(){
         super(new CachingProofGenerator<>(new ESPGMinimalWeightedSize()),
-                identifier, new EveeElkBasedExtractorProofPreferencesManager(identifier));
+                EveeElkBasedExtractorProofPreferencesManager.WEIGHTED_SIZE_MINIMAL,
+                new EveeElkBasedExtractorProofPreferencesManager(
+                        EveeElkBasedExtractorProofPreferencesManager.WEIGHTED_SIZE_MINIMAL));
     }
 }

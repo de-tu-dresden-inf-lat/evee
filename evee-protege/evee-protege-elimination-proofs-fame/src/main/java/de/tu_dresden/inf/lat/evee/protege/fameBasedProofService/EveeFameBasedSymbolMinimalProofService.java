@@ -8,13 +8,11 @@ import org.slf4j.LoggerFactory;
 
 public class EveeFameBasedSymbolMinimalProofService extends AbstractEveeProofService {
 
-    private Logger logger = LoggerFactory.getLogger(EveeFameBasedSymbolMinimalProofService.class);
-    private static final String identifier = "Elimination Proof, optimized for eliminated names (FAME)";
-
     public EveeFameBasedSymbolMinimalProofService(){
         super(new CachingProofGenerator<>(new FameBasedSymbolMinimalProofGenerator()),
-                identifier, new EveeFameBasedEliminationProofPreferencesManager(identifier));
-        this.proofAdapter.setDefaultIsActive(false);
+                EveeFameBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL,
+                new EveeFameBasedEliminationProofPreferencesManager(
+                        EveeFameBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL));
     }
 
 }

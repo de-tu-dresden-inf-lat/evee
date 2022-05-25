@@ -8,12 +8,11 @@ import org.slf4j.LoggerFactory;
 
 public class EveeLetheBasedHeuristicProofService extends AbstractEveeProofService {
 
-    private Logger logger = LoggerFactory.getLogger(EveeLetheBasedHeuristicProofService.class);
-    private static final String identifier = "Elimination Proof (LETHE)";
-
     public EveeLetheBasedHeuristicProofService(){
         super(new CachingProofGenerator<>(new LetheBasedHeuristicProofGenerator()),
-                identifier, new EveeLetheBasedEliminationProofPreferencesManager(identifier));
+                EveeLetheBasedEliminationProofPreferencesManager.HEURISTIC,
+                new EveeLetheBasedEliminationProofPreferencesManager(
+                        EveeLetheBasedEliminationProofPreferencesManager.HEURISTIC));
     }
 
 }

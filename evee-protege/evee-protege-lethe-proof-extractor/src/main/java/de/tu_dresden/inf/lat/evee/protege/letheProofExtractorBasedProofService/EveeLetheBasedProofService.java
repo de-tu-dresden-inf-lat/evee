@@ -9,12 +9,11 @@ import org.slf4j.LoggerFactory;
 
 public class EveeLetheBasedProofService extends AbstractEveeProofService {
 
-    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedProofService.class);
-    private static final String identifier =  "Detailed Proof";
-
     public EveeLetheBasedProofService(){
         super(new CachingProofGenerator<>(new MinimalTreeProofGenerator(new LetheProofGenerator())),
-                identifier, new EveeLetheBasedExtractorProofPreferencesManager(identifier));
+                EveeLetheBasedExtractorProofPreferencesManager.DETAILED,
+                new EveeLetheBasedExtractorProofPreferencesManager(
+                        EveeLetheBasedExtractorProofPreferencesManager.DETAILED));
     }
 
 }

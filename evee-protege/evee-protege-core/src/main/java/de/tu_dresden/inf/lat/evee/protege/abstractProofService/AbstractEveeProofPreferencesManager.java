@@ -5,132 +5,146 @@ import org.protege.editor.core.prefs.PreferencesManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public abstract class AbstractEveeProofPreferencesManager {
 
-    public static final String GENERAL_NAME = "GENERAL_PREFERENCES";
-    public static final String ACTIVE = "isActive";
-    private final String ACTIVE_LABEL = "Activate ";
-    private final String ACTIVE_TOOLTIP = "Turns the proof service on and off";
-    public static final String SUBOPTIMAL_MSG = "showSuboptimalProofWarning";
-    private final String SUBOPTIMAL_MSG_LABEL = "Don't show warning for suboptimal proof";
-    private final String SUBOTPIMAL_MSG_TOOLTIP = "Show a warning if a suboptimal proof was found after cancellation of the proof service.";
-    private final String baseKey;
-    private final Logger logger = LoggerFactory.getLogger(AbstractEveeProofPreferencesManager.class);
+    protected static final String PREFERENCE_UI = "PREFERENCE_UI_PANEL";
+    private final String setId;
+    private final String preferenceId;
+    private final String proofServiceName;
+    protected final TreeSet<String> proofServiceNameSet = new TreeSet<>();
+    protected final TreeMap<String, EveeActivationProofPreference> activationDefaultPreferences = new TreeMap<>();
+    protected final TreeMap<String, EveeBooleanProofPreference> booleanDefaultPreferences = new TreeMap<>();
+    public final String SUBOPTIMAL_MSG = "showSuboptimalProofWarning";
+    private final String SUBOPTIMAL_MSG_LABEL = "Show warning for suboptimal proof";
+    private final String SUBOPTIMAL_MSG_TOOLTIP = "Show a warning if a suboptimal proof was found after cancellation of the proof service";
+    protected final Logger logger = LoggerFactory.getLogger(AbstractEveeProofPreferencesManager.class);
 
-    public AbstractEveeProofPreferencesManager(String baseKey){
-        this.baseKey = baseKey;
-        if (baseKey.equals(GENERAL_NAME)){
-            if (! this.getDefaultBooleanPreferences().containsKey(SUBOPTIMAL_MSG)){
-                EveeProofPreferenceBoolean suboptimalMessagePreference = new EveeProofPreferenceBoolean(
-                        GENERAL_NAME, SUBOPTIMAL_MSG, true, SUBOPTIMAL_MSG_LABEL, SUBOTPIMAL_MSG_TOOLTIP);
-                this.getDefaultBooleanPreferences().put(baseKey + SUBOPTIMAL_MSG, suboptimalMessagePreference);
-                this.logger.debug("suboptimal proof message preference set with key " + this.baseKey + SUBOPTIMAL_MSG);
-            }
+    public AbstractEveeProofPreferencesManager(String setId, String preferenceId, String proofServiceName){
+        this.setId = setId;
+        this.preferenceId = preferenceId;
+        this.proofServiceName = proofServiceName;
+        this.createIdentifierSet();
+        for (String name : this.proofServiceNameSet){
+            EveeActivationProofPreference eveePreference = new EveeActivationProofPreference(
+                    true, name);
+            this.activationDefaultPreferences.put(name, eveePreference);
         }
-        else {
-            EveeProofPreferenceBoolean activationPreference = new EveeProofPreferenceBoolean(
-                    this.baseKey, ACTIVE, true, this.ACTIVE_LABEL + this.baseKey, this.ACTIVE_TOOLTIP);
-            this.getDefaultBooleanPreferences().put(this.baseKey + ACTIVE, activationPreference);
-            this.logger.debug("activation preference set for key " + this.baseKey + ACTIVE);
-        }
+        EveeBooleanProofPreference suboptimalWarning = new EveeBooleanProofPreference(
+                true, SUBOPTIMAL_MSG_LABEL, SUBOPTIMAL_MSG_TOOLTIP);
+        this.booleanDefaultPreferences.put(SUBOPTIMAL_MSG, suboptimalWarning);
     }
 
-    abstract public String getSetId();
+    abstract protected void createIdentifierSet();
 
-    abstract public String getPreferenceId();
+    public String getSetId(){
+        return this.setId;
+    }
 
-    abstract public HashMap<String, EveeProofPreferenceBoolean> getDefaultBooleanPreferences();
+    public String getPreferenceId(){
+        return this.preferenceId;
+    }
 
-    abstract public HashMap<String, EveeProofPreferenceInteger> getDefaultIntegerPreferences();
+    public String getProofServiceName(){
+        return this.proofServiceName;
+    }
 
-    private Preferences getProtegePreferences(){
+    public TreeSet<String> getProofServiceNameSet(){
+        return this.proofServiceNameSet;
+    }
+
+    protected Preferences getProtegePreferences(){
         return PreferencesManager.getInstance().getPreferencesForSet(this.getSetId(), this.getPreferenceId());
     }
 
-    public EveeProofPreferenceBoolean getDefaultPreferenceBoolean(String key) {
-        return this.getDefaultBooleanPreferences().get(key);
+    public boolean loadIsActive(){
+        Preferences preferences = this.getProtegePreferences();
+        boolean defaultValue = this.activationDefaultPreferences.get(this.proofServiceName).getBooleanDefaultValue();
+        return preferences.getBoolean(this.proofServiceName, defaultValue);
     }
 
-    public Set<String> getDefaultPreferenceKeysBoolean(){
-        return this.getDefaultBooleanPreferences().keySet();
+    //    todo: should we ensure that key is present in activationDefaultPreferences??
+    public boolean loadIsActive(String key) {
+        Preferences preferences = this.getProtegePreferences();
+        boolean defaultValue = this.activationDefaultPreferences.get(key).getBooleanDefaultValue();
+        return preferences.getBoolean(key, defaultValue);
     }
 
-    public void setDefaultPreferenceBoolean(String key, boolean value){
-        EveeProofPreferenceBoolean booleanPreference = this.getDefaultBooleanPreferences().get(key);
-        booleanPreference.setBooleanDefaultValue(value);
+    public String getIsActiveUILabel(String key) {
+        return this.activationDefaultPreferences.get(key).getUiLabel();
     }
 
-    public void setProtegePreferenceBoolean(String key, boolean value){
+    public String getIsActiveToolTip(String key){
+        return this.activationDefaultPreferences.get(key).getUiToolTip();
+    }
+
+    //    todo: should we ensure that key is present in activationDefaultPreferences??
+    protected void saveIsActive(String key, boolean value) {
         Preferences preferences = this.getProtegePreferences();
         preferences.putBoolean(key, value);
     }
 
-    public EveeProofPreferenceInteger getDefaultPreferenceInteger(String key) {
-        return this.getDefaultIntegerPreferences().get(key);
-    }
-
-    public Set<String> getDefaultPreferenceKeysInteger() {
-        return this.getDefaultIntegerPreferences().keySet();
-    }
-
-    public void setDefaultPreferenceInteger(String key, Integer value){
-        EveeProofPreferenceInteger integerPreference = this.getDefaultIntegerPreferences().get(key);
-        integerPreference.setIntegerDefaultValue(value);
-    }
-
-    public void setProtegePreferenceInteger(String key, int value){
+    public boolean loadShowSuboptimalProofWarning(){
         Preferences preferences = this.getProtegePreferences();
-        preferences.putInt(key, value);
+        boolean defaultValue = this.booleanDefaultPreferences.get(SUBOPTIMAL_MSG).getBooleanDefaultValue();
+        return preferences.getBoolean(SUBOPTIMAL_MSG, defaultValue);
     }
 
-    public String getBaseKey(){
-        return this.baseKey;
+    public void saveShowSuboptimalProofWarning(boolean value){
+        Preferences preferences = this.getProtegePreferences();
+        preferences.putBoolean(SUBOPTIMAL_MSG, value);
     }
 
-    public void setDefaultIsActive(boolean newValue){
-        String key = this.baseKey + ACTIVE;
-        this.getDefaultBooleanPreferences().get(key).setBooleanDefaultValue(newValue);
+    public String getSuboptimalProofWarningUILabel(){
+        return this.booleanDefaultPreferences.get(SUBOPTIMAL_MSG).getUiLabel();
     }
 
-    public boolean getProtegeIsActive(){
-        String key = this.baseKey + ACTIVE;
-        boolean defaultValue = this.getDefaultBooleanPreferences().get(key).getBooleanDefaultValue();
-        return this.getProtegePreferences().getBoolean(key, defaultValue);
+    public String getSuboptimalProofWarningUIToolTip(){
+        return this.booleanDefaultPreferences.get(SUBOPTIMAL_MSG).getUiToolTip();
     }
 
-    public void setProtegeIsActive(boolean newValue){
-        String key = this.baseKey + ACTIVE;
-        this.getProtegePreferences().putBoolean(key, newValue);
+    public void saveBooleanPreferenceValue(String key, boolean value){
+        Preferences preferences = this.getProtegePreferences();
+        preferences.putBoolean(key, value);
     }
 
-    public boolean getProtegeShowSuboptimalProofMessage(){
-        String key = this.baseKey + SUBOPTIMAL_MSG;
-        boolean defaultValue = this.getDefaultBooleanPreferences().get(key).getBooleanDefaultValue();
-        return this.getProtegePreferences().getBoolean(key, defaultValue);
-    }
-
-    public void setProtegeShowSuboptimalProofMessage(boolean newValue){
-        String key = this.baseKey + SUBOPTIMAL_MSG;
-        this.getProtegePreferences().putBoolean(key, newValue);
-    }
-
-    public boolean getProtegePreferenceBoolean(String key) throws EveeProofPreferecenRetrievalException {
-        if (! this.getDefaultBooleanPreferences().containsKey(key)){
-            throw new EveeProofPreferecenRetrievalException("No default boolean preference set for key " + key);
-        }
-        Preferences protegePreferences = this.getProtegePreferences();
-        return protegePreferences.getBoolean(key, this.getDefaultBooleanPreferences().get(key).getBooleanDefaultValue());
-    }
-
-    public Integer getProtegePreferenceInteger(String key) throws EveeProofPreferecenRetrievalException {
-        if (! this.getDefaultIntegerPreferences().containsKey(key)){
-            throw new EveeProofPreferecenRetrievalException("No default integer preference set for key " + key);
-        }
-        Preferences protegePreferences = this.getProtegePreferences();
-        return protegePreferences.getInt(key, this.getDefaultIntegerPreferences().get(key).getDefaultIntegerValue());
-    }
+    //    public AbstractEveeProofPreferencesManager(String setId, String preferenceId){
+//        this.setId = setId;
+//        this.preferenceId = preferenceId;
+//        this.proofServiceName = PREFERENCE_UI;
+//        this.initialize();
+//    }
+//
+//    protected void initialize(){
+//        this.createIdentifierSet();
+//        for (String proofServiceName : this.proofServiceNameSet){
+//            EveeActivationProofPreference eveePreference = new EveeActivationProofPreference(
+//                    true, proofServiceName);
+//            this.activationDefaultPreferences.put(proofServiceName, eveePreference);
+//        }
+//        EveeBooleanProofPreference suboptimalWarning = new EveeBooleanProofPreference(
+//                true, SUBOPTIMAL_MSG_LABEL, SUBOPTIMAL_MSG_TOOLTIP);
+//        this.booleanDefaultPreferences.put(SUBOPTIMAL_MSG, suboptimalWarning);
+//    }
+//
+//    protected void createActivationDefaultPreferences(){
+//        for (String proofServiceName : this.proofServiceNameSet){
+//            EveeActivationProofPreference eveePreference = new EveeActivationProofPreference(
+//                    true, proofServiceName);
+//            this.activationDefaultPreferences.put(proofServiceName, eveePreference);
+//        }
+//    }
+//
+//    protected void ensureActivtionDefaultPrefrences() throws EveeProofPreferecenRetrievalException{
+//        for (String identifier : this.identifierSet){
+//            if (! this.activationDefaultPreferences.containsKey(identifier)){
+//                throw new EveeProofPreferecenRetrievalException(
+//                        "Error during initialization: No default activation preference set for identifier <" + identifier + ">");
+//            }
+//        }
+//    }
 
 }

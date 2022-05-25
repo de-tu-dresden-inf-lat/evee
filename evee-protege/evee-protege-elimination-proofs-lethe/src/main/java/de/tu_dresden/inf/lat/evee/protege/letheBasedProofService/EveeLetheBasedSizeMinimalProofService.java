@@ -8,13 +8,11 @@ import org.slf4j.LoggerFactory;
 
 public class EveeLetheBasedSizeMinimalProofService extends AbstractEveeProofService {
 
-    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedSizeMinimalProofService.class);
-    private static final String identifier = "Elimination Proof, optimized for size (LETHE)";
-
     public EveeLetheBasedSizeMinimalProofService(){
         super(new CachingProofGenerator<>(new LetheBasedSizeMinimalProofGenerator()),
-                identifier, new EveeLetheBasedEliminationProofPreferencesManager(identifier));
-        this.proofAdapter.setDefaultIsActive(false);
+                EveeLetheBasedEliminationProofPreferencesManager.SIZE_MINIMAL,
+                new EveeLetheBasedEliminationProofPreferencesManager(
+                        EveeLetheBasedEliminationProofPreferencesManager.SIZE_MINIMAL));
     }
 
 }

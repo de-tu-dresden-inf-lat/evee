@@ -166,7 +166,7 @@ public class EveeDynamicProofLoadingUI implements ItemListener {
     }
 
     public void showSubOptimalProofMessage(){
-        if (this.proofPreferencesManager.getProtegeShowSuboptimalProofMessage()){
+        if (! this.proofPreferencesManager.loadShowSuboptimalProofWarning()){
             return;
         }
         SwingUtilities.invokeLater(() -> {
@@ -200,6 +200,6 @@ public class EveeDynamicProofLoadingUI implements ItemListener {
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        this.proofPreferencesManager.setProtegeShowSuboptimalProofMessage(true);
+        this.proofPreferencesManager.saveShowSuboptimalProofWarning(false);
     }
 }

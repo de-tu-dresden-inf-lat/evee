@@ -8,14 +8,11 @@ import org.slf4j.LoggerFactory;
 
 public class EveeFameBasedSizeMinimalProofService extends AbstractEveeProofService {
 
-    private static final String identifier = "Elimination Proof, optimized for size (FAME)";
-    private Logger logger = LoggerFactory.getLogger(EveeFameBasedSizeMinimalProofService.class);
-
     public EveeFameBasedSizeMinimalProofService(){
         super(new CachingProofGenerator<>(new FameBasedSizeMinimalProofGenerator()),
-                identifier, new EveeFameBasedEliminationProofPreferencesManager(identifier));
-        this.proofAdapter.setDefaultIsActive(false);
+                EveeFameBasedEliminationProofPreferencesManager.SIZE_MINIMAL,
+                new EveeFameBasedEliminationProofPreferencesManager(
+                        EveeFameBasedEliminationProofPreferencesManager.SIZE_MINIMAL));
     }
-
 
 }
