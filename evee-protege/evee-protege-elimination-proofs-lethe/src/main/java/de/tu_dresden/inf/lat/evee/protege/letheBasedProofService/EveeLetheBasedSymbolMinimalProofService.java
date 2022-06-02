@@ -3,17 +3,15 @@ package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.LetheBasedSymbolMinimalProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.CachingProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EveeLetheBasedSymbolMinimalProofService extends AbstractEveeProofService {
 
     public EveeLetheBasedSymbolMinimalProofService(){
-        super(new CachingProofGenerator<>(new LetheBasedSymbolMinimalProofGenerator()),
+        super(new EveeLetheBasedEliminationDynamicProofAdapter(
+                new CachingProofGenerator<>(new LetheBasedSymbolMinimalProofGenerator()),
                 EveeLetheBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL,
                 new EveeLetheBasedEliminationProofPreferencesManager(
-                        EveeLetheBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL
-                ));
+                        EveeLetheBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL)));
     }
 
 }

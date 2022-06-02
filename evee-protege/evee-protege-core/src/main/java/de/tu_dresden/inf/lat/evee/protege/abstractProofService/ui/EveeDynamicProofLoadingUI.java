@@ -1,15 +1,14 @@
-package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
+package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeDynamicProofAdapter;
 import org.protege.editor.owl.OWLEditorKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
-public class EveeDynamicProofLoadingUI implements ItemListener {
+public class EveeDynamicProofLoadingUI {
 
     private JFrame frame;
     private JPanel panel;
@@ -20,18 +19,16 @@ public class EveeDynamicProofLoadingUI implements ItemListener {
     private boolean showLoadingScreen;
     private boolean showCancelScreen;
     private boolean proofGenerationFinished;
-    private final EveeDynamicProofAdapter proofAdapter;
-    private final OWLEditorKit editorKit;
-    private final AbstractEveeProofPreferencesManager proofPreferencesManager;
+    private final AbstractEveeDynamicProofAdapter proofAdapter;
+    protected final OWLEditorKit editorKit;
     private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofLoadingUI.class);
 
-    public EveeDynamicProofLoadingUI(EveeDynamicProofAdapter proofAdapter, String uiTitle, OWLEditorKit editorKit, AbstractEveeProofPreferencesManager proofPreferencesManager){
+    public EveeDynamicProofLoadingUI(AbstractEveeDynamicProofAdapter proofAdapter, String uiTitle, OWLEditorKit editorKit){
         this.showLoadingScreen = false;
         this.showCancelScreen = false;
         this.proofGenerationFinished = false;
         this.proofAdapter = proofAdapter;
         this.editorKit = editorKit;
-        this.proofPreferencesManager = proofPreferencesManager;
         SwingUtilities.invokeLater(() -> {
             this.frame = new JFrame(uiTitle);
             this.panel = new JPanel(new GridLayout(3, 1, 5, 5));
@@ -165,41 +162,8 @@ public class EveeDynamicProofLoadingUI implements ItemListener {
         });
     }
 
-    public void showSubOptimalProofMessage(){
-        if (! this.proofPreferencesManager.loadShowSuboptimalProofWarning()){
-            return;
-        }
-        SwingUtilities.invokeLater(() -> {
-            JFrame subOptimalProofMessageFrame = new JFrame("Proof generation cancelled");
-            subOptimalProofMessageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            JPanel subOptimalProofMessagePanel = new JPanel(new GridLayout(3, 1, 5, 5));
-            JLabel subOptimalProofMessageLabel = new JLabel(
-                    "Due to cancellation of the proof generation, you might be seeing a sub-optimal proof",
-                    SwingConstants.CENTER);
-            subOptimalProofMessageLabel.setHorizontalTextPosition(JLabel.CENTER);
-            subOptimalProofMessageLabel.setVerticalTextPosition(JLabel.CENTER);
-            JCheckBox subOptimalProofMessageCheckBox = new JCheckBox("Don't show this message again", false);
-            subOptimalProofMessageCheckBox.addItemListener(this);
-            JButton subOptimalProofMessageButton = new JButton("OK");
-            subOptimalProofMessageButton.addActionListener(e -> subOptimalProofMessageFrame.dispose());
-            subOptimalProofMessageCheckBox.setHorizontalAlignment(JCheckBox.CENTER);
-            subOptimalProofMessagePanel.add(subOptimalProofMessageLabel);
-            subOptimalProofMessagePanel.add(subOptimalProofMessageCheckBox);
-            subOptimalProofMessagePanel.add(subOptimalProofMessageButton);
-            subOptimalProofMessageFrame.getContentPane().add(subOptimalProofMessagePanel);
-            subOptimalProofMessageFrame.pack();
-            subOptimalProofMessageFrame.setSize(600, 150);
-            subOptimalProofMessageFrame.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this.editorKit.getOWLWorkspace()));
-            subOptimalProofMessageFrame.setVisible(true);
-        });
-    }
-
     public void proofGenerationFinished(){
         this.proofGenerationFinished = true;
     }
 
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        this.proofPreferencesManager.saveShowSuboptimalProofWarning(false);
-    }
 }

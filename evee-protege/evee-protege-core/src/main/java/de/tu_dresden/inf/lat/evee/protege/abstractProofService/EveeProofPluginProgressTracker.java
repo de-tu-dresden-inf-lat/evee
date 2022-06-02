@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

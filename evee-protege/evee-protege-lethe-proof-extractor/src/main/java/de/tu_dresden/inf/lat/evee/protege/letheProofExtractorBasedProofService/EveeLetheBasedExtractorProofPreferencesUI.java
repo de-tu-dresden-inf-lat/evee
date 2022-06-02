@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.letheProofExtractorBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofPreferencesUI;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.AbstractEveeProofPreferencesUI;
 
 public class EveeLetheBasedExtractorProofPreferencesUI extends AbstractEveeProofPreferencesUI {
 
@@ -8,13 +8,4 @@ public class EveeLetheBasedExtractorProofPreferencesUI extends AbstractEveeProof
         super(new EveeLetheBasedExtractorProofPreferencesManager());
     }
 
-    @Override
-    protected void addAdditionalPreferences() {
-//        no operation needed
-    }
-
-    @Override
-    protected void saveAdditionalPreferences() {
-//        no operation needed
-    }
 }

@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.letheProofExtractorBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
 
 public class EveeLetheBasedExtractorProofPreferencesManager extends AbstractEveeProofPreferencesManager {
 

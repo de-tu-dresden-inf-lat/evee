@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.elkBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
 
 public class EveeElkBasedExtractorProofPreferencesManager extends AbstractEveeProofPreferencesManager {
 

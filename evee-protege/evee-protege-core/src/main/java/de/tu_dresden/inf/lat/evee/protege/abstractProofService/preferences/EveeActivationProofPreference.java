@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
+package de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences;
 
 public class EveeActivationProofPreference extends EveeBooleanProofPreference {
 

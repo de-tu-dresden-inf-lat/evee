@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.fameBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeEliminationProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.abstractEliminationProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
 
 public class EveeFameBasedEliminationProofPreferencesManager extends AbstractEveeEliminationProofPreferencesManager {
 

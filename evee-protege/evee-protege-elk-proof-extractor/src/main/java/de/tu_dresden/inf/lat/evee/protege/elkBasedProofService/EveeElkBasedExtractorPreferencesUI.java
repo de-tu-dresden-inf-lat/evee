@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.elkBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofPreferencesUI;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.AbstractEveeProofPreferencesUI;
 
 public class EveeElkBasedExtractorPreferencesUI extends AbstractEveeProofPreferencesUI {
 
@@ -8,13 +8,4 @@ public class EveeElkBasedExtractorPreferencesUI extends AbstractEveeProofPrefere
         super(new EveeElkBasedExtractorProofPreferencesManager());
     }
 
-    @Override
-    protected void addAdditionalPreferences() {
-//        no operation needed
-    }
-
-    @Override
-    protected void saveAdditionalPreferences() {
-//        no operation needed
-    }
 }
