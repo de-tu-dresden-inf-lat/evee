@@ -67,16 +67,17 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.3</version>
+            <version>[1.2.0,)</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.1.3</version>
+            <version>[1.2.9,)</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+<!--            todo: can this be changed to [2.12.6.1,) ? results in missing osgi-wiring-package, try resolving import/export-statements of maven bundle plugin via embed-dependency with scope compile instead-->
             <version>2.9.8</version>
         </dependency>
         <dependency>

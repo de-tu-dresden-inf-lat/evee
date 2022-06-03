@@ -28,6 +28,10 @@ public abstract class AbstractEveeProofService extends ProofService implements O
 //    todo: whats the status here!?
     @Override
     public boolean hasProof(OWLAxiom owlAxiom) {
+        if (owlAxiom instanceof OWLSubClassOfAxiom){
+            return !((OWLSubClassOfAxiom) owlAxiom).getSuperClass().isOWLNothing() ||
+                    !((OWLSubClassOfAxiom) owlAxiom).getSubClass().isOWLThing();
+        }
         return true;
     }
 
