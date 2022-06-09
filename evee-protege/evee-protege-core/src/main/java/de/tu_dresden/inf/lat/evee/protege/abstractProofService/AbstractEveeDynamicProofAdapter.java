@@ -15,33 +15,32 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.text.EditorKit;
 import java.util.*;
 
 public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>> {
 
-    protected IProof<OWLAxiom> iProof;
-    protected IProofGenerator<OWLAxiom, OWLOntology> iProofGen;
-    protected OWLAxiom entailment;
-    protected OWLOntology ontology;
-    protected OWLReasoner reasoner;
-    protected boolean generationComplete = false;
-    protected boolean generationSuccess = false;
-    protected boolean ontologyChanged = true;
-    protected final String LOADING = "Please wait while the proof is generated";
-    protected String errorMsg = "";
-    protected final Logger logger = LoggerFactory.getLogger(AbstractEveeDynamicProofAdapter.class);
-    protected HashSet<ChangeListener> inferenceChangeListener = new HashSet<>();
-    protected String uiTitle;
-    protected final AbstractEveeProofPreferencesManager proofPreferencesManager;
-    protected EveeDynamicProofLoadingUI uiWindow;
+    private IProof<OWLAxiom> iProof;
+    private final IProofGenerator<OWLAxiom, OWLOntology> iProofGen;
+    private OWLAxiom entailment;
+    private OWLOntology ontology;
+    private OWLReasoner reasoner;
+    private boolean generationComplete = false;
+    private boolean generationSuccess = false;
+    private boolean ontologyChanged = true;
+    private final String LOADING = "Please wait while the proof is generated";
+    private String errorMsg = "";
+    private final Logger logger = LoggerFactory.getLogger(AbstractEveeDynamicProofAdapter.class);
+    private final Set<ChangeListener> inferenceChangeListener = new HashSet<>();
+    private final AbstractEveeProofPreferencesManager proofPreferencesManager;
+    private final EveeDynamicProofLoadingUI uiWindow;
 
-    public AbstractEveeDynamicProofAdapter(IProofGenerator<OWLAxiom, OWLOntology> iProofGen, String uiTitle, AbstractEveeProofPreferencesManager proofPreferencesManager){
+    public AbstractEveeDynamicProofAdapter(IProofGenerator<OWLAxiom, OWLOntology> iProofGen, AbstractEveeProofPreferencesManager proofPreferencesManager, EveeDynamicProofLoadingUI uiWindow){
         this.iProofGen = iProofGen;
-        this.uiTitle = uiTitle;
         this.proofPreferencesManager = proofPreferencesManager;
+        this.uiWindow = uiWindow;
+        this.uiWindow.setProofAdapter(this);
     }
-
-    abstract protected void setProofGeneratorParameters();
 
     public void setOntology(OWLOntology ontology){
         this.ontology = ontology;
@@ -171,11 +170,6 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         return protegeInferences;
     }
 
-    protected void createUI(OWLEditorKit editorKit){
-        this.uiWindow = new EveeDynamicProofLoadingUI(this, this.uiTitle, editorKit);
-        this.uiWindow.updateMessage(this.LOADING);
-    }
-
     public void start(OWLAxiom entailment, OWLEditorKit editorKit){
         this.generationComplete = false;
         this.generationSuccess = false;
@@ -187,10 +181,10 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
             this.ontologyChanged=false;
         }
         this.entailment = entailment;
-        this.createUI(editorKit);
         IProgressTracker progressTracker = new EveeProofPluginProgressTracker(this.uiWindow);
         this.iProofGen.addProgressTracker(progressTracker);
-        this.setProofGeneratorParameters();
+        this.uiWindow.initialize(editorKit);
+        this.uiWindow.updateMessage(this.LOADING);
         EveeProofGenerationThread proofGenThread = new EveeProofGenerationThread(this.entailment, this.ontology, this.reasoner, this.iProofGen, this);
         proofGenThread.start();
         this.uiWindow.showWindow();

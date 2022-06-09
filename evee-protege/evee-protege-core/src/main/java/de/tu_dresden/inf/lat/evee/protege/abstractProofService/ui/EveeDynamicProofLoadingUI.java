@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeDynamicProofAdapter;
+import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.owl.OWLEditorKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,18 +20,26 @@ public class EveeDynamicProofLoadingUI {
     private boolean showLoadingScreen;
     private boolean showCancelScreen;
     private boolean proofGenerationFinished;
-    private final AbstractEveeDynamicProofAdapter proofAdapter;
-    protected final OWLEditorKit editorKit;
+    private AbstractEveeDynamicProofAdapter proofAdapter;
+    protected OWLEditorKit editorKit;
+    private final String uiTitle;
     private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofLoadingUI.class);
 
-    public EveeDynamicProofLoadingUI(AbstractEveeDynamicProofAdapter proofAdapter, String uiTitle, OWLEditorKit editorKit){
+    public EveeDynamicProofLoadingUI(String uiTitle){
+        this.uiTitle = uiTitle;
+    }
+
+    public void setProofAdapter(AbstractEveeDynamicProofAdapter proofAdapter){
+        this.proofAdapter = proofAdapter;
+    }
+
+    public void initialize(OWLEditorKit editorKit){
+        this.editorKit = editorKit;
         this.showLoadingScreen = false;
         this.showCancelScreen = false;
         this.proofGenerationFinished = false;
-        this.proofAdapter = proofAdapter;
-        this.editorKit = editorKit;
         SwingUtilities.invokeLater(() -> {
-            this.frame = new JFrame(uiTitle);
+            this.frame = new JFrame(this.uiTitle);
             this.panel = new JPanel(new GridLayout(3, 1, 5, 5));
             this.label = new JLabel("", SwingConstants.CENTER);
             this.progressBar = new JProgressBar(0, 100);

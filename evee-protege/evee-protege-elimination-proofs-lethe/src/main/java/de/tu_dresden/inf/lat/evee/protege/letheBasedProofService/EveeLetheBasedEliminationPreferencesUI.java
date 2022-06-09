@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.abstractEliminationProofService.ui.AbstractEveeEliminationProofPreferencesUI;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.AbstractEveeEliminationProofPreferencesUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,23 +9,26 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
 
     private JSpinner timeOutSpinner;
     private final int SPINNER_WIDTH = 100;
+    private static final double STEP_SIZE = 0.05;
+    private final EveeLetheBasedEliminationProofPreferencesManager letheEliminationPreferencesManager;
 
+//    todo: how can creation of 2 separate objects be avoided here?
+//    -> use and overwrite setter for preferencesManager?
     public EveeLetheBasedEliminationPreferencesUI(){
         super(new EveeLetheBasedEliminationProofPreferencesManager());
+        this.letheEliminationPreferencesManager = new EveeLetheBasedEliminationProofPreferencesManager();
     }
 
     @Override
     protected void createUiElements(){
         super.createUiElements();
         SwingUtilities.invokeLater(() -> {
-            EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager =
-                    (EveeLetheBasedEliminationProofPreferencesManager) this.proofPreferencesManager;
-            SpinnerNumberModel timeOutSpinnerNumberModel = new SpinnerNumberModel(proofPreferencesManager.loadTimeOut(),
+            SpinnerNumberModel timeOutSpinnerNumberModel = new SpinnerNumberModel(this.letheEliminationPreferencesManager.loadTimeOut(),
 //                    todo: what should stepSize be? set min/max to avoid checking before value is used for proofGenerator?
-                    null, null, 0.001);
+                    0d, null, STEP_SIZE);
             this.timeOutSpinner = new JSpinner(timeOutSpinnerNumberModel);
             this.timeOutSpinner.setPreferredSize(new Dimension(this.SPINNER_WIDTH, this.timeOutSpinner.getPreferredSize().height));
-            this.timeOutSpinner.setToolTipText(proofPreferencesManager.getTimeOutUIToolTip());
+            this.timeOutSpinner.setToolTipText(this.letheEliminationPreferencesManager.getTimeOutUIToolTip());
         });
     }
 
@@ -33,11 +36,9 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
     protected void createAndFillHolderPanel(){
         super.createAndFillHolderPanel();
         SwingUtilities.invokeLater(() -> {
-            EveeLetheBasedEliminationProofPreferencesManager prefManager =
-                    (EveeLetheBasedEliminationProofPreferencesManager) this.proofPreferencesManager;
             JPanel timeOutPanel = new JPanel(new GridBagLayout());
-            this.miscellaneousPreferencesPanel.addGroupComponent(timeOutPanel);
-            JLabel timeOutLabel = new JLabel(prefManager.getTimeOutUILabel());
+            this.holderPanel.addGroupComponent(timeOutPanel);
+            JLabel timeOutLabel = new JLabel(this.letheEliminationPreferencesManager.getTimeOutUILabel());
             GridBagConstraints labelConstraints = new GridBagConstraints();
             labelConstraints.gridx = 0;
             labelConstraints.gridy = 0;
@@ -46,7 +47,7 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
             spinnerConstraints.gridx = 1;
             spinnerConstraints.gridy = 0;
             timeOutPanel.add(this.timeOutSpinner, spinnerConstraints);
-            JLabel timeOutUnit = new JLabel(prefManager.TIME_OUT_UNIT);
+            JLabel timeOutUnit = new JLabel(this.letheEliminationPreferencesManager.TIME_OUT_UNIT);
             GridBagConstraints unitConstraints = new GridBagConstraints();
             unitConstraints.gridx = 2;
             unitConstraints.gridy = 0;
@@ -56,10 +57,8 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
 
     @Override
     public void applyChanges(){
-        EveeLetheBasedEliminationProofPreferencesManager prefManager =
-                ((EveeLetheBasedEliminationProofPreferencesManager) this.proofPreferencesManager);
         SwingUtilities.invokeLater(() -> {
-            prefManager.saveTimeOut((double) this.timeOutSpinner.getValue());
+            this.letheEliminationPreferencesManager.saveTimeOut((double) this.timeOutSpinner.getValue());
         });
     }
 

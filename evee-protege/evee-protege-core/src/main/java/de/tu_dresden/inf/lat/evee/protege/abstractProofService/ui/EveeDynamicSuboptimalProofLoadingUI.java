@@ -1,8 +1,6 @@
-package de.tu_dresden.inf.lat.evee.protege.abstractProofService.abstractEliminationProofService.ui;
+package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeDynamicProofAdapter;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.abstractEliminationProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeSuboptimalProofPreferencesManager;
 import org.protege.editor.owl.OWLEditorKit;
 
 import javax.swing.*;
@@ -10,17 +8,20 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class EveeDynamicEliminationProofLoadingUI extends EveeDynamicProofLoadingUI implements ItemListener {
+public class EveeDynamicSuboptimalProofLoadingUI extends EveeDynamicProofLoadingUI implements ItemListener {
 
-    private final AbstractEveeEliminationProofPreferencesManager proofPreferencesManager;
+    private AbstractEveeSuboptimalProofPreferencesManager suboptimalPreferencesManager;
 
-    public EveeDynamicEliminationProofLoadingUI(AbstractEveeDynamicProofAdapter proofAdapter, String uiTitle, OWLEditorKit editorKit, AbstractEveeEliminationProofPreferencesManager proofPreferencesManager) {
-        super(proofAdapter, uiTitle, editorKit);
-        this.proofPreferencesManager = proofPreferencesManager;
+    public EveeDynamicSuboptimalProofLoadingUI(String uiTitle) {
+        super(uiTitle);
+    }
+
+    public void setPreferencesManager(AbstractEveeSuboptimalProofPreferencesManager preferencesManager){
+        this.suboptimalPreferencesManager = preferencesManager;
     }
 
     public void showSubOptimalProofMessage(){
-        if (! this.proofPreferencesManager.loadShowSuboptimalProofWarning()){
+        if (! this.suboptimalPreferencesManager.loadShowSuboptimalProofWarning()){
             return;
         }
         SwingUtilities.invokeLater(() -> {
@@ -50,7 +51,7 @@ public class EveeDynamicEliminationProofLoadingUI extends EveeDynamicProofLoadin
 
     @Override
     public void itemStateChanged(ItemEvent e) {
-        this.proofPreferencesManager.saveShowSuboptimalProofWarning(false);
+        this.suboptimalPreferencesManager.saveShowSuboptimalProofWarning(false);
     }
 
 }

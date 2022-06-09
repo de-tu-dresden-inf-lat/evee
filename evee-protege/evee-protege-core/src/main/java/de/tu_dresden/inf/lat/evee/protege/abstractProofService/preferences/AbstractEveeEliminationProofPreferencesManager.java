@@ -1,18 +1,12 @@
-package de.tu_dresden.inf.lat.evee.protege.abstractProofService.abstractEliminationProofService.preferences;
+package de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeBooleanProofPreference;
 import org.protege.editor.core.prefs.Preferences;
 
 
-public abstract class AbstractEveeEliminationProofPreferencesManager extends AbstractEveeProofPreferencesManager {
+public abstract class AbstractEveeEliminationProofPreferencesManager extends AbstractEveeSuboptimalProofPreferencesManager {
 
     protected final EveeBooleanProofPreference useProtegeReasonerDefaultPreference;
     protected final EveeBooleanProofPreference skipStepsDefaultPreference;
-    protected final EveeBooleanProofPreference suboptimalWarningDefaultPreference;
-    public final String SUBOPTIMAL_MSG = "showSuboptimalProofWarning";
-    private final String SUBOPTIMAL_MSG_LABEL = "Show warning for suboptimal proof";
-    private final String SUBOPTIMAL_MSG_TOOLTIP = "Show a warning if a suboptimal proof was found after cancellation of the proof service";
     protected final String PROTEGE_REASONER = "useProtegeReasoner";
     protected final String PROTEGE_REASONER_LABEL = "Use Protégé reasoner";
 //    todo: test "Protégé" on other operating systems than windows
@@ -27,27 +21,6 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
                 false, this.PROTEGE_REASONER_LABEL, this.PROTEGE_REASONER_TOOL_TIP);
         this.skipStepsDefaultPreference = new EveeBooleanProofPreference(
                 false, this.SKIP_STEPS_LABEL, this.SKIP_STEPS_TOOL_TIP);
-        this.suboptimalWarningDefaultPreference = new EveeBooleanProofPreference(
-                true, SUBOPTIMAL_MSG_LABEL, SUBOPTIMAL_MSG_TOOLTIP);
-    }
-
-    public boolean loadShowSuboptimalProofWarning(){
-        Preferences preferences = this.getProtegePreferences();
-        return preferences.getBoolean(SUBOPTIMAL_MSG,
-                this.suboptimalWarningDefaultPreference.getBooleanDefaultValue());
-    }
-
-    public void saveShowSuboptimalProofWarning(boolean value){
-        Preferences preferences = this.getProtegePreferences();
-        preferences.putBoolean(SUBOPTIMAL_MSG, value);
-    }
-
-    public String getSuboptimalProofWarningUILabel(){
-        return this.suboptimalWarningDefaultPreference.getUiLabel();
-    }
-
-    public String getSuboptimalProofWarningUIToolTip(){
-        return this.suboptimalWarningDefaultPreference.getUiToolTip();
     }
 
     public boolean loadUseProtegeReasoner() {

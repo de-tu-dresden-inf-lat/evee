@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.abstractEliminationProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeDoubleProofPreference;
 import org.protege.editor.core.prefs.Preferences;
 
