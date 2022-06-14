@@ -78,7 +78,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
 <!--            todo: can this be changed to [2.12.6.1,) ? results in missing osgi-wiring-package, try resolving import/export-statements of maven bundle plugin via embed-dependency with scope compile instead-->
-            <version>2.9.8</version>
+            <version>2.12.6.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
