@@ -19,6 +19,8 @@ Additionally, it provides methods to optimize proofs that are generated via othe
 2. Install both the [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin and the [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi.
 3. Copy the .jar files from the directory "release" of this repository to the directory "plugins" of your local Protégé installation.
 
+Note that the Evee plugins require the OWL Reasoner [HermiT](http://www.hermit-reasoner.com/index.html "http://www.hermit-reasoner.com/index.html"), which is already included as a plugin in Protégé version 5.5.0.
+
 ## Installing and using Evee
 
 ### Requirements
@@ -28,6 +30,7 @@ Evee requires the following software, which is included as a git-submodule:
 The Evee-Protégé plugins require the following other Protégé plugins:
 - The [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin
 - The [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi
+- The OWL Reasoner [HermiT](http://www.hermit-reasoner.com/index.html "http://www.hermit-reasoner.com/index.html"), which is already included as a plugin in Protégé version 5.5.0.
 
 These plugins also need to be installed into Protégé in order to use the Evee Protégé plugins.
 

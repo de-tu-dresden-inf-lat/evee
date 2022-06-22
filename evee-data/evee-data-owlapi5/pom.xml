@@ -7,12 +7,11 @@
     <parent>
         <artifactId>evee-data</artifactId>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
-        <version>0.4-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>evee-data-owlapi5</artifactId>
     <packaging>jar</packaging>
-
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,7 +43,7 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>${LatScalaDlTools.Version}</version>
         </dependency>
 
         <!--    <dependency>

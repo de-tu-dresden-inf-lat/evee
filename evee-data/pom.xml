@@ -8,11 +8,10 @@
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>evee-data</artifactId>
-    <version>0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
