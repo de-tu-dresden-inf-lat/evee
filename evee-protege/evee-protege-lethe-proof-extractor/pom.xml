@@ -75,6 +75,7 @@
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             de.tu_dresden.inf.lat.dltools.*,
                             scala.swing.*;resolution:=optional,
+                            org.checkerframework.checker.nullness.qual.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>
