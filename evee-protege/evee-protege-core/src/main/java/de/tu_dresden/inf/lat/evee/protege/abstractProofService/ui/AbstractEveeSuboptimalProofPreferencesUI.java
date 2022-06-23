@@ -7,11 +7,15 @@ import javax.swing.*;
 public class AbstractEveeSuboptimalProofPreferencesUI extends AbstractEveeProofPreferencesUI {
 
     private JCheckBox suboptimalMsgCheckBox;
-    private final AbstractEveeSuboptimalProofPreferencesManager suboptimalProofPreferencesManager;
+    private AbstractEveeSuboptimalProofPreferencesManager suboptimalProofPreferencesManager;
 
-    public AbstractEveeSuboptimalProofPreferencesUI(AbstractEveeSuboptimalProofPreferencesManager suboptimalProofPreferencesManager){
-        super(suboptimalProofPreferencesManager);
-        this.suboptimalProofPreferencesManager = suboptimalProofPreferencesManager;
+    public AbstractEveeSuboptimalProofPreferencesUI(){
+        super();
+    }
+
+    public void setAbstractSuboptimalProofPreferencesManager(AbstractEveeSuboptimalProofPreferencesManager proofPreferencesManager){
+        super.setAbstractProofPreferencesManager(proofPreferencesManager);
+        this.suboptimalProofPreferencesManager = proofPreferencesManager;
     }
 
     @Override

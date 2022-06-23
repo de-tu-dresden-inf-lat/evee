@@ -5,7 +5,12 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.AbstractEveePr
 public class EveeElkBasedExtractorPreferencesUI extends AbstractEveeProofPreferencesUI {
 
     public EveeElkBasedExtractorPreferencesUI(){
-        super(new EveeElkBasedExtractorProofPreferencesManager());
+        super();
+        this.setElkBasedExtractorProofPreferencesManager(new EveeElkBasedExtractorProofPreferencesManager());
+    }
+
+    public void setElkBasedExtractorProofPreferencesManager(EveeElkBasedExtractorProofPreferencesManager proofPreferencesManager){
+        super.setAbstractProofPreferencesManager(proofPreferencesManager);
     }
 
 }

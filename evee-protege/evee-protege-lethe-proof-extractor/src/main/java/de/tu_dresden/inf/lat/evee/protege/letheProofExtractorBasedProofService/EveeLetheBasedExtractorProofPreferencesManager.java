@@ -6,7 +6,7 @@ public class EveeLetheBasedExtractorProofPreferencesManager extends AbstractEvee
 
     private static final String SET_ID = "EVEE_PROOF_LETHE_DETAILED";
     private static final String PREFERENCE_ID = "EVEE_PREFERENCES_MANAGER_LETHE_DETAILED";
-    protected static final String DETAILED = "Detailed Proof";
+    protected static final String DETAILED = "Detailed Proof (Lethe)";
 
     public EveeLetheBasedExtractorProofPreferencesManager(String identifier) {
         super(SET_ID, PREFERENCE_ID, identifier);

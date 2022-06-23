@@ -10,13 +10,16 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
     private JSpinner timeOutSpinner;
     private final int SPINNER_WIDTH = 100;
     private static final double STEP_SIZE = 0.05;
-    private final EveeLetheBasedEliminationProofPreferencesManager letheEliminationPreferencesManager;
+    private EveeLetheBasedEliminationProofPreferencesManager letheEliminationPreferencesManager;
 
-//    todo: how can creation of 2 separate objects be avoided here?
-//    -> use and overwrite setter for preferencesManager?
     public EveeLetheBasedEliminationPreferencesUI(){
-        super(new EveeLetheBasedEliminationProofPreferencesManager());
-        this.letheEliminationPreferencesManager = new EveeLetheBasedEliminationProofPreferencesManager();
+        super();
+        this.setLetheBasedEliminationProofPreferencesManager(new EveeLetheBasedEliminationProofPreferencesManager());
+    }
+
+    public void setLetheBasedEliminationProofPreferencesManager(EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager){
+        super.setAbstractEliminationProofPreferencesManager(proofPreferencesManager);
+        this.letheEliminationPreferencesManager = proofPreferencesManager;
     }
 
     @Override

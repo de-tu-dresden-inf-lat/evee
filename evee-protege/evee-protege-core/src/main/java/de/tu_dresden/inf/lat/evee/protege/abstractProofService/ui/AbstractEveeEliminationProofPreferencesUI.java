@@ -1,7 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.AbstractEveeSuboptimalProofPreferencesUI;
 
 import javax.swing.*;
 
@@ -9,11 +8,15 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
 
     private JCheckBox protegeReasonerCheckBox;
     private JCheckBox skipStepsCheckBox;
-    private final AbstractEveeEliminationProofPreferencesManager eliminationProofPreferencesManager;
+    private AbstractEveeEliminationProofPreferencesManager eliminationProofPreferencesManager;
 
-    public AbstractEveeEliminationProofPreferencesUI(AbstractEveeEliminationProofPreferencesManager eliminationProofPreferencesManager) {
-        super(eliminationProofPreferencesManager);
-        this.eliminationProofPreferencesManager = eliminationProofPreferencesManager;
+    public AbstractEveeEliminationProofPreferencesUI() {
+        super();
+    }
+
+    public void setAbstractEliminationProofPreferencesManager(AbstractEveeEliminationProofPreferencesManager proofPreferencesManager){
+        super.setAbstractSuboptimalProofPreferencesManager(proofPreferencesManager);
+        this.eliminationProofPreferencesManager = proofPreferencesManager;
     }
 
     @Override

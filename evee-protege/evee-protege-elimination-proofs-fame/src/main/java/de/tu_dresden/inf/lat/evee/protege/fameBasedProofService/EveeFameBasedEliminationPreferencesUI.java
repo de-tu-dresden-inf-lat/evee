@@ -5,7 +5,12 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.AbstractEveeEl
 public class EveeFameBasedEliminationPreferencesUI extends AbstractEveeEliminationProofPreferencesUI {
 
     public EveeFameBasedEliminationPreferencesUI(){
-        super(new EveeFameBasedEliminationProofPreferencesManager());
+        super();
+        this.setFameBasedEliminationProofPreferencesManager(new EveeFameBasedEliminationProofPreferencesManager());
+    }
+
+    public void setFameBasedEliminationProofPreferencesManager(EveeFameBasedEliminationProofPreferencesManager proofPreferencesManager){
+        super.setAbstractEliminationProofPreferencesManager(proofPreferencesManager);
     }
 
 }

@@ -3,12 +3,12 @@
 <plugin>
 
     <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
-        <name value="Detailed Proof" />
+        <name value="Detailed Proof (Lethe)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.letheProofExtractorBasedProofService.EveeLetheBasedProofService" />
     </extension>
 
     <extension id="evee.proof.preferences" point="org.liveontologies.protege.explanation.proof.preferences">
-        <label value="Detailed Proof"/>
+        <label value="Detailed Proof (Lethe)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.letheProofExtractorBasedProofService.EveeLetheBasedExtractorProofPreferencesUI"/>
     </extension>
 

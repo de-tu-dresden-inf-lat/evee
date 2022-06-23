@@ -13,7 +13,7 @@ import java.util.TreeMap;
 
 public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel {
 
-    private final AbstractEveeProofPreferencesManager abstractProofPreferencesManager;
+    private AbstractEveeProofPreferencesManager abstractProofPreferencesManager;
     private final SortedMap<String, JCheckBox> activeServicesCheckBoxes;
     private final String ACTIVE_SERVICES = "Active Proof Services:";
     private final String MISC_OPTIONS = "Miscellaneous Options:";
@@ -21,9 +21,12 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
     protected PreferencesLayoutPanel holderPanel;
     private final Logger logger = LoggerFactory.getLogger(AbstractEveeProofPreferencesUI.class);
 
-    public AbstractEveeProofPreferencesUI(AbstractEveeProofPreferencesManager abstractProofPreferencesManager){
-        this.abstractProofPreferencesManager = abstractProofPreferencesManager;
+    public AbstractEveeProofPreferencesUI(){
         this.activeServicesCheckBoxes = new TreeMap<>();
+    }
+
+    public void setAbstractProofPreferencesManager(AbstractEveeProofPreferencesManager proofPreferencesManager){
+        this.abstractProofPreferencesManager = proofPreferencesManager;
     }
 
     @Override
