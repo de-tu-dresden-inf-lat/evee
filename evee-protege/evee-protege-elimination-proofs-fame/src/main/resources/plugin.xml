@@ -2,38 +2,38 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-    <extension id="evee.proof.eliminationFame" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofEliminationFame" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof (FAME)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedHeuristicProofService" />
     </extension>
-    <extension id="evee.proof.preferences.eliminationFame" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="eveeProofPreferencesEliminationFame" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof (FAME)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedHeuristicPreferences"/>
     </extension>
 
-    <extension id="evee.proof.eliminationFameSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofEliminationFameSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for size (FAME)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedSizeMinimalProofService" />
     </extension>
-    <extension id="evee.proof.preferences.eliminationFameSizeOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="eveeProofPreferencesEliminationFameSizeOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof, optimized for size (FAME)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedSizeMinimalPreferences"/>
     </extension>
 
-    <extension id="evee.proof.eliminationFameNameOptimized" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofEliminationFameNameOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for eliminated names (FAME)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedSymbolMinimalProofService" />
     </extension>
-    <extension id="evee.proof.preferences.eliminationFameNameOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="eveeProofPreferencesPliminationFameNameOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof, optimized for eliminated names (FAME)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedSymbolMinimalPreferences"/>
     </extension>
 
-    <extension id="evee.proof.eliminationFameWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofEliminationFameWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for weighted size (FAME)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedWeightedSizeMinimalProofService" />
     </extension>
-    <extension id="evee.proof.preferences.eliminationFameWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="eveeProofPreferencesEliminationFameWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof, optimized for weighted size (FAME)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedWeightedSizeMinimalPreferences"/>
     </extension>

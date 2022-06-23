@@ -2,29 +2,29 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-    <extension id="evee.proof.elkDepthOptimized" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofElkDepthOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="ELK Proof, optimized for depth" />
         <class value="de.tu_dresden.inf.lat.evee.protege.elkBasedProofService.EveeElkBasedDepthMinimalProofService"/>
     </extension>
-    <extension id="evee.proof.preferences.elkDepthOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="eveeProofPreferencesElkDepthOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="ELK Proof, optimized for depth"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.elkBasedProofService.EveeElkBasedDepthMinimalPreferences"/>
     </extension>
 
-    <extension id="evee.proof.elkSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofElkSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="ELK Proof, optimized for size" />
         <class value="de.tu_dresden.inf.lat.evee.protege.elkBasedProofService.EveeElkBasedSizeMinimalProofService"/>
     </extension>
-    <extension id="evee.proof.preferences.elkSizeOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="eveeProofPreferencesElkSizeOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="ELK Proof, optimized for size"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.elkBasedProofService.EveeElkBasedSizeMinimalPreferences"/>
     </extension>
 
-    <extension id="evee.proof.elkWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofElkWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="ELK Proof, optimized for weighted size" />
         <class value="de.tu_dresden.inf.lat.evee.protege.elkBasedProofService.EveeElkBasedWeightedSizeMinimalProofService"/>
     </extension>
-    <extension id="evee.proof.preferences.elkWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="eveeProofPreferencesElkWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="ELK Proof, optimized for weighted size"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.elkBasedProofService.EveeElkBasedWeightedSizeMinimalPreferences"/>
     </extension>
