@@ -214,9 +214,10 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
 
     @Override
     public void cancel() {
+        logger.debug("canceling execution");
         if (computationRunning) {
-            interpolator.forgetter().cancel();            
-            System.out.println("Cancelled.");
+            logger.debug("canceling forgetter");
+            interpolator.forgetter().cancel();
         }
         cancelled = true;
     }
@@ -244,6 +245,8 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         Set<IInference<OWLAxiom>> missing = new HashSet<>();
         for(IInference<OWLAxiom> inference: proof.getInferences()){
             for(OWLAxiom premise: inference.getPremises()){
+                if(cancelled)
+                    return;
                 if(!proof.hasInferenceFor(premise)) {
                     logger.trace(""+inference);
                     if(ontology.containsAxiom(premise))
@@ -420,6 +423,8 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
      * Get the inferences from the input TBox (axioms are considered facts, without any premises).
      */
     private Set<Inference<OWLAxiom>> getTBoxInputInferences() {
+        if(cancelled)
+            return Collections.EMPTY_SET;
         assertOntologySet();
         Set<Inference<OWLAxiom>> inferences = new HashSet<Inference<OWLAxiom>>();
         ontology.getTBoxAxioms(Imports.EXCLUDED).forEach(
@@ -511,9 +516,13 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             List<OWLAxiom> inferencePremisesAxioms = new ArrayList<>();
 
             for (Expression premise : premises) {
+                if(cancelled)
+                    return inferences;
+
                 OWLAxiom premiseAxiom = (OWLAxiom) letheClauseToOwlAxiom(premise);
                 logger.trace("premise "+premise+" becomes "+SimpleOWLFormatter.format(premiseAxiom));
                 if(derivation.getRuleName().equals(LETHE_ROLE_RESOLUTION_RULE) && premise instanceof ConceptClause) {
+
                     Set<Concept> definers = new HashSet<>();
                     Collection<ConceptLiteral> literals = JavaConverters.asJavaCollection(((ConceptClause) premise).literals());
                     for(ConceptLiteral literal: literals){
@@ -523,10 +532,9 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
                                 definers.add(literal.concept());
                         }
                     }
-                    System.out.println("literals: "+literals);
-                    System.out.println("definers: "+definers);
+                    logger.trace("literals: ${literals}");
+                    logger.trace("definers: ${definers}");
                     if(definers.size()==literals.size()){
-                        System.out.println("Jo!");
                         inferences.addAll(createDefinerRules(definers, translatingVisitor));
                     }
                 }
@@ -568,6 +576,9 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             Set<Concept> next = toProcess.poll();
             if(next.size()>1)
             for (Concept definer : next) {
+                if(cancelled)
+                    return result;
+
                 Set<Concept> without = new HashSet<>(next);
                 without.remove(definer);
                 result.add(new Inference<OWLAxiom>(conclusion,SUBSUMPTION_WEAKENING_RULE,
@@ -612,6 +623,9 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         );
 
         for (OWLAxiom subsumptionWeakeningCase : subsumptionWeakeningCases) {
+            if(cancelled)
+                return inferences;
+
             if (ontology.containsAxiom(subsumptionWeakeningCase)
                     && !subsumptionWeakeningCase.equals(resultingSubsumption)) {
                 inferences.add(new Inference<>(
