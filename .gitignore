@@ -7,3 +7,4 @@ temp/
 .settings
 .classpath
 .project
+.flattened-pom.xml

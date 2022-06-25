@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee-protege</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>evee-protege-lethe-proof-extractor</artifactId>
-    <version>0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -32,12 +32,12 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

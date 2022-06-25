@@ -7,11 +7,10 @@
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>evee-elimination-proofs_2.12</artifactId>
-    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>

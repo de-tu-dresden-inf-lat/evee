@@ -6,11 +6,11 @@
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>evee-elk-proof-extractor</artifactId>
-    <version>0.1-SNAPSHOT</version>
+
     <modules>
         <module>evee-elk-proof-extractor-owlapi4</module>
         <module>evee-elk-proof-extractor-owlapi5</module>

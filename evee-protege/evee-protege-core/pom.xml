@@ -4,14 +4,14 @@
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee-protege</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>evee-protege-core</artifactId>
-    <version>0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
+        <bundleName>${project.artifactId}</bundleName>
     </properties>
 
 
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-data-owlapi4</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <!--		included to resolve various version mismatches-->
         <dependency>
@@ -119,7 +119,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
                             org.protege.editor.owl.*;version="4.3",
                             sun.misc.*;resolution:=optional,

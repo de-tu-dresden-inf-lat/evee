@@ -5,11 +5,10 @@
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>evee-protege</artifactId>
-    <version>0.1-SNAPSHOT</version>
     <name>evee-protege</name>
 
     <packaging>pom</packaging>
