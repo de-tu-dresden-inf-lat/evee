@@ -42,7 +42,7 @@ Evee was developed to work with the OWL API versions 4 and 5.
 For easy compilation, we have created several Maven profiles:
 - owlapi4: This will compile all submodules of Evee except the Evee Protégé plugins. The resulting .jar files will have the OWL API version 4 as a dependency.  
 - owlapi5: This will compile all submodules of Evee except the Evee Protégé plugins. The resulting .jar files will have the OWL API version 5 as a dependency.
-- protege: This will compile all submodules of Evee including the Evee Protégé plugins. As Protégé itself uses the OWLApi version 4, every compiled .jar  file will have the OWL API version 4 as a dependency. 
+- protege: This will compile all submodules of Evee including the Evee Protégé plugins. As Protégé itself uses the OWL API version 4, every compiled .jar  file will have the OWL API version 4 as a dependency. 
 - complete: This will compile all submodules of Evee. Every library except for evee-elimination-proofs-fame and the Protégé plugins will be compiled in 2 versions, one using the OWL API version 4, the other using the OWL API version 5.
 
 The standard profile is "complete", which can be used via the command `mvn clean install` from the root of this directory.
@@ -53,11 +53,13 @@ These libraries aggregate all submodules of Evee except for the Evee Protégé p
 
 ### Technical notes
 
+Evee was developed for and tested with Java version 8.
+
 Any Scala code of this repository was written for Scala version 2.12.6.
 
 The Protégé plugins were developed for and tested with Protégé version 5.5.0.
 
-Evee internally relies on the libraries FamePlus and Lethe (consisting of lethe-core, lethe-owlapi4 and lethe-owlapi4).
+Evee internally relies on the libraries FamePlus and Lethe (consisting of lethe-core, lethe-owlapi4 and lethe-owlapi5).
 All these libraries have been pre-installed to a maven-repository in the directory [lib](lib).
 If you only want to use the Evee plugins for Protégé, no further steps are required.
 However, if you want to use Evee anywhere else (e.g. as part of your own project), Lethe and Fame are required for some functionalities of Evee.
