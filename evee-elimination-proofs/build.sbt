@@ -1,7 +1,6 @@
 //general settings:
 ThisBuild / name := "evee-elimination-proofs"
 ThisBuild / organization := "de.tu-dresden.inf.lat.evee"
-//todo: non-SNAPSHOT-version is not overwritten, even with additions of line 8-9
 ThisBuild / version := "0.1"
 ThisBuild / scalaVersion := "2.12.6"
 ThisBuild / resolvers += Resolver.mavenLocal

@@ -35,8 +35,19 @@ The Evee-Protégé plugins require the following other Protégé plugins:
 These plugins also need to be installed into Protégé in order to use the Evee Protégé plugins.
 
 ### Installation
-To clone this repository, use `git clone https://github.com/de-tu-dresden-inf-lat/evee --recurse-submodules`.
-This will clone the repository for Evee as well as the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools").
+
+#### Getting the latest stable version of Evee
+1. If you have never downloaded this repository, please use `git clone https://github.com/de-tu-dresden-inf-lat/evee --recurse-submodules`.
+If you have already cloned this repository in the past, please use `git pull origin main` from the root directory.
+These commands will create/update your local repository of Evee (including the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools")) to the latest commit.
+
+2. Check the release-tags on GitHub for the latest stable version of Evee and use `git checkout commit`, where *commit* refers to the specific commit mentioned in the release. 
+This will set your local Evee-repository to the commit of this release.
+However, this does not change the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit associated with the stable release. 
+
+3. Use `git submodule update` to set the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit specified in the stable release you have just checked out.
+
+#### Compiling Evee with Maven
 
 Evee was developed to work with the OWL API versions 4 and 5.
 For easy compilation, we have created several Maven profiles:
@@ -45,7 +56,7 @@ For easy compilation, we have created several Maven profiles:
 - protege: This will compile all submodules of Evee including the Evee Protégé plugins. As Protégé itself uses the OWL API version 4, every compiled .jar  file will have the OWL API version 4 as a dependency. 
 - complete: This will compile all submodules of Evee. Every library except for evee-elimination-proofs-fame and the Protégé plugins will be compiled in 2 versions, one using the OWL API version 4, the other using the OWL API version 5.
 
-The standard profile is "complete", which can be used via the command `mvn clean install` from the root of this directory.
+The standard profile is "complete", which can be used via the command `mvn clean install` from the root directory.
 If you want to use any of the other profiles, use the command `mvn clean install -P !complete,profileName` instead, where *profileName* is one of the other 3 mentioned above. 
 
 For easy reuse of Evee as a library, please use [evee-libs-owlapi4](evee-libs/evee-libs-owlapi4/pom.xml) or [evee-libs-owlapi5](evee-libs/evee-libs-owlapi5/pom.xml) as a dependency, depending on the version of the OWL API that you need.
