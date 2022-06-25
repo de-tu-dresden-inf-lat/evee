@@ -1,7 +1,7 @@
 //general settings:
 ThisBuild / name := "evee-elimination-proofs"
 ThisBuild / organization := "de.tu-dresden.inf.lat.evee"
-ThisBuild / version := "0.1"
+ThisBuild / version := "0.1.1-SNAPSHOT"
 ThisBuild / scalaVersion := "2.12.6"
 ThisBuild / resolvers += Resolver.mavenLocal
 ThisBuild / publishConfiguration := publishConfiguration.value.withOverwrite(true)
