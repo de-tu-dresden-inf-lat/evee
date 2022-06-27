@@ -78,7 +78,7 @@ public class MinimalProofExtractor<S> {
 				if ((!currentBestProofValues.containsKey(ax)) || (newProofSize < currentBestProofValues.get(ax))) {
 					currentBestProofValues.put(ax, newProofSize);
 					currentBestInferences.put(ax, inf);
-					System.out.println("Added new best inference for " + ax + ": " + inf);
+					//System.out.println("Added new best inference for " + ax + ": " + inf);
 				}
 
 			});
