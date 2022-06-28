@@ -2,6 +2,7 @@ target/
 *.iml
 .idea/
 socrates-proof.json
+.flattened-pom.xml
 log.txt
 temp/
 .settings
