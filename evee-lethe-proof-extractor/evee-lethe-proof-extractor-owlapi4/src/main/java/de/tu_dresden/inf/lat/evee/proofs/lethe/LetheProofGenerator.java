@@ -228,9 +228,9 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     }
 
     private void computationStart() {
+        cancelled = false;
         assertOntologySet();
         initializeInterpolator();
-        cancelled = false;
         computationRunning = true;
     }
     
