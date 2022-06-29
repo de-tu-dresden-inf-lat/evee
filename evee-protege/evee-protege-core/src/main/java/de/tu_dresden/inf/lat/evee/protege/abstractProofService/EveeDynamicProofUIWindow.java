@@ -72,9 +72,12 @@ public class EveeDynamicProofUIWindow implements ItemListener {
         this.disposeLoadingScreen();
         this.disposeCancelDialog();
         SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(
-                    this.editorKit.getOWLWorkspace()), message, "Error",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+            JDialog errorDialog = errorPane.createDialog(errorPane, "Error");
+            errorDialog.setAlwaysOnTop(true);
+            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this.editorKit.getOWLWorkspace()));
+            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            errorDialog.setVisible(true);
         });
     }
 
