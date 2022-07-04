@@ -17,7 +17,7 @@ import scala.collection.JavaConverters.{asScalaIteratorConverter, asScalaSetConv
 class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
                                                  filter: DLFilter,
                                                  justifier: Justifier,
-                                                 override var skipSteps: Boolean = true,
+                                                 skipSteps: Boolean = true,
                                                  var varyJustifications: Boolean = false)
 //                                           proofMeasure: ProofMeasure,
 //                                           approximateProofMeasure: ApproximateProofMeasure)
