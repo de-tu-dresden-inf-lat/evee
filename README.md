@@ -43,8 +43,8 @@ These commands will create/update your local repository of Evee (including the s
 
 2. Currently, the latest stable version of Evee is tagged as `v0.1` (you can find previous stable versions by checking the *Releases* on GitHub).
 To check out the commit of this version, use `git checkout tags/v0.1`.
-The above command will set your local Evee-repository to the commit of this release.
-However, this does not change the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit associated with the stable release.
+This command will set your local Evee-repository to the commit of this release.
+However, this does **not** change the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit associated with the stable release.
 
 3. Use `git submodule update` to set the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit specified in the stable release you have just checked out.
 
