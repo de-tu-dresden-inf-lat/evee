@@ -41,9 +41,10 @@ These plugins also need to be installed into Protégé in order to use the Evee 
 If you have already cloned this repository in the past, please use `git pull origin main` from the root directory.
 These commands will create/update your local repository of Evee (including the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools")) to the latest commit.
 
-2. Check the release-tags on GitHub for the latest stable version of Evee and use `git checkout commit`, where *commit* refers to the specific commit mentioned in the release. 
-This will set your local Evee-repository to the commit of this release.
-However, this does not change the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit associated with the stable release. 
+2. Currently, the latest stable version of Evee is tagged as `v0.1` (you can find previous stable versions by checking the *Releases* on GitHub).
+To check out the commit of this version, use `git checkout tags/v0.1`.
+The above command will set your local Evee-repository to the commit of this release.
+However, this does not change the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit associated with the stable release.
 
 3. Use `git submodule update` to set the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit specified in the stable release you have just checked out.
 
