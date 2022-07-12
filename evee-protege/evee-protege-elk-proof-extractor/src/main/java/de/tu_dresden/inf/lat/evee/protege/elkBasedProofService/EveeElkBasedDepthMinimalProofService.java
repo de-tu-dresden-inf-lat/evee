@@ -12,7 +12,7 @@ public class EveeElkBasedDepthMinimalProofService extends AbstractEveeProofServi
 
     public EveeElkBasedDepthMinimalProofService(){
         super(new EveeElkBasedDynamicProofAdapter(
-                new CachingProofGenerator<>(new ESPGMinimalDepth()),
+                new ESPGMinimalDepth(),
                 new EveeElkBasedExtractorProofPreferencesManager(identifier),
                 new EveeDynamicProofLoadingUI(identifier)));
     }

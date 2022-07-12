@@ -5,6 +5,7 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 
+import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.CachingProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
 import org.liveontologies.puli.DynamicProof;
@@ -36,7 +37,7 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
     private final EveeDynamicProofLoadingUI uiWindow;
 
     public AbstractEveeDynamicProofAdapter(IProofGenerator<OWLAxiom, OWLOntology> iProofGen, AbstractEveeProofPreferencesManager proofPreferencesManager, EveeDynamicProofLoadingUI uiWindow){
-        this.iProofGen = iProofGen;
+        this.iProofGen = new CachingProofGenerator<>(iProofGen);
         this.proofPreferencesManager = proofPreferencesManager;
         this.uiWindow = uiWindow;
         this.uiWindow.setProofAdapter(this);

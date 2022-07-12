@@ -10,8 +10,8 @@ public class EveeLetheBasedSizeMinimalProofService extends AbstractEveeProofServ
     private static final String identifier = EveeLetheBasedEliminationProofPreferencesManager.SIZE_MINIMAL;
 
     public EveeLetheBasedSizeMinimalProofService(){
-        super(new EveeLetheBasedEliminationDynamicProofAdapter(
-                new CachingProofGenerator<>(new LetheBasedSizeMinimalProofGenerator()),
+        super(new EveeLetheBasedMinimalDynamicProofAdapter(
+                new LetheBasedSizeMinimalProofGenerator(),
                 new EveeLetheBasedEliminationProofPreferencesManager(identifier),
                 new EveeDynamicSuboptimalProofLoadingUI(identifier)));
     }

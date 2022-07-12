@@ -13,7 +13,7 @@ public class EveeLetheBasedProofService extends AbstractEveeProofService {
 
     public EveeLetheBasedProofService(){
         super(new EveeLetheBasedDynamicProofAdapter(
-                new CachingProofGenerator<>(new MinimalTreeProofGenerator<>(new LetheProofGenerator())),
+                new MinimalTreeProofGenerator<>(new LetheProofGenerator()),
                 new EveeLetheBasedExtractorProofPreferencesManager(identifier),
                 new EveeDynamicProofLoadingUI(identifier)));
     }

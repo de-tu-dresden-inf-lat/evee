@@ -1,0 +1,33 @@
+package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
+
+import de.tu_dresden.inf.lat.evee.eliminationProofs.ForgettingBasedProofGenerator;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
+import org.protege.editor.owl.OWLEditorKit;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
+
+    private final AbstractEveeEliminationProofPreferencesManager proofPreferencesManager;
+    private final ForgettingBasedProofGenerator innerProofGenerator;
+
+    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedForgettingDynamicProofAdapter.class);
+
+    public EveeLetheBasedForgettingDynamicProofAdapter(ForgettingBasedProofGenerator iProofGen, AbstractEveeEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
+        super(iProofGen, proofPreferencesManager, uiWindow);
+        this.proofPreferencesManager = proofPreferencesManager;
+        this.innerProofGenerator = iProofGen;
+    }
+
+    @Override
+    public void start(OWLAxiom entailment, OWLEditorKit editorKit){
+        boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
+        this.innerProofGenerator.setSkipSteps(skipSteps);
+        this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
+        super.start(entailment, editorKit);
+    }
+
+}

@@ -10,8 +10,8 @@ public class EveeLetheBasedWeightedSizeMinimalProofService extends AbstractEveeP
     private static final String identifier = EveeLetheBasedEliminationProofPreferencesManager.WEIGHTED_SIZE_MINIMAL;
 
     public EveeLetheBasedWeightedSizeMinimalProofService(){
-        super(new EveeLetheBasedEliminationDynamicProofAdapter(
-                new CachingProofGenerator<>(new LetheBasedWeightedSizeMinimalProofGenerator()),
+        super(new EveeLetheBasedMinimalDynamicProofAdapter(
+                new LetheBasedWeightedSizeMinimalProofGenerator(),
                 new EveeLetheBasedEliminationProofPreferencesManager(identifier),
                 new EveeDynamicSuboptimalProofLoadingUI(identifier)));
     }

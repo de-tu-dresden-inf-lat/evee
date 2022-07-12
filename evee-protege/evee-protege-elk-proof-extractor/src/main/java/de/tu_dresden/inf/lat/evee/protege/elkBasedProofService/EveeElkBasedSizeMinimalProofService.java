@@ -11,7 +11,7 @@ public class EveeElkBasedSizeMinimalProofService extends AbstractEveeProofServic
 
     public EveeElkBasedSizeMinimalProofService(){
         super(new EveeElkBasedDynamicProofAdapter(
-                new CachingProofGenerator<>(new ESPGMinimalSize()),
+                new ESPGMinimalSize(),
                 new EveeElkBasedExtractorProofPreferencesManager(identifier),
                 new EveeDynamicProofLoadingUI(identifier)));
     }

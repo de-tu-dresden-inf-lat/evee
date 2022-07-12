@@ -27,7 +27,6 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
         super.createUiElements();
         SwingUtilities.invokeLater(() -> {
             SpinnerNumberModel timeOutSpinnerNumberModel = new SpinnerNumberModel(this.letheEliminationPreferencesManager.loadTimeOut(),
-//                    todo: what should stepSize be? set min/max to avoid checking before value is used for proofGenerator?
                     0d, null, STEP_SIZE);
             this.timeOutSpinner = new JSpinner(timeOutSpinnerNumberModel);
             this.timeOutSpinner.setPreferredSize(new Dimension(this.SPINNER_WIDTH, this.timeOutSpinner.getPreferredSize().height));

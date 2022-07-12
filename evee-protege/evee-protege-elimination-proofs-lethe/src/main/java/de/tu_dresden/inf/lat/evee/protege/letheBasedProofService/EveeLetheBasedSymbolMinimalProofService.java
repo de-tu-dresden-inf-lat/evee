@@ -10,8 +10,8 @@ public class EveeLetheBasedSymbolMinimalProofService extends AbstractEveeProofSe
     private static final String identifier = EveeLetheBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL;
 
     public EveeLetheBasedSymbolMinimalProofService(){
-        super(new EveeLetheBasedEliminationDynamicProofAdapter(
-                new CachingProofGenerator<>(new LetheBasedSymbolMinimalProofGenerator()),
+        super(new EveeLetheBasedSymbolMinimalDynamicProofAdapter(
+                new LetheBasedSymbolMinimalProofGenerator(),
                 new EveeLetheBasedEliminationProofPreferencesManager(identifier),
                 new EveeDynamicSuboptimalProofLoadingUI(identifier)));
     }

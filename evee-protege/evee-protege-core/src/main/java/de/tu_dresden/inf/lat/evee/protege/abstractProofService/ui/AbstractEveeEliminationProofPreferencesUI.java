@@ -8,6 +8,7 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
 
     private JCheckBox protegeReasonerCheckBox;
     private JCheckBox skipStepsCheckBox;
+    private JCheckBox varyJustificationsCheckBox;
     private AbstractEveeEliminationProofPreferencesManager eliminationProofPreferencesManager;
 
     public AbstractEveeEliminationProofPreferencesUI() {
@@ -33,6 +34,11 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
                     this.eliminationProofPreferencesManager.loadSkipSteps());
             this.skipStepsCheckBox.setToolTipText(
                     this.eliminationProofPreferencesManager.getSkipStepsUIToolTip());
+            this.varyJustificationsCheckBox = new JCheckBox(
+                    this.eliminationProofPreferencesManager.getVaryJustificationsUILabel(),
+                    this.eliminationProofPreferencesManager.loadVaryJustifications());
+            this.varyJustificationsCheckBox.setToolTipText(
+                    this.eliminationProofPreferencesManager.getVaryJustificationsUIToolTip());
         });
     }
 
@@ -42,6 +48,7 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
         SwingUtilities.invokeLater(() -> {
             this.holderPanel.addGroupComponent(this.protegeReasonerCheckBox);
             this.holderPanel.addGroupComponent(this.skipStepsCheckBox);
+            this.holderPanel.addGroupComponent(this.varyJustificationsCheckBox);
         });
     }
 
@@ -51,6 +58,7 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
         SwingUtilities.invokeLater(() -> {
             this.eliminationProofPreferencesManager.saveUseProtegeReasoner(this.protegeReasonerCheckBox.isSelected());
             this.eliminationProofPreferencesManager.saveSkipSteps(this.skipStepsCheckBox.isSelected());
+            this.eliminationProofPreferencesManager.saveVaryJustifiactions(this.varyJustificationsCheckBox.isSelected());
         });
     }
 

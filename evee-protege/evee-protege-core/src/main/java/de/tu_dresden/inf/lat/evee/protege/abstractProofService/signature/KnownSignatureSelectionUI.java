@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.abstractProofService.signature;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeKnownSignaturePreferencesManager;
 import org.apache.commons.io.FilenameUtils;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
@@ -28,7 +29,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     private static final String CANCEL = "cancel";
     private static final String APPLY = "apply";
     private final Insets insets = new Insets(5, 5, 5, 5);
-    private JFrame frame;
+    private JDialog dialog;
     private JPanel holderPanel;
     private EveeKnownSignaturePreferencesManager preferencesManager;
     private OWLEntityListModel ontologyListModel;
@@ -82,45 +83,58 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     }
 
     private void createUI(){
-        try{
-            this.createListModels();
-        }
-        catch (UnknownOWLOntologyException e){
+        if (! this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().isPresent()){
             SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(
-                        this.getOWLWorkspace()), "Error: Anonymous ontology detected.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane errorPane = new JOptionPane("Error: Anonymous ontology detected.", JOptionPane.ERROR_MESSAGE);
+                JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()), "Error");
+                errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+                errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                        ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace())));
+                errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                errorDialog.setVisible(true);
             });
             return;
         }
+        String ontoName = this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().get().toString();
         SwingUtilities.invokeLater(() -> {
-            this.frame = new JFrame(INIT);
-//            this.frame.setAlwaysOnTop(true);
-            this.frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            this.dialog = new JDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()));
+//            this.dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            this.dialog.setTitle("Manage signature for " + ontoName);
             this.holderPanel = new JPanel();
-            this.frame.getContentPane().add(holderPanel);
+            this.dialog.getContentPane().add(holderPanel);
             this.holderPanel.setLayout(new GridBagLayout());
         });
+        this.createListModels();
         this.addTopLabels();
         this.addScrollPanes();
         this.addMiddleButtons();
         this.addBottomButtons();
         SwingUtilities.invokeLater(() -> {
-            this.frame.pack();
-            this.frame.setLocationRelativeTo(this.getOWLWorkspace());
-            this.frame.setVisible(true);
+            this.dialog.pack();
+            this.dialog.setLocationRelativeTo(
+                    ProtegeManager.getInstance().getFrame(this.getWorkspace()));
+            this.dialog.setVisible(true);
         });
     }
 
-    private void createListModels() throws UnknownOWLOntologyException{
-        if (! this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().isPresent()){
-            throw new UnknownOWLOntologyException(this.getOWLModelManager().getActiveOntology().getOntologyID());
-        }
+    private void createListModels(){
         this.preferencesManager = new EveeKnownSignaturePreferencesManager(
-                this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().get().toString());
-        Set<OWLEntity> ontologyEntitySet = new HashSet<>();
-        this.getOWLModelManager().getActiveOntology().getLogicalAxioms(Imports.INCLUDED).forEach(
-                axiom -> ontologyEntitySet.addAll(axiom.getSignature()));
+                this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().get().toString()); // getOntologyIRI().isPresent() was checked beforehand
+        Set<OWLEntity> ontologyEntitySet = new HashSet<>(
+                this.getOWLModelManager().getActiveOntology().getClassesInSignature(Imports.INCLUDED));
+        ontologyEntitySet.addAll(
+                this.getOWLModelManager().getActiveOntology().getDataPropertiesInSignature(Imports.INCLUDED)
+        );
+        ontologyEntitySet.addAll(
+                this.getOWLModelManager().getActiveOntology().getDatatypesInSignature(Imports.INCLUDED)
+        );
+        ontologyEntitySet.addAll(
+                this.getOWLModelManager().getActiveOntology().getIndividualsInSignature(Imports.INCLUDED)
+        );
+        ontologyEntitySet.addAll(
+                this.getOWLModelManager().getActiveOntology().getObjectPropertiesInSignature(Imports.INCLUDED)
+        );
         List<String> knownEntityIRIList = this.preferencesManager.loadKnownSignature();
         Set<OWLEntity> knownEntitySet = new HashSet<>();
         for (String iri : knownEntityIRIList){
@@ -300,7 +314,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
 
     private void load(){
         JFileChooser fileChooser = this.createFileChooser();
-        int result = fileChooser.showOpenDialog(this.frame);
+        int result = fileChooser.showOpenDialog(this.dialog);
         List<IRI> iriList = new ArrayList<>();
         if (result == JFileChooser.APPROVE_OPTION){
             File file = fileChooser.getSelectedFile();
@@ -333,7 +347,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
 
     private void save(){
         JFileChooser fileChooser = this.createFileChooser();
-        int result = fileChooser.showSaveDialog(this.frame);
+        int result = fileChooser.showSaveDialog(this.dialog);
         if (result == JFileChooser.APPROVE_OPTION){
             File file = fileChooser.getSelectedFile();
             if (! FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("txt")) {
@@ -363,7 +377,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     }
 
     private void cancel(){
-        SwingUtilities.invokeLater(() -> this.frame.dispose());
+        SwingUtilities.invokeLater(() -> this.dialog.dispose());
     }
 
     private void apply(){
@@ -371,7 +385,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
             List<String> iriList = new ArrayList<>();
             this.knownSignatureListModel.getOwlEntityList().forEach(entity -> iriList.add(entity.getIRI().toString()));
             this.preferencesManager.saveKnownSignature(iriList);
-            this.frame.dispose();
+            this.dialog.dispose();
         });
     }
 
@@ -396,8 +410,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         }
 
         public void sort(){
-//            Collections.sort(owlEntityList);
-            owlEntityList.sort(new OWLEntityComparator());
+            Collections.sort(this.owlEntityList);
             this.fireContentsChanged(this, 0, this.owlEntityList.size() -1);
         }
 
@@ -418,50 +431,6 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         public void deleteList(){
             this.owlEntityList = new ArrayList<>();
             this.fireContentsChanged(this, 0, 0);
-        }
-
-    }
-
-
-    private class OWLEntityComparator implements Comparator<OWLEntity> {
-
-        @Override
-        public int compare(OWLEntity o1, OWLEntity o2) {
-            if (this.typeCalculation(o1) < this.typeCalculation(o2)){
-                return -1;
-            }
-            else if (this.typeCalculation(o1) > this.typeCalculation(o2)){
-                return 1;
-            }
-            else {
-//                https://stackoverflow.com/questions/38181645/java-lang-linkageerror-or-java-lang-noclassdeffounderror
-//                todo: only possible because google.com.guava removed from dependencies -> check maven-dependency-plugin to remove dependency from bundle-jar so guava can be added as dependency for other Evee-projects again
-                if (o1.getIRI().getRemainder().isPresent() && o2.getIRI().getRemainder().isPresent()){
-                    return o1.getIRI().getRemainder().get().compareTo(o2.getIRI().getRemainder().get());
-                }
-                return o1.compareTo(o2);
-            }
-        }
-
-        private int typeCalculation(OWLEntity entity){
-            if (entity.isOWLClass()) {
-                return 0;
-            }
-            else if (entity.isOWLObjectProperty()){
-                return 1;
-            }
-            else if (entity.isOWLNamedIndividual()){
-                return 2;
-            }
-            else if (entity.isOWLDatatype()){
-                return 3;
-            }
-            else if (entity.isOWLDataProperty()){
-                return 4;
-            }
-            else {
-                return 5;
-            }
         }
 
     }
