@@ -115,7 +115,8 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         // blocking call - cancel() might get called in the meantime
         //OWLOntology interpolant = findInterpolant(interpolator, owlClass, owlClass1);
         OWLAxiom targetAxiom = dataFactory.getOWLSubClassOfAxiom(owlClass,owlClass1);
-        OWLOntology interpolant = findInterpolant(interpolator, targetAxiom);
+        OWLOntology currentJustification = computeCurrentJustification(targetAxiom);
+        OWLOntology interpolant = findInterpolant(interpolator, currentJustification, targetAxiom);
 
 
         if (cancelled) {
@@ -129,7 +130,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             logger.debug("Subsumption holds.");
 
             // This computation might take some time, check for cancellation again...
-            List<IInference<OWLAxiom>> inferences = extractInferences(interpolator);
+            List<IInference<OWLAxiom>> inferences = extractInferences(currentJustification, interpolator);
 
             if (cancelled) {
                 throw new ProofGenerationCancelledException("Proof generation cancelled");
@@ -138,7 +139,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             inferences.addAll(getSubsumptionWeakeningInferences(interpolant, owlClass, owlClass1));
 
             Proof<OWLAxiom> result =  new Proof<>(targetAxiom, inferences);
-            addMissingInferences(result);
+            addMissingInferences(currentJustification, result);
 
             if (cancelled) {
                 throw new ProofGenerationCancelledException("Proof generation cancelled");
@@ -158,7 +159,8 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         // blocking call - cancel() might get called in the meantime
         //OWLOntology interpolant = findInterpolant(interpolator, owlClassA, owlClassB);
         OWLAxiom targetAxiom = dataFactory.getOWLEquivalentClassesAxiom(owlClassA,owlClassB);
-        OWLOntology interpolant = findInterpolant(interpolator, targetAxiom);
+        OWLOntology currentJustification = computeCurrentJustification(targetAxiom);
+        OWLOntology interpolant = findInterpolant(interpolator, currentJustification, targetAxiom);
 
         if (cancelled) {
             computationEnd();
@@ -175,7 +177,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             System.out.println("Equivalence holds.");
 
             // This computation might take some time, check for cancellation again...
-            List<IInference<OWLAxiom>> inferences = extractInferences(interpolator);
+            List<IInference<OWLAxiom>> inferences = extractInferences(currentJustification, interpolator);
 
             if (cancelled) {
                 logger.debug("Execution canceled");
@@ -193,7 +195,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
 
             Proof<OWLAxiom> result =  new Proof<>(targetAxiom, inferences);
 
-            addMissingInferences(result); // adds tautologies that are not always derived by LETHE, such as BOTTOM <= A
+            addMissingInferences(currentJustification, result); // adds tautologies that are not always derived by LETHE, such as BOTTOM <= A
 
             if (cancelled) {
                 logger.debug("computation canceled");
@@ -214,9 +216,10 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
 
     @Override
     public void cancel() {
+        logger.debug("canceling execution");
         if (computationRunning) {
-            interpolator.forgetter().cancel();            
-            System.out.println("Cancelled.");
+            logger.debug("canceling forgetter");
+            interpolator.forgetter().cancel();
         }
         cancelled = true;
     }
@@ -227,9 +230,9 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     }
 
     private void computationStart() {
+        cancelled = false;
         assertOntologySet();
         initializeInterpolator();
-        cancelled = false;
         computationRunning = true;
     }
     
@@ -239,17 +242,19 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         computationRunning = false;
     }
 
-    public void addMissingInferences(IProof<OWLAxiom> proof) {
+    public void addMissingInferences(OWLOntology currentJustification, IProof<OWLAxiom> proof) {
         assert proof.hasInferenceFor(proof.getFinalConclusion()) : "final conclusion not proved!";
         Set<IInference<OWLAxiom>> missing = new HashSet<>();
         for(IInference<OWLAxiom> inference: proof.getInferences()){
             for(OWLAxiom premise: inference.getPremises()){
+                if(cancelled)
+                    return;
                 if(!proof.hasInferenceFor(premise)) {
                     logger.trace(""+inference);
-                    if(ontology.containsAxiom(premise))
+                    if(currentJustification.containsAxiom(premise))
                         missing.add(new Inference<>(premise, ASSERTED_RULE, Collections.emptyList()));
                     else if(premise instanceof OWLSubPropertyAxiom){
-                        List<OWLAxiom> premises = new LinkedList<>(justify(premise).getAxioms());
+                        List<OWLAxiom> premises = new LinkedList<>(justify(currentJustification, premise).getAxioms());
                         missing.add(new Inference<>(premise, ROLE_HIERARCHY, premises));
                     }
                     else {
@@ -287,22 +292,26 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         interpolator.forgetter().conceptsFirst_$eq(true);
         interpolator.forgetter().inferenceLogger().clear();
     }
+    
+    private OWLOntology computeCurrentJustification(OWLAxiom axiom) {
+        assertOntologySet();
+        logger.trace("Ontology:");
+        logger.trace(SimpleOWLFormatter.format(ontology));
+        OWLOntology currentJustification = justify(ontology, axiom);
+        logger.trace("Justification:");
+        logger.trace(SimpleOWLFormatter.format(currentJustification));
+        return currentJustification;
+    }
 
     /**
      * Use LETHE's uniform interpolant algorithm to find the new ontology.
      */
-    private OWLOntology findInterpolant(ShKnowledgeBaseInterpolator interpolator, OWLAxiom axiom) {
-        assertOntologySet();
-        logger.trace("Ontology:");
-        logger.trace(SimpleOWLFormatter.format(ontology));
-        ontology = justify(axiom);
-        logger.trace("Justification:");
-        logger.trace(SimpleOWLFormatter.format(ontology));
+    private OWLOntology findInterpolant(ShKnowledgeBaseInterpolator interpolator, OWLOntology currentJustification, OWLAxiom axiom) {
         Set<OWLEntity> targetSignature = axiom.getSignature();
-        return interpolator.uniformInterpolant(ontology, targetSignature);
+        return interpolator.uniformInterpolant(currentJustification, targetSignature);
     }
 
-    private OWLOntology justify(OWLAxiom axiom) {
+    private OWLOntology justify(OWLOntology ontology, OWLAxiom axiom) {
 
         Set<OWLAxiom> explanation;
 
@@ -360,34 +369,25 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         }
     }
 
-    private OWLOntology findInterpolant(ShKnowledgeBaseInterpolator interpolator, OWLClass owlClass, OWLClass owlClass1) {
-        assertOntologySet();
-        Set<OWLEntity> targetSignature = new HashSet<>();
-        targetSignature.add(owlClass);
-        targetSignature.add(owlClass1);
-
-        return interpolator.uniformInterpolant(ontology, targetSignature);
-    }
-
     private DefinerFactory definerFactory;
 
     /**
      * Extract inferences collected during interpolation of the input ontology.
      */
-    private List<IInference<OWLAxiom>> extractInferences(ShKnowledgeBaseInterpolator interpolator) {
+    private List<IInference<OWLAxiom>> extractInferences(OWLOntology currentJustification, ShKnowledgeBaseInterpolator interpolator) {
         assertOntologySet();
         List<IInference<OWLAxiom>> inferences = new ArrayList<>();
 
         InferenceLogger$ logger = interpolator.forgetter().inferenceLogger();
 
         // Add input TBox axioms
-        inferences.addAll(getTBoxInputInferences());
+        inferences.addAll(getTBoxInputInferences(currentJustification));
 
         if(logger.derivations().isEmpty()) {
             // nothing needed to be derived for the conclusion
             // we then also have no definer factory, but we still may need to add the input inferences linking
             // the tbox input to the representation in LETHE, and potentially the conclusion
-            inferences.addAll(getLETHEInputInferences(logger, Optional.empty()));
+            inferences.addAll(getLETHEInputInferences(currentJustification, logger, Optional.empty()));
             return inferences;
         } else {
 
@@ -401,15 +401,15 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
                 definerFactory.addDefinerBases(alternativeDefinerFactory);
             }
 
-            DefinerTranslatingVisitor translatingVisitor = new DefinerTranslatingVisitor(ontology,
+            DefinerTranslatingVisitor translatingVisitor = new DefinerTranslatingVisitor(currentJustification,
                     definerFactory);
 
 
             // Add input normalized axioms (used by LETHE)
-            inferences.addAll(getLETHEInputInferences(logger, Optional.of(translatingVisitor)));
+            inferences.addAll(getLETHEInputInferences(currentJustification, logger, Optional.of(translatingVisitor)));
 
             // Add derivations created by LETHE
-            inferences.addAll(getLETHEDerivationInferences(logger, translatingVisitor));
+            inferences.addAll(getLETHEDerivationInferences(currentJustification, logger, translatingVisitor));
 
             return inferences;
         }
@@ -419,10 +419,12 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     /**
      * Get the inferences from the input TBox (axioms are considered facts, without any premises).
      */
-    private Set<Inference<OWLAxiom>> getTBoxInputInferences() {
+    private Set<Inference<OWLAxiom>> getTBoxInputInferences(OWLOntology currentJustification) {
+        if(cancelled)
+            return Collections.EMPTY_SET;
         assertOntologySet();
         Set<Inference<OWLAxiom>> inferences = new HashSet<Inference<OWLAxiom>>();
-        ontology.getTBoxAxioms(Imports.EXCLUDED).forEach(
+        currentJustification.getTBoxAxioms(Imports.EXCLUDED).forEach(
             axiom -> inferences.add(new Inference<>(axiom, ASSERTED_RULE, new ArrayList<>()))
         );
         return inferences;
@@ -431,18 +433,18 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     /**
      * Get the inferences expressing normalization done by LETHE.
      */
-    private Set<Inference<OWLAxiom>> getLETHEInputInferences(InferenceLogger$ logger,
+    private Set<Inference<OWLAxiom>> getLETHEInputInferences(OWLOntology currentJustification, InferenceLogger$ logger,
                                                              Optional<DefinerTranslatingVisitor> translatingVisitor) {
         assertOntologySet();
         Set<Inference<OWLAxiom>> inferences = new HashSet<Inference<OWLAxiom>>();
         ReasonerFactory rf = new Reasoner.ReasonerFactory();
-        OWLReasoner reasoner = rf.createReasoner(ontology);
-        OWLReasoner tautologyReasoner = inferTautologiesFromInput ? reasoner : rf.createReasoner(getEmptyOntology(ontology));
+        OWLReasoner reasoner = rf.createReasoner(currentJustification);
+        OWLReasoner tautologyReasoner = inferTautologiesFromInput ? reasoner : rf.createReasoner(getEmptyOntology(currentJustification));
 
         DefaultExplanationGenerator generator =
-                new DefaultExplanationGenerator(ontologyManager, rf, ontology, reasoner, null);
+                new DefaultExplanationGenerator(ontologyManager, rf, currentJustification, reasoner, null);
 
-        for (OWLAxiom letheInputAxiom : letheClausesToOwlAxioms(JavaConverters.setAsJavaSet(logger.inputClauses()))) {
+        for (OWLAxiom letheInputAxiom : letheClausesToOwlAxioms(currentJustification, JavaConverters.setAsJavaSet(logger.inputClauses()))) {
 
             if (cancelled) {
                 return inferences;
@@ -487,7 +489,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     /**
      * Get the inferences expressing derivation steps done by LETHE.
      */
-    private Set<Inference<OWLAxiom>> getLETHEDerivationInferences(InferenceLogger$ inflogger, DefinerTranslatingVisitor translatingVisitor) {
+    private Set<Inference<OWLAxiom>> getLETHEDerivationInferences(OWLOntology currentJustification, InferenceLogger$ inflogger, DefinerTranslatingVisitor translatingVisitor) {
         Set<Inference<OWLAxiom>> inferences = new HashSet<Inference<OWLAxiom>>();
 
         for (AbstractDerivation derivation : JavaConverters.seqAsJavaList(inflogger.derivations())) {
@@ -511,9 +513,13 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             List<OWLAxiom> inferencePremisesAxioms = new ArrayList<>();
 
             for (Expression premise : premises) {
-                OWLAxiom premiseAxiom = (OWLAxiom) letheClauseToOwlAxiom(premise);
+                if(cancelled)
+                    return inferences;
+
+                OWLAxiom premiseAxiom = (OWLAxiom) letheClauseToOwlAxiom(currentJustification, premise);
                 logger.trace("premise "+premise+" becomes "+SimpleOWLFormatter.format(premiseAxiom));
                 if(derivation.getRuleName().equals(LETHE_ROLE_RESOLUTION_RULE) && premise instanceof ConceptClause) {
+
                     Set<Concept> definers = new HashSet<>();
                     Collection<ConceptLiteral> literals = JavaConverters.asJavaCollection(((ConceptClause) premise).literals());
                     for(ConceptLiteral literal: literals){
@@ -523,11 +529,10 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
                                 definers.add(literal.concept());
                         }
                     }
-                    System.out.println("literals: "+literals);
-                    System.out.println("definers: "+definers);
+                    logger.trace("literals: ${literals}");
+                    logger.trace("definers: ${definers}");
                     if(definers.size()==literals.size()){
-                        System.out.println("Jo!");
-                        inferences.addAll(createDefinerRules(definers, translatingVisitor));
+                        inferences.addAll(createDefinerRules(currentJustification, definers, translatingVisitor));
                     }
                 }
                 inferencePremisesAxioms.add(removeDefiners(dataFactory, translatingVisitor, premiseAxiom));
@@ -537,7 +542,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             if(derivation.getRuleName().equals(LETHE_RESOLUTION_RULE) || derivation.getRuleName().equals(LETHE_MONOTONICITY))
                 Collections.reverse(inferencePremisesAxioms); // looks nicer in most cases, I think
 
-            OWLAxiom conclusionAxiom = (OWLSubClassOfAxiom) letheClauseToOwlAxiom(conclusions.iterator().next());
+            OWLAxiom conclusionAxiom = (OWLSubClassOfAxiom) letheClauseToOwlAxiom(currentJustification, conclusions.iterator().next());
 
             if (!isTranslatedInferenceValid(inferencePremisesAxioms, conclusionAxiom)) {
                 continue;
@@ -556,11 +561,11 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         return inferences;
     }
 
-    private Set<Inference<OWLAxiom>> createDefinerRules(Set<Concept> definers, DefinerTranslatingVisitor translatingVisitor) {
+    private Set<Inference<OWLAxiom>> createDefinerRules(OWLOntology currentJustification, Set<Concept> definers, DefinerTranslatingVisitor translatingVisitor) {
         Set<Inference<OWLAxiom>> result = new HashSet<>();
         Queue<Set<Concept>> toProcess = new LinkedList<>();
         Set<Set<Concept>> all = new HashSet<>();
-        OWLAxiom conclusion = unsatAxiom(definers,translatingVisitor);
+        OWLAxiom conclusion = unsatAxiom(currentJustification,definers,translatingVisitor);
 
         toProcess.add(definers);
         all.add(definers);
@@ -568,10 +573,13 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             Set<Concept> next = toProcess.poll();
             if(next.size()>1)
             for (Concept definer : next) {
+                if(cancelled)
+                    return result;
+
                 Set<Concept> without = new HashSet<>(next);
                 without.remove(definer);
                 result.add(new Inference<OWLAxiom>(conclusion,SUBSUMPTION_WEAKENING_RULE,
-                        Arrays.asList(unsatAxiom(without,translatingVisitor))));
+                        Arrays.asList(unsatAxiom(currentJustification,without,translatingVisitor))));
                 if(!all.contains(without)) {
                     toProcess.add(without);
                     all.add(without);
@@ -581,10 +589,10 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         return result;
     }
 
-    private OWLAxiom unsatAxiom(Set<Concept> definers, DefinerTranslatingVisitor translatingVisitor) {
+    private OWLAxiom unsatAxiom(OWLOntology currentJustification, Set<Concept> definers, DefinerTranslatingVisitor translatingVisitor) {
         return removeDefiners(dataFactory,translatingVisitor,
                 dataFactory.getOWLSubClassOfAxiom(
-                        owlExporter.toOwl(ontology, new ConceptConjunction(JavaConverters.asScalaSet(definers).toSet())),
+                        owlExporter.toOwl(currentJustification, new ConceptConjunction(JavaConverters.asScalaSet(definers).toSet())),
                         dataFactory.getOWLNothing()));
     }
 
@@ -612,6 +620,9 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
         );
 
         for (OWLAxiom subsumptionWeakeningCase : subsumptionWeakeningCases) {
+            if(cancelled)
+                return inferences;
+
             if (ontology.containsAxiom(subsumptionWeakeningCase)
                     && !subsumptionWeakeningCase.equals(resultingSubsumption)) {
                 inferences.add(new Inference<>(
@@ -696,10 +707,10 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
      * Convert the clause form that LETHE uses to a subsumption axiom.
      * (negated atoms from the disjunction on the LHS, the rest on the RHS)
      */
-    private OWLAxiom letheClauseToOwlAxiom(Expression exp) {
+    private OWLAxiom letheClauseToOwlAxiom(OWLOntology currentJustification, Expression exp) {
 
         if(exp instanceof RoleSubsumption) {
-            return owlExporter.toOwl(ontology,(RoleAxiom) exp);
+            return owlExporter.toOwl(currentJustification,(RoleAxiom) exp);
         } else {
 
             assert exp instanceof ConceptClause;
@@ -710,16 +721,16 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             Subsumption newSubsumption = new Subsumption(TopConcept$.MODULE$, letheClause.convertBack());
             Subsumption beautifiedSubsumptionAxiom = (Subsumption) OntologyBeautifier.nice(newSubsumption);
 
-            return (OWLSubClassOfAxiom) owlExporter.toOwl(ontology, beautifiedSubsumptionAxiom);
+            return (OWLSubClassOfAxiom) owlExporter.toOwl(currentJustification, beautifiedSubsumptionAxiom);
         }
     }
 
     /**
      * Convert a set of LETHE clauses to axioms.
      */
-    private Set<OWLSubClassOfAxiom> letheClausesToOwlAxioms(Set<ConceptClause> letheClauses) {
+    private Set<OWLSubClassOfAxiom> letheClausesToOwlAxioms(OWLOntology currentJustification, Set<ConceptClause> letheClauses) {
         Set<OWLSubClassOfAxiom> axioms = new HashSet<>();
-        letheClauses.forEach(inputClause -> axioms.add((OWLSubClassOfAxiom) letheClauseToOwlAxiom(inputClause)));
+        letheClauses.forEach(inputClause -> axioms.add((OWLSubClassOfAxiom) letheClauseToOwlAxiom(currentJustification, inputClause)));
         return axioms;
     }
 

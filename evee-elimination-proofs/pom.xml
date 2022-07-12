@@ -91,6 +91,8 @@
                 </executions>
                 <configuration>
                     <sbtVersion>0.13</sbtVersion>
+                    <skipMain>${skipCompilation}</skipMain>
+                    <skipTest>${skipCompilation}</skipTest>
                 </configuration>
             </plugin>
             <plugin>

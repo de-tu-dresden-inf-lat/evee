@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeSuboptimalProofPreferencesManager;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
 
 import javax.swing.*;
@@ -25,8 +26,9 @@ public class EveeDynamicSuboptimalProofLoadingUI extends EveeDynamicProofLoading
             return;
         }
         SwingUtilities.invokeLater(() -> {
-            JFrame subOptimalProofMessageFrame = new JFrame("Proof generation cancelled");
-            subOptimalProofMessageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            JDialog subOptimalProofMessageDialog = new JDialog(ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
+            subOptimalProofMessageDialog.setTitle("Proof generation cancelled");
+            subOptimalProofMessageDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             JPanel subOptimalProofMessagePanel = new JPanel(new GridLayout(3, 1, 5, 5));
             JLabel subOptimalProofMessageLabel = new JLabel(
                     "Due to cancellation of the proof generation, you might be seeing a sub-optimal proof",
@@ -36,16 +38,17 @@ public class EveeDynamicSuboptimalProofLoadingUI extends EveeDynamicProofLoading
             JCheckBox subOptimalProofMessageCheckBox = new JCheckBox("Don't show this message again", false);
             subOptimalProofMessageCheckBox.addItemListener(this);
             JButton subOptimalProofMessageButton = new JButton("OK");
-            subOptimalProofMessageButton.addActionListener(e -> subOptimalProofMessageFrame.dispose());
+            subOptimalProofMessageButton.addActionListener(e -> subOptimalProofMessageDialog.dispose());
             subOptimalProofMessageCheckBox.setHorizontalAlignment(JCheckBox.CENTER);
             subOptimalProofMessagePanel.add(subOptimalProofMessageLabel);
             subOptimalProofMessagePanel.add(subOptimalProofMessageCheckBox);
             subOptimalProofMessagePanel.add(subOptimalProofMessageButton);
-            subOptimalProofMessageFrame.getContentPane().add(subOptimalProofMessagePanel);
-            subOptimalProofMessageFrame.pack();
-            subOptimalProofMessageFrame.setSize(600, 150);
-            subOptimalProofMessageFrame.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this.editorKit.getOWLWorkspace()));
-            subOptimalProofMessageFrame.setVisible(true);
+            subOptimalProofMessageDialog.getContentPane().add(subOptimalProofMessagePanel);
+            subOptimalProofMessageDialog.pack();
+            subOptimalProofMessageDialog.setSize(600, 150);
+            subOptimalProofMessageDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                            ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
+            subOptimalProofMessageDialog.setVisible(true);
         });
     }
 

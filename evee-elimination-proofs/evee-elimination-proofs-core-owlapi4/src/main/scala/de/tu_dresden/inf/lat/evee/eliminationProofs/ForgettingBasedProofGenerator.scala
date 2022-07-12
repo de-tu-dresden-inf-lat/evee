@@ -33,7 +33,7 @@ import scala.concurrent.CancellationException
 class ForgettingBasedProofGenerator(forgetter: Forgetter,
                                     filter: DLFilter,
                                     justifier: Justifier,
-                                    skipSteps: Boolean = true,
+                                    var skipSteps: Boolean = true,
                                     var hiddenSignature: Set[OWLEntity] = Set())
   extends IProofGenerator[OWLAxiom,OWLOntology] with ISimpleProofGenerator[OWLClass, OWLAxiom, OWLOntology] {
 
@@ -51,6 +51,9 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
   protected val tidyProofs = new TidyForgettingBasedProofs(formatter)
 
   protected var canceled: Boolean = false
+
+  def setSkipSteps(skipSteps: Boolean) =
+    this.skipSteps=skipSteps
 
   override def cancel(): Unit = {
     System.out.println("Canceling execution")

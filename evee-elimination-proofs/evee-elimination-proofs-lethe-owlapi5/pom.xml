@@ -10,6 +10,10 @@
 
     <artifactId>evee-elimination-proofs-lethe-owlapi5_2.12</artifactId>
 
+    <properties>
+        <skipCompilation>false</skipCompilation>
+    </properties>
+
     <repositories>
         <repository>
             <id>EveeLocalMavenRepository</id>

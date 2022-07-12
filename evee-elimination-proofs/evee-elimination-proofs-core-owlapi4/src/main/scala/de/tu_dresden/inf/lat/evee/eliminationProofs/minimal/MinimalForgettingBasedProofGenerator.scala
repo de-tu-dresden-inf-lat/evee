@@ -47,7 +47,7 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
                                            forgetter: Forgetter,
                                            filter: DLFilter,
                                            justifier: Justifier,
-                                           skipSteps: Boolean = true)
+                                           var skipSteps: Boolean = true)
   extends IProofGenerator[OWLAxiom, OWLOntology] with ISimpleProofGenerator[OWLClass, OWLAxiom, OWLOntology] {
 
   val logger = Logger[MinimalForgettingBasedProofGenerator]
@@ -71,6 +71,9 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
   //override def setReasoner(owlReasoner: OWLReasoner): Unit = {}
 
   private var canceled = false
+
+  def setSkipSteps(skipSteps: Boolean) =
+    this.skipSteps=skipSteps
 
   override def cancel(): Unit = {
     println("Canceling!")

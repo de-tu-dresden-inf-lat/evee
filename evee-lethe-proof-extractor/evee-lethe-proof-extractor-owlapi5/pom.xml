@@ -12,6 +12,13 @@
         <version>${revision}</version>
     </parent>
 
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <skipTests>true</skipTests>
+        <skipCompilation>false</skipCompilation>
+    </properties>
+
     <repositories>
         <repository>
             <id>EveeLocalMavenRepository</id>
@@ -149,12 +156,5 @@
         <testSourceDirectory>${project.basedir}/target/src/test/java</testSourceDirectory>
 
     </build>
-
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <skipTests>true</skipTests>
-    </properties>
 
 </project>

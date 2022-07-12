@@ -1,9 +1,11 @@
 //general settings:
 ThisBuild / name := "evee-elimination-proofs"
-ThisBuild / organization := "de.tu-dresden.lat.inf.evee"
-ThisBuild / version := "0.2-SNAPSHOT"
+ThisBuild / organization := "de.tu-dresden.inf.lat.evee"
+ThisBuild / version := "0.1.1-SNAPSHOT"
 ThisBuild / scalaVersion := "2.12.6"
 ThisBuild / resolvers += Resolver.mavenLocal
+ThisBuild / publishConfiguration := publishConfiguration.value.withOverwrite(true)
+ThisBuild / publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true)
 ThisBuild / excludeDependencies ++= Seq(
   // commons-logging is replaced by jcl-over-slf4j
   ExclusionRule("commons-logging", "commons-logging"),
@@ -37,7 +39,7 @@ lazy val evee_elimination_proofs_core_owlapi4 = Project(
     name := createString("core", 4),
     libraryDependencies ++= Seq(
 //      my own stuff:
-      "de.tu-dresden.inf.lat.evee" % "evee-data-owlapi4" % "0.4-SNAPSHOT",
+      "de.tu-dresden.inf.lat.evee" % "evee-data-owlapi4" % "0.1",
 //      reasoner:
       "net.sourceforge.owlapi" % "org.semanticweb.hermit" % "1.3.8.413",
     )
@@ -53,7 +55,7 @@ lazy val evee_elimination_proofs_core_owlapi5 = Project(
 //    target := file(file(createTargetDirString("core", 5)).getAbsolutePath),  //alternative to explicitly adding scalaSource
     libraryDependencies ++= Seq(
 //       my own stuff:
-      "de.tu-dresden.inf.lat.evee" % "evee-data-owlapi5" % "0.4-SNAPSHOT",
+      "de.tu-dresden.inf.lat.evee" % "evee-data-owlapi5" % "0.1",
 
 //      "net.sourceforge.owlapi" % "owlapi-distribution" % "3.5.2",
 //      "com.hermit-reasoner" % "org.semanticweb.hermit" % "1.3.8.4",
@@ -69,7 +71,7 @@ lazy val evee_elimination_proofs_fame_owlapi4 = Project(
 )
   .settings(
     name := createString("fame", 4),
-    unmanagedJars in Compile += file(createString("fame", 4) + "/../../lib/FamePlus/FamePlus/1-SNAPSHOT/FamePlus-1-SNAPSHOT.jar"),
+    unmanagedJars in Compile += file(createString("fame", 4) + "/../../lib/FamePlus/FamePlus/0.0.1-SNAPSHOT/FamePlus-0.0.1-SNAPSHOT.jar"),
     libraryDependencies ++= Seq(
 //        for FAME
       "org.apache.commons" % "commons-lang3" % "3.6",
@@ -84,8 +86,8 @@ lazy val evee_elimination_proofs_lethe_owlapi4 = Project(
   .settings(
     name := createString("lethe", 4),
 //    target := file(file(createTargetDirString("lethe", 4)).getAbsolutePath), //alternative to explicitly adding scalaSource
-    unmanagedJars in Compile += file(createString("lethe", 4) + "/../../lib/de/tu-dresden/inf/lat/evee/lethe-core_2.12/0.8-SNAPSHOT/lethe-core_2.12-0.8-SNAPSHOT.jar"),
-    unmanagedJars in Compile += file(createString("lethe", 4) + "/../../lib/de/tu-dresden/inf/lat/evee/lethe-owlapi4_2.12/0.8-SNAPSHOT/lethe-owlapi4_2.12-0.8-SNAPSHOT.jar")
+    unmanagedJars in Compile += file(createString("lethe", 4) + "/../../lib/de/tu-dresden/inf/lat/lethe-core_2.12/0.8-SNAPSHOT/lethe-core_2.12-0.8-SNAPSHOT.jar"),
+    unmanagedJars in Compile += file(createString("lethe", 4) + "/../../lib/de/tu-dresden/inf/lat/lethe-owlapi4_2.12/0.8-SNAPSHOT/lethe-owlapi4_2.12-0.8-SNAPSHOT.jar")
   )
   .dependsOn(evee_elimination_proofs_core_owlapi4)
 
@@ -96,8 +98,8 @@ lazy val evee_elimination_proofs_lethe_owlapi5 = Project(
   .settings(
     name := createString("lethe", 5),
     scalaSource in Compile := file(file(createScalaSRCDirString("lethe", 4)).getAbsolutePath),
-    unmanagedJars in Compile += file(createString("lethe", 5) + "/../../lib/de/tu-dresden/inf/lat/evee/lethe-core_2.12/0.8-SNAPSHOT/lethe-core_2.12-0.8-SNAPSHOT.jar"),
-    unmanagedJars in Compile += file(createString("lethe", 5) + "/../../lib/de/tu-dresden/inf/lat/evee/lethe-owlapi5_2.12/0.8-SNAPSHOT/lethe-owlapi5_2.12-0.8-SNAPSHOT.jar"),
+    unmanagedJars in Compile += file(createString("lethe", 5) + "/../../lib/de/tu-dresden/inf/lat/lethe-core_2.12/0.8-SNAPSHOT/lethe-core_2.12-0.8-SNAPSHOT.jar"),
+    unmanagedJars in Compile += file(createString("lethe", 5) + "/../../lib/de/tu-dresden/inf/lat/lethe-owlapi5_2.12/0.8-SNAPSHOT/lethe-owlapi5_2.12-0.8-SNAPSHOT.jar"),
     libraryDependencies ++= Seq(
       "net.sourceforge.owlapi" % "owlapi-distribution" % "5.1.7",
     ))

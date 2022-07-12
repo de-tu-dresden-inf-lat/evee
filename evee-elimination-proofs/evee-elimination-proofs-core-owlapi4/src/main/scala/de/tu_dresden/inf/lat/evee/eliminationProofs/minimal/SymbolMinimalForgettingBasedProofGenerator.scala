@@ -18,7 +18,7 @@ class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
                                                  filter: DLFilter,
                                                  justifier: Justifier,
                                                  skipSteps: Boolean = true,
-                                                 varyJustifications: Boolean = false)
+                                                 var varyJustifications: Boolean = false)
 //                                           proofMeasure: ProofMeasure,
 //                                           approximateProofMeasure: ApproximateProofMeasure)
   extends ForgettingBasedProofGenerator(new RobustForgetter(forgetter), filter, justifier, skipSteps) {
@@ -36,6 +36,9 @@ class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
   var maxProgress = 0L
 
   var searchTreeProgressTracker: SearchTreeProgressTracker = _// = new SearchTreeProgressTracker(progressTrackers,1,0)
+
+  def setVaryJustifications(varyJustifications: Boolean) =
+    this.varyJustifications=varyJustifications
 
   override def computeOntologySteps(): Unit = {
 

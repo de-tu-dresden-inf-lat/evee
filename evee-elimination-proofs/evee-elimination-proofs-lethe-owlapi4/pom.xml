@@ -12,7 +12,6 @@
 
     <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
 
-
     <repositories>
         <repository>
             <id>EveeLocalMavenRepository</id>
