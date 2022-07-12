@@ -124,7 +124,8 @@
                             sun.misc.*;resolution:=optional,
                             org.protege.editor.core.ui.preferences.*;version="4.3",
                             org.protege.editor.owl.ui.preferences.*;version="4.3",
-                            org.protege.editor.core.prefs.*;version="4.3",
+<!--                            org.protege.editor.core.prefs.*;version="4.3",-->
+                            org.protege.editor.core.*;version="4.3",
                             *
                         </Import-Package>
                         <Export-Package>

@@ -1,5 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
+import jdk.nashorn.internal.scripts.JD;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.prefs.Preferences;
 import org.protege.editor.core.prefs.PreferencesManager;
 import org.protege.editor.owl.OWLEditorKit;
@@ -13,7 +15,7 @@ import java.awt.event.ItemListener;
 
 public class EveeDynamicProofUIWindow implements ItemListener {
 
-    private JFrame frame;
+    private JDialog loadingDialog;
     private JPanel panel;
     private JLabel label;
     private JButton button;
@@ -37,14 +39,15 @@ public class EveeDynamicProofUIWindow implements ItemListener {
         this.PREFERENCE_ID = preferenceId;
         this.PREFERENCE_KEY = preferenceKey;
         SwingUtilities.invokeLater(() -> {
-            this.frame = new JFrame(uiTitle);
+            this.loadingDialog = new JDialog(ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
+            this.loadingDialog.setTitle(uiTitle);
             this.panel = new JPanel(new GridLayout(3, 1, 5, 5));
             this.label = new JLabel("", SwingConstants.CENTER);
             this.progressBar = new JProgressBar(0, 100);
             this.progressBar.setIndeterminate(true);
             this.label.setVerticalTextPosition(JLabel.CENTER);
             this.label.setHorizontalTextPosition(JLabel.CENTER);
-            this.frame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+            this.loadingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
             this.button = new JButton("Cancel");
             this.button.addActionListener(e -> {
                 this.cancelGeneration();
@@ -52,13 +55,14 @@ public class EveeDynamicProofUIWindow implements ItemListener {
             this.panel.add(this.label, BorderLayout.CENTER);
             this.panel.add(this.progressBar);
             this.panel.add(this.button);
-            this.frame.getContentPane().add(this.panel);
-            this.frame.pack();
-            this.frame.setVisible(false);
-            this.frame.setSize(600, 150);
-            this.frame.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this.editorKit.getOWLWorkspace()));
-            this.frame.setAlwaysOnTop(true);
-            this.frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            this.loadingDialog.getContentPane().add(this.panel);
+            this.loadingDialog.pack();
+            this.loadingDialog.setVisible(false);
+            this.loadingDialog.setSize(600, 150);
+            this.loadingDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
+            this.loadingDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            this.loadingDialog.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                     logger.debug("Evee Proof Service UI window closed");
@@ -73,9 +77,11 @@ public class EveeDynamicProofUIWindow implements ItemListener {
         this.disposeCancelDialog();
         SwingUtilities.invokeLater(() -> {
             JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-            JDialog errorDialog = errorPane.createDialog(errorPane, "Error");
-            errorDialog.setAlwaysOnTop(true);
-            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this.editorKit.getOWLWorkspace()));
+            JDialog errorDialog = errorPane.createDialog(
+                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()), "Error");
+            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
             errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             errorDialog.setVisible(true);
         });
@@ -107,7 +113,7 @@ public class EveeDynamicProofUIWindow implements ItemListener {
     public void showWindow(){
         SwingUtilities.invokeLater(() -> {
             this.showLoadingScreen = true;
-            this.frame.setVisible(true);
+            this.loadingDialog.setVisible(true);
         });
     }
 
@@ -125,11 +131,11 @@ public class EveeDynamicProofUIWindow implements ItemListener {
         this.disposeCancelDialog();
         SwingUtilities.invokeLater( () -> {
             if (this.showLoadingScreen){
-            this.showLoadingScreen = false;
-            if (! this.progressBar.isIndeterminate()){
-                this.progressBar.setValue(this.progressBar.getMaximum());
-            }
-            this.frame.dispose();
+                this.showLoadingScreen = false;
+                if (! this.progressBar.isIndeterminate()){
+                    this.progressBar.setValue(this.progressBar.getMaximum());
+                }
+                this.loadingDialog.dispose();
             }
         });
     }
@@ -141,9 +147,9 @@ public class EveeDynamicProofUIWindow implements ItemListener {
         }
         SwingUtilities.invokeLater(() -> {
             this.showCancelScreen = true;
-            this.cancelDialog = new JDialog(SwingUtilities.getWindowAncestor(this.editorKit.getOWLWorkspace()));
+            this.cancelDialog = new JDialog(ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
             this.cancelDialog.setUndecorated(true);
-            this.cancelDialog.setModal(true);
+            this.cancelDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             JPanel cancelPanel = new JPanel(new GridLayout(2, 1, 5, 5));
             JLabel cancelLabel = new JLabel("Cancelling proof generation, please wait.", SwingConstants.CENTER);
             cancelLabel.setVerticalTextPosition(JLabel.CENTER);
@@ -155,8 +161,8 @@ public class EveeDynamicProofUIWindow implements ItemListener {
             this.cancelDialog.getContentPane().add(cancelPanel);
             this.cancelDialog.pack();
             this.cancelDialog.setSize(600, 100);
-            this.cancelDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this.editorKit.getOWLWorkspace()));
-            this.cancelDialog.setAlwaysOnTop(true);
+            this.cancelDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
             this.cancelDialog.setVisible(true);
         });
         this.proofAdapter.cancelProofGeneration();
@@ -178,8 +184,9 @@ public class EveeDynamicProofUIWindow implements ItemListener {
             return;
         }
         SwingUtilities.invokeLater(() -> {
-            JFrame subOptimalProofMessageFrame = new JFrame("Proof generation cancelled");
-            subOptimalProofMessageFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            JDialog subOptimalProofMessageDialog = new JDialog(ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
+            subOptimalProofMessageDialog.setTitle("Proof generation cancelled");
+            subOptimalProofMessageDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             JPanel subOptimalProofMessagePanel = new JPanel(new GridLayout(3, 1, 5, 5));
             JLabel subOptimalProofMessageLabel = new JLabel(
                     "Due to cancellation of the proof generation, you might be seeing a sub-optimal proof",
@@ -189,16 +196,17 @@ public class EveeDynamicProofUIWindow implements ItemListener {
             JCheckBox subOptimalProofMessageCheckBox = new JCheckBox("Don't show this message again", false);
             subOptimalProofMessageCheckBox.addItemListener(this);
             JButton subOptimalProofMessageButton = new JButton("OK");
-            subOptimalProofMessageButton.addActionListener(e -> subOptimalProofMessageFrame.dispose());
+            subOptimalProofMessageButton.addActionListener(e -> subOptimalProofMessageDialog.dispose());
             subOptimalProofMessageCheckBox.setHorizontalAlignment(JCheckBox.CENTER);
             subOptimalProofMessagePanel.add(subOptimalProofMessageLabel);
             subOptimalProofMessagePanel.add(subOptimalProofMessageCheckBox);
             subOptimalProofMessagePanel.add(subOptimalProofMessageButton);
-            subOptimalProofMessageFrame.getContentPane().add(subOptimalProofMessagePanel);
-            subOptimalProofMessageFrame.pack();
-            subOptimalProofMessageFrame.setSize(600, 150);
-            subOptimalProofMessageFrame.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this.editorKit.getOWLWorkspace()));
-            subOptimalProofMessageFrame.setVisible(true);
+            subOptimalProofMessageDialog.getContentPane().add(subOptimalProofMessagePanel);
+            subOptimalProofMessageDialog.pack();
+            subOptimalProofMessageDialog.setSize(600, 150);
+            subOptimalProofMessageDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
+            subOptimalProofMessageDialog.setVisible(true);
         });
     }
 
