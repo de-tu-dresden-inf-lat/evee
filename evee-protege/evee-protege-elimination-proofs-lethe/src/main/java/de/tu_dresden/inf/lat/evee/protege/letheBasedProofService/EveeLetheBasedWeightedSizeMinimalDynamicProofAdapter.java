@@ -10,8 +10,13 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.measures.OWLAxiomSizeWeightedTree
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.collection.JavaConverters;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
 
@@ -31,7 +36,7 @@ public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends Abstra
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
         this.innerProofGenerator = new MinimalForgettingBasedProofGenerator(
             new RecursiveProofEvaluator<>(new OWLAxiomSizeWeightedTreeSizeMeasure()),
-            new ApproximateProofMeasureAxiomSizeSum(null),
+            new ApproximateProofMeasureAxiomSizeSum(JavaConverters.asScalaSet(new HashSet<OWLEntity>()).toSet()),
             LetheBasedForgetter.ALC_ABox(timeOut),
                 ALCHTBoxFilter$.MODULE$,
             OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),

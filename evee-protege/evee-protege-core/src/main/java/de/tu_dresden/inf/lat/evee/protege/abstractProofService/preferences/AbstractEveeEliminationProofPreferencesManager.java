@@ -1,6 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences;
 
 import org.protege.editor.core.prefs.Preferences;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public abstract class AbstractEveeEliminationProofPreferencesManager extends AbstractEveeSuboptimalProofPreferencesManager {
@@ -18,6 +20,8 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
     protected final String VARY_JUSTIFICATIONS = "veryJustifications";
     protected final String VARY_JUSTIFICATIONS_LABEL = "Vary justifications";
     protected final String VARY_JUSTIFICATIONS_TOOL_TIP = "Vary justifications";
+
+    private final Logger logger = LoggerFactory.getLogger(AbstractEveeEliminationProofPreferencesManager.class);
 
     public AbstractEveeEliminationProofPreferencesManager(String setId, String preferenceId, String identifier) {
         super(setId, preferenceId, identifier);
@@ -38,6 +42,7 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
     public void saveUseProtegeReasoner(boolean newValue) {
         Preferences preferences = this.getProtegePreferences();
         preferences.putBoolean(PROTEGE_REASONER, newValue);
+        this.logger.debug("Preference useProtegeReasoner saved: " + newValue);
     }
 
     public String getUseProtegeReasonerUILabel(){
@@ -56,6 +61,7 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
     public void saveSkipSteps(boolean newValue){
         Preferences preferences = this.getProtegePreferences();
         preferences.putBoolean(SKIP_STEPS, newValue);
+        this.logger.debug("Preference skipSteps saved: " + newValue);
     }
 
     public String getSkipStepsUILabel(){
@@ -71,9 +77,10 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
         return preferences.getBoolean(VARY_JUSTIFICATIONS, this.varyJustificationsDefaultPreference.getBooleanDefaultValue());
     }
 
-    public void saveVaryJustifiactions(boolean newValue) {
+    public void saveVaryJustifications(boolean newValue) {
         Preferences preferences = this.getProtegePreferences();
         preferences.putBoolean(VARY_JUSTIFICATIONS, newValue);
+        this.logger.debug("Preference varyJustifications saved: " + newValue);
     }
 
     public String getVaryJustificationsUILabel(){

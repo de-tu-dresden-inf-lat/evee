@@ -6,13 +6,16 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ApproximateProofMeasureInferenceNumber;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.MinimalForgettingBasedProofGenerator;
-import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ProofEvaluatorInferenceNumber;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ProofEvaluatorInferenceNumber$;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.collection.JavaConverters;
+
+import java.util.HashSet;
 
 public class EveeLetheBasedSizeMinimalDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
 
@@ -32,7 +35,7 @@ public class EveeLetheBasedSizeMinimalDynamicProofAdapter extends AbstractEveeSu
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
         this.innerProofGenerator = new MinimalForgettingBasedProofGenerator(
                 ProofEvaluatorInferenceNumber$.MODULE$,
-                new ApproximateProofMeasureInferenceNumber(null),
+                new ApproximateProofMeasureInferenceNumber(JavaConverters.asScalaSet(new HashSet<OWLEntity>()).toSet()),
                 LetheBasedForgetter.ALC_ABox(timeOut),
                 ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),

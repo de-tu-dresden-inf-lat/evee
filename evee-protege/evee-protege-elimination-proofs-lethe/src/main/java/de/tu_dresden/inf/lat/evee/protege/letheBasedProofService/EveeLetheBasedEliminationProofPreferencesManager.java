@@ -3,6 +3,8 @@ package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeDoubleProofPreference;
 import org.protege.editor.core.prefs.Preferences;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEveeEliminationProofPreferencesManager {
 
@@ -18,6 +20,8 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
     protected final String TIME_OUT_LABEL = "Forgetting timeout:";
     protected final String TIME_OUT_TOOL_TIP = "Sets the timeout for each elimination step (in seconds)";
     private EveeDoubleProofPreference timeOutDefaultPreference;
+
+    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedEliminationProofPreferencesManager.class);
 
     public EveeLetheBasedEliminationProofPreferencesManager(String identifier) {
         super(SET_ID, PREFERENCE_ID, identifier);
@@ -58,6 +62,7 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
     protected void saveTimeOut(double newValue){
         Preferences preferences = this.getProtegePreferences();
         preferences.putDouble(TIME_OUT, newValue);
+        this.logger.debug("Preference timeOut saved: " + newValue);
     }
 
     protected String getTimeOutUILabel(){

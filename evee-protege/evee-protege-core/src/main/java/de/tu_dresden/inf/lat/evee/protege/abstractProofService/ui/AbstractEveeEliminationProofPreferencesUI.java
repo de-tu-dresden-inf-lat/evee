@@ -58,7 +58,7 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
         SwingUtilities.invokeLater(() -> {
             this.eliminationProofPreferencesManager.saveUseProtegeReasoner(this.protegeReasonerCheckBox.isSelected());
             this.eliminationProofPreferencesManager.saveSkipSteps(this.skipStepsCheckBox.isSelected());
-            this.eliminationProofPreferencesManager.saveVaryJustifiactions(this.varyJustificationsCheckBox.isSelected());
+            this.eliminationProofPreferencesManager.saveVaryJustifications(this.varyJustificationsCheckBox.isSelected());
         });
     }
 

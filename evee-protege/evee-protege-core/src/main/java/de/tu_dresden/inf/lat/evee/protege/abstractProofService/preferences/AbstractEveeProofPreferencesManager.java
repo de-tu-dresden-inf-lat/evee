@@ -78,6 +78,7 @@ public abstract class AbstractEveeProofPreferencesManager {
         Preferences preferences = this.getProtegePreferences();
         assert this.proofServiceNameSet.contains(key);
         preferences.putBoolean(key, value);
+        this.logger.debug("Preference isActive saved: " + value + " for: " + key);
     }
 
 }

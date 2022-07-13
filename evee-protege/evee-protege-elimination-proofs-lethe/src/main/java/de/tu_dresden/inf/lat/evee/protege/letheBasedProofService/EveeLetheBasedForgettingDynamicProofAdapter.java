@@ -8,8 +8,12 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSubop
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.collection.JavaConverters;
+
+import java.util.HashSet;
 
 public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
 
@@ -31,7 +35,7 @@ public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSub
                 LetheBasedForgetter.ALC_ABox(timeOut),
                 ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
-                skipSteps, null);
+                skipSteps, JavaConverters.asScalaSet(new HashSet<>()));
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
         this.logger.debug("Long parameter timeOut set to " + timeOut);
         super.setProofGenerator(this.innerProofGenerator);
