@@ -22,9 +22,9 @@ import java.util.*;
 public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>> {
 
     private IProof<OWLAxiom> iProof;
-    private final IProofGenerator<OWLAxiom, OWLOntology> iProofGen;
+    private IProofGenerator<OWLAxiom, OWLOntology> iProofGen = null;
     private OWLAxiom entailment;
-    private OWLOntology ontology;
+    protected OWLOntology ontology;
     private OWLReasoner reasoner;
     private boolean generationComplete = false;
     private boolean generationSuccess = false;
@@ -36,11 +36,14 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
     private final AbstractEveeProofPreferencesManager proofPreferencesManager;
     private final EveeDynamicProofLoadingUI uiWindow;
 
-    public AbstractEveeDynamicProofAdapter(IProofGenerator<OWLAxiom, OWLOntology> iProofGen, AbstractEveeProofPreferencesManager proofPreferencesManager, EveeDynamicProofLoadingUI uiWindow){
-        this.iProofGen = new CachingProofGenerator<>(iProofGen);
+    public AbstractEveeDynamicProofAdapter(AbstractEveeProofPreferencesManager proofPreferencesManager, EveeDynamicProofLoadingUI uiWindow){
         this.proofPreferencesManager = proofPreferencesManager;
         this.uiWindow = uiWindow;
         this.uiWindow.setProofAdapter(this);
+    }
+
+    protected void setProofGenerator(IProofGenerator<OWLAxiom, OWLOntology> iProofGen){
+        this.iProofGen = new CachingProofGenerator<>(iProofGen);
     }
 
     public void setOntology(OWLOntology ontology){
@@ -172,15 +175,14 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
     }
 
     public void start(OWLAxiom entailment, OWLEditorKit editorKit){
+        assert (this.iProofGen != null);
+        this.setProofGeneratorParameters();
         this.generationComplete = false;
         this.generationSuccess = false;
         for (ChangeListener listener : this.inferenceChangeListener){
             listener.inferencesChanged();
         }
-        if(this.ontologyChanged){
-            this.iProofGen.setOntology(this.ontology);
-            this.ontologyChanged=false;
-        }
+        this.checkOntology();
         this.entailment = entailment;
         IProgressTracker progressTracker = new EveeProofPluginProgressTracker(this.uiWindow);
         this.iProofGen.addProgressTracker(progressTracker);
@@ -189,6 +191,15 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         EveeProofGenerationThread proofGenThread = new EveeProofGenerationThread(this.entailment, this.ontology, this.reasoner, this.iProofGen, this);
         proofGenThread.start();
         this.uiWindow.showWindow();
+    }
+
+    abstract protected void setProofGeneratorParameters();
+
+    protected void checkOntology(){
+        if(this.ontologyChanged){
+            this.iProofGen.setOntology(this.ontology);
+            this.ontologyChanged=false;
+        }
     }
 
 //    currently not in use as iProofGen.supportsProof is too expensive for Protege

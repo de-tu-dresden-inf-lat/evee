@@ -11,7 +11,6 @@ public class EveeLetheBasedSymbolMinimalProofService extends AbstractEveeProofSe
 
     public EveeLetheBasedSymbolMinimalProofService(){
         super(new EveeLetheBasedSymbolMinimalDynamicProofAdapter(
-                new LetheBasedSymbolMinimalProofGenerator(),
                 new EveeLetheBasedEliminationProofPreferencesManager(identifier),
                 new EveeDynamicSuboptimalProofLoadingUI(identifier)));
     }

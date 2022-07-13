@@ -12,8 +12,8 @@ public abstract class AbstractEveeSuboptimalDynamicProofAdapter extends Abstract
 
     private final EveeDynamicSuboptimalProofLoadingUI suboptimalLoadingUI;
 
-    public AbstractEveeSuboptimalDynamicProofAdapter(IProofGenerator<OWLAxiom, OWLOntology> iProofGen, AbstractEveeSuboptimalProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
-        super(iProofGen, proofPreferencesManager, uiWindow);
+    public AbstractEveeSuboptimalDynamicProofAdapter(AbstractEveeSuboptimalProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
+        super(proofPreferencesManager, uiWindow);
         this.suboptimalLoadingUI = uiWindow;
         this.suboptimalLoadingUI.setPreferencesManager(proofPreferencesManager);
     }

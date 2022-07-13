@@ -13,7 +13,12 @@ public class EveeLetheBasedDynamicProofAdapter extends AbstractEveeDynamicProofA
     public EveeLetheBasedDynamicProofAdapter(IProofGenerator<OWLAxiom, OWLOntology> iProofGen,
                                              EveeLetheBasedExtractorProofPreferencesManager proofPreferencesManager,
                                              EveeDynamicProofLoadingUI uiWindow) {
-        super(iProofGen, proofPreferencesManager, uiWindow);
+        super(proofPreferencesManager, uiWindow);
+        this.setProofGenerator(iProofGen);
     }
 
+    @Override
+    protected void setProofGeneratorParameters() {
+//        no operation needed
+    }
 }

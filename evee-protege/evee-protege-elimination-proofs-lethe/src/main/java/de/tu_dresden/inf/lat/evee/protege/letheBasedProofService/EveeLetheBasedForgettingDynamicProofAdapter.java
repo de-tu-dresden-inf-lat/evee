@@ -1,33 +1,45 @@
 package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 
+import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter$;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.ForgettingBasedProofGenerator;
+import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter;
+import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
-import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owlapi.model.OWLAxiom;
+import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
 
-    private final AbstractEveeEliminationProofPreferencesManager proofPreferencesManager;
-    private final ForgettingBasedProofGenerator innerProofGenerator;
+    private final EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager;
+    private ForgettingBasedProofGenerator innerProofGenerator;
 
     private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedForgettingDynamicProofAdapter.class);
 
-    public EveeLetheBasedForgettingDynamicProofAdapter(ForgettingBasedProofGenerator iProofGen, AbstractEveeEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
-        super(iProofGen, proofPreferencesManager, uiWindow);
+    public EveeLetheBasedForgettingDynamicProofAdapter(EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
+        super(proofPreferencesManager, uiWindow);
         this.proofPreferencesManager = proofPreferencesManager;
-        this.innerProofGenerator = iProofGen;
     }
 
     @Override
-    public void start(OWLAxiom entailment, OWLEditorKit editorKit){
+    protected void setProofGeneratorParameters() {
         boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
-        this.innerProofGenerator.setSkipSteps(skipSteps);
+        long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
+        this.innerProofGenerator = new ForgettingBasedProofGenerator(
+                LetheBasedForgetter.ALC_ABox(timeOut),
+                ALCHTBoxFilter$.MODULE$,
+                OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
+                skipSteps, null);
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
-        super.start(entailment, editorKit);
+        this.logger.debug("Long parameter timeOut set to " + timeOut);
+        super.setProofGenerator(this.innerProofGenerator);
+    }
+
+    @Override
+    protected void checkOntology(){
+        this.innerProofGenerator.setOntology(this.ontology);
     }
 
 }

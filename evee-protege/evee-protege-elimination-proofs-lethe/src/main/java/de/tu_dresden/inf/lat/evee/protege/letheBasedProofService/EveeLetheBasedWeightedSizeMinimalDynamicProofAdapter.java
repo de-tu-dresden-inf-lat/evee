@@ -1,42 +1,43 @@
 package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 
-import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter;
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter$;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
-import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.SymbolMinimalForgettingBasedProofGenerator;
+import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ApproximateProofMeasureAxiomSizeSum;
+import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.MinimalForgettingBasedProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.tools.RecursiveProofEvaluator;
+import de.tu_dresden.inf.lat.evee.proofs.tools.measures.OWLAxiomSizeWeightedTreeSizeMeasure;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
+public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
 
     private final EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager;
-    private SymbolMinimalForgettingBasedProofGenerator innerProofGenerator;
+    private MinimalForgettingBasedProofGenerator innerProofGenerator;
 
-    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedSymbolMinimalDynamicProofAdapter.class);
+    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter.class);
 
-    public EveeLetheBasedSymbolMinimalDynamicProofAdapter(EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
+    public EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter(EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
         super(proofPreferencesManager, uiWindow);
         this.proofPreferencesManager = proofPreferencesManager;
     }
 
     @Override
-    protected void setProofGeneratorParameters(){
+    protected void setProofGeneratorParameters() {
         boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
-        boolean varyJustifications = this.proofPreferencesManager.loadVaryJustifications();
-        this.innerProofGenerator = new SymbolMinimalForgettingBasedProofGenerator(
-                LetheBasedForgetter.ALC_ABox(timeOut),
+        this.innerProofGenerator = new MinimalForgettingBasedProofGenerator(
+            new RecursiveProofEvaluator<>(new OWLAxiomSizeWeightedTreeSizeMeasure()),
+            new ApproximateProofMeasureAxiomSizeSum(null),
+            LetheBasedForgetter.ALC_ABox(timeOut),
                 ALCHTBoxFilter$.MODULE$,
-                OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
-                skipSteps,
-                varyJustifications);
+            OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
+            skipSteps);
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
         this.logger.debug("Long parameter timeOut set to " + timeOut);
-        this.logger.debug("Boolean parameter varyJustifications set to " + varyJustifications);
         super.setProofGenerator(this.innerProofGenerator);
     }
 
