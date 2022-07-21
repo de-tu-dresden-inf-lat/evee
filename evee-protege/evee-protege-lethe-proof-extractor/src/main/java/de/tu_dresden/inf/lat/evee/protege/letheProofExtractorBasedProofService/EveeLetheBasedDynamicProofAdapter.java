@@ -17,8 +17,4 @@ public class EveeLetheBasedDynamicProofAdapter extends AbstractEveeDynamicProofA
         this.setProofGenerator(iProofGen);
     }
 
-    @Override
-    protected void setProofGeneratorParameters() {
-//        no operation needed
-    }
 }

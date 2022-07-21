@@ -17,7 +17,6 @@ public class EveeKnownSignaturePreferencesManager {
 
     public EveeKnownSignaturePreferencesManager(String knownOntology){
         this.knownOntology = knownOntology.replace("//", "/*/*");
-//        this.knownOntology = knownOntology.substring(knownOntology.indexOf("//") +2, knownOntology.length() -1 );
     }
 
     public List<String> loadKnownSignature(){

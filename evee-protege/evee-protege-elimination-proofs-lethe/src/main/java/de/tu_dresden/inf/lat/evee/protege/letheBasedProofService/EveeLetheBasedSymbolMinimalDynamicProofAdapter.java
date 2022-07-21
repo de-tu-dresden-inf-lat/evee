@@ -7,6 +7,7 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifie
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.SymbolMinimalForgettingBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
+import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEvee
     }
 
     @Override
-    protected void setProofGeneratorParameters(){
+    protected void setProofGeneratorParameters(OWLEditorKit editorKit){
         boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
         boolean varyJustifications = this.proofPreferencesManager.loadVaryJustifications();
@@ -34,15 +35,10 @@ public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEvee
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps,
                 varyJustifications);
+        super.setProofGenerator(this.innerProofGenerator);
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
         this.logger.debug("Long parameter timeOut set to " + timeOut);
         this.logger.debug("Boolean parameter varyJustifications set to " + varyJustifications);
-        super.setProofGenerator(this.innerProofGenerator);
-    }
-
-    @Override
-    protected void checkOntology(){
-        this.innerProofGenerator.setOntology(this.ontology);
     }
 
 }

@@ -4,6 +4,7 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.SymbolMinimalForgett
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
+import org.protege.editor.owl.OWLEditorKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public class EveeFameBasedSymbolMinimalDynamicProofAdapter extends AbstractEveeS
     }
 
     @Override
-    protected void setProofGeneratorParameters() {
+    protected void setProofGeneratorParameters(OWLEditorKit editorKit) {
         boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
         this.innerProofGenerator.setSkipSteps(skipSteps);
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);

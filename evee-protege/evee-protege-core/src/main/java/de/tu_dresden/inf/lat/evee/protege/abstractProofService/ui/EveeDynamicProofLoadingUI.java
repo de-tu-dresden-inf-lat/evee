@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
 
 public class EveeDynamicProofLoadingUI {
 
@@ -148,7 +149,15 @@ public class EveeDynamicProofLoadingUI {
         SwingUtilities.invokeLater(() -> {
             this.showCancelScreen = true;
             this.cancelDialog = new JDialog(ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
-            this.cancelDialog.setUndecorated(true);
+//            this.cancelDialog.setUndecorated(true);
+            this.cancelDialog.setResizable(false);
+            this.cancelDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            this.cancelDialog.addWindowListener(new java.awt.event.WindowAdapter(){
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowClosingEvent){
+                    Toolkit.getDefaultToolkit().beep();
+                }
+            });
             this.cancelDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             JPanel cancelPanel = new JPanel(new GridLayout(2, 1, 5, 5));
             JLabel cancelLabel = new JLabel("Cancelling proof generation, please wait.", SwingConstants.CENTER);

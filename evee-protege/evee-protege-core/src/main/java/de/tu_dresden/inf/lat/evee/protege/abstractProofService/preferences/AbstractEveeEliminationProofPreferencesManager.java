@@ -17,7 +17,7 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
     protected final String SKIP_STEPS = "skipSteps";
     protected final String SKIP_STEPS_LABEL = "Allow merging of elimination steps";
     protected final String SKIP_STEPS_TOOL_TIP = "Allow elimination of multiple entities at once";
-    protected final String VARY_JUSTIFICATIONS = "veryJustifications";
+    protected final String VARY_JUSTIFICATIONS = "varyJustifications";
     protected final String VARY_JUSTIFICATIONS_LABEL = "Vary justifications";
     protected final String VARY_JUSTIFICATIONS_TOOL_TIP = "Vary justifications";
 

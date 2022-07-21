@@ -41,8 +41,8 @@ public class AbstractEveeSuboptimalProofPreferencesUI extends AbstractEveeProofP
 
     @Override
     public void applyChanges(){
-        super.applyChanges();
         SwingUtilities.invokeLater(() ->
                 this.suboptimalProofPreferencesManager.saveShowSuboptimalProofWarning(this.suboptimalMsgCheckBox.isSelected()));
+        super.applyChanges();
     }
 }

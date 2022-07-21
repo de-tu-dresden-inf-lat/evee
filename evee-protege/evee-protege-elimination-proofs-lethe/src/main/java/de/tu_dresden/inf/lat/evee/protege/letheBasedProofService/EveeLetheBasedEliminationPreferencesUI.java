@@ -59,10 +59,10 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
 
     @Override
     public void applyChanges(){
-        super.applyChanges();
         SwingUtilities.invokeLater(() -> {
             this.letheEliminationPreferencesManager.saveTimeOut((double) this.timeOutSpinner.getValue());
         });
+        super.applyChanges();
     }
 
 }

@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofService;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
 import org.protege.editor.core.ui.preferences.PreferencesLayoutPanel;
 import org.protege.editor.owl.ui.preferences.OWLPreferencesPanel;
@@ -32,6 +33,17 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
     @Override
     public void applyChanges() {
         this.saveActiveProofServices();
+//        not the desired effect:
+        this.getOWLModelManager().getExplanationManager().reload();
+        this.getOWLModelManager().getExplanationManager().getExplainers().forEach(explainer -> {
+            try {
+                explainer.initialise();
+                this.logger.debug("Explanation service initialized: {}\npluginID: {}", explainer.getClass(), explainer.getPluginId());
+            } catch (Exception e) {
+                this.logger.error("Error while initializing explainer {} after applying preference changes:\n" + e,
+                        explainer.getClass());
+            }
+        });
     }
 
     @Override

@@ -7,6 +7,7 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifie
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter;
+import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSub
     }
 
     @Override
-    protected void setProofGeneratorParameters() {
+    protected void setProofGeneratorParameters(OWLEditorKit editorKit) {
         boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
         this.innerProofGenerator = new ForgettingBasedProofGenerator(
@@ -36,14 +37,9 @@ public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSub
                 ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps, JavaConverters.asScalaSet(new HashSet<>()));
+        super.setProofGenerator(this.innerProofGenerator);
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
         this.logger.debug("Long parameter timeOut set to " + timeOut);
-        super.setProofGenerator(this.innerProofGenerator);
-    }
-
-    @Override
-    protected void checkOntology(){
-        this.innerProofGenerator.setOntology(this.ontology);
     }
 
 }

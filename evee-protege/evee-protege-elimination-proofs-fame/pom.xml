@@ -78,6 +78,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
+                            org.protege.editor.owl.*;version="4.3",
                             sun.misc.*;resolution:=optional,
                             org.apache.batik.transcoder.*;resolution:=optional,
                             org.apache.tools.ant.*;resolution:=optional,

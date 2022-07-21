@@ -15,8 +15,4 @@ public class EveeElkBasedDynamicProofAdapter extends AbstractEveeDynamicProofAda
         this.setProofGenerator(iProofGen);
     }
 
-    @Override
-    protected void setProofGeneratorParameters() {
-//        no operation needed
-    }
 }
