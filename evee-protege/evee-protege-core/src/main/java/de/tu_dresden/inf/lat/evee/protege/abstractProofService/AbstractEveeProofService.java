@@ -3,13 +3,11 @@ package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 import org.liveontologies.protege.explanation.proof.service.ProofService;
 import org.liveontologies.puli.DynamicProof;
 import org.liveontologies.puli.Inference;
-import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +49,9 @@ public abstract class AbstractEveeProofService extends ProofService implements O
 
     @Override
     public void initialise() {
-        getEditorKit().getOWLModelManager().removeListener(this);
         getEditorKit().getOWLModelManager().addListener(this);
         this.changeOntology();
         this.changeReasoner();
-        this.proofAdapter.setProofGeneratorParameters(getEditorKit());
         this.logger.debug("ProofService initialized");
     }
 

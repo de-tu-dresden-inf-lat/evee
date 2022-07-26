@@ -19,11 +19,13 @@ public abstract class AbstractEveeProofPreferencesManager {
     protected final SortedSet<String> proofServiceNameSet = new TreeSet<>();
     protected final SortedMap<String, EveeActivationProofPreference> activationDefaultPreferences = new TreeMap<>();
     protected final Logger logger = LoggerFactory.getLogger(AbstractEveeProofPreferencesManager.class);
+    protected static long lastSaved;
 
     public AbstractEveeProofPreferencesManager(String setId, String preferenceId, String proofServiceName){
         this.setId = setId;
         this.preferenceId = preferenceId;
         this.proofServiceName = proofServiceName;
+        lastSaved = System.currentTimeMillis();
         this.createIdentifierSet();
         for (String name : this.proofServiceNameSet){
             EveeActivationProofPreference eveePreference = new EveeActivationProofPreference(
@@ -79,6 +81,14 @@ public abstract class AbstractEveeProofPreferencesManager {
         assert this.proofServiceNameSet.contains(key);
         preferences.putBoolean(key, value);
         this.logger.debug("Preference isActive saved: " + value + " for: " + key);
+    }
+
+    public boolean proofPreferencesChanged(long lastUsed){
+        return lastUsed < lastSaved;
+    }
+
+    public void updateLastSaved(){
+        lastSaved = System.currentTimeMillis();
     }
 
 }

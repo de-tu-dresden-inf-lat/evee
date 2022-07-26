@@ -132,11 +132,9 @@
                         <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
                             org.protege.editor.owl.*;version="4.3",
-                            sun.misc.*;resolution:=optional,
-                            org.protege.editor.core.ui.preferences.*;version="4.3",
-                            org.protege.editor.owl.ui.preferences.*;version="4.3",
-                            org.checkerframework.checker.nullness.qual.*;resolution:=optional,
                             org.protege.editor.core.*;version="4.3",
+                            sun.misc.*;resolution:=optional,
+                            org.checkerframework.checker.nullness.qual.*;resolution:=optional,
 <!--                            org.apache.batik.transcoder.*;resolution:=optional,-->
 <!--                            org.apache.tools.ant.*;resolution:=optional,-->
 <!--                            org.graalvm.polyglot.*;resolution:=optional,-->
@@ -167,7 +165,7 @@
 <!--                            org.apache.commons.exec.*,-->
                         </Private-Package>
 <!--                        problem with embedding dependencies: adds import-package instruction for android.dalvik which cannot be resolved by protege
-                            solution? try embedding only those dependencies currently mentioned in import/export/private-package-->
+                            solution: try embedding only those dependencies currently mentioned in import/export/private-package-->
 <!--                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>-->
 <!--                        <Embed-Transitive>true</Embed-Transitive>-->
                     </instructions>

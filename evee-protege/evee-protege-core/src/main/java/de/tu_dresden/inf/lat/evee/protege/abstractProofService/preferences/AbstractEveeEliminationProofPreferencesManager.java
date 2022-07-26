@@ -7,19 +7,22 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractEveeEliminationProofPreferencesManager extends AbstractEveeSuboptimalProofPreferencesManager {
 
-    protected final EveeBooleanProofPreference useProtegeReasonerDefaultPreference;
-    protected final EveeBooleanProofPreference skipStepsDefaultPreference;
-    protected final EveeBooleanProofPreference varyJustificationsDefaultPreference;
-    protected final String PROTEGE_REASONER = "useProtegeReasoner";
-    protected final String PROTEGE_REASONER_LABEL = "Use Protégé reasoner";
-//    todo: test "Protégé" on other operating systems than windows
-    protected final String PROTEGE_REASONER_TOOL_TIP = "Use the reasoner currently used by Protégé instead of own Hermit instance";
-    protected final String SKIP_STEPS = "skipSteps";
-    protected final String SKIP_STEPS_LABEL = "Allow merging of elimination steps";
-    protected final String SKIP_STEPS_TOOL_TIP = "Allow elimination of multiple entities at once";
-    protected final String VARY_JUSTIFICATIONS = "varyJustifications";
-    protected final String VARY_JUSTIFICATIONS_LABEL = "Vary justifications";
-    protected final String VARY_JUSTIFICATIONS_TOOL_TIP = "Vary justifications";
+    private final EveeBooleanProofPreference useProtegeReasonerDefaultPreference;
+    private boolean useProtegeReasoenerLastUsedValue;
+    private final EveeBooleanProofPreference skipStepsDefaultPreference;
+    private boolean skipStepsLastUsedValue;
+    private final EveeBooleanProofPreference varyJustificationsDefaultPreference;
+    private boolean varyJustificationsLastUsedValue;
+    private final String PROTEGE_REASONER = "useProtegeReasoner";
+    //    todo: test "Protégé" on other operating systems than Windows
+    private final String PROTEGE_REASONER_LABEL = "Use Protégé reasoner";
+    private final String PROTEGE_REASONER_TOOL_TIP = "Use the reasoner currently used by Protégé instead of own Hermit instance";
+    private final String SKIP_STEPS = "skipSteps";
+    private final String SKIP_STEPS_LABEL = "Allow merging of elimination steps";
+    private final String SKIP_STEPS_TOOL_TIP = "Allow elimination of multiple entities at once";
+    private final String VARY_JUSTIFICATIONS = "varyJustifications";
+    private final String VARY_JUSTIFICATIONS_LABEL = "Vary justifications";
+    private final String VARY_JUSTIFICATIONS_TOOL_TIP = "Vary justifications";
 
     private final Logger logger = LoggerFactory.getLogger(AbstractEveeEliminationProofPreferencesManager.class);
 
@@ -27,16 +30,23 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
         super(setId, preferenceId, identifier);
         this.useProtegeReasonerDefaultPreference = new EveeBooleanProofPreference(
                 false, this.PROTEGE_REASONER_LABEL, this.PROTEGE_REASONER_TOOL_TIP);
+        this.useProtegeReasoenerLastUsedValue = false;
         this.skipStepsDefaultPreference = new EveeBooleanProofPreference(
                 true, this.SKIP_STEPS_LABEL, this.SKIP_STEPS_TOOL_TIP);
+        this.skipStepsLastUsedValue = true;
         this.varyJustificationsDefaultPreference = new EveeBooleanProofPreference(
                 false, VARY_JUSTIFICATIONS_LABEL, VARY_JUSTIFICATIONS_TOOL_TIP);
+        this.varyJustificationsLastUsedValue = false;
     }
 
     public boolean loadUseProtegeReasoner() {
         Preferences preferences = this.getProtegePreferences();
-        return preferences.getBoolean(PROTEGE_REASONER,
+        boolean currentValue = preferences.getBoolean(PROTEGE_REASONER,
                 this.useProtegeReasonerDefaultPreference.getBooleanDefaultValue());
+        if (this.useProtegeReasoenerLastUsedValue != currentValue){
+            this.useProtegeReasoenerLastUsedValue = currentValue;
+        }
+        return this.useProtegeReasoenerLastUsedValue;
     }
 
     public void saveUseProtegeReasoner(boolean newValue) {
@@ -55,7 +65,12 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
 
     public boolean loadSkipSteps() {
         Preferences preferences = this.getProtegePreferences();
-        return preferences.getBoolean(SKIP_STEPS, this.skipStepsDefaultPreference.getBooleanDefaultValue());
+        boolean currentValue = preferences.getBoolean(SKIP_STEPS,
+                this.skipStepsDefaultPreference.getBooleanDefaultValue());
+        if (this.skipStepsLastUsedValue != currentValue){
+            this.skipStepsLastUsedValue = currentValue;
+        }
+        return this.skipStepsLastUsedValue;
     }
 
     public void saveSkipSteps(boolean newValue){
@@ -74,7 +89,12 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
 
     public boolean loadVaryJustifications() {
         Preferences preferences = this.getProtegePreferences();
-        return preferences.getBoolean(VARY_JUSTIFICATIONS, this.varyJustificationsDefaultPreference.getBooleanDefaultValue());
+        boolean currentValue = preferences.getBoolean(VARY_JUSTIFICATIONS,
+                this.varyJustificationsDefaultPreference.getBooleanDefaultValue());
+        if (this.varyJustificationsLastUsedValue != currentValue){
+            this.varyJustificationsLastUsedValue = currentValue;
+        }
+        return varyJustificationsLastUsedValue;
     }
 
     public void saveVaryJustifications(boolean newValue) {
@@ -90,8 +110,5 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
     public String getVaryJustificationsUIToolTip(){
         return this.varyJustificationsDefaultPreference.getUiToolTip();
     }
-
-    @Override
-    abstract protected void createIdentifierSet();
 
 }

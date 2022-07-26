@@ -12,7 +12,7 @@
     <extension id="eveeProofsSignature"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Manage signature"/>
-        <class value="de.tu_dresden.inf.lat.evee.protege.abstractProofService.signature.KnownSignatureSelectionUI"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.KnownSignatureSelectionUI"/>
         <toolTip value="Select known ontology signature"/>
         <path value="${bundleName}.eveeProofsTopMenu/SlotA-A"/>
         <editorKitId value="OWLEditorKit"/>

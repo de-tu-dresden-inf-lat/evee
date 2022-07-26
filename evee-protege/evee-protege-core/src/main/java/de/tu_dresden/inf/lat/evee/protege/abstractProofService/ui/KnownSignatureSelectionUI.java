@@ -1,15 +1,9 @@
-package de.tu_dresden.inf.lat.evee.protege.abstractProofService.signature;
+package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeDynamicProofAdapter;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofService;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeKnownSignaturePreferencesManager;
 import org.apache.commons.io.FilenameUtils;
-import org.liveontologies.protege.explanation.proof.ProofBasedExplanationService;
-import org.liveontologies.protege.explanation.proof.ProofServiceManager;
-import org.liveontologies.protege.explanation.proof.service.ProofPluginLoader;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
-import org.protege.editor.owl.ui.explanation.ExplanationService;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
@@ -37,7 +31,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     private final Insets insets = new Insets(5, 5, 5, 5);
     private JDialog dialog;
     private JPanel holderPanel;
-    private EveeKnownSignaturePreferencesManager preferencesManager;
+    private final EveeKnownSignaturePreferencesManager signaturePreferencesManager;
     private OWLEntityListModel ontologyListModel;
     private JList<OWLEntity> ontologyList;
     private OWLEntityListModel knownSignatureListModel;
@@ -45,7 +39,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     private final Logger logger = LoggerFactory.getLogger(KnownSignatureSelectionUI.class);
 
     public KnownSignatureSelectionUI(){
-
+        this.signaturePreferencesManager = new EveeKnownSignaturePreferencesManager();
     }
 
     @Override
@@ -80,12 +74,10 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
 
     @Override
     public void initialise() throws Exception {
-
     }
 
     @Override
     public void dispose() throws Exception {
-
     }
 
     private void createUI(){
@@ -125,21 +117,16 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     }
 
     private void createListModels(){
-        this.preferencesManager = new EveeKnownSignaturePreferencesManager(
-                this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().get().toString()); // getOntologyIRI().isPresent() was checked beforehand
         Set<OWLEntity> ontologyEntitySet = new HashSet<>(
                 this.getOWLModelManager().getActiveOntology().getClassesInSignature(Imports.INCLUDED));
         ontologyEntitySet.addAll(
                 this.getOWLModelManager().getActiveOntology().getIndividualsInSignature(Imports.INCLUDED));
         ontologyEntitySet.addAll(
                 this.getOWLModelManager().getActiveOntology().getObjectPropertiesInSignature(Imports.INCLUDED));
-        List<String> knownEntityIRIList = this.preferencesManager.loadKnownSignature();
-        Set<OWLEntity> knownEntitySet = new HashSet<>();
-        for (String iri : knownEntityIRIList){
-            this.getOWLModelManager().getActiveOntology().getSignature(Imports.INCLUDED).stream().filter(
-                    owlEntity -> owlEntity.getIRI().equals(IRI.create(iri))).forEach(
-                    knownEntitySet::add);
-        }
+        OWLOntology activeOntology = this.getOWLModelManager().getActiveOntology();
+//        getOntologyIRI().isPresent was checked at UI-creation
+        Set<OWLEntity> knownEntitySet = this.signaturePreferencesManager.loadKnownSignature(
+                activeOntology, activeOntology.getOntologyID().getOntologyIRI().get().toString());
         ontologyEntitySet.removeAll(knownEntitySet);
         ontologyEntitySet.removeIf(OWLEntity::isBuiltIn);
         SwingUtilities.invokeLater(() -> {
@@ -383,36 +370,11 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         SwingUtilities.invokeLater(() -> {
             List<String> iriList = new ArrayList<>();
             this.knownSignatureListModel.getOwlEntityList().forEach(entity -> iriList.add(entity.getIRI().toString()));
-            this.preferencesManager.saveKnownSignature(iriList);
+//            getOntologyIRI().isPresent() was checked at UI-creation
+            this.signaturePreferencesManager.saveKnownSignature(
+                    this.getOWLEditorKit().getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().get().toString(),
+                    iriList);
             this.dialog.dispose();
-            this.logger.debug("this should be good...");
-//            ProofPluginLoader pluginLoader = new ProofPluginLoader(this.getOWLEditorKit());
-//            pluginLoader.getPlugins().stream().filter(plugin -> plugin.getId().startsWith("evee")).forEach(
-//                    eveePlugin -> ((AbstractEveeProofService) eveePlugin).getInstance());
-//            error when loading bundle and using "org.liveontologies.protege.explanation.proof.*," in private-package-instruction (import not working as required class not exported by plugin "protege-proof-explanation")
-//            see protege-error-log 1
-//            this.getOWLModelManager().getExplanationManager().getExplainers().stream().filter(
-//                    explanationService -> ProofBasedExplanationService.class.isAssignableFrom(
-//                            explanationService.getClass())).forEach(proofBasedExplanationService -> {
-//                try {
-//                    proofBasedExplanationService.initialise();
-//                    this.logger.debug("ProofBasedExplanationService initialised: {}", proofBasedExplanationService.getClass());
-//                } catch (Exception e) {
-//                    this.logger.error("Error when initialising ProofBasedExplanationService: {}", proofBasedExplanationService.getClass());
-//                }
-//            });
-//            not the desired effect:
-            this.getOWLModelManager().getExplanationManager().reload();
-            this.getOWLModelManager().getExplanationManager().getExplainers().forEach(
-                    explainer -> {
-                        try {
-                            explainer.initialise();
-                            this.logger.debug("Explanation service initialized: {}\npluginID: {}", explainer.getClass(), explainer.getPluginId());
-                        } catch (Exception e) {
-                            this.logger.error("Error while initializing ExplanationService {} after changing Known Signature:\n" + e,
-                                    explainer.getClass());
-                        }
-                    });
         });
     }
 

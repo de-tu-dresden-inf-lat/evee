@@ -15,11 +15,12 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
     protected static final String SYMBOL_MINIMAL = "Elimination Proof, optimized for eliminated names (LETHE)";
     protected static final String WEIGHTED_SIZE_MINIMAL = "Elimination Proof, optimized for weighted size (LETHE)";
     public final String TIME_OUT = "timeOut";
-    protected final double TIME_OUT_DEFAULT_VALUE = 2d;
     protected final String TIME_OUT_UNIT = "Seconds";
     protected final String TIME_OUT_LABEL = "Forgetting timeout:";
     protected final String TIME_OUT_TOOL_TIP = "Sets the timeout for each elimination step (in seconds)";
+    private final double TIME_OUT_DEFAULT_VALUE = 2d;
     private EveeDoubleProofPreference timeOutDefaultPreference;
+    private double timeOutLastUsedValue;
 
     private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedEliminationProofPreferencesManager.class);
 
@@ -38,6 +39,7 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
     private void initializeTimeOutDefaultPreference(){
         this.timeOutDefaultPreference = new EveeDoubleProofPreference(
                 this.TIME_OUT_DEFAULT_VALUE, this.TIME_OUT_LABEL, this.TIME_OUT_TOOL_TIP);
+        this.timeOutLastUsedValue = TIME_OUT_DEFAULT_VALUE;
     }
 
     @Override
@@ -56,7 +58,11 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
 
     protected double loadTimeOut(){
         Preferences preferences = this.getProtegePreferences();
-        return preferences.getDouble(TIME_OUT, this.timeOutDefaultPreference.getDefaultDoubleValue());
+        double currentValue = preferences.getDouble(TIME_OUT, this.timeOutDefaultPreference.getDefaultDoubleValue());
+        if (this.timeOutLastUsedValue != currentValue){
+            this.timeOutLastUsedValue = currentValue;
+        }
+        return timeOutLastUsedValue;
     }
 
     protected void saveTimeOut(double newValue){
