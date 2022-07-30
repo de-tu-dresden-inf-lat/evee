@@ -19,8 +19,10 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
     protected final String TIME_OUT_LABEL = "Forgetting timeout:";
     protected final String TIME_OUT_TOOL_TIP = "Sets the timeout for each elimination step (in seconds)";
     private final double TIME_OUT_DEFAULT_VALUE = 2d;
+    private static long timeOutTimeStamp;
     private EveeDoubleProofPreference timeOutDefaultPreference;
     private double timeOutLastUsedValue;
+    private static boolean initialised = false;
 
     private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedEliminationProofPreferencesManager.class);
 
@@ -40,6 +42,10 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
         this.timeOutDefaultPreference = new EveeDoubleProofPreference(
                 this.TIME_OUT_DEFAULT_VALUE, this.TIME_OUT_LABEL, this.TIME_OUT_TOOL_TIP);
         this.timeOutLastUsedValue = TIME_OUT_DEFAULT_VALUE;
+        if (! initialised){
+            timeOutTimeStamp = System.currentTimeMillis();
+            initialised = true;
+        }
     }
 
     @Override
@@ -56,19 +62,33 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
         this.activationDefaultPreferences.get(WEIGHTED_SIZE_MINIMAL).setBooleanDefaultValue(false);
     }
 
-    protected double loadTimeOut(){
-        Preferences preferences = this.getProtegePreferences();
-        double currentValue = preferences.getDouble(TIME_OUT, this.timeOutDefaultPreference.getDefaultDoubleValue());
-        if (this.timeOutLastUsedValue != currentValue){
-            this.timeOutLastUsedValue = currentValue;
-        }
+    public double loadTimeOut(){
+        this.timeOutLastUsedValue = this.internalLoadTimeOut();
         return timeOutLastUsedValue;
+    }
+
+    public boolean timeOutChanged(long otherTimeStamp){
+        if (timeOutTimeStamp != otherTimeStamp){
+            return ! (this.timeOutLastUsedValue == this.internalLoadTimeOut());
+        }
+        return false;
+    }
+
+    private double internalLoadTimeOut(){
+        Preferences preferences = this.getProtegePreferences();
+        return preferences.getDouble(TIME_OUT,
+                this.timeOutDefaultPreference.getDefaultDoubleValue());
+    }
+
+    public long getTimeOutTimeStamp(){
+        return timeOutTimeStamp;
     }
 
     protected void saveTimeOut(double newValue){
         Preferences preferences = this.getProtegePreferences();
         preferences.putDouble(TIME_OUT, newValue);
         this.logger.debug("Preference timeOut saved: " + newValue);
+        timeOutTimeStamp = System.currentTimeMillis();
     }
 
     protected String getTimeOutUILabel(){

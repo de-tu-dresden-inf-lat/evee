@@ -33,7 +33,6 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
     @Override
     public void applyChanges() {
         this.saveActiveProofServices();
-        this.abstractProofPreferencesManager.updateLastSaved();
     }
 
     @Override

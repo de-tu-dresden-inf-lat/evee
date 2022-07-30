@@ -2,7 +2,6 @@ package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeSuboptimalProofPreferencesManager;
 import org.protege.editor.core.ProtegeManager;
-import org.protege.editor.owl.OWLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;

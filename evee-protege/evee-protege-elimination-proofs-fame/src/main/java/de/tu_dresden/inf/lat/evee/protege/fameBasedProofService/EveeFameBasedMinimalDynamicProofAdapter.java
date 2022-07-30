@@ -12,26 +12,35 @@ public class EveeFameBasedMinimalDynamicProofAdapter extends AbstractEveeSubopti
 
     private final AbstractEveeEliminationProofPreferencesManager proofPreferencesManager;
     private final MinimalForgettingBasedProofGenerator innerProofGenerator;
+    private long skipStepsTimeStamp;
 
     private final Logger logger = LoggerFactory.getLogger(EveeFameBasedMinimalDynamicProofAdapter.class);
 
     public EveeFameBasedMinimalDynamicProofAdapter(MinimalForgettingBasedProofGenerator proofGen, AbstractEveeEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
         super(proofPreferencesManager, uiWindow);
-        super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(proofGen));
         this.proofPreferencesManager = proofPreferencesManager;
         this.innerProofGenerator = proofGen;
+        super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
+                this.innerProofGenerator));
+        this.logger.debug("Dynamic proof adapter created.");
     }
 
     @Override
     protected void setProofGeneratorParameters() {
-        if (this.proofPreferencesManager.proofPreferencesChanged(this.preferencesUsedLast)){
-            boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
-            this.innerProofGenerator.setSkipSteps(skipSteps);
-            super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(this.innerProofGenerator));
-            this.cachingProofGen.setOntology(this.ontology);
-            logger.debug("Boolean parameter skipSteps set to " + skipSteps);
+        this.logger.debug("Checking parameters for proof generator.");
+        if (this.proofPreferencesManager.skipStepsChanged(this.skipStepsTimeStamp)){
+            this.setSkipSteps();
+            super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
+                    this.innerProofGenerator));
         }
         super.setProofGeneratorParameters();
+    }
+
+    private void setSkipSteps(){
+        boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
+        this.innerProofGenerator.setSkipSteps(skipSteps);
+        this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
+        this.skipStepsTimeStamp = this.proofPreferencesManager.getSkipStepsTimeStamp();
     }
 
 }

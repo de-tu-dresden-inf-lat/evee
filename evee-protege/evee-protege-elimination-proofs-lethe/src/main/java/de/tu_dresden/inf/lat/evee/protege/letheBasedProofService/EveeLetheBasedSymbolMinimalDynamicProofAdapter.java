@@ -14,33 +14,78 @@ import org.slf4j.LoggerFactory;
 public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
 
     private final EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager;
+    private SymbolMinimalForgettingBasedProofGenerator innerProofGenerator;
+    private long skipStepsTimeStamp;
+    private long varyJustificationsTimeStamp;
+    private long timeOutTimeStamp;
 
     private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedSymbolMinimalDynamicProofAdapter.class);
 
     public EveeLetheBasedSymbolMinimalDynamicProofAdapter(EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
         super(proofPreferencesManager, uiWindow);
         this.proofPreferencesManager = proofPreferencesManager;
+        this.createInnerProofGenerator();
+        super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
+                innerProofGenerator));
+        this.logger.debug("Dynamic proof adapter created.");
+    }
+
+    private void createInnerProofGenerator(){
+        this.logger.debug("Creating new inner proof generator.");
+        boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
+        boolean varyJustifications = this.proofPreferencesManager.loadVaryJustifications();
+        long timeOut = (long) ((1000) * this.proofPreferencesManager.loadTimeOut());
+        this.innerProofGenerator = new SymbolMinimalForgettingBasedProofGenerator(
+                LetheBasedForgetter.ALC_ABox(timeOut),
+                ALCHTBoxFilter$.MODULE$,
+                OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
+                skipSteps,
+                varyJustifications);
+        this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
+        this.logger.debug("Boolean parameter varyJustifications set to " + varyJustifications);
+        this.logger.debug("Long parameter timeOut set to " + timeOut);
+        this.skipStepsTimeStamp = this.proofPreferencesManager.getSkipStepsTimeStamp();
+        this.varyJustificationsTimeStamp = this.proofPreferencesManager.getVaryJustificationsTimeStamp();
+        this.timeOutTimeStamp = this.proofPreferencesManager.getTimeOutTimeStamp();
     }
 
     @Override
     protected void setProofGeneratorParameters(){
-        if (this.proofPreferencesManager.proofPreferencesChanged(this.preferencesUsedLast)){
-            boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
-            long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
-            boolean varyJustifications = this.proofPreferencesManager.loadVaryJustifications();
-            SymbolMinimalForgettingBasedProofGenerator innerProofGenerator = new SymbolMinimalForgettingBasedProofGenerator(
-                    LetheBasedForgetter.ALC_ABox(timeOut),
-                    ALCHTBoxFilter$.MODULE$,
-                    OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
-                    skipSteps,
-                    varyJustifications);
-            super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(innerProofGenerator));
-            this.cachingProofGen.setOntology(this.ontology);
-            this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
-            this.logger.debug("Long parameter timeOut set to " + timeOut);
-            this.logger.debug("Boolean parameter varyJustifications set to " + varyJustifications);
+        this.logger.debug("Checking parameters for proof generator.");
+        boolean parameterChanged = false;
+        if (this.proofPreferencesManager.timeOutChanged(this.timeOutTimeStamp)){
+            this.createInnerProofGenerator();
+            parameterChanged = true;
+        }
+        else{
+            if (this.proofPreferencesManager.skipStepsChanged(this.skipStepsTimeStamp)){
+                this.setSkipSteps();
+                parameterChanged = true;
+            }
+            if (this.proofPreferencesManager.varyJustificationsChanged(this.varyJustificationsTimeStamp)){
+                this.setVaryJustifications();
+                parameterChanged = true;
+            }
+        }
+        if (parameterChanged){
+            super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
+                    innerProofGenerator));
         }
         super.setProofGeneratorParameters();
+    }
+
+    private void setSkipSteps(){
+        boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
+        this.innerProofGenerator.setSkipSteps(skipSteps);
+        this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
+        this.skipStepsTimeStamp = this.proofPreferencesManager.getSkipStepsTimeStamp();
+    }
+
+    private void setVaryJustifications(){
+        boolean varyJustifications = this.proofPreferencesManager.loadVaryJustifications();
+        this.innerProofGenerator.setVaryJustifications(varyJustifications);
+        this.logger.debug("Boolean parameter varyJustifications set to " + varyJustifications);
+        this.varyJustificationsTimeStamp = this.proofPreferencesManager.getVaryJustificationsTimeStamp();
     }
 
 }

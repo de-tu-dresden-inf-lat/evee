@@ -28,6 +28,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     private static final String SAVE = "save";
     private static final String CANCEL = "cancel";
     private static final String APPLY = "apply";
+    private static final String ERROR_MSG = "Error: Anonymous ontology detected.\nChanges to the signature are only allowed if the ontology has an IRI.";
     private final Insets insets = new Insets(5, 5, 5, 5);
     private JDialog dialog;
     private JPanel holderPanel;
@@ -82,8 +83,9 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
 
     private void createUI(){
         if (! this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().isPresent()){
+//            todo: check spelling of Protégé on operating systems other than Windows
             SwingUtilities.invokeLater(() -> {
-                JOptionPane errorPane = new JOptionPane("Error: Anonymous ontology detected.", JOptionPane.ERROR_MESSAGE);
+                JOptionPane errorPane = new JOptionPane(ERROR_MSG, JOptionPane.ERROR_MESSAGE);
                 JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()), "Error");
                 errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
                 errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
@@ -128,7 +130,9 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         Set<OWLEntity> knownEntitySet = this.signaturePreferencesManager.loadKnownSignature(
                 activeOntology, activeOntology.getOntologyID().getOntologyIRI().get().toString());
         ontologyEntitySet.removeAll(knownEntitySet);
-        ontologyEntitySet.removeIf(OWLEntity::isBuiltIn);
+        OWLDataFactory dataFactory = this.getOWLModelManager().getActiveOntology().getOWLOntologyManager().getOWLDataFactory();
+        ontologyEntitySet.add(dataFactory.getOWLThing());
+        ontologyEntitySet.add(dataFactory.getOWLNothing());
         SwingUtilities.invokeLater(() -> {
             this.ontologyListModel = new OWLEntityListModel(ontologyEntitySet);
             this.knownSignatureListModel = new OWLEntityListModel(knownEntitySet);
