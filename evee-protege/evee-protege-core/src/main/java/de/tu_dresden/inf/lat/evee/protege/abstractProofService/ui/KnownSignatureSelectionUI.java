@@ -28,11 +28,9 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     private static final String SAVE = "save";
     private static final String CANCEL = "cancel";
     private static final String APPLY = "apply";
-//            todo: check spelling of Protégé on operating systems other than Windows
-    private static final String ANONYMOUS_ONTOLOGY_ERROR_MSG = "Error: Anonymous ontology detected.\nChanges to the signature are only allowed if the ontology has an IRI.";
+    private static final String ANONYMOUS_ONTOLOGY_ERROR_MSG = "<html><center>Error: Anonymous ontology detected.</center><center>Changes to the signature are only allowed if the ontology has an IRI.</center>";
 //    todo: improve wording
-    private final String firstLabelText = "<html>Any OWL Entity in the right list will <b>not</b> be shown in any Evee proof.<br />";
-    private final String secondLabelText = "This will also be considered when optimizing the Evee proofs (e.g. in the case of minimal size optimization).";
+    private final String topLabelText = "<html><center>Any proof step that contains only those OWL Entities in the right list will <b>not</b> be explained in any Evee proof.</center><center>This will also be considered when optimizing the Evee proofs.</center>";
     private final Insets insets = new Insets(5, 5, 5, 5);
     private JDialog dialog;
     private JPanel holderPanel;
@@ -41,6 +39,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     private JList<OWLEntity> ontologyList;
     private OWLEntityListModel knownSignatureListModel;
     private JList<OWLEntity> knownSignatureList;
+    private OWLOntology activeOntology;
     private final Logger logger = LoggerFactory.getLogger(KnownSignatureSelectionUI.class);
 
     public KnownSignatureSelectionUI(){
@@ -78,19 +77,22 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     }
 
     @Override
-    public void initialise() throws Exception {
+    public void initialise(){
     }
 
     @Override
-    public void dispose() throws Exception {
+    public void dispose(){
     }
 
     private void createUI(){
-        if (! this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().isPresent()){
+        if (this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().isPresent()){
+            this.activeOntology = this.getOWLModelManager().getActiveOntology();
+        }
+        else{
             this.showError(ANONYMOUS_ONTOLOGY_ERROR_MSG);
             return;
         }
-        String ontoName = this.getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().get().toString();
+        String ontoName = this.activeOntology.getOntologyID().getOntologyIRI().get().toString();
         SwingUtilities.invokeLater(() -> {
             this.dialog = new JDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()));
 //            this.dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
@@ -115,10 +117,9 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
 
     private void createListModels(){
         Set<OWLEntity> ontologyEntitySet = this.getAllEntities();
-        OWLOntology activeOntology = this.getOWLModelManager().getActiveOntology();
 //        getOntologyIRI().isPresent was checked at UI-creation
         Set<OWLEntity> knownEntitySet = this.signaturePreferencesManager.loadKnownSignature(
-                activeOntology, activeOntology.getOntologyID().getOntologyIRI().get().toString());
+                this.activeOntology, this.activeOntology.getOntologyID().getOntologyIRI().get().toString());
         ontologyEntitySet.removeAll(knownEntitySet);
         SwingUtilities.invokeLater(() -> {
             this.ontologyListModel = new OWLEntityListModel(ontologyEntitySet);
@@ -137,13 +138,8 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
             labelGBC.anchor = GridBagConstraints.CENTER;
             labelGBC.weightx = 0.1;
             labelGBC.weighty = 0.1;
-            JLabel firstLabel = this.createLabel(firstLabelText);
-            JLabel secondLabel = this.createLabel(secondLabelText);
-            JPanel labelPanel = new JPanel();
-            labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
-            labelPanel.add(firstLabel);
-            labelPanel.add(secondLabel);
-            this.holderPanel.add(labelPanel, labelGBC);
+            JLabel topCenterLabel = this.createLabel(topLabelText);
+            this.holderPanel.add(topCenterLabel, labelGBC);
             labelGBC.gridy = 1;
             labelGBC.gridwidth = 1;
             JLabel ontoSignatureLabel = this.createLabel("Ontology Signature");
@@ -310,7 +306,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         Set<OWLEntity> knownEntitySet = new HashSet<>();
         iriList.forEach(iri ->
                 knownEntitySet.addAll(
-                        this.getOWLModelManager().getActiveOntology().getEntitiesInSignature(
+                        this.activeOntology.getEntitiesInSignature(
                                 iri)));
         ontologyEntitySet.removeAll(knownEntitySet);
         this.setEntityListModels(ontologyEntitySet, knownEntitySet);
@@ -359,21 +355,20 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
             this.knownSignatureListModel.getOwlEntityList().forEach(entity -> iriList.add(entity.getIRI().toString()));
 //            getOntologyIRI().isPresent() was checked at UI-creation
             this.signaturePreferencesManager.saveKnownSignature(
-                    this.getOWLEditorKit().getOWLModelManager().getActiveOntology().getOntologyID().getOntologyIRI().get().toString(),
+                    this.activeOntology.getOntologyID().getOntologyIRI().get().toString(),
                     iriList);
             this.dialog.dispose();
         });
     }
 
     private Set<OWLEntity> getAllEntities(){
-        OWLOntology activeOntology = this.getOWLModelManager().getActiveOntology();
         Set<OWLEntity> ontologyEntitySet = new HashSet<>(
-                activeOntology.getClassesInSignature(Imports.INCLUDED));
+                this.activeOntology.getClassesInSignature(Imports.INCLUDED));
         ontologyEntitySet.addAll(
-                activeOntology.getIndividualsInSignature(Imports.INCLUDED));
+                this.activeOntology.getIndividualsInSignature(Imports.INCLUDED));
         ontologyEntitySet.addAll(
-                activeOntology.getObjectPropertiesInSignature(Imports.INCLUDED));
-        OWLDataFactory dataFactory = activeOntology.getOWLOntologyManager().getOWLDataFactory();
+                this.activeOntology.getObjectPropertiesInSignature(Imports.INCLUDED));
+        OWLDataFactory dataFactory = this.activeOntology.getOWLOntologyManager().getOWLDataFactory();
         ontologyEntitySet.add(dataFactory.getOWLThing());
         ontologyEntitySet.add(dataFactory.getOWLNothing());
         return ontologyEntitySet;
