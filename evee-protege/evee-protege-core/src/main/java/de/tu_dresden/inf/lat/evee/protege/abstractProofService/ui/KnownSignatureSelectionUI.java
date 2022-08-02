@@ -28,7 +28,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     private static final String SAVE = "save";
     private static final String CANCEL = "cancel";
     private static final String APPLY = "apply";
-    private static final String ANONYMOUS_ONTOLOGY_ERROR_MSG = "<html><center>Error: Anonymous ontology detected.</center><center>Changes to the signature are only allowed if the ontology has an IRI.</center>";
+    private static final String ANONYMOUS_ONTOLOGY_ERROR_MSG = "<html><center>Ontology has no IRI.</center><center>Changes to the signature are only allowed if the ontology has an IRI.</center>";
 //    todo: improve wording
     private final String topLabelText = "<html><center>Any proof step that contains only those OWL Entities in the right list will <b>not</b> be explained in any Evee proof.</center><center>This will also be considered when optimizing the Evee proofs.</center>";
     private final Insets insets = new Insets(5, 5, 5, 5);
