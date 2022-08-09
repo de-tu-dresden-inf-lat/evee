@@ -71,7 +71,7 @@ public class GenerateProof {
 		generator.setOntology(ontology);
 
 		if (!generator.supportsProof(axiom)) {
-			System.out.println("Proofs of " + SimpleOWLFormatter.format(axiom)+" are not supported by "+ generator.class.getName());
+			System.out.println("Proofs of " + SimpleOWLFormatter.format(axiom)+" are not supported by "+ generator.getClass().getName());
 			System.exit(3);
 		}
 
