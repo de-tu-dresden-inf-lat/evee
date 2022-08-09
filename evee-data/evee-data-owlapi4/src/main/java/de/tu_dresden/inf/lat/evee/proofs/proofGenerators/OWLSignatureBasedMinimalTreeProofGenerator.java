@@ -33,4 +33,6 @@ public class OWLSignatureBasedMinimalTreeProofGenerator
 	public boolean successful() {
 		return innerGenerator.successful();
 	}
+
+
 }
