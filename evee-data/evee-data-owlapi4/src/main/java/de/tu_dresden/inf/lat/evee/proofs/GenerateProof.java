@@ -26,6 +26,8 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.ISignatureBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofWriter;
 
+import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
+
 public class GenerateProof {
 	public static void main(String[] args) throws Exception {
 
@@ -70,7 +72,7 @@ public class GenerateProof {
 		generator.setOntology(ontology);
 
 		if (!generator.supportsProof(axiom)) {
-			System.out.println("Proofs of " + SimpleOWLFormatter.format(axiom)+" are not supported by "+ generator.class.getName());
+			System.out.println("Proofs of " + SimpleOWLFormatter.format(axiom)+" are not supported by "+ generator.getClass().getName());
 			System.exit(3);
 		}
 
