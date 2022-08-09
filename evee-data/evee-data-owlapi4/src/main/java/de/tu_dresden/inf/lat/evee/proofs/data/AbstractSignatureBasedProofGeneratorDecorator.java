@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.proofs.data;
 
 import java.util.Collection;
 
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.ISignatureBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.ISimpleProofGenerator;
@@ -34,6 +35,16 @@ public abstract class AbstractSignatureBasedProofGeneratorDecorator<SYMBOL, SENT
 	@Override
 	public boolean supportsProof(SENTENCE axiom) {
 		return innerGenerator.supportsProof(axiom);
+	}
+
+	@Override
+	public void addProgressTracker(IProgressTracker tracker) {
+		innerGenerator.addProgressTracker(tracker);
+	}
+
+	@Override
+	public void cancel() {
+		innerGenerator.cancel();
 	}
 
 }

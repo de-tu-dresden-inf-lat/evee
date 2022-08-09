@@ -15,6 +15,8 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IRecursiveMeasure;
 
+// TODO ignore top&bottom,
+
 public class OWLSignatureBasedMinimalProofExtractor extends MinimalProofExtractor<OWLAxiom> {
 
 	public OWLSignatureBasedMinimalProofExtractor(IRecursiveMeasure<OWLAxiom> measure) {

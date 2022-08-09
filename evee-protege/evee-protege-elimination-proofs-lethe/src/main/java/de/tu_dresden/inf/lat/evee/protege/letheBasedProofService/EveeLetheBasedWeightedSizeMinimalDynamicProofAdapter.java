@@ -3,10 +3,11 @@ package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter$;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
-import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ApproximateProofMeasureInferenceNumber;
+import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ApproximateProofMeasureAxiomSizeSum;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.MinimalForgettingBasedProofGenerator;
-import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ProofEvaluatorInferenceNumber$;
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.OWLSignatureBasedMinimalTreeProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.tools.RecursiveProofEvaluator;
+import de.tu_dresden.inf.lat.evee.proofs.tools.measures.OWLAxiomSizeWeightedTreeSizeMeasure;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -17,16 +18,16 @@ import scala.collection.JavaConverters;
 
 import java.util.HashSet;
 
-public class EveeLetheBasedSizeMinimalDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
+public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
 
     private final EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager;
     private MinimalForgettingBasedProofGenerator innerProofGenerator;
     private long skipStepsTimeStamp;
     private long timeOutTimeStamp;
 
-    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedSizeMinimalDynamicProofAdapter.class);
+    private final Logger logger = LoggerFactory.getLogger(EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter.class);
 
-    public EveeLetheBasedSizeMinimalDynamicProofAdapter(EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
+    public EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter(EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
         super(proofPreferencesManager, uiWindow);
         this.proofPreferencesManager = proofPreferencesManager;
         this.createInnerProofGenerator();
@@ -40,8 +41,8 @@ public class EveeLetheBasedSizeMinimalDynamicProofAdapter extends AbstractEveeSu
         boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
         this.innerProofGenerator = new MinimalForgettingBasedProofGenerator(
-                ProofEvaluatorInferenceNumber$.MODULE$,
-                new ApproximateProofMeasureInferenceNumber(JavaConverters.asScalaSet(new HashSet<OWLEntity>()).toSet()),
+                new RecursiveProofEvaluator<>(new OWLAxiomSizeWeightedTreeSizeMeasure()),
+                new ApproximateProofMeasureAxiomSizeSum(JavaConverters.asScalaSet(new HashSet<OWLEntity>()).toSet()),
                 LetheBasedForgetter.ALC_ABox(timeOut),
                 ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),

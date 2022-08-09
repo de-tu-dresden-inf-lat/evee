@@ -6,14 +6,19 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicPro
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EveeElkBasedDynamicProofAdapter extends AbstractEveeDynamicProofAdapter {
+
+    private Logger logger = LoggerFactory.getLogger(EveeElkBasedDynamicProofAdapter.class);
 
     public EveeElkBasedDynamicProofAdapter(ISignatureBasedProofGenerator<OWLEntity, OWLAxiom, OWLOntology> proofGen,
                                            EveeElkBasedExtractorProofPreferencesManager proofPreferencesManager,
                                            EveeDynamicProofLoadingUI uiWindow) {
         super(proofPreferencesManager, uiWindow);
-        this.setProofGenerator(proofGen);
+        super.setProofGenerator(proofGen);
+        this.logger.debug("Dynamic proof adapter created.");
     }
 
 }
