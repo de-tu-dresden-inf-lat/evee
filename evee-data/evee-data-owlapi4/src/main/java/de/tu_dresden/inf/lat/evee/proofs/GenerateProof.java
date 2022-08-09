@@ -20,6 +20,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
 import de.tu_dresden.inf.lat.prettyPrinting.parsing.OWLParser;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
@@ -70,8 +71,8 @@ public class GenerateProof {
 		generator.setOntology(ontology);
 
 		if (!generator.supportsProof(axiom)) {
-			System.out.println("Axiom type is not supported!");
-			System.exit(333);
+			System.out.println("Proofs of " + SimpleOWLFormatter.format(axiom)+" are not supported by "+ generator.class.getName());
+			System.exit(3);
 		}
 
 		IProof<OWLAxiom> proof = generator.getProof(axiom);
