@@ -8,3 +8,4 @@ temp/
 .classpath
 .project
 .flattened-pom.xml
+*.DS_Store
