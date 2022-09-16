@@ -19,6 +19,7 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
     private static boolean initialised = false;
     private final String PROTEGE_REASONER = "useProtegeReasoner";
     //    todo: test "Protégé" on other operating systems than Windows
+    //    todo: maybe use "Prot\u00E9g\u00E9" instead (see class ProtegeProperties in package org.protege.editor.core)
     private final String PROTEGE_REASONER_LABEL = "Use Protégé reasoner";
     private final String PROTEGE_REASONER_TOOL_TIP = "Use the reasoner currently used by Protégé instead of own Hermit instance";
     private final String SKIP_STEPS = "skipSteps";

@@ -14,31 +14,33 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.io.*;
 import java.util.*;
 import java.util.List;
 
+// todo: rename to make distinguishable from ProofSignatureSelectionUI
 public class KnownSignatureSelectionUI extends ProtegeOWLAction implements ActionListener {
 
     private static final String INIT = "Manage signature";
-    private static final String RIGHT = "right";
-    private static final String LEFT = "left";
-    private static final String DELETE = "delete";
-    private static final String LOAD = "load";
-    private static final String SAVE = "save";
-    private static final String CANCEL = "cancel";
-    private static final String APPLY = "apply";
+    private static final String LOAD = "LOAD_SIGNATURE";
+    private static final String SAVE = "SAVE_SIGNATURE";
+    private static final String CANCEL = "CANCEL_SIGNATURE_SELECTION";
+    private static final String APPLY = "APPLY_SIGNATURE";
+    private static final String CLASSES_DELIMITER = "##### Classes: #####";
+    private static final String OBJECT_PROPERTIES_DELIMITER = "##### Object Properties: #####";
+    private static final String INDIVIDUAL_DELIMITER = "##### Individuals: #####";
     private static final String ANONYMOUS_ONTOLOGY_ERROR_MSG = "<html><center>Ontology has no IRI.</center><center>Changes to the signature are only allowed if the ontology has an IRI.</center>";
 //    todo: improve wording
     private final String topLabelText = "<html><center>Any proof step that contains only those OWL Entities in the right list will <b>not</b> be explained in any Evee proof.</center><center>This will also be considered when optimizing the Evee proofs.</center>";
     private final Insets insets = new Insets(5, 5, 5, 5);
     private JDialog dialog;
     private JPanel holderPanel;
+    private JButton loadButton;
+    private JButton saveButton;
+//    private JCheckBox useSignatureCheckBox;
     private final EveeKnownSignaturePreferencesManager signaturePreferencesManager;
-    private OWLEntityListModel ontologyListModel;
-    private JList<OWLEntity> ontologyList;
-    private OWLEntityListModel knownSignatureListModel;
-    private JList<OWLEntity> knownSignatureList;
+    private ProofSignatureSelectionUI signatureSelectionUI;
     private OWLOntology activeOntology;
     private final Logger logger = LoggerFactory.getLogger(KnownSignatureSelectionUI.class);
 
@@ -51,15 +53,6 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         switch (e.getActionCommand()) {
             case INIT :
                 this.createUI();
-                break;
-            case RIGHT :
-                this.moveRight();
-                break;
-            case LEFT :
-                this.moveLeft();
-                break;
-            case DELETE :
-                this.delete();
                 break;
             case LOAD :
                 this.load();
@@ -82,6 +75,7 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
 
     @Override
     public void dispose(){
+        this.signatureSelectionUI.dispose();
     }
 
     private void createUI(){
@@ -94,20 +88,39 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         }
         String ontoName = this.activeOntology.getOntologyID().getOntologyIRI().get().toString();
         SwingUtilities.invokeLater(() -> {
+            this.signatureSelectionUI = new ProofSignatureSelectionUI(this.getOWLEditorKit());
+            this.signatureSelectionUI.createSignatureSelectionComponents(this.getOWLEditorKit());
             this.dialog = new JDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()));
-//            this.dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            this.dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             this.dialog.setTitle("Manage signature for " + ontoName);
             this.holderPanel = new JPanel();
             this.dialog.getContentPane().add(holderPanel);
             this.holderPanel.setLayout(new GridBagLayout());
-        });
-        this.createListModels();
-        this.addTopLabels();
-        this.addScrollPanes();
-        this.addMiddleButtons();
-        this.addBottomButtons();
-        SwingUtilities.invokeLater(() -> {
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 1;
+            gbc.gridheight = 1;
+            gbc.insets = this.insets;
+            gbc.anchor = GridBagConstraints.CENTER;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 0.1;
+            gbc.weighty = 0.1;
+            JPanel topLabelPanel = this.createTopLabel();
+            this.holderPanel.add(topLabelPanel, gbc);
+            JPanel signaturePanels = this.createSignaturePanelComponent();
+            gbc.gridy = 1;
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.weightx = 0.5;
+            gbc.weighty = 0.5;
+            this.holderPanel.add(signaturePanels, gbc);
+            JPanel buttonPanel = this.createButtonPanel();
+            gbc.gridy = 2;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 0.1;
+            gbc.weighty = 0.1;
+            this.holderPanel.add(buttonPanel, gbc);
             this.dialog.pack();
             this.dialog.setLocationRelativeTo(
                     ProtegeManager.getInstance().getFrame(this.getWorkspace()));
@@ -115,135 +128,104 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         });
     }
 
-    private void createListModels(){
-        Set<OWLEntity> ontologyEntitySet = this.getAllEntities();
-//        getOntologyIRI().isPresent was checked at UI-creation
+    private JPanel createTopLabel(){
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.PAGE_AXIS));
+        JLabel topCenterLabel = new JLabel(topLabelText);
+        topCenterLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        topCenterLabel.setVerticalTextPosition(JLabel.CENTER);
+        topCenterLabel.setHorizontalTextPosition(JLabel.CENTER);
+        labelPanel.add(topCenterLabel, Box.CENTER_ALIGNMENT);
+        topCenterLabel.setHorizontalAlignment(JLabel.CENTER);
+        labelPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        return labelPanel;
+    }
+
+    private JPanel createSignaturePanelComponent(){
         Set<OWLEntity> knownEntitySet = this.signaturePreferencesManager.loadKnownSignature(
                 this.activeOntology, this.activeOntology.getOntologyID().getOntologyIRI().get().toString());
-        ontologyEntitySet.removeAll(knownEntitySet);
-        SwingUtilities.invokeLater(() -> {
-            this.ontologyListModel = new OWLEntityListModel(ontologyEntitySet);
-            this.knownSignatureListModel = new OWLEntityListModel(knownEntitySet);
-        });
+        if (knownEntitySet.size() == 0){
+            OWLEntity top = this.getOWLDataFactory().getOWLThing();
+            OWLEntity bot = this.getOWLDataFactory().getOWLNothing();
+            knownEntitySet.add(top);
+            knownEntitySet.add(bot);
+        }
+        this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
+        JPanel ontologySignaturePanel = this.signatureSelectionUI.getOntologySignatureTabbedPanel();
+        JPanel signatureSelectionHolderPanel = new JPanel();
+        signatureSelectionHolderPanel.setLayout(new BoxLayout(signatureSelectionHolderPanel, BoxLayout.LINE_AXIS));
+        signatureSelectionHolderPanel.add(ontologySignaturePanel);
+        signatureSelectionHolderPanel.add(Box.createRigidArea(new Dimension(15, 0)));
+        JPanel selectedSignaturePanel = this.signatureSelectionUI.getSelectedSignatureListPanel();
+        signatureSelectionHolderPanel.add(selectedSignaturePanel);
+        return signatureSelectionHolderPanel;
     }
 
-    private void addTopLabels(){
-        SwingUtilities.invokeLater(() -> {
-            GridBagConstraints labelGBC = new GridBagConstraints();
-            labelGBC.gridx = 0;
-            labelGBC.gridy = 0;
-            labelGBC.gridwidth = 3;
-            labelGBC.fill = GridBagConstraints.HORIZONTAL;
-            labelGBC.insets = this.insets;
-            labelGBC.anchor = GridBagConstraints.CENTER;
-            labelGBC.weightx = 0.1;
-            labelGBC.weighty = 0.1;
-            JLabel topCenterLabel = this.createLabel(topLabelText);
-            this.holderPanel.add(topCenterLabel, labelGBC);
-            labelGBC.gridy = 1;
-            labelGBC.gridwidth = 1;
-            JLabel ontoSignatureLabel = this.createLabel("Ontology Signature");
-            this.holderPanel.add(ontoSignatureLabel, labelGBC);
-            labelGBC.gridx = 2;
-            JLabel knownSignatureLabel = this.createLabel("Known Signature");
-            this.holderPanel.add(knownSignatureLabel, labelGBC);
-        });
-    }
+    private JPanel createButtonPanel(){
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
+//        first row:
+        JPanel checkBoxPanel = new JPanel();
+        checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.LINE_AXIS));
+        JLabel checkBoxLabel = new JLabel("Use Signature for proofs:");
+        checkBoxLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        checkBoxLabel.setVerticalTextPosition(JLabel.CENTER);
+        checkBoxLabel.setHorizontalTextPosition(JLabel.CENTER);
+        checkBoxLabel.setHorizontalAlignment(JLabel.CENTER);
+        checkBoxPanel.add(checkBoxLabel);
+        checkBoxPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        JCheckBox useSignatureCheckBox = new JCheckBox();
+        useSignatureCheckBox.setSelected(true);
+        useSignatureCheckBox.addItemListener(e -> enableButtons(e.getStateChange() == ItemEvent.SELECTED));
+        checkBoxPanel.add(useSignatureCheckBox);
+        buttonPanel.add(checkBoxPanel);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-    private JLabel createLabel(String labelText){
-        JLabel label = new JLabel(labelText, JLabel.CENTER);
-        label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        label.setVerticalTextPosition(JLabel.CENTER);
-        label.setHorizontalTextPosition(JLabel.CENTER);
-        return label;
-    }
+//        second row:
+        JPanel fileOperationButtonPanel = new JPanel();
+        fileOperationButtonPanel.setLayout(new BoxLayout(fileOperationButtonPanel, BoxLayout.LINE_AXIS));
+        this.loadButton = this.createButton(
+                LOAD, "Load from file",
+                "Load a signature from a file");
+        fileOperationButtonPanel.add(loadButton);
+        fileOperationButtonPanel.add(Box.createRigidArea(new Dimension(25, 0)));
+        this.saveButton = this.createButton(
+                SAVE, "Save to file",
+                "Save a signature to a file");
+        fileOperationButtonPanel.add(saveButton);
+        fileOperationButtonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        JPanel firstButtonRow = new JPanel();
+        buttonPanel.add(fileOperationButtonPanel);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-    private void addScrollPanes(){
-        SwingUtilities.invokeLater(() -> {
-            GridBagConstraints scrollPaneGBC = new GridBagConstraints();
-            scrollPaneGBC.gridx = 0;
-            scrollPaneGBC.gridy = 2;
-            scrollPaneGBC.fill = GridBagConstraints.BOTH;
-            scrollPaneGBC.insets = this.insets;
-            scrollPaneGBC.anchor = GridBagConstraints.CENTER;
-            scrollPaneGBC.weightx = 0.9;
-            scrollPaneGBC.weighty = 0.9;
-            this.ontologyList = new JList<>(this.ontologyListModel);
-            JScrollPane ontologySignatureScrollPane = this.createScrollPane(this.ontologyList);
-            this.holderPanel.add(ontologySignatureScrollPane, scrollPaneGBC);
-            this.knownSignatureList = new JList<>(this.knownSignatureListModel);
-            JScrollPane knownSignatureScrollPane = this.createScrollPane(this.knownSignatureList);
-            scrollPaneGBC.gridx = 2;
-            this.holderPanel.add(knownSignatureScrollPane, scrollPaneGBC);
-        });
-    }
+//        third row:
+        JPanel signatureSelectionButtonPanel = new JPanel();
+        signatureSelectionButtonPanel.setLayout(new BoxLayout(signatureSelectionButtonPanel, BoxLayout.LINE_AXIS));
+        signatureSelectionButtonPanel.add(this.signatureSelectionUI.getDeleteButton());
+        signatureSelectionButtonPanel.add(Box.createRigidArea(new Dimension(25, 0)));
+        signatureSelectionButtonPanel.add(this.signatureSelectionUI.getClearButton());
+        signatureSelectionButtonPanel.add(Box.createRigidArea(new Dimension(25, 0)));
+        signatureSelectionButtonPanel.add(this.signatureSelectionUI.getAddButton());
+        signatureSelectionButtonPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        buttonPanel.add(signatureSelectionButtonPanel);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-    private JScrollPane createScrollPane(JList<OWLEntity> entityList){
-            entityList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-            entityList.setLayoutOrientation(JList.VERTICAL);
-            JScrollPane scrollPane = new JScrollPane(entityList);
-            scrollPane.setPreferredSize(new Dimension(400, 600));
-            scrollPane.setAlignmentX(JScrollPane.LEFT_ALIGNMENT);
-            return scrollPane;
-    }
-
-    private void addMiddleButtons(){
-        SwingUtilities.invokeLater(() -> {
-            GridBagConstraints middleToolBarConstraints = new GridBagConstraints();
-            middleToolBarConstraints.gridx = 1;
-            middleToolBarConstraints.gridy = 2;
-            middleToolBarConstraints.insets = this.insets;
-            middleToolBarConstraints.anchor = GridBagConstraints.CENTER;
-            middleToolBarConstraints.weightx = 0.1;
-            middleToolBarConstraints.weighty = 0.1;
-            JToolBar middleToolBar = new JToolBar();
-            middleToolBar.setOrientation(JToolBar.VERTICAL);
-            middleToolBar.setFloatable(false);
-            middleToolBar.setLayout(new BoxLayout(middleToolBar, BoxLayout.PAGE_AXIS));
-            JButton toRight = this.createButton(RIGHT, ">", "Move right");
-            JButton toLeft = this.createButton(LEFT, "<", "Move left");
-            middleToolBar.add(toRight);
-            middleToolBar.add(Box.createRigidArea(new Dimension(0, 5)));
-            middleToolBar.add(toLeft);
-            this.holderPanel.add(middleToolBar, middleToolBarConstraints);
-        });
-    }
-
-    private void addBottomButtons(){
-        SwingUtilities.invokeLater(() -> {
-            GridBagConstraints buttonGBC = new GridBagConstraints();
-            buttonGBC.gridx = 0;
-            buttonGBC.gridy = 3;
-            buttonGBC.insets = this.insets;
-            buttonGBC.anchor = GridBagConstraints.CENTER;
-            buttonGBC.weightx = 0.1;
-            buttonGBC.weighty = 0.1;
-            JButton deleteButton = this.createButton(
-                    DELETE, "Delete Signature",
-                    "Remove all entries from known signature");
-            this.holderPanel.add(deleteButton, buttonGBC);
-            buttonGBC.gridx = 2;
-            JButton loadButton = this.createButton(
-                    LOAD, "Load from file",
-                    "Load a signature from a file");
-            this.holderPanel.add(loadButton, buttonGBC);
-            buttonGBC.gridy = 4;
-            JButton saveButton = this.createButton(
-                    SAVE, "Save to file",
-                    "Save a signature to a file");
-            this.holderPanel.add(saveButton, buttonGBC);
-            buttonGBC.gridx = 0;
-            buttonGBC.gridy = 5;
-            JButton cancelButton = this.createButton(
-                    CANCEL, "Cancel",
-                    "Cancel without saving any changes to the known signature");
-            this.holderPanel.add(cancelButton, buttonGBC);
-            buttonGBC.gridx = 2;
-            JButton applyButton = this.createButton(
-                    APPLY, "Apply",
-                    "Apply current known signature to all Evee proofs");
-            this.holderPanel.add(applyButton, buttonGBC);
-        });
+//        fourth row:
+        JPanel cancelApplyButtonRow = new JPanel();
+        cancelApplyButtonRow.setLayout(new BoxLayout(cancelApplyButtonRow, BoxLayout.LINE_AXIS));
+        JButton cancelButton = this.createButton(
+                CANCEL, "Cancel",
+                "Cancel without saving any changes to the known signature");
+        cancelApplyButtonRow.add(cancelButton);
+        cancelApplyButtonRow.add(Box.createHorizontalGlue());
+        JButton applyButton = this.createButton(
+                APPLY, "Apply",
+                "Apply current known signature to all Evee proofs");
+        cancelApplyButtonRow.add(applyButton);
+        cancelApplyButtonRow.setBorder(BorderFactory.createEmptyBorder(5, 10, 0, 10));
+        buttonPanel.add(cancelApplyButtonRow);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        return buttonPanel;
     }
 
     private JButton createButton(String actionCommand, String name, String toolTip){
@@ -254,66 +236,87 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         return newButton;
     }
 
-    private void moveRight(){
-        SwingUtilities.invokeLater(() -> {
-            Collection<OWLEntity> entities = this.ontologyList.getSelectedValuesList();
-            this.knownSignatureListModel.addElements(entities);
-            this.ontologyListModel.removeElements(entities);
-            this.ontologyList.clearSelection();
-            this.knownSignatureList.clearSelection();
-        });
-    }
-
-    private void moveLeft(){
-        SwingUtilities.invokeLater(() -> {
-            Collection<OWLEntity> entities = this.knownSignatureList.getSelectedValuesList();
-            this.ontologyListModel.addElements(entities);
-            this.knownSignatureListModel.removeElements(entities);
-            this.ontologyList.clearSelection();
-            this.knownSignatureList.clearSelection();
-        });
-    }
-
-    private void delete(){
-        Set<OWLEntity> allEntities = this.getAllEntities();
-        this.setEntityListModels(allEntities, Collections.emptySet());
-        this.clearSelection();
-    }
-
     private void load(){
         JFileChooser fileChooser = this.createFileChooser();
         int result = fileChooser.showOpenDialog(this.dialog);
-        List<IRI> iriList = new ArrayList<>();
+        List<IRI> classes = new ArrayList<>();
+        List<IRI> objectProperties = new ArrayList<>();
+        List<IRI> individuals = new ArrayList<>();
+        List<IRI> currentList = classes;
         if (result == JFileChooser.APPROVE_OPTION){
             File file = fileChooser.getSelectedFile();
             try (FileReader fileReader = new FileReader(file);
                  BufferedReader bufferedReader = new BufferedReader(fileReader)){
                 String line;
                 while ((line = bufferedReader.readLine()) != null){
-                    iriList.add(IRI.create(line));
+                    this.logger.debug("line:" + line);
+                    switch (line) {
+                        case CLASSES_DELIMITER:
+                            this.logger.debug("switched to classes");
+                            currentList = classes;
+                            break;
+                        case OBJECT_PROPERTIES_DELIMITER:
+                            this.logger.debug("switched to object properties");
+                            currentList = objectProperties;
+                            break;
+                        case INDIVIDUAL_DELIMITER:
+                            this.logger.debug("switched to individuals");
+                            currentList = individuals;
+                            break;
+                        default:
+                            this.logger.debug("stuff added: " + IRI.create(line));
+                            currentList.add(IRI.create(line));
+                            break;
+                    }
                 }
             }
             catch (IOException e){
                 this.logger.error("Error when loading from file: ", e);
+                this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
                 this.showError("Error: " + e);
             }
         }
-        if (iriList.size() == 0){
+        if (classes.size() == 0 && objectProperties.size() == 0 && individuals.size() == 0){
             return;
         }
-        Set<OWLEntity> ontologyEntitySet = this.getAllEntities();
         Set<OWLEntity> knownEntitySet = new HashSet<>();
-        iriList.forEach(iri ->
-                knownEntitySet.addAll(
-                        this.activeOntology.getEntitiesInSignature(
-                                iri)));
-        ontologyEntitySet.removeAll(knownEntitySet);
-        this.setEntityListModels(ontologyEntitySet, knownEntitySet);
-        this.clearSelection();
+        this.activeOntology.getClassesInSignature(Imports.INCLUDED).forEach(owlClass -> {
+            if (classes.contains(owlClass.getIRI())){
+                knownEntitySet.add(owlClass);
+            }});
+        this.activeOntology.getObjectPropertiesInSignature(Imports.INCLUDED).forEach(objectProperty -> {
+            if (objectProperties.contains(objectProperty.getIRI())){
+                knownEntitySet.add(objectProperty);
+            }});
+        this.activeOntology.getIndividualsInSignature(Imports.INCLUDED).forEach(individual -> {
+            if (individuals.contains(individual.getIRI())){
+                knownEntitySet.add(individual);
+            }});
+//        classes.forEach(iri ->
+//                knownEntitySet.addAll(
+//                        this.activeOntology.getEntitiesInSignature(
+//                                iri)));
+//        ontologyEntitySet.removeAll(knownEntitySet);
+        this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
+        this.signatureSelectionUI.clearSelectedSignatureUISelection();
     }
 
     private void save(){
+        ArrayList<OWLEntity> classes = new ArrayList<>();
+        ArrayList<OWLEntity> objectProperties = new ArrayList<>();
+        ArrayList<OWLEntity> individuals = new ArrayList<>();
+        this.signatureSelectionUI.getSelectedSignature().forEach(owlEntity -> {
+            if (owlEntity.isOWLClass()){
+                classes.add(owlEntity);
+            }
+            else if (owlEntity.isOWLObjectProperty()){
+                objectProperties.add(owlEntity);
+            }
+            else if (owlEntity.isOWLNamedIndividual()){
+                individuals.add(owlEntity);
+            }
+        });
         JFileChooser fileChooser = this.createFileChooser();
         int result = fileChooser.showSaveDialog(this.dialog);
         if (result == JFileChooser.APPROVE_OPTION){
@@ -323,17 +326,27 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
             }
             try (FileWriter fileWriter = new FileWriter(file);
                  BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)){
-                for (OWLEntity entity : this.knownSignatureListModel.getOwlEntityList()){
+                bufferedWriter.write(CLASSES_DELIMITER + "\n");
+                for (OWLEntity entity : classes){
+                    bufferedWriter.write(entity.getIRI() + "\n");
+                }
+                bufferedWriter.write(OBJECT_PROPERTIES_DELIMITER + "\n");
+                for (OWLEntity entity : objectProperties){
+                    bufferedWriter.write(entity.getIRI() + "\n");
+                }
+                bufferedWriter.write(INDIVIDUAL_DELIMITER + "\n");
+                for (OWLEntity entity : individuals){
                     bufferedWriter.write(entity.getIRI() + "\n");
                 }
             }
             catch (IOException e){
                 this.logger.error("Error when saving to file: ", e);
+                this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
                 this.showError("Error: " + e);
             }
         }
-        this.clearSelection();
+        this.signatureSelectionUI.clearSelectedSignatureUISelection();
     }
 
     private JFileChooser createFileChooser(){
@@ -346,47 +359,21 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
     }
 
     private void cancel(){
-        SwingUtilities.invokeLater(() -> this.dialog.dispose());
+        SwingUtilities.invokeLater(() -> {
+            this.dialog.dispose();
+            this.signatureSelectionUI.dispose();
+        });
     }
 
     private void apply(){
         SwingUtilities.invokeLater(() -> {
-            List<String> iriList = new ArrayList<>();
-            this.knownSignatureListModel.getOwlEntityList().forEach(entity -> iriList.add(entity.getIRI().toString()));
-//            getOntologyIRI().isPresent() was checked at UI-creation
+//            getOntologyIRI().isPresent() should have been checked at UI-creation
+            assert(this.activeOntology.getOntologyID().getOntologyIRI().isPresent());
             this.signaturePreferencesManager.saveKnownSignature(
                     this.activeOntology.getOntologyID().getOntologyIRI().get().toString(),
-                    iriList);
+                    this.signatureSelectionUI.getSelectedSignature());
             this.dialog.dispose();
-        });
-    }
-
-    private Set<OWLEntity> getAllEntities(){
-        Set<OWLEntity> ontologyEntitySet = new HashSet<>(
-                this.activeOntology.getClassesInSignature(Imports.INCLUDED));
-        ontologyEntitySet.addAll(
-                this.activeOntology.getIndividualsInSignature(Imports.INCLUDED));
-        ontologyEntitySet.addAll(
-                this.activeOntology.getObjectPropertiesInSignature(Imports.INCLUDED));
-        OWLDataFactory dataFactory = this.activeOntology.getOWLOntologyManager().getOWLDataFactory();
-        ontologyEntitySet.add(dataFactory.getOWLThing());
-        ontologyEntitySet.add(dataFactory.getOWLNothing());
-        return ontologyEntitySet;
-    }
-
-    private void setEntityListModels(Set<OWLEntity> ontologyEntities, Set<OWLEntity> knownEntities){
-        SwingUtilities.invokeLater(() -> {
-            this.ontologyListModel.deleteList();
-            this.ontologyListModel.addElements(ontologyEntities);
-            this.knownSignatureListModel.deleteList();
-            this.knownSignatureListModel.addElements(knownEntities);
-        });
-    }
-
-    private void clearSelection(){
-        SwingUtilities.invokeLater(() -> {
-            this.ontologyList.clearSelection();
-            this.knownSignatureList.clearSelection();
+            this.signatureSelectionUI.dispose();
         });
     }
 
@@ -402,49 +389,11 @@ public class KnownSignatureSelectionUI extends ProtegeOWLAction implements Actio
         });
     }
 
-    private class OWLEntityListModel extends AbstractListModel<OWLEntity>{
-
-        private List<OWLEntity> owlEntityList;
-
-        public OWLEntityListModel(Collection<OWLEntity> entities){
-            this.owlEntityList = new ArrayList<>(entities);
-            this.sort();
-        }
-
-        @Override
-        public int getSize() {
-            return this.owlEntityList.size();
-        }
-
-        @Override
-        public OWLEntity getElementAt(int index) {
-            return this.owlEntityList.get(index);
-        }
-
-        public void sort(){
-            Collections.sort(this.owlEntityList);
-            this.fireContentsChanged(this, 0, this.owlEntityList.size() -1);
-        }
-
-        public void addElements(Collection<OWLEntity> elements){
-            this.owlEntityList.addAll(elements);
-            this.sort();
-        }
-
-        public void removeElements(Collection<OWLEntity> elements){
-            this.owlEntityList.removeAll(elements);
-            this.fireContentsChanged(this, 0, this.owlEntityList.size() -1);
-        }
-
-        public List<OWLEntity> getOwlEntityList(){
-            return new ArrayList<>(this.owlEntityList);
-        }
-
-        public void deleteList(){
-            this.owlEntityList = new ArrayList<>();
-            this.fireContentsChanged(this, 0, 0);
-        }
-
+    private void enableButtons(boolean enable){
+        this.loadButton.setEnabled(enable);
+        this.saveButton.setEnabled(enable);
+        this.signatureSelectionUI.enableButtons(enable);
+        this.signatureSelectionUI.resetSelectedSignatureList();
     }
 
 }
