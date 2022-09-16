@@ -14,6 +14,8 @@ So far, the ontology editor Protégé supports only (black-box) justifications a
 Evee is a library for computing proofs that includes proof generation algorithms for DLs up to ALCH. It includes a recently developed technique for computing black-box *elimination proofs* as well as a glass-box technique based on the resolution calculus of *Lethe*, a tool for computing uniform interpolants.
 Additionally, it provides methods to optimize proofs that are generated via other methods according to various measures of proof quality. The Evee library is used by two frontends: a collection of Protégé plugins of the same name and the standalone tool [*Evonne*](https://imld.de/en/research/research-projects/evonne/ "https://imld.de/en/research/research-projects/evonne/"), which supports more varied ways of displaying and interacting with proofs.
 
+![Evee plugin showing a proof in Protégé](https://user-images.githubusercontent.com/8749392/183616469-05452593-ae9b-496a-a55d-4fda6d122f2a.png)
+
 ## Using the Evee plugins
 1. Install [Protégé](https://protege.stanford.edu/ "https://protege.stanford.edu/"). Evee was developed for and tested with Protégé version 5.5.0.
 2. Install both the [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin and the [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi.

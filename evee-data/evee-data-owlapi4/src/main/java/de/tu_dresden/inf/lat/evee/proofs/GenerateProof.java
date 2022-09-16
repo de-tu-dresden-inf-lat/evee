@@ -27,6 +27,8 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.ISignatureBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofWriter;
 
+import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
+
 public class GenerateProof {
 	public static void main(String[] args) throws Exception {
 
