@@ -20,8 +20,8 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
     protected JPanel ontologySignatureTabbedPanel;
     protected JPanel selectedSignatureListPanel;
     private JTabbedPane signatureTabPane;
-    private OWLObjectTree<OWLClass> classesTree;
-    private OWLObjectTree<OWLObjectProperty> propertyTree;
+    protected OWLObjectTree<OWLClass> classesTree;
+    protected OWLObjectTree<OWLObjectProperty> propertyTree;
     protected OWLObjectListModel<OWLNamedIndividual> ontologyIndividualsListModel;
     protected JList<OWLNamedIndividual> ontologyIndividualsJList;
     protected OWLObjectListModel<OWLEntity> selectedSignatureListModel;
@@ -52,6 +52,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
         this.createSelectedSignatureListPane(owlEditorKit);
     }
 
+//    todo: this does not seem to be working correctly -> badly behaved listener found!
     public void dispose(){
         if (this.classesTree != null){
             this.classesTree.dispose();

@@ -4,7 +4,8 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.*;
 
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.CachingProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeKnownSignaturePreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeKnownSignaturePreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeProofAdapterKnownSignaturePreferenceManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
 import org.liveontologies.puli.DynamicProof;
 import org.liveontologies.puli.Inference;
@@ -33,12 +34,12 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
     private final Logger logger = LoggerFactory.getLogger(AbstractEveeDynamicProofAdapter.class);
     private final Set<ChangeListener> inferenceChangeListener = new HashSet<>();
     private final AbstractEveeProofPreferencesManager proofPreferencesManager;
-    private final EveeKnownSignaturePreferencesManager signaturePreferencesManager;
+    private final EveeProofAdapterKnownSignaturePreferenceManager signaturePreferencesManager;
     private final EveeDynamicProofLoadingUI uiWindow;
 
     public AbstractEveeDynamicProofAdapter(AbstractEveeProofPreferencesManager proofPreferencesManager, EveeDynamicProofLoadingUI uiWindow){
         this.proofPreferencesManager = proofPreferencesManager;
-        this.signaturePreferencesManager = new EveeKnownSignaturePreferencesManager();
+        this.signaturePreferencesManager = new EveeProofAdapterKnownSignaturePreferenceManager();
         this.uiWindow = uiWindow;
         this.uiWindow.setProofAdapter(this);
         this.signatureTimeStamp = 0;
@@ -216,14 +217,14 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         }
         String ontologyName = this.ontology.getOntologyID().getOntologyIRI().get().toString();
         if (this.signaturePreferencesManager.signatureChanged(
-                this.signatureTimeStamp, ontologyName)){
+                this.signatureTimeStamp, this.ontology, ontologyName)){
             this.setSignature(ontologyName);
             this.setCachingProofGenerator();
         }
     }
 
     private void setSignature(String ontologyName){
-        Set<OWLEntity> signature = this.signaturePreferencesManager.loadKnownSignature(
+        Set<OWLEntity> signature = this.signaturePreferencesManager.getKnownSignatureForProofGeneration(
                 this.ontology, ontologyName);
         this.signatureProofGen.setSignature(signature);
         this.logger.debug("Signature of known OWLEntities set to:");

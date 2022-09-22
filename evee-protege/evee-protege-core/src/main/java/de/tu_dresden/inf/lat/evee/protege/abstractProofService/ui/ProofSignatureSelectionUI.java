@@ -2,9 +2,17 @@ package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.AbstractSignatureSelectionUI;
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owlapi.model.OWLEntity;
+import org.protege.editor.owl.ui.renderer.OWLCellRendererSimple;
+import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
+import org.protege.editor.owl.ui.tree.OWLObjectTreeRootNode;
+import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassAssertionAxiomImpl;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,12 +20,12 @@ import java.util.Collection;
 
 public class ProofSignatureSelectionUI extends AbstractSignatureSelectionUI {
 
-    private final OWLEntity top;
-    private final OWLEntity bot;
+    private final EveeDynamicProofKnownSignatureSelectionUI signatureSelectionUI;
 
-    public ProofSignatureSelectionUI(OWLEditorKit owlEditorKit){
-        this.top = owlEditorKit.getOWLModelManager().getOWLDataFactory().getOWLThing();
-        this.bot = owlEditorKit.getOWLModelManager().getOWLDataFactory().getOWLNothing();
+    private final Logger logger = LoggerFactory.getLogger(ProofSignatureSelectionUI.class);
+
+    public ProofSignatureSelectionUI(EveeDynamicProofKnownSignatureSelectionUI signatureSelectionUI){
+        this.signatureSelectionUI = signatureSelectionUI;
     }
 
     protected void setSelectedSignature(Collection<OWLEntity> entities){
@@ -32,12 +40,12 @@ public class ProofSignatureSelectionUI extends AbstractSignatureSelectionUI {
 
     @Override
     protected void setButtonNamesAndToolTipStrings(){
-        this.ADD_BTN_NAME = "Add";
+        this.ADD_BTN_NAME = ">";
         this.ADD_BTN_TOOLTIP =  "Add selected entries to known signature";
-        this.DEL_BTN_NAME = "Delete";
+        this.DEL_BTN_NAME = "<";
         this.DEL_BTN_TOOLTIP = "Delete selected entries from known signature";
-        this.CLR_BTN_NAME = "Clear";
-        this.CLR_BTN_TOOLTIP = "Remove all entries from known signature";
+        this.CLR_BTN_NAME = "Reset";
+        this.CLR_BTN_TOOLTIP = "Remove all entries from known signature except owl:Thing and owl:Nothing";
     }
 
     @Override
@@ -62,6 +70,24 @@ public class ProofSignatureSelectionUI extends AbstractSignatureSelectionUI {
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
                         "Known signature:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        this.selectedSignatureJList.setCellRenderer(new SignatureSelectionOWLCellRendererSimple(owlEditorKit));
+    }
+
+    @Override
+    protected void createOntologySignatureTabbedPanel(OWLEditorKit owlEditorKit){
+        super.createOntologySignatureTabbedPanel(owlEditorKit);
+        OWLEntity bot = owlEditorKit.getModelManager().getOWLDataFactory().getOWLNothing();
+        OWLObjectTreeNode<OWLClass> newNode = new OWLObjectTreeNode<>(
+                bot, this.classesTree);
+//        protege-standard-version for inferred classes, BUT opposite to selectedClassesList (owl:Nothing at first position)
+//        DefaultMutableTreeNode parentNode = ((DefaultMutableTreeNode) ((OWLObjectTreeRootNode<OWLClass>) this.classesTree.getModel().getRoot()).getFirstChild());
+//        ((DefaultTreeModel) this.classesTree.getModel()).insertNodeInto(
+//                newNode, parentNode, 0);
+//        owl:Nothing above owl:Thing as "second root"
+        ((DefaultTreeModel) this.classesTree.getModel()).insertNodeInto(
+                newNode,
+                ((DefaultMutableTreeNode) this.classesTree.getModel().getRoot()),
+                0);
     }
 
     @Override
@@ -69,8 +95,8 @@ public class ProofSignatureSelectionUI extends AbstractSignatureSelectionUI {
         SwingUtilities.invokeLater(() -> {
             this.selectedSignatureListModel.removeAll();
             ArrayList<OWLEntity> helperList = new ArrayList<>();
-            helperList.add(this.top);
-            helperList.add(this.bot);
+            helperList.add(this.signatureSelectionUI.getOWLDataFactory().getOWLThing());
+            helperList.add(this.signatureSelectionUI.getOWLDataFactory().getOWLNothing());
             this.selectedSignatureListModel.addElements(helperList);
             this.selectedSignatureJList.clearSelection();
         });
@@ -80,10 +106,41 @@ public class ProofSignatureSelectionUI extends AbstractSignatureSelectionUI {
         this.clearAction();
     }
 
-    public void enableButtons(boolean enable){
+    public void enableSignature(boolean enable){
         this.addButton.setEnabled(enable);
         this.deleteButton.setEnabled(enable);
         this.clearButton.setEnabled(enable);
+        this.selectedSignatureJList.repaint();
+//        this.selectedSignatureJList.setEnabled(enable);
+    }
+
+    private class SignatureSelectionOWLCellRendererSimple extends OWLCellRendererSimple{
+
+        public SignatureSelectionOWLCellRendererSimple(OWLEditorKit owlEditorKit) {
+            super(owlEditorKit);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            JLabel result = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (! signatureSelectionUI.isSignatureEnabled()){
+                if (! (signatureSelectionUI.getOWLDataFactory().getOWLThing().equals(value) ||
+                        signatureSelectionUI.getOWLDataFactory().getOWLNothing().equals(value))
+                ){
+                    result.setForeground(Color.LIGHT_GRAY);
+                    Icon resultIcon = result.getIcon();
+//                    only works with protege 5.6.0-beta-1-SNAPSHOT
+//                    Icon resultIcon = result.getIcon();
+//                    if (resultIcon instanceof OWLEntityIcon){
+//                        ((OWLEntityIcon) resultIcon).setEnabled(false);
+//                    }
+                }
+            }
+
+            return result;
+        }
+
+
     }
 
 }
