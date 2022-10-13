@@ -44,16 +44,28 @@ public class OWLObjectListModel<O extends OWLObject>
         this.fireContentsChanged(this, 0, this.owlObjects.size() -1);
     }
 
-    public void addElements(Collection<? extends O> addedEntities){
-        this.owlObjects.addAll(addedEntities);
+    public void addElement(O newEntity){
+        this.owlObjects.add(newEntity);
         this.sort();
     }
 
-    public void checkAndAddElements(Collection<? extends O> addedEntities){
-        addedEntities.stream().filter(
+    public void addElements(Collection<? extends O> newEntities){
+        this.owlObjects.addAll(newEntities);
+        this.sort();
+    }
+
+    public void checkAndAddElements(Collection<? extends O> newEntities){
+        newEntities.stream().filter(
                 entity -> (! this.owlObjects.contains(entity))).forEach(
                         this.owlObjects::add);
         this.sort();
+    }
+
+    public void checkAndAddElement(O newEntity){
+        if (! this.owlObjects.contains(newEntity)){
+            this.owlObjects.add(newEntity);
+            this.sort();
+        }
     }
 
     public void removeAll(){

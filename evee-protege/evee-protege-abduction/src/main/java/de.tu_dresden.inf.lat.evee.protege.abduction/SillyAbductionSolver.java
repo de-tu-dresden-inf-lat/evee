@@ -3,12 +3,13 @@ package de.tu_dresden.inf.lat.evee.protege.abduction;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SillyAbductionGenerator implements AbductionGenerator<Set<OWLAxiom>, Set<OWLEntity>, OWLOntology, Set<Set<OWLAxiom>>>{
+public class SillyAbductionGenerator implements AbductionGenerator<Set<OWLObject>, Set<OWLEntity>, OWLOntology, Set<Set<OWLAxiom>>>{
 
-    private final Set<OWLAxiom> observation;
+    private final Set<OWLObject> observation;
     private final Set<OWLEntity> signature;
     private OWLOntology ontology;
     private final Set<OWLAxiom> hypothesis;
@@ -28,9 +29,9 @@ public class SillyAbductionGenerator implements AbductionGenerator<Set<OWLAxiom>
     }
 
     @Override
-    public void setObservations(Set<OWLAxiom> owlAxioms) {
+    public void setObservations(Set<OWLObject> owlObjects) {
         this.observation.clear();
-        this.observation.addAll(owlAxioms);
+        this.observation.addAll(owlObjects);
     }
 
     @Override

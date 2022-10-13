@@ -9,11 +9,15 @@ import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.util.OWLEntityCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,9 +28,11 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
     private final AbductionViewComponent abductionViewComponent;
     private GivenSignatureOWLModelChangeListener givenSignatureModelManagerListener;
     private GivenSignatureOntologyChangeListener givenSignatureOntologyChangeListener;
-    private JCheckBox observationSignatureExclusionCheckBox;
-    private final String CHECKBOX_LABEL = "Only exclude signature of observations";
-    private final String CHECKBOX_TOOLTIP = "If checked, only signature from observations will be excluded";
+    private final String ADD_OBSERVATION_SIGNATURE_COMMAND = "ADD_OBSERVATION_SIGNATURE";
+    private final String ADD_OBSERVATION_SIGNATURE_NAME = "Add observation signature";
+    private final String ADD_OBSERVATION_SIGNATURE_TOOLTIP = "Adds signature of all observations";
+
+    private final Logger logger = LoggerFactory.getLogger(AbductionSignatureSelectionUI.class);
 
     public AbductionSignatureSelectionUI(AbductionViewComponent abductionViewComponent, OWLEditorKit editorKit, OWLModelManager modelManager){
         super();
@@ -40,7 +46,7 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         this.ADD_BTN_TOOLTIP = "Add selected OWLObjects to \"Excluded Signature\"";
         this.DEL_BTN_NAME = "Delete";
         this.DEL_BTN_TOOLTIP = "Delete selected OWLObjects from \"Excluded Signature\"";
-        this.CLR_BTN_NAME = "Clear";
+        this.CLR_BTN_NAME = "Reset";
         this.CLR_BTN_TOOLTIP = "Remove all OWLObjects from \"Excluded Signature\"";
     }
 
@@ -54,7 +60,7 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         owlEditorKit.getOWLModelManager().addOntologyChangeListener(this.givenSignatureOntologyChangeListener);;
     }
 
-    protected JPanel getSignatureSelectionButtonsAndCheckBox(){
+    protected JPanel getSignatureSelectionButtons(){
         JToolBar toolbar = new JToolBar();
         toolbar.setOrientation(JToolBar.HORIZONTAL);
         toolbar.setFloatable(false);
@@ -64,21 +70,22 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         toolbar.add(this.getDeleteButton());
         toolbar.add(Box.createRigidArea(new Dimension(5, 0)));
         toolbar.add(this.getClearButton());
-        JPanel buttonAndCheckBoxPanel = new JPanel();
-        buttonAndCheckBoxPanel.setLayout(new BoxLayout(buttonAndCheckBoxPanel, BoxLayout.PAGE_AXIS));
-        buttonAndCheckBoxPanel.add(toolbar);
-        JLabel label = this.createLabel(this.CHECKBOX_LABEL);
-        JPanel checkBoxPanel = new JPanel();
-        checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.LINE_AXIS));
-        checkBoxPanel.add(label);
-        checkBoxPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        this.observationSignatureExclusionCheckBox = new JCheckBox();
-        this.observationSignatureExclusionCheckBox.setToolTipText(this.CHECKBOX_TOOLTIP);
-        checkBoxPanel.add(this.observationSignatureExclusionCheckBox);
-        buttonAndCheckBoxPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        buttonAndCheckBoxPanel.add(checkBoxPanel);
-        buttonAndCheckBoxPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
-        return buttonAndCheckBoxPanel;
+        JPanel buttonHolderPanel = new JPanel();
+        buttonHolderPanel.setLayout(new BoxLayout(buttonHolderPanel, BoxLayout.PAGE_AXIS));
+        buttonHolderPanel.add(toolbar);
+        JPanel secondRowPanel = new JPanel();
+        secondRowPanel.setLayout(new BoxLayout(secondRowPanel, BoxLayout.LINE_AXIS));
+        JButton addObservationSignatureButton = new JButton(this.ADD_OBSERVATION_SIGNATURE_NAME);
+        addObservationSignatureButton.setActionCommand(this.ADD_OBSERVATION_SIGNATURE_COMMAND);
+        addObservationSignatureButton.setToolTipText(this.ADD_OBSERVATION_SIGNATURE_TOOLTIP);
+        addObservationSignatureButton.addActionListener(this);
+        secondRowPanel.add(Box.createGlue());
+        secondRowPanel.add(addObservationSignatureButton);
+        secondRowPanel.add(Box.createGlue());
+        buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        buttonHolderPanel.add(secondRowPanel);
+        buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
+        return buttonHolderPanel;
     }
 
     @Override
@@ -102,7 +109,20 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         return this.abductionViewComponent.getOWLEditorKit().getOWLModelManager().getActiveOntology();
     }
 
-
+    @Override
+    public void actionPerformed(ActionEvent e){
+        if (e.getActionCommand().equals(this.ADD_OBSERVATION_SIGNATURE_COMMAND)){
+            SwingUtilities.invokeLater(() -> {
+                ArrayList<OWLObject> observations = this.abductionViewComponent.getObservations();
+                HashSet<OWLEntity> observationEntities = new HashSet<>();
+                observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
+                this.selectedSignatureListModel.checkAndAddElements(observationEntities);
+            });
+        }
+        else{
+            super.actionPerformed(e);
+        }
+    }
 
     private class GivenSignatureOWLModelChangeListener implements OWLModelManagerListener {
 

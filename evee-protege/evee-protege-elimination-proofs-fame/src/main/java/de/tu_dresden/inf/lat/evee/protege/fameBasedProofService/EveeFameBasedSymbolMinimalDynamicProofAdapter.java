@@ -19,17 +19,15 @@ public class EveeFameBasedSymbolMinimalDynamicProofAdapter extends AbstractEveeS
 
     public EveeFameBasedSymbolMinimalDynamicProofAdapter(SymbolMinimalForgettingBasedProofGenerator proofGen, AbstractEveeEliminationProofPreferencesManager proofPreferencesManager, EveeDynamicSuboptimalProofLoadingUI uiWindow) {
         super(proofPreferencesManager, uiWindow);
-        super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(proofGen));
         this.proofPreferencesManager = proofPreferencesManager;
         this.innerProofGenerator = proofGen;
         this.setVaryJustifications();
-        super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
-                this.innerProofGenerator));
+        super.setInnerProofGenerator(this.innerProofGenerator);
         this.logger.debug("Dynamic proof adapter created.");
     }
 
     @Override
-    protected void setProofGeneratorParameters() {
+    protected void setProofGeneratorParameters(boolean previousParametersChanged) {
         this.logger.debug("Checking parameters for proof generator.");
         boolean parameterChanged = false;
         if (this.proofPreferencesManager.skipStepsChanged(this.skipStepsTimeStamp)) {
@@ -40,11 +38,7 @@ public class EveeFameBasedSymbolMinimalDynamicProofAdapter extends AbstractEveeS
             this.setVaryJustifications();
             parameterChanged = true;
         }
-        if (parameterChanged){
-            super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
-                    this.innerProofGenerator));
-        }
-        super.setProofGeneratorParameters();
+        super.setProofGeneratorParameters(parameterChanged || previousParametersChanged);
     }
 
     private void setSkipSteps(){

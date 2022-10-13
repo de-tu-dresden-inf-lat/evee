@@ -12,9 +12,8 @@ public class EveeLetheBasedProofService extends AbstractEveeProofService {
 
     public EveeLetheBasedProofService(){
         super(new EveeLetheBasedDynamicProofAdapter(
-                        new OWLSignatureBasedMinimalTreeProofGenerator(
-                                new MinimalTreeProofGenerator<>(
-                                        new LetheProofGenerator())),
+                new MinimalTreeProofGenerator<>(
+                        new LetheProofGenerator()),
                 new EveeLetheBasedExtractorProofPreferencesManager(identifier),
                 new EveeDynamicProofLoadingUI(identifier)));
     }

@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeUIKnownSignaturePreferenceManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeProofSignatureUIPreferenceManager;
 import org.apache.commons.io.FilenameUtils;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
@@ -19,8 +19,7 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-// todo: rename to make distinguishable from ProofSignatureSelectionUI
-public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction implements ActionListener {
+public class EveeDynamicProofSignatureSelectionUI extends ProtegeOWLAction implements ActionListener {
 
     private static final String INIT = "Manage signature";
     private static final String LOAD = "LOAD_SIGNATURE";
@@ -34,7 +33,7 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
     private static final String OBJECT_PROPERTIES_DELIMITER = "##### Object Properties: #####";
     private static final String INDIVIDUAL_DELIMITER = "##### Individuals: #####";
     private static final String ANONYMOUS_ONTOLOGY_ERROR_MSG = "<html><center>Ontology has no IRI.</center><center>Changes to the signature are only allowed if the ontology has an IRI.</center>";
-    private static final String SIGNATURE_SAVING_ERROR_MSG = "<html><center>Error while saving signature</center><center>The IRI of the active Ontology is too long to use a signature.</center>";
+    private static final String SIGNATURE_SAVING_ERROR_MSG = "<html><center>Error while saving signature</center>";
 //    todo: improve wording
     private final String topLabelText = "<html><center>Any proof step that contains only those OWL Entities in the right list will <b>not</b> be explained in any Evee proof.</center><center>This will also be considered when optimizing the Evee proofs.</center>";
     private final Insets insets = new Insets(5, 5, 5, 5);
@@ -43,14 +42,14 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
     private JButton loadButton;
     private JButton saveButton;
     private JCheckBox useSignatureCheckBox;
-    private final EveeUIKnownSignaturePreferenceManager signaturePreferencesManager;
-    private ProofSignatureSelectionUI signatureSelectionUI;
+    private final EveeProofSignatureUIPreferenceManager signaturePreferencesManager;
+    private EveeDynamicProofSignatureSelectionCoreUI signatureSelectionUI;
     private OWLOntology activeOntology;
     private boolean signatureEnabled;
-    private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofKnownSignatureSelectionUI.class);
+    private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofSignatureSelectionUI.class);
 
-    public EveeDynamicProofKnownSignatureSelectionUI(){
-        this.signaturePreferencesManager = new EveeUIKnownSignaturePreferenceManager();
+    public EveeDynamicProofSignatureSelectionUI(){
+        this.signaturePreferencesManager = new EveeProofSignatureUIPreferenceManager();
     }
 
     @Override
@@ -93,7 +92,7 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
         }
         String ontoName = this.activeOntology.getOntologyID().getOntologyIRI().get().toString();
         SwingUtilities.invokeLater(() -> {
-            this.signatureSelectionUI = new ProofSignatureSelectionUI(this);
+            this.signatureSelectionUI = new EveeDynamicProofSignatureSelectionCoreUI(this);
             this.signatureSelectionUI.createSignatureSelectionComponents(this.getOWLEditorKit());
             this.dialog = new JDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()));
             this.dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
@@ -102,33 +101,10 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
             this.holderPanel = new JPanel();
             this.dialog.getContentPane().add(holderPanel);
             this.holderPanel.setLayout(new GridBagLayout());
-//            GridBagConstraints gbc = new GridBagConstraints();
-//            gbc.gridx = 0;
-//            gbc.gridy = 0;
-//            gbc.gridwidth = 1;
-//            gbc.gridheight = 1;
-//            gbc.insets = this.insets;
-//            gbc.anchor = GridBagConstraints.CENTER;
-//            gbc.fill = GridBagConstraints.HORIZONTAL;
-//            gbc.weightx = 0.1;
-//            gbc.weighty = 0.1;
-//            JPanel topLabelPanel = this.createTopLabel();
-//            this.holderPanel.add(topLabelPanel, gbc);
             this.addTopLabel();
             this.addSignaturePanelComponents();
-//            gbc.gridy = 1;
-//            gbc.fill = GridBagConstraints.BOTH;
-//            gbc.weightx = 0.5;
-//            gbc.weighty = 0.5;
-//            this.holderPanel.add(signaturePanels, gbc);
             this.addMiddleButtons();
             this.addLowerInteractiveElements();
-//            JPanel buttonPanel = this.addLowerInteractiveElements();
-//            gbc.gridy = 2;
-//            gbc.fill = GridBagConstraints.HORIZONTAL;
-//            gbc.weightx = 0.1;
-//            gbc.weighty = 0.1;
-//            this.holderPanel.add(buttonPanel, gbc);
             this.dialog.pack();
             this.dialog.setLocationRelativeTo(
                     ProtegeManager.getInstance().getFrame(this.getWorkspace()));
@@ -166,16 +142,12 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
 
     private void addSignaturePanelComponents(){
 //        getOntologyIRI().isPresent() was checked earlier during UI-creation
+        String ontologyName = this.activeOntology.getOntologyID().getOntologyIRI().get().toString();
         Set<OWLEntity> knownEntitySet = this.signaturePreferencesManager.getKnownSignatureForUI(
-                this.activeOntology,
-                this.activeOntology.getOntologyID().getOntologyIRI().get().toString());
-//        if (knownEntitySet.size() == 0){
-//            OWLEntity top = this.getOWLDataFactory().getOWLThing();
-//            OWLEntity bot = this.getOWLDataFactory().getOWLNothing();
-//            knownEntitySet.add(top);
-//            knownEntitySet.add(bot);
-//        }
+                this.activeOntology, ontologyName);
         this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
+        boolean useSignature = this.signaturePreferencesManager.getUseSignatureForUI(ontologyName);
+        this.signatureSelectionUI.enableSignature(useSignature);
         JPanel ontologySignaturePanel = this.signatureSelectionUI.getOntologySignatureTabbedPanel();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -188,12 +160,7 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
         this.holderPanel.add(ontologySignaturePanel, gbc);
-//        JPanel signatureSelectionHolderPanel = new JPanel();
-//        signatureSelectionHolderPanel.setLayout(new BoxLayout(signatureSelectionHolderPanel, BoxLayout.LINE_AXIS));
-//        signatureSelectionHolderPanel.add(ontologySignaturePanel);
-//        signatureSelectionHolderPanel.add(Box.createRigidArea(new Dimension(15, 0)));
         JPanel selectedSignaturePanel = this.signatureSelectionUI.getSelectedSignatureListPanel();
-//        signatureSelectionHolderPanel.add(selectedSignaturePanel);
         gbc.gridx = 2;
         this.holderPanel.add(selectedSignaturePanel, gbc);
     }
@@ -231,7 +198,7 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
         checkBoxPanel.add(checkBoxLabel);
         checkBoxPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         this.useSignatureCheckBox = new JCheckBox();
-//        getOntologyIRI().isPresent() was checked earlier during UI-creation
+//        note: getOntologyIRI().isPresent() was checked earlier during UI-creation
         boolean enabled = this.signaturePreferencesManager.getUseSignatureForUI(
                 this.activeOntology.getOntologyID().getOntologyIRI().get().toString());
         this.useSignatureCheckBox.setSelected(enabled);
@@ -266,11 +233,13 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
         this.loadButton = this.createButton(
                 LOAD, "Load from file",
                 "Load a signature from a file");
+        this.loadButton.setEnabled(this.signatureEnabled);
         fileOperationButtonPanel.add(loadButton);
         fileOperationButtonPanel.add(Box.createGlue());
         this.saveButton = this.createButton(
                 SAVE, "Save to file",
                 "Save a signature to a file");
+        this.saveButton.setEnabled(this.signatureEnabled);
         fileOperationButtonPanel.add(saveButton);
         this.addLowerInteractiveElementBorder(fileOperationButtonPanel);
         gbc.gridy = 3;
@@ -411,7 +380,7 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
             try (FileWriter fileWriter = new FileWriter(file);
                  BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)){
                 bufferedWriter.write(USE_SIGNATURE_DELIMITER + "\n");
-                if (this.signaturePreferencesManager.loadUseSignature(
+                if (this.signaturePreferencesManager.getUseSignatureForUI(
                         this.activeOntology.getOntologyID().getOntologyIRI().get().toString())){
                     bufferedWriter.write(TRUE + "\n");
                 }
@@ -463,15 +432,19 @@ public class EveeDynamicProofKnownSignatureSelectionUI extends ProtegeOWLAction 
             assert(this.activeOntology.getOntologyID().getOntologyIRI().isPresent());
             String ontologyName = this.activeOntology.getOntologyID().getOntologyIRI().get().toString();
             try{
-                this.signaturePreferencesManager.saveKnownSignature(ontologyName,
+                this.signaturePreferencesManager.saveSignature(ontologyName,
+                        this.useSignatureCheckBox.isSelected(),
                         this.signatureSelectionUI.getSelectedSignature());
-                this.signaturePreferencesManager.saveUseSignature(ontologyName,
-                        this.useSignatureCheckBox.isSelected());
+//                this.signaturePreferencesManager.saveKnownSignature(ontologyName,
+//                        this.signatureSelectionUI.getSelectedSignature());
+//                this.signaturePreferencesManager.saveUseSignature(ontologyName,
+//                        this.useSignatureCheckBox.isSelected());
             }
             catch (IllegalArgumentException e){
-                this.logger.error("Error while saving signature to Protege Preferences: Ontology-IRI + Delimiters is too long.");
+                this.logger.error("Error while saving signature to Protege Preferences.");
                 this.logger.error(e.toString());
-                this.showError(SIGNATURE_SAVING_ERROR_MSG);
+                String errorString = "<center>" + e + "</center>";
+                this.showError(SIGNATURE_SAVING_ERROR_MSG + errorString);
             }
             finally{
                 this.dialog.dispose();

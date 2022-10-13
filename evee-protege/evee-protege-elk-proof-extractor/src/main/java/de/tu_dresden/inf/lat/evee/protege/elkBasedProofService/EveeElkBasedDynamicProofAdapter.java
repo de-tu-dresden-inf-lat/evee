@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.elkBasedProofService;
 
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.ISignatureBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
@@ -13,11 +14,11 @@ public class EveeElkBasedDynamicProofAdapter extends AbstractEveeDynamicProofAda
 
     private Logger logger = LoggerFactory.getLogger(EveeElkBasedDynamicProofAdapter.class);
 
-    public EveeElkBasedDynamicProofAdapter(ISignatureBasedProofGenerator<OWLEntity, OWLAxiom, OWLOntology> proofGen,
+    public EveeElkBasedDynamicProofAdapter(IProofGenerator<OWLAxiom, OWLOntology> proofGen,
                                            EveeElkBasedExtractorProofPreferencesManager proofPreferencesManager,
                                            EveeDynamicProofLoadingUI uiWindow) {
         super(proofPreferencesManager, uiWindow);
-        super.setProofGenerator(proofGen);
+        super.setInnerProofGenerator(proofGen);
         this.logger.debug("Dynamic proof adapter created.");
     }
 

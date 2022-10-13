@@ -7,6 +7,8 @@ import org.protege.editor.owl.ui.tree.OWLModelManagerTree;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,6 +41,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
     protected String CLR_BTN_NAME;
     protected String CLR_BTN_TOOLTIP;
 
+    private Logger logger = LoggerFactory.getLogger(AbstractSignatureSelectionUI.class);
 
     protected AbstractSignatureSelectionUI() {
         this.setButtonNamesAndToolTipStrings();

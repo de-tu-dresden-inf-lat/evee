@@ -25,8 +25,7 @@ public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEvee
         super(proofPreferencesManager, uiWindow);
         this.proofPreferencesManager = proofPreferencesManager;
         this.createInnerProofGenerator();
-        super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
-                innerProofGenerator));
+        super.setInnerProofGenerator(innerProofGenerator);
         this.logger.debug("Dynamic proof adapter created.");
     }
 
@@ -50,7 +49,7 @@ public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEvee
     }
 
     @Override
-    protected void setProofGeneratorParameters(){
+    protected void setProofGeneratorParameters(boolean previousParametersChanged){
         this.logger.debug("Checking parameters for proof generator.");
         boolean parameterChanged = false;
         if (this.proofPreferencesManager.timeOutChanged(this.timeOutTimeStamp)){
@@ -68,10 +67,9 @@ public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEvee
             }
         }
         if (parameterChanged){
-            super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
-                    innerProofGenerator));
+            super.setInnerProofGenerator(innerProofGenerator);
         }
-        super.setProofGeneratorParameters();
+        super.setProofGeneratorParameters(previousParametersChanged || parameterChanged);
     }
 
     private void setSkipSteps(){

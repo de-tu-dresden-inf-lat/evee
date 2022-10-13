@@ -31,8 +31,7 @@ public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends Abstra
         super(proofPreferencesManager, uiWindow);
         this.proofPreferencesManager = proofPreferencesManager;
         this.createInnerProofGenerator();
-        super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
-                this.innerProofGenerator));
+        super.setInnerProofGenerator(this.innerProofGenerator);
         this.logger.debug("Dynamic proof adapter created.");
     }
 
@@ -54,7 +53,7 @@ public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends Abstra
     }
 
     @Override
-    protected void setProofGeneratorParameters(){
+    protected void setProofGeneratorParameters(boolean previousParametersChanged){
         this.logger.debug("Checking parameters for proof generator.");
         boolean parameterChanged = false;
         if (this.proofPreferencesManager.timeOutChanged(this.timeOutTimeStamp)){
@@ -66,10 +65,9 @@ public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends Abstra
             parameterChanged = true;
         }
         if (parameterChanged){
-            super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
-                    this.innerProofGenerator));
+            super.setInnerProofGenerator(this.innerProofGenerator);
         }
-        super.setProofGeneratorParameters();
+        super.setProofGeneratorParameters(previousParametersChanged || parameterChanged);
     }
 
     private void setSkipSteps(){

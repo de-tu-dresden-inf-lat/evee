@@ -3,8 +3,8 @@ package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.*;
 
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.CachingProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.OWLSignatureBasedMinimalTreeProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeKnownSignaturePreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeProofAdapterKnownSignaturePreferenceManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
 import org.liveontologies.puli.DynamicProof;
@@ -22,6 +22,7 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
     private IProof<OWLAxiom> iProof;
     private IProofGenerator<OWLAxiom, OWLOntology> cachingProofGen = null;
     private ISignatureBasedProofGenerator<OWLEntity, OWLAxiom, OWLOntology> signatureProofGen = null;
+    private IProofGenerator<OWLAxiom, OWLOntology> innerProofGen = null;
     private OWLOntology ontology;
     private OWLReasoner reasoner;
     private String errorMsg = "";
@@ -45,14 +46,15 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         this.signatureTimeStamp = 0;
     }
 
-    protected void setProofGenerator(ISignatureBasedProofGenerator<OWLEntity, OWLAxiom, OWLOntology> proofGen){
-        this.signatureProofGen = proofGen;
-        this.setCachingProofGenerator();
+    protected void setInnerProofGenerator(IProofGenerator<OWLAxiom, OWLOntology> proofGen){
+        this.innerProofGen = proofGen;
+//        this.setCachingProofGenerator();
+        this.proofGeneratorChanged = true;
     }
 
-    private void setCachingProofGenerator(){
+    protected void setCachingProofGenerator(IProofGenerator<OWLAxiom, OWLOntology> innerProofGenerator){
         this.logger.debug("New CachingProofGenerator created with empty cache.");
-        this.cachingProofGen = new CachingProofGenerator<>(this.signatureProofGen);
+        this.cachingProofGen = new CachingProofGenerator<>(innerProofGenerator);
         this.proofGeneratorChanged = true;
     }
 
@@ -191,7 +193,7 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
     public void start(OWLAxiom entailment, OWLEditorKit editorKit){
         this.logger.debug("DynamicProofAdapter started.");
         assert (this.cachingProofGen != null);
-        this.setProofGeneratorParameters();
+        this.setProofGeneratorParameters(false);
         this.generationComplete = false;
         this.generationSuccess = false;
         for (ChangeListener listener : this.inferenceChangeListener){
@@ -208,29 +210,51 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         this.uiWindow.showWindow();
     }
 
-    protected void setProofGeneratorParameters(){
+    protected void setProofGeneratorParameters(boolean parametersChanged){
         this.logger.debug("Checking signature.");
-        assert (this.signatureProofGen != null);
+//        assert (this.signatureProofGen != null);
         if (! this.ontology.getOntologyID().getOntologyIRI().isPresent()){
-            this.logger.warn("Anonymous ontology detected. Signature of known OWLEntities could not be set.");
+            this.logger.warn("Anonymous ontology detected. Signature related parameters could not be set.");
             return;
         }
         String ontologyName = this.ontology.getOntologyID().getOntologyIRI().get().toString();
-        if (this.signaturePreferencesManager.signatureChanged(
-                this.signatureTimeStamp, this.ontology, ontologyName)){
-            this.setSignature(ontologyName);
-            this.setCachingProofGenerator();
+        boolean useSignature = this.signaturePreferencesManager.useSignature(ontologyName);
+        boolean useSignatureChanged = this.signaturePreferencesManager.useSignatureChanged(this.signatureTimeStamp, ontologyName);
+        boolean signatureChanged = this.signaturePreferencesManager.signatureChanged(this.signatureTimeStamp, ontologyName);
+        if (useSignature){
+//            useSignatureChanged auch mit drin
+            if (signatureChanged || useSignatureChanged){
+                this.signatureProofGen = new OWLSignatureBasedMinimalTreeProofGenerator(this.innerProofGen);
+                Set<OWLEntity> signature = this.signaturePreferencesManager.getKnownSignatureForProofGeneration(
+                        this.ontology, ontologyName);
+                this.signatureProofGen.setSignature(signature);
+                this.logger.debug("Signature of known OWLEntities set to:");
+                signature.forEach(owlEntity -> this.logger.debug(owlEntity.toString()));
+                this.signatureTimeStamp = this.signaturePreferencesManager.getTimeStamp();
+            }
+//            else: was ist hiermit
+        }
+        if (parametersChanged || useSignatureChanged || (useSignature && signatureChanged)){
+            if (useSignature){
+                this.cachingProofGen = new CachingProofGenerator<>(this.signatureProofGen);
+                this.logger.debug("New CachingProofGenerator created with empty cache, using SignatureProofGenerator.");
+            }
+            else {
+                this.cachingProofGen = new CachingProofGenerator<>(this.innerProofGen);
+                this.logger.debug("New CachingProofGenerator created with empty cache, NOT using SignatureProofGenerator.");
+            }
+            this.proofGeneratorChanged = true;
         }
     }
 
-    private void setSignature(String ontologyName){
-        Set<OWLEntity> signature = this.signaturePreferencesManager.getKnownSignatureForProofGeneration(
-                this.ontology, ontologyName);
-        this.signatureProofGen.setSignature(signature);
-        this.logger.debug("Signature of known OWLEntities set to:");
-        signature.forEach(owlEntity -> this.logger.debug(owlEntity.toString()));
-        this.signatureTimeStamp = this.signaturePreferencesManager.getTimeStamp();
-    }
+//    private void setSignature(String ontologyName){
+//        Set<OWLEntity> signature = this.signaturePreferencesManager.getKnownSignatureForProofGeneration(
+//                this.ontology, ontologyName);
+//        this.signatureProofGen.setSignature(signature);
+//        this.logger.debug("Signature of known OWLEntities set to:");
+//        signature.forEach(owlEntity -> this.logger.debug(owlEntity.toString()));
+//        this.signatureTimeStamp = this.signaturePreferencesManager.getTimeStamp();
+//    }
 
     private void checkOntology(){
         this.logger.debug("Checking if ontology of cachingProofGenerator needs to be updated.");

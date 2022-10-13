@@ -20,20 +20,18 @@ public class EveeFameBasedForgettingDynamicProofAdapter extends AbstractEveeSubo
         super(proofPreferencesManager, uiWindow);
         this.proofPreferencesManager = proofPreferencesManager;
         this.innerProofGenerator = proofGen;
-        super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
-                this.innerProofGenerator));
+        super.setInnerProofGenerator(this.innerProofGenerator);
         this.logger.debug("Dynamic proof adapter created.");
     }
 
     @Override
-    protected void setProofGeneratorParameters() {
+    protected void setProofGeneratorParameters(boolean parametersChanged) {
         this.logger.debug("Checking parameters for proof generator.");
         if (this.proofPreferencesManager.skipStepsChanged(this.skipStepsTimeStamp)){
             this.setSkipSteps();
-            super.setProofGenerator(new OWLSignatureBasedMinimalTreeProofGenerator(
-                    this.innerProofGenerator));
+            parametersChanged = true;
         }
-        super.setProofGeneratorParameters();
+        super.setProofGeneratorParameters(parametersChanged);
     }
 
     private void setSkipSteps(){
