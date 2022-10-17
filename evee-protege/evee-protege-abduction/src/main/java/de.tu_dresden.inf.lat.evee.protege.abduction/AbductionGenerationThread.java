@@ -12,7 +12,7 @@ import java.util.Set;
 public class AbductionGenerationThread extends Thread {
 
     private final AbductionViewComponent viewComponent;
-    private AbductionSolver<Set<OWLObject>, Set<OWLEntity>, OWLOntology, Set<Set<OWLAxiom>>> abductionSolver;
+    private AbductionGenerator<Set<OWLObject>, OWLEntity, OWLOntology, Set<Set<OWLAxiom>>> abductionSolver;
 
     private final Logger logger = LoggerFactory.getLogger(AbductionGenerationThread.class);
 
@@ -21,7 +21,7 @@ public class AbductionGenerationThread extends Thread {
         this.viewComponent = viewComponent;
     }
 
-    public void setAbductionGenerator(AbductionSolver<Set<OWLObject>, Set<OWLEntity>, OWLOntology,  Set<Set<OWLAxiom>>> abductionSolver) {
+    public void setAbductionGenerator(AbductionGenerator<Set<OWLObject>, OWLEntity, OWLOntology,  Set<Set<OWLAxiom>>> abductionSolver) {
         this.abductionSolver = abductionSolver;
     }
 

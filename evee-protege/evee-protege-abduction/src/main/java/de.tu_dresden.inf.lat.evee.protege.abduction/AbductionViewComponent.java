@@ -319,7 +319,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
 
     private void computeAbductions(){
         this.logger.debug("computeAbduction called");
-        AbductionSolver<Set<OWLObject>, Set<OWLEntity>, OWLOntology, Set<Set<OWLAxiom>>> abductionSolver =
+        AbductionGenerator<Set<OWLObject>, OWLEntity, OWLOntology, Set<Set<OWLAxiom>>> abductionSolver =
                 this.abductionGeneratorManager.getCurrentAbductionGenerator();
         abductionSolver.setAbducibles(new HashSet<>(this.signatureSelectionUI.getSelectedSignature()));
         abductionSolver.setOntology(this.getOWLModelManager().getActiveOntology());

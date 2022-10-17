@@ -5,10 +5,11 @@ import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SlowAbductionSolver implements AbductionSolver<Set<OWLObject>, Set<OWLEntity>, OWLOntology, Set<Set<OWLAxiom>>> {
+public class SlowAbductionSolver implements AbductionGenerator<Set<OWLObject>, OWLEntity, OWLOntology, Set<Set<OWLAxiom>>> {
 
     private final Set<OWLObject> observation;
     private final Set<OWLEntity> signature;
@@ -30,7 +31,7 @@ public class SlowAbductionSolver implements AbductionSolver<Set<OWLObject>, Set<
     }
 
     @Override
-    public void setAbducibles(Set<OWLEntity> owlEntities) {
+    public void setAbducibles(Collection<OWLEntity> owlEntities) {
         this.signature.clear();
         this.signature.addAll(owlEntities);
     }

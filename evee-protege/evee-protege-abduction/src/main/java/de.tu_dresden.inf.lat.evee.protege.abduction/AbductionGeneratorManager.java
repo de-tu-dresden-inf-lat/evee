@@ -15,7 +15,7 @@ import java.util.Vector;
 
 public class AbductionGeneratorManager implements ActionListener {
 
-    private AbductionSolver<Set<OWLObject>, Set<OWLEntity>, OWLOntology, Set<Set<OWLAxiom>>> currentAbductionSolver;
+    private AbductionGenerator<Set<OWLObject>, OWLEntity, OWLOntology, Set<Set<OWLAxiom>>> currentAbductionSolver;
     private final SillyAbductionSolver sillyAbductionGenerator;
     private final SlowAbductionSolver slowAbductionGenerator;
     private final String SILLY_NAME = "Silly Abduction Generator";
@@ -28,7 +28,7 @@ public class AbductionGeneratorManager implements ActionListener {
         this.currentAbductionSolver = this.sillyAbductionGenerator;
     }
 
-    public AbductionSolver<Set<OWLObject>, Set<OWLEntity>, OWLOntology, Set<Set<OWLAxiom>>> getCurrentAbductionGenerator(){
+    public AbductionGenerator<Set<OWLObject>, OWLEntity, OWLOntology, Set<Set<OWLAxiom>>> getCurrentAbductionGenerator(){
         if (this.currentAbductionSolver.equals(this.sillyAbductionGenerator)){
         }
         else if (this.currentAbductionSolver.equals(this.slowAbductionGenerator)){

@@ -3,18 +3,19 @@ package de.tu_dresden.inf.lat.evee.protege.abduction;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SillyAbductionGenerator implements AbductionGenerator<Set<OWLObject>, Set<OWLEntity>, OWLOntology, Set<Set<OWLAxiom>>>{
+public class SillyAbductionSolver implements AbductionGenerator<Set<OWLObject>, OWLEntity, OWLOntology, Set<Set<OWLAxiom>>>{
 
     private final Set<OWLObject> observation;
     private final Set<OWLEntity> signature;
     private OWLOntology ontology;
     private final Set<OWLAxiom> hypothesis;
 
-    public SillyAbductionGenerator(){
+    public SillyAbductionSolver(){
         this.observation = new HashSet<>();
         this.signature = new HashSet<>();
         this.hypothesis = new HashSet<>();
@@ -29,13 +30,13 @@ public class SillyAbductionGenerator implements AbductionGenerator<Set<OWLObject
     }
 
     @Override
-    public void setObservations(Set<OWLObject> owlObjects) {
+    public void setObservation(Set<OWLObject> owlObjects) {
         this.observation.clear();
         this.observation.addAll(owlObjects);
     }
 
     @Override
-    public void setSignature(Set<OWLEntity> owlEntities) {
+    public void setAbducibles(Collection<OWLEntity> owlEntities) {
         this.signature.clear();
         this.signature.addAll(owlEntities);
     }
@@ -46,7 +47,7 @@ public class SillyAbductionGenerator implements AbductionGenerator<Set<OWLObject
     }
 
     @Override
-    public Set<Set<OWLAxiom>> generateAbductions() {
+    public Set<Set<OWLAxiom>> generateHypotheses() {
         HashSet<Set<OWLAxiom>> resultSet = new HashSet<>();
         this.hypothesis.forEach(hypo -> {
             HashSet<OWLAxiom> singleResult = new HashSet<>();
