@@ -24,6 +24,8 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
@@ -35,9 +37,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     private Set<OWLObject> currentObservations;
     private AbductionSignatureSelectionUI signatureSelectionUI;
     private final Insets STANDARD_INSETS = new Insets(5, 5, 5, 5);
-    private JTabbedPane observationTabbedPane;
-    private ExpressionEditor<OWLClassAxiom> observationTBoxEditor;
-    private ExpressionEditor<OWLClassAssertionAxiom> observationABoxEditor;
+    private ExpressionEditor<OWLAxiom> observationTextEditor;
     private OWLObjectListModel<OWLObject> selectedObservationListModel;
     private JList<OWLObject> selectedObservationList;
     private JButton computeButton;
@@ -147,12 +147,12 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         constraints.weightx = 0;
         constraints.weighty = 0;
         signatureManagementPanel.add(signatureSelectionToolPanel, constraints);
-        JPanel listPane = this.signatureSelectionUI.getSelectedSignatureListPanel();
+        JPanel listPanel = this.signatureSelectionUI.getSelectedSignatureListPanel();
 //        specific for selected signature pane:
         constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.6;
-        signatureManagementPanel.add(listPane, constraints);
+        signatureManagementPanel.add(listPanel, constraints);
         return signatureManagementPanel;
     }
 
@@ -219,7 +219,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     private JPanel createObservationComponent(){
         JPanel observationHolderPanel = new JPanel();
         observationHolderPanel.setLayout(new GridBagLayout());
-        JPanel observationTabbedPanel = this.createObservationEditorTabbedPanel();
+        JPanel observationTextPanel = this.createObservationTextPanel();
         GridBagConstraints constraints = new GridBagConstraints();
 //        general constraints:
         constraints.fill = GridBagConstraints.BOTH;
@@ -228,11 +228,11 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.gridx = 0;
-//        specific for tabbed editor panel:
+//        specific for editor panel:
         constraints.gridy= 0;
         constraints.weightx = 0.3;
         constraints.weighty = 0.6;
-        observationHolderPanel.add(observationTabbedPanel, constraints);
+        observationHolderPanel.add(observationTextPanel, constraints);
         JPanel buttonPanel = this.createObservationButtonPanel();
 //        specific for button panel:
         constraints.gridy = 1;
@@ -248,24 +248,20 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         return observationHolderPanel;
     }
 
-    private JPanel createObservationEditorTabbedPanel(){
-        this.observationTabbedPane = new JTabbedPane();
-        OWLExpressionChecker<OWLClassAxiom> classAxiomChecker =
-                this.getOWLModelManager().getOWLExpressionCheckerFactory().getClassAxiomChecker();
-        this.observationTBoxEditor = new ExpressionEditor<>(this.getOWLEditorKit(), classAxiomChecker);
-        this.observationTabbedPane.addTab("OWLClassAxiom", ComponentFactory.createScrollPane(this.observationTBoxEditor));
-        OWLExpressionChecker<OWLClassAssertionAxiom> classAssertionChecker =
-                new OWLClassAssertionChecker(this.getOWLModelManager());
-        this.observationABoxEditor = new ExpressionEditor<>(this.getOWLEditorKit(), classAssertionChecker);
-        this.observationTabbedPane.addTab("OWLClassAssertionAxiom", ComponentFactory.createScrollPane(this.observationABoxEditor));
-        JPanel observationEditorHolderPanel = new JPanel(new BorderLayout());
-        observationEditorHolderPanel.add(this.observationTabbedPane, BorderLayout.CENTER);
-        observationEditorHolderPanel.setBorder(BorderFactory.createCompoundBorder(
+    private JPanel createObservationTextPanel(){
+        JPanel observationEditorPanel = new JPanel(new BorderLayout());
+        OWLExpressionChecker<OWLAxiom> logicalAxiomChecker =
+                new OWLLogicalAxiomChecker(this.getOWLModelManager());
+        this.observationTextEditor = new ExpressionEditor<>(this.getOWLEditorKit(), logicalAxiomChecker);
+        JScrollPane editorScrollPane = ComponentFactory.createScrollPane(this.observationTextEditor);
+        editorScrollPane.setPreferredSize(new Dimension(400, 400));
+        observationEditorPanel.add(editorScrollPane, BorderLayout.CENTER);
+        observationEditorPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
                         "Enter observation:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        return observationEditorHolderPanel;
+        return observationEditorPanel;
     }
 
     private JPanel createObservationButtonPanel(){
@@ -295,8 +291,24 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         JPanel observationPanel = new JPanel(new BorderLayout());
         this.selectedObservationListModel = new OWLObjectListModel<>();
         this.selectedObservationList = new JList<>(this.selectedObservationListModel);
+        this.selectedObservationList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2){
+                    JList list = (JList) e.getSource();
+                    Object selectedValue = list.getSelectedValue();
+                    if (selectedValue instanceof OWLObject){
+//                        todo: need to reverse-parse here! Thing and Nothing need to be turned to owl:Thing/owl:Nothing + check stuff other than SubClassOf
+                        observationTextEditor.setText(selectedValue.toString());
+                    }
+                }
+            }
+        });
         this.selectedObservationList.setCellRenderer(new OWLCellRendererSimple(this.getOWLEditorKit()));
-        observationPanel.add(this.selectedObservationList, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(this.selectedObservationList);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setPreferredSize(new Dimension(400, 400));
+        observationPanel.add(scrollPane, BorderLayout.CENTER);
         observationPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(),
@@ -415,28 +427,16 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
 
     private void addObservation(){
         SwingUtilities.invokeLater(() -> {
-            int tabIndex = this.observationTabbedPane.getSelectedIndex();
-            if (tabIndex == 0){
-                try {
-                    OWLClassAxiom axiomToAdd = this.observationTBoxEditor.createObject();
-                    this.selectedObservationListModel.checkAndAddElement(axiomToAdd);
-                } catch (OWLException e) {
-                    this.logger.debug("Exception caught when adding observation from TBox: " + e);
-                }
-                finally{
-                    this.selectedObservationList.clearSelection();
-                }
+            try{
+                OWLAxiom axiomToAdd = this.observationTextEditor.createObject();
+                this.selectedObservationListModel.checkAndAddElement(axiomToAdd);
             }
-            else if (tabIndex == 1){
-                try{
-                    OWLClassAssertionAxiom axiomToAdd = this.observationABoxEditor.createObject();
-                    this.selectedObservationListModel.checkAndAddElement(axiomToAdd);
-                } catch (OWLException e) {
-                    this.logger.debug("Exception caught when adding observation from ABox: " + e);
-                }
-                finally{
-                    this.selectedObservationList.clearSelection();
-                }
+            catch (OWLException e) {
+                this.logger.debug("Exception caught when trying to add observation: " + e);
+            }
+            finally {
+                this.selectedObservationList.clearSelection();
+                this.observationTextEditor.setText("");
             }
         });
     }
@@ -446,6 +446,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
             java.util.List<OWLObject> toDelete = this.selectedObservationList.getSelectedValuesList();
             this.selectedObservationListModel.removeElements(toDelete);
             this.selectedObservationList.clearSelection();
+            this.observationTextEditor.setText("");
         });
     }
 
@@ -453,6 +454,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         SwingUtilities.invokeLater(() -> {
             this.selectedObservationListModel.removeAll();
             this.selectedObservationList.clearSelection();
+            this.observationTextEditor.setText("");
         });
     }
 
@@ -487,21 +489,23 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
 
     }
 
-    private class OWLClassAssertionChecker implements OWLExpressionChecker<OWLClassAssertionAxiom>{
+    private static class OWLLogicalAxiomChecker implements OWLExpressionChecker<OWLAxiom>{
 
-        private OWLModelManager manager;
+        private final OWLModelManager manager;
 
-        public OWLClassAssertionChecker(OWLModelManager manager){
+        public OWLLogicalAxiomChecker(OWLModelManager manager){
             this.manager = manager;
         }
 
         @Override
         public void check(String input) throws OWLExpressionParserException {
-            this.createObject(input);
+            if (input.length() != 0){
+                this.createObject(input);
+            }
         }
 
         @Override
-        public OWLClassAssertionAxiom createObject(String input) throws OWLExpressionParserException {
+        public OWLAxiom createObject(String input) throws OWLExpressionParserException {
             ManchesterOWLSyntaxParser parser = new ManchesterOWLSyntaxParserImpl(
                     OWLOntologyLoaderConfiguration::new,
                     this.manager.getOWLDataFactory());
@@ -511,15 +515,13 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
             parser.setStringToParse(input);
             try {
                 OWLAxiom axiom = parser.parseAxiom();
-//                todo: check axiom for isLogicalAxiom instead (oder: wrapper der beide checkt)
-//                todo: parser für role-assertions muss eingebaut werden
-                if(axiom instanceof OWLLogicalAxiom) {
-                    return (OWLClassAssertionAxiom) axiom;
+                if(axiom.isLogicalAxiom()) {
+                    return axiom;
                 }
                 else {
                     throw new OWLExpressionParserException(
-                            "Expected a class assertion axiom of the form A Type: C"
-                            , 0, 0, true, false, false, true, false, false, Collections.emptySet());
+                            "Expected a logical axiom"
+                            , 0, 0, true, true, true, true, true, false, Collections.emptySet());
                 }
             }
             catch (ParserException e) {
