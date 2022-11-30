@@ -6,6 +6,5 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Set;
 
-// todo: hiervon erben
 public interface OWLAbductionSolver extends AbductionSolver<Set<OWLAxiom>, OWLEntity, OWLOntology, Set<OWLAxiom>> {
 }

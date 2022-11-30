@@ -115,6 +115,15 @@
             </modules>
         </profile>
         <profile>
+            <id>pluginDev</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>evee-protege</module>
+            </modules>
+        </profile>
+        <profile>
             <id>complete</id>
             <activation>
                 <activeByDefault>true</activeByDefault>

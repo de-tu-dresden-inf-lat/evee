@@ -20,6 +20,14 @@
         <bundleName>${project.artifactId}</bundleName>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>EveeLocalMavenRepository</id>
+            <name>EveeLocalMavenRepository</name>
+            <url>file:${project.basedir}/../../lib</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!--        OWLApi and Protege basics-->
         <dependency>
@@ -43,6 +51,12 @@
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!--        lethe-related-->
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lethe-owlapi4_2.12</artifactId>
+            <version>0.8-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -70,8 +84,15 @@
                             org.protege.editor.owl.*;version="4.3",
                             org.protege.editor.core.*;version="4.3",
                             de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
+                            scala.swing.*;resolution:=optional,
                             *
                         </Import-Package>
+                        <Private-Package>
+                            uk.ac.man.cs.lethe.internal.dl.*,
+                            uk.ac.man.cs.lethe.internal.application.benchmarks.*,
+                            uk.ac.man.cs.lethe.internal.forgetting.*,
+                            uk.ac.man.cs.lethe.internal.tools.*,
+                        </Private-Package>
                     </instructions>
                 </configuration>
                 <executions>

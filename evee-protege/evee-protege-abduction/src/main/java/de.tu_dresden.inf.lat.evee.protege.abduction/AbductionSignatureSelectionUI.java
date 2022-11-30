@@ -43,11 +43,11 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
     @Override
     protected void setButtonNamesAndToolTipStrings(){
         this.ADD_BTN_NAME = "Add";
-        this.ADD_BTN_TOOLTIP = "Add selected OWLObjects to \"Excluded Signature\"";
+        this.ADD_BTN_TOOLTIP = "Add selected OWLObjects to \"Selected Signature\"";
         this.DEL_BTN_NAME = "Delete";
-        this.DEL_BTN_TOOLTIP = "Delete selected OWLObjects from \"Excluded Signature\"";
+        this.DEL_BTN_TOOLTIP = "Delete selected OWLObjects from \"Selected Signature\"";
         this.CLR_BTN_NAME = "Reset";
-        this.CLR_BTN_TOOLTIP = "Remove all OWLObjects from \"Excluded Signature\"";
+        this.CLR_BTN_TOOLTIP = "Remove all OWLObjects from \"Selected Signature\"";
     }
 
 
@@ -94,7 +94,7 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         this.selectedSignatureListPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Excluded signature:"),
+                        "Selected signature:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
     }
 
@@ -104,7 +104,7 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         modelManager.removeOntologyChangeListener(this.givenSignatureOntologyChangeListener);
     }
 
-//    todo: improve!! - this class should not reach all the way back to the AbductionViewComponent just to get access to the active ontology!
+//    todo: improve - this class should not reach all the way back to the AbductionViewComponent just to get access to the active ontology!
     private OWLOntology getActiveOntology(){
         return this.abductionViewComponent.getOWLEditorKit().getOWLModelManager().getActiveOntology();
     }
