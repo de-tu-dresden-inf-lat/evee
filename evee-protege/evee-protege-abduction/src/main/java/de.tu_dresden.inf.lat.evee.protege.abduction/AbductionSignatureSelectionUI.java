@@ -122,6 +122,11 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         else{
             super.actionPerformed(e);
         }
+        this.abductionViewComponent.changeComputeButtonStatus();
+    }
+
+    protected boolean listModelIsNonEmpty(){
+        return this.selectedSignatureListModel.getSize() > 0;
     }
 
     private class GivenSignatureOWLModelChangeListener implements OWLModelManagerListener {

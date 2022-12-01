@@ -1,11 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction;
 
-import org.semanticweb.owlapi.model.OWLAxiom;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLAbductionSolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Set;
-import java.util.stream.Stream;
 
 public class AbductionSolverThread extends Thread {
 

@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.abduction;
+package de.tu_dresden.inf.lat.evee.proofs.interfaces;
 
 import java.util.Collection;
 import java.util.stream.Stream;

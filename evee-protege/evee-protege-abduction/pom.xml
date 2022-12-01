@@ -52,6 +52,11 @@
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-data-owlapi4</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--        lethe-related-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>

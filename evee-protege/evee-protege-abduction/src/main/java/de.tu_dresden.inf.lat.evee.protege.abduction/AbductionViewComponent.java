@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction;
 
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLAbductionSolver;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.model.OWLModelManager;
@@ -20,6 +21,7 @@ import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -38,7 +40,7 @@ import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 public class AbductionViewComponent extends AbstractOWLViewComponent implements ActionListener {
 
     private final AbductionGeneratorManager abductionGeneratorManager;
-    private final AbductionViewComponentOWLModelChangeListener owlModelChangeListener;
+    private final AbductionViewComponentChangeListener changeListener;
     private OWLAbductionSolver abductionSolver;
     private AbductionLoadingUI loadingUI;
     private Set<OWLAxiom> lastObservation;
@@ -93,7 +95,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         this.lastAbducibles = new ArrayList<>();
         this.parametersChanged = true;
         this.logger.debug("Object AbductionViewComponent created");
-        this.owlModelChangeListener = new AbductionViewComponentOWLModelChangeListener();
+        this.changeListener = new AbductionViewComponentChangeListener();
     }
 
     protected ArrayList<OWLObject> getObservations(){
@@ -112,7 +114,8 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         this.createSettingsComponent();
         this.createAbductionComponent();
         this.resetView();
-        this.getOWLEditorKit().getOWLModelManager().addListener(this.owlModelChangeListener);
+        this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
+        this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
         this.logger.debug("initialisation completed");
     }
 
@@ -144,7 +147,8 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     @Override
     protected void disposeOWLView() {
         this.signatureSelectionUI.dispose(this.getOWLModelManager());
-        this.getOWLEditorKit().getOWLModelManager().removeListener(this.owlModelChangeListener);
+        this.getOWLEditorKit().getOWLModelManager().removeListener(this.changeListener);
+        this.getOWLEditorKit().getOWLModelManager().removeOntologyChangeListener(this.changeListener);
     }
 
     @Override
@@ -165,10 +169,6 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         }
     }
 
-//    private JPanel createSignatureAndObservationComponent(){
-//
-//        return tabbedPaneHolderPanel;
-//    }
 
     private void createSignatureManagementComponent(){
         this.signatureSelectionUI.createSignatureSelectionComponents(this.getOWLEditorKit());
@@ -217,18 +217,6 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         return newButton;
     }
 
-//    private JPanel createSettingsAndAbductionComponent(){
-//        JPanel upperPanel = this.createSettingsComponent();
-//        JPanel lowerPanel = this.createAbductionComponent();
-//        JSplitPane observationAndAbductionPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-//                upperPanel, lowerPanel);
-//        observationAndAbductionPane.setDividerLocation(0.3);
-//        JPanel holderPanel = new JPanel();
-//        holderPanel.setLayout(new BoxLayout(holderPanel, BoxLayout.PAGE_AXIS));
-//        holderPanel.add(observationAndAbductionPane);
-//        return holderPanel;
-//    }
-
     private void createSettingsComponent(){
         this.settingsHolderPanel = new JPanel();
         this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
@@ -253,6 +241,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         this.settingsHolderPanel.add(spinnerHelperPanel);
         this.settingsHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         this.computeButton = this.createButton(this.COMPUTE_COMMAND, this.COMPUTE_NAME, this.COMPUTE_TOOLTIP);
+        this.computeButton.setEnabled(false);
         JPanel buttonHelperPanel = new JPanel();
         buttonHelperPanel.setLayout(new BoxLayout(buttonHelperPanel, BoxLayout.LINE_AXIS));
         buttonHelperPanel.add(this.computeButton);
@@ -434,19 +423,19 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
             JPanel labelAndButtonPanel = new JPanel();
             labelAndButtonPanel.setLayout(new BoxLayout(labelAndButtonPanel, BoxLayout.LINE_AXIS));
             JLabel label = new JLabel("Hypothesis " + this.hypothesisIndex);
-            this.hypothesisIndex++;
+            OWLObjectListModel<OWLAxiom> resultListModel = new OWLObjectListModel<>();
+            resultListModel.addElements(result);
+            JList<OWLAxiom> resultList = new JList<>(resultListModel);
             labelAndButtonPanel.add(label);
             labelAndButtonPanel.add(Box.createHorizontalGlue());
             JButton addToOntologyButton = new JButton(this.ADD_TO_ONTO_NAME);
             addToOntologyButton.setToolTipText(this.ADD_TO_ONTO_TOOLTIP);
             addToOntologyButton.setActionCommand(this.ADD_TO_ONTO_COMMAND);
             addToOntologyButton.addActionListener(new AddToOntologyButtonListener(
-                    this.getOWLModelManager().getActiveOntology(), result));
+                    this.getOWLModelManager().getActiveOntology(), resultList, this.hypothesisIndex));
+            this.hypothesisIndex++;
             labelAndButtonPanel.add(addToOntologyButton);
             singleResultPanel.add(labelAndButtonPanel, BorderLayout.PAGE_START);
-            OWLObjectListModel<OWLAxiom> resultListModel = new OWLObjectListModel<>();
-            resultListModel.addElements(result);
-            JList<OWLAxiom> resultList = new JList<>(resultListModel);
             OWLCellRenderer renderer = new OWLCellRenderer(this.getOWLEditorKit());
             renderer.setHighlightUnsatisfiableClasses(false);
             renderer.setHighlightUnsatisfiableProperties(false);
@@ -487,16 +476,18 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
             finally {
                 this.selectedObservationList.clearSelection();
                 this.observationTextEditor.setText("");
+                this.changeComputeButtonStatus();
             }
         });
     }
 
     private void deleteObservation(){
         SwingUtilities.invokeLater(() -> {
-            java.util.List<OWLAxiom> toDelete = this.selectedObservationList.getSelectedValuesList();
+            List<OWLAxiom> toDelete = this.selectedObservationList.getSelectedValuesList();
             this.selectedObservationListModel.removeElements(toDelete);
             this.selectedObservationList.clearSelection();
             this.observationTextEditor.setText("");
+            this.changeComputeButtonStatus();
         });
     }
 
@@ -505,6 +496,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
             this.selectedObservationListModel.removeAll();
             this.selectedObservationList.clearSelection();
             this.observationTextEditor.setText("");
+            this.changeComputeButtonStatus();
         });
     }
 
@@ -522,42 +514,89 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         }
     }
 
+    protected void changeComputeButtonStatus(){
+        SwingUtilities.invokeLater(() -> {
+                this.computeButton.setEnabled(this.selectedObservationListModel.getSize() > 0 &&
+                        this.signatureSelectionUI.listModelIsNonEmpty());
+        });
+    }
 
-    private class AbductionViewComponentOWLModelChangeListener implements OWLModelManagerListener {
+    private class AbductionViewComponentChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {
 
         @Override
         public void handleChange(OWLModelManagerChangeEvent changeEvent) {
             SwingUtilities.invokeLater(() -> {
-                if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) || changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
+                if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
+                        changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
                     selectedObservationListModel.removeAll();
-                    abductionSolver.setOntology(getOWLModelManager().getActiveOntology());
-                    createAbductionComponent();
-                    resetView();
+                    change();
                 }
             });
+        }
+
+        @Override
+        public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> list) {
+            change();
+        }
+
+        private void change(){
+            abductionSolver.setOntology(getOWLModelManager().getActiveOntology());
+            hypothesisIndex = 1;
+            createAbductionComponent();
+            resetView();
+            changeComputeButtonStatus();
         }
     }
 
     private class AddToOntologyButtonListener implements ActionListener{
 
-        boolean alreadyAdded = false;
         private final OWLOntology ontology;
-        private final Set<OWLAxiom> newAxioms;
+        private final JList<OWLAxiom> axiomList;
+        private final int hypothesisIndex;
         private final Logger logger = LoggerFactory.getLogger(AddToOntologyButtonListener.class);
 
-        private AddToOntologyButtonListener(OWLOntology ontology, Set<OWLAxiom> newAxioms){
+        private AddToOntologyButtonListener(OWLOntology ontology, JList<OWLAxiom> axiomList, int index){
             this.ontology = ontology;
-            this.newAxioms = newAxioms;
+            this.axiomList = axiomList;
+            this.hypothesisIndex = index;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             this.logger.debug("Button AddToOntology clicked");
-            if (e.getActionCommand().equals(ADD_TO_ONTO_COMMAND) && !alreadyAdded){
+            if (e.getActionCommand().equals(ADD_TO_ONTO_COMMAND)){
                 this.logger.debug("Adding new Axioms to Ontology:");
-                this.newAxioms.forEach(axiom -> this.logger.debug(axiom.toString()));
-                this.ontology.getOWLOntologyManager().addAxioms(this.ontology, newAxioms);
-                alreadyAdded = true;
+                SwingUtilities.invokeLater(() -> {
+                    Set<OWLAxiom> selectedAxioms = new HashSet<>(axiomList.getSelectedValuesList());
+                    String msgString = "";
+                    if (selectedAxioms.size() == 0){
+                        for (int index = 0; index < axiomList.getModel().getSize(); index++){
+                            selectedAxioms.add(axiomList.getModel().getElementAt(index));
+                        }
+                        msgString += "All axioms ";
+                    }
+                    else {
+                        if (selectedAxioms.size() == 1){
+                            msgString += "Selected axiom ";
+                        }
+                        else{
+                            msgString += "Selected " + selectedAxioms.size() + " axioms ";
+                        }
+                    }
+                    selectedAxioms.forEach(axiom -> {
+                        this.logger.debug(axiom.toString());
+                        this.ontology.getOWLOntologyManager().addAxiom(this.ontology, axiom);
+                    });
+                    msgString += "of hypothesis " + hypothesisIndex + " added to ontology.";
+                    JOptionPane msgPane = new JOptionPane(msgString, JOptionPane.INFORMATION_MESSAGE);
+                    JDialog errorDialog = msgPane.createDialog(ProtegeManager.getInstance().getFrame(
+                            getOWLEditorKit().getWorkspace()), "Added to ontology");
+                    errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+                    errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                            ProtegeManager.getInstance().getFrame(getOWLEditorKit().getWorkspace())));
+                    errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    errorDialog.setVisible(true);
+                });
             }
         }
 

@@ -1,18 +1,13 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction;
 
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLOntology;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLAbductionSolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
 import java.util.Vector;
-import java.util.stream.Stream;
 
 public class AbductionGeneratorManager implements ActionListener {
 
