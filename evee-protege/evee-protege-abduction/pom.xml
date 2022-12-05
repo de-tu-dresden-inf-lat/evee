@@ -63,6 +63,11 @@
             <artifactId>lethe-owlapi4_2.12</artifactId>
             <version>0.8-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lethe-abduction-owlapi4_2.12</artifactId>
+            <version>0.8-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 
@@ -97,6 +102,8 @@
                             uk.ac.man.cs.lethe.internal.application.benchmarks.*,
                             uk.ac.man.cs.lethe.internal.forgetting.*,
                             uk.ac.man.cs.lethe.internal.tools.*,
+                            uk.ac.man.cs.lethe.abduction.*,
+                            uk.ac.man.cs.lethe.interpolation.*,
                         </Private-Package>
                     </instructions>
                 </configuration>

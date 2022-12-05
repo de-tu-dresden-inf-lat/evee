@@ -4,9 +4,9 @@ import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
-import uk.ac.man.cs.lethe.internal.dl.abduction.forgetting.ConjunctiveDLStatement;
-import uk.ac.man.cs.lethe.internal.dl.abduction.forgetting.GreatestFixpoint;
-import uk.ac.man.cs.lethe.internal.dl.abduction.forgetting.LeastFixpoint;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.ConjunctiveDLStatement;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.GreatestFixpoint;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.LeastFixpoint;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.*;
 
 import java.util.*;

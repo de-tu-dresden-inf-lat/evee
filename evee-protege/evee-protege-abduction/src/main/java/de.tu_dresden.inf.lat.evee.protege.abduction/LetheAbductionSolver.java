@@ -4,9 +4,9 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLAbductionSolver;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.man.cs.lethe.internal.dl.abduction.OWLAbducer;
-import uk.ac.man.cs.lethe.internal.dl.abduction.forgetting.ConjunctiveDLStatement;
-import uk.ac.man.cs.lethe.internal.dl.abduction.forgetting.DisjunctiveDLStatement;
+import uk.ac.man.cs.lethe.abduction.OWLAbducer;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.ConjunctiveDLStatement;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.*;
 
 import java.util.*;
