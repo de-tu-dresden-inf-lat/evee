@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 public class AbductionSolverThread extends Thread {
 
     private final AbductionViewComponent viewComponent;
-    private final OWLAbductionSolver abductionSolver;
+    private final AbstractAbductionSolver abductionSolver;
 
     private final Logger logger = LoggerFactory.getLogger(AbductionSolverThread.class);
 
-    public AbductionSolverThread(AbductionViewComponent viewComponent, OWLAbductionSolver abductionSolver){
+    public AbductionSolverThread(AbductionViewComponent viewComponent, AbstractAbductionSolver abductionSolver){
         super.setName("Evee Abduction Generation Thread");
         this.viewComponent = viewComponent;
         this.abductionSolver = abductionSolver;
@@ -21,9 +21,9 @@ public class AbductionSolverThread extends Thread {
         this.logger.debug("Abduction generation thread started");
         assert(abductionSolver != null);
         try{
-            this.abductionSolver.generateHypotheses();
+            this.abductionSolver.abduce();
         }
-        catch (Exception e){
+        catch (Throwable e){
             this.logger.error("Error during abduction generation:\n" + e);
             this.viewComponent.abductionGenerationCompleted();
             this.viewComponent.showError(e.toString());

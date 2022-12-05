@@ -26,6 +26,12 @@
             <artifactId>org.semanticweb.hermit</artifactId>
             <version>1.3.8.413</version>
         </dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_2.12</artifactId>
+            <version>3.0.8</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -58,24 +64,10 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.2</version>
-                <executions>
-                    <execution>
-                        <id>test-resources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <classesDirectory>${project.basedir}/src/test/resources</classesDirectory>
-                            <classifier>test-resources</classifier>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
+
         </plugins>
+
     </build>
 
 </project>

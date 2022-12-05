@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.tu-dresden.inf.lat</groupId>
-  <artifactId>lethe-core_2.12</artifactId>
+  <artifactId>lethe-abduction-owlapi4_2.12</artifactId>
   <version>0.8-SNAPSHOT</version>
   <description>POM was created from install:install-file</description>
 </project>
