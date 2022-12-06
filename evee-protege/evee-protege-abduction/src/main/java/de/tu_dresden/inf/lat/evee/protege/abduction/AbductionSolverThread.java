@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction;
 
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLAbductionSolver;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.AbductionViewComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +25,13 @@ public class AbductionSolverThread extends Thread {
         }
         catch (Throwable e){
             this.logger.error("Error during abduction generation:\n" + e);
-            this.viewComponent.abductionGenerationCompleted();
+//            this.viewComponent.abductionGenerationCompleted();
             this.viewComponent.showError(e.toString());
         }
         finally{
             this.logger.debug("Abduction generation completed successfully");
-            this.viewComponent.abductionGenerationCompleted();
-            this.viewComponent.showResults();
+//            this.viewComponent.abductionGenerationCompleted();
+//            this.viewComponent.showResults();
         }
     }
 

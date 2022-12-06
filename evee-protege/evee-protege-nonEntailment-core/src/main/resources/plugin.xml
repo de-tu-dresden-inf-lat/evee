@@ -5,7 +5,7 @@
     <extension id="AbductionManageSignatureView"
                point="org.protege.editor.core.application.ViewComponent">
         <label value="Abductions"/>
-        <class value="de.tu_dresden.inf.lat.evee.protege.abduction.AbductionViewComponent"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.AbductionViewComponent"/>
         <headerColor value="@org.protege.classcolor"/>
         <category value="@org.protege.miscellaneous"/>
     </extension>

@@ -10,7 +10,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>evee-protege-abduction</artifactId>
+    <artifactId>evee-protege-nonEntailment-core</artifactId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -49,25 +49,16 @@
         <!--        evee-related-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-data-owlapi4</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-protege-nonEntailment-core</artifactId>
+            <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lethe-abduction-owlapi4_2.12</artifactId>
-            <version>0.8-SNAPSHOT</version>
-        </dependency>
     </dependencies>
+
 
     <build>
         <plugins>

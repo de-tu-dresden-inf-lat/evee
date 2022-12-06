@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.abduction;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.AbstractSignatureSelectionUI;
 import org.protege.editor.owl.OWLEditorKit;

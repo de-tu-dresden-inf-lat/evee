@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.proofs.interfaces;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-public interface AbductionSolver<Observation, Abducible, Ontology, Hypothesis> {
+public interface NonEntailmentExplainer<Observation, Abducible, Ontology, Hypothesis> {
 
     void setObservation(Observation observation);
 
