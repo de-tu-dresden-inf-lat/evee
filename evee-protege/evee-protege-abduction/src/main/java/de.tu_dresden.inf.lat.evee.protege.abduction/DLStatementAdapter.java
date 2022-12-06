@@ -69,31 +69,33 @@ public class DLStatementAdapter {
                 return null;
             }
         }
-        List<Integer> nextLevelList = this.levelList.poll();
+        else{
+            List<Integer> nextLevelList = this.levelList.poll();
 //        no more results for current maxLevel
-        if (nextLevelList == null){
-            this.logger.debug("no new results for this level, returning null");
-            return null;
-        }
-        this.logger.debug("unraveling new result");
-        int index = 0;
-        for (String converter : this.fixpointCurrentLevelMap.keySet()){
-            this.fixpointCurrentLevelMap.put(converter, nextLevelList.get(index));
-            index+= 1;
-        }
-        DLStatement statement = this.statement;
-        for (String fixpointName : this.fixpointCurrentLevelMap.keySet()){
-            FixpointAdapter adapter = this.fixpointAdapterMap.get(fixpointName);
-            statement = new Substitution(adapter.getFixpointConcept(), adapter.unravel(
-                    this.fixpointCurrentLevelMap.get(fixpointName))).apply(statement);
-        }
-        result.addAll(JavaConverters.setAsJavaSet(new OWLExporter().toOwl(null,
-                CheapSimplifier$.MODULE$.simplify(statement))));
+            if (nextLevelList == null){
+                this.logger.debug("no new results for this level, returning null");
+                return null;
+            }
+            this.logger.debug("unraveling new result");
+            int index = 0;
+            for (String converter : this.fixpointCurrentLevelMap.keySet()){
+                this.fixpointCurrentLevelMap.put(converter, nextLevelList.get(index));
+                index+= 1;
+            }
+            DLStatement statement = this.statement;
+            for (String fixpointName : this.fixpointCurrentLevelMap.keySet()){
+                FixpointAdapter adapter = this.fixpointAdapterMap.get(fixpointName);
+                statement = new Substitution(adapter.getFixpointConcept(), adapter.unravel(
+                        this.fixpointCurrentLevelMap.get(fixpointName))).apply(statement);
+            }
+            result.addAll(JavaConverters.setAsJavaSet(new OWLExporter().toOwl(null,
+                    CheapSimplifier$.MODULE$.simplify(statement))));
 //        for (DLStatement innerStatement :
 //                JavaConverters.setAsJavaSet((this.statement).statements())){
 //            result.add(convert(innerStatement, null, null));
 //        }
-        return result;
+            return result;
+        }
     }
 
     protected void setMaxLevel(int newLevel){
