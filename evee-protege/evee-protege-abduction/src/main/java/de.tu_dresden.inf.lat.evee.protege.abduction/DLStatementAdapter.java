@@ -83,11 +83,14 @@ public class DLStatementAdapter {
                 index+= 1;
             }
             DLStatement statement = this.statement;
+            this.logger.debug("statement in the beginning:\n" + statement);
             for (String fixpointName : this.fixpointCurrentLevelMap.keySet()){
                 FixpointAdapter adapter = this.fixpointAdapterMap.get(fixpointName);
-                statement = new Substitution(adapter.getFixpointConcept(), adapter.unravel(
+                statement = new Substitution(adapter.getFixpoint(), adapter.unravel(
                         this.fixpointCurrentLevelMap.get(fixpointName))).apply(statement);
+                this.logger.debug("statement at end of for-loop:\n" + statement);
             }
+            this.logger.debug("finalised statement:\n" + statement);
             result.addAll(JavaConverters.setAsJavaSet(new OWLExporter().toOwl(null,
                     CheapSimplifier$.MODULE$.simplify(statement))));
 //        for (DLStatement innerStatement :
@@ -381,13 +384,13 @@ public class DLStatementAdapter {
     protected void findFixpoint(Concept c){
         if (c instanceof LeastFixpoint){
             LeastFixpoint lfp = (LeastFixpoint) c;
-            FixpointAdapter adapter = new FixpointAdapter(lfp.concept(), lfp.variable(),
+            FixpointAdapter adapter = new FixpointAdapter(lfp, lfp.concept(), lfp.variable(),
                     BottomConcept$.MODULE$);
             this.fixpointAdapterMap.put(lfp.variable().name(), adapter);
         }
         else if (c instanceof  GreatestFixpoint){
             GreatestFixpoint gfp = (GreatestFixpoint) c;
-            FixpointAdapter adapter = new FixpointAdapter(gfp.concept(), gfp.variable(),
+            FixpointAdapter adapter = new FixpointAdapter(gfp, gfp.concept(), gfp.variable(),
                     TopConcept$.MODULE$);
             this.fixpointAdapterMap.put(gfp.variable().name(), adapter);
         }

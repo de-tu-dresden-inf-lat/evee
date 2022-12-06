@@ -8,12 +8,14 @@ import java.util.Map;
 
 public class FixpointAdapter {
 
-    private final Concept fixpointConcept;
-    private final Concept fixpointVariable;
+    private final Concept fixpoint; // LFP.X1(A u X1)
+    private final Concept fixpointConcept; // A u X1
+    private final Concept fixpointVariable; // X1
     private final Map<Integer, Concept> levelToExpressionMap;
     private Integer currentMaxLevel;
 
-    public FixpointAdapter(Concept fixpointConcept, Concept fixpointVariable, Concept baseConcept){
+    public FixpointAdapter(Concept fixpoint, Concept fixpointConcept, Concept fixpointVariable, Concept baseConcept){
+        this.fixpoint = fixpoint;
         this.fixpointConcept = fixpointConcept;
         this.fixpointVariable = fixpointVariable;
         this.levelToExpressionMap = new HashMap<>();
@@ -23,8 +25,8 @@ public class FixpointAdapter {
         this.levelToExpressionMap.put(this.currentMaxLevel, levelZero);
     }
 
-    public Concept getFixpointConcept(){
-        return this.fixpointConcept;
+    public Concept getFixpoint(){
+        return this.fixpoint;
     }
 
     protected Concept unravel(int level) {
