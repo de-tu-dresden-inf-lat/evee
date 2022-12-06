@@ -11,7 +11,7 @@ import java.util.Vector;
 
 public class AbductionGeneratorManager implements ActionListener {
 
-    private OWLAbductionSolver currentAbductionSolver;
+    private AbstractAbductionSolver currentAbductionSolver;
     private final LetheAbductionSolver letheAbductionSolver;
     private final String LETHE_ABDUCTION_SOLVER = "Abduction Solver (Lethe)";
     private final Logger logger = LoggerFactory.getLogger(AbductionGeneratorManager.class);
@@ -21,7 +21,7 @@ public class AbductionGeneratorManager implements ActionListener {
         this.currentAbductionSolver = this.letheAbductionSolver;
     }
 
-    public OWLAbductionSolver getCurrentAbductionGenerator(){
+    public AbstractAbductionSolver getCurrentAbductionGenerator(){
         return this.currentAbductionSolver;
     }
 

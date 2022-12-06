@@ -41,7 +41,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
 
     private final AbductionGeneratorManager abductionGeneratorManager;
     private final AbductionViewComponentChangeListener changeListener;
-    private OWLAbductionSolver abductionSolver;
+    private AbstractAbductionSolver abductionSolver;
     private AbductionLoadingUI loadingUI;
     private Set<OWLAxiom> lastObservation;
     private List<OWLEntity> lastAbducibles;
