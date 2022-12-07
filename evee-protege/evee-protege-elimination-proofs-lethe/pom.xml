@@ -106,6 +106,7 @@
                             uk.ac.man.cs.lethe.internal.application.benchmarks.*,
                             uk.ac.man.cs.lethe.internal.forgetting.*,
                             uk.ac.man.cs.lethe.internal.tools.*;-split-package:=merge-last,
+                            uk.ac.man.cs.lethe.interpolation.*,
                             guru.nidi.graphviz.attribute.*,
                             guru.nidi.graphviz.engine.*,
                             guru.nidi.graphviz.model.*,
