@@ -1,5 +1,11 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction;
 
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationService;
+import org.protege.editor.core.ProtegeManager;
+import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.model.event.EventType;
+import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
+import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,36 +14,39 @@ import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.ConjunctiveDLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.*;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class LetheAbductionSolver extends AbstractAbductionSolver implements Supplier<Set<OWLAxiom>> {
+public class LetheAbductionSolver implements NonEntailmentExplanationService, Supplier<Set<OWLAxiom>> {
 
     private Set<OWLAxiom> observation = null;
     private Collection<OWLEntity> abducibles = null;
     private OWLOntology activeOntology = null;
-    private final OWLAbducer abducer = new OWLAbducer();
+    private OWLEditorKit owlEditorKit;
+    private AbductionLoadingUI loadingUI;
+    private final LetheAbductionSolverOntologyChangeListener changeListener;
+    private final OWLAbducer abducer;
     private final List<DLStatementAdapter> resultConverterList;
     private final Map<OWLOntology, DLStatementCache> ontoStatementMap;
     private int maxLevel;
     private int currentConverterIndex;
     boolean continueStream = false;
+    private final static String SERVICE_NAME = "Abduction Solver (Lethe)";
+    private final static String LOADING = "LOADING";
 
     private final Logger logger = LoggerFactory.getLogger(LetheAbductionSolver.class);
 
     public LetheAbductionSolver(){
+        this.changeListener = new LetheAbductionSolverOntologyChangeListener();
         this.observation = new HashSet<>();
         this.resultConverterList = new ArrayList<>();
         this.ontoStatementMap = new HashMap<>();
+        this.abducer  = new OWLAbducer();
         this.maxLevel = 0;
         this.currentConverterIndex = 0;
     }
@@ -57,10 +66,6 @@ public class LetheAbductionSolver extends AbstractAbductionSolver implements Sup
     @Override
     public void setOntology(OWLOntology ontology) {
         this.activeOntology = ontology;
-        this.logger.debug("Resetting DLStatementCache for ontology " + this.activeOntology.getOntologyID().getOntologyIRI());
-        DLStatementCache newCache = new DLStatementCache();
-        this.ontoStatementMap.put(activeOntology, newCache);
-        this.continueStream = false;
     }
 
     @Override
@@ -124,25 +129,27 @@ public class LetheAbductionSolver extends AbstractAbductionSolver implements Sup
     }
 
     @Override
-    public void abduce() {
+    public void setup(OWLEditorKit editorKit) {
+        this.owlEditorKit = editorKit;
+    }
+
+    @Override
+    public String getName() {
+        return SERVICE_NAME;
+    }
+
+    @Override
+    public void computeExplanation() {
         this.logger.debug("Computing new abduction");
         assert (this.activeOntology != null);
         assert (this.observation != null);
         assert (this.abducibles != null);
         this.abducer.setBackgroundOntology(this.activeOntology);
         this.abducer.setAbducibles(new HashSet<>(this.abducibles));
-        DLStatement hypotheses = this.abducer.abduce(this.observation);
-        this.ontoStatementMap.get(this.activeOntology).putStatement(this.observation, this.abducibles, hypotheses);
-    }
-
-    @Override
-    public void computeNonEntailmentExplanation() {
-
-    }
-
-    @Override
-    public void addListener(ActionListener listener) {
-
+        AbductionSolverThread thread = new AbductionSolverThread(this, this.abducer, this.observation);
+        this.loadingUI = new AbductionLoadingUI(LOADING, this.owlEditorKit);
+        this.loadingUI.showLoadingScreen();
+        thread.start();
     }
 
     @Override
@@ -150,6 +157,62 @@ public class LetheAbductionSolver extends AbstractAbductionSolver implements Sup
         return null;
     }
 
+    @Override
+    public void initialise() {
+        this.owlEditorKit.getOWLModelManager().addOntologyChangeListener(this.changeListener);
+        this.resetCache();
+    }
+
+    @Override
+    public void dispose() {
+        this.owlEditorKit.getOWLModelManager().removeOntologyChangeListener(this.changeListener);
+    }
+
+    protected void computationCompleted(DLStatement hypotheses){
+        this.ontoStatementMap.get(this.activeOntology).putStatement(this.observation, this.abducibles, hypotheses);
+    }
+
+    private void resetCache(){
+        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+        this.logger.debug("Resetting DLStatementCache for ontology " + ontology.getOntologyID().getOntologyIRI());
+        DLStatementCache newCache = new DLStatementCache();
+        this.ontoStatementMap.put(ontology, newCache);
+        this.continueStream = false;
+    }
+
+    public void showResults(){
+        DLStatement result = this.ontoStatementMap.get(this.activeOntology).getStatement(this.observation, this.abducibles);
+        assert (result != null);
+
+//        this.resultHolderPanel.removeAll();
+//        this.resultHolderPanel.add(component);
+//        this.holderPanel.repaint();
+    }
+
+    protected void disposeLoadingScreen(){
+        this.loadingUI.disposeLoadingScreen();
+    }
+
+    public void showError(String message){
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
+                    this.owlEditorKit.getWorkspace()), "Error");
+            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                    ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace())));
+            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            errorDialog.setVisible(true);
+        });
+    }
+
+    private class LetheAbductionSolverOntologyChangeListener implements OWLOntologyChangeListener {
+
+        @Override
+        public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> list) {
+            resetCache();
+        }
+    }
 
 //    leftover from computeAbductions:
     //        this.logger.debug("Hypotheses requested, checking if new results need to be calculated");
@@ -226,10 +289,6 @@ public class LetheAbductionSolver extends AbstractAbductionSolver implements Sup
 //        singleResultPanel.add(singleResultScrollPane, BorderLayout.CENTER);
 //
 //        this.resultScrollingPanel.add(singleResultPanel);
-//    }
-
-//    public void abductionGenerationCompleted(){
-//        this.loadingUI.disposeLoadingScreen();
 //    }
 
 //    leftover from createAbductionComponent

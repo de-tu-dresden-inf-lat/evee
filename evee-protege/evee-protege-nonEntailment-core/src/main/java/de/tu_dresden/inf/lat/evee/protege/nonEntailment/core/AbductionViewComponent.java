@@ -1,7 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLNonEntailmentExplainer;
-import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.classexpression.OWLExpressionParserException;
@@ -36,7 +35,7 @@ import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 public class AbductionViewComponent extends AbstractOWLViewComponent implements ActionListener {
 
     private final NonEntailmentExplainerManager nonEntailmentExplainerManager;
-    private final OntologyChangeListener changeListener;
+    private final ViewComponentOntologyChangeListener changeListener;
 
     private AbductionSignatureSelectionUI signatureSelectionUI;
     private final Insets STANDARD_INSETS = new Insets(5, 5, 5, 5);
@@ -70,13 +69,14 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     private final String RESET_OBSERVATION_TOOLTIP = "Delete all axioms from observation";
     private final String SETTINGS_LABEL = "Maximal number of hypotheses:";
     private final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
+//    public static final String COMPUTATION_COMPLETE = "COMPUTATION_COMPLETE";
 
     private final Logger logger = LoggerFactory.getLogger(AbductionViewComponent.class);
 
     public AbductionViewComponent(){
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
         this.logger.debug("Object AbductionViewComponent created");
-        this.changeListener = new OntologyChangeListener();
+        this.changeListener = new ViewComponentOntologyChangeListener();
     }
 
     protected ArrayList<OWLObject> getObservations(){
@@ -97,6 +97,16 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         this.resetView();
         this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
+        NonEntailmentExplanationPluginLoader loader = new NonEntailmentExplanationPluginLoader(this.getOWLEditorKit());
+        for (NonEntailmentExplanationPlugin plugin : loader.getPlugins()){
+            try{
+                NonEntailmentExplanationService service = plugin.newInstance();
+                this.nonEntailmentExplainerManager.registerNonEntailmentExplanationService(service);
+            }
+            catch (Exception e){
+                this.logger.error("Error during non-entailment explanation service initialisation:\n" + e);
+            }
+        }
         this.logger.debug("initialisation completed");
     }
 
@@ -147,6 +157,10 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
             case RESET_OBSERVATION_COMMAND:
                 this.resetObservation();
                 break;
+//            case COMPUTATION_COMPLETE:
+//                if (e.getSource() instanceof  AbstractNonEntailmentExplainer){
+//                    this.showResults(((AbstractNonEntailmentExplainer) e.getSource()).getResultComponent());
+//                }
         }
     }
 
@@ -201,9 +215,9 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     private void createSettingsComponent(){
         this.settingsHolderPanel = new JPanel();
         this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
-        Vector<String> abductionNames = this.nonEntailmentExplainerManager.getAbductionGeneratorNames();
+        Vector<String> abductionNames = this.nonEntailmentExplainerManager.getExplanationServiceNames();
         JComboBox<String> abductionNamesComboBox = new JComboBox<>(abductionNames);
-        abductionNamesComboBox.setSelectedItem(this.nonEntailmentExplainerManager.getCurrentAbductionGeneratorName());
+//        abductionNamesComboBox.setSelectedItem(this.nonEntailmentExplainerManager.getCurrentAbductionGeneratorName());
 //        abductionNamesComboBox.setSelectedIndex(0);
         abductionNamesComboBox.addActionListener(this.nonEntailmentExplainerManager);
         this.settingsHolderPanel.add(abductionNamesComboBox);
@@ -354,25 +368,6 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         explainer.generateHypotheses();
     }
 
-
-    public void showResults(Component component){
-        this.resultHolderPanel.removeAll();
-        this.resultHolderPanel.add(component);
-        this.holderPanel.repaint();
-    }
-
-    public void showError(String message){
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace()), "Error");
-            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace())));
-            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            errorDialog.setVisible(true);
-        });
-    }
-
     private void addObservation(){
         SwingUtilities.invokeLater(() -> {
             try{
@@ -426,7 +421,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         });
     }
 
-    private class OntologyChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {
+    private class ViewComponentOntologyChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {
 
         @Override
         public void handleChange(OWLModelManagerChangeEvent changeEvent) {
