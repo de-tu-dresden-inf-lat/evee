@@ -12,10 +12,8 @@ import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofWriter
 import org.semanticweb.HermiT.ReasonerFactory
 
 import scala.collection.JavaConverters._
-import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.{IRI, OWLAxiom, OWLClass, OWLClassExpression, OWLOntology}
 import org.semanticweb.owlapi.reasoner.Node
-import uk.ac.man.cs.lethe.internal.dl.datatypes.OntologyFilter
 import uk.ac.man.cs.lethe.internal.dl.filters.OWLOntologyFilters
 
 import scala.io.Source
