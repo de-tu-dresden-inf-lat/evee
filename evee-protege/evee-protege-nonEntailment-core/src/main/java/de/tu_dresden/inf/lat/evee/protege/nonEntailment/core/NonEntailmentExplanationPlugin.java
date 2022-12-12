@@ -8,24 +8,13 @@ public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<NonEnt
 
     private final OWLEditorKit owlEditorKit;
 
-//    todo: why should we use type and name??
-//    public static final String TYPE_PARAM = "type";
-//    public static final String NAME = "name";
-    public static final String PLUGIN_ID = "de.tu-dresden.inf.lat.evee";
-    public static final String EXTENSION_POINT_ID = "nonEntailmentExplainer";
+    public static final String PLUGIN_ID = "de.tu_dresden.inf.lat.evee.protege.nonEntailment.core";
+    public static final String EXTENSION_POINT_ID = "service";
 
     protected NonEntailmentExplanationPlugin(OWLEditorKit editorKit, IExtension extension) {
         super(extension);
         this.owlEditorKit = editorKit;
     }
-
-//    public String getType() {
-//        return getPluginProperty(TYPE_PARAM, "null type");
-//    }
-//
-//    public String getName() {
-//        return NAME;
-//    }
 
     public NonEntailmentExplanationService newInstance() throws ClassNotFoundException, IllegalAccessException,
             InstantiationException {

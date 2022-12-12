@@ -7,10 +7,12 @@ public interface NonEntailmentExplainer<Observation, Abducible, Ontology, Hypoth
 
     void setObservation(Observation observation);
 
-    void setAbducibles(Collection<Abducible> abducibles);
+    void setSignature(Collection<Abducible> abducibles);
 
     void setOntology(Ontology ontology);
 
     Stream<Hypothesis> generateHypotheses();
+
+    boolean supportsMultiObservation();
 
 }

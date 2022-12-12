@@ -21,14 +21,25 @@ public class DLStatementCache {
         this.statementList = new ArrayList<>();
     }
 
-    protected DLStatement getStatement(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenAbducibles){
+    protected boolean containsStatement(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenAbducibles){
         for (int idx = 0; idx < this.observationList.size(); idx ++){
             if (this.observationList.get(idx).equals(givenObservation) &&
                     this.abducibleList.get(idx).equals(givenAbducibles)){
-                return this.statementList.get(idx);
+                return true;
             }
         }
-        return null;
+        return false;
+    }
+
+    protected DLStatement getStatement(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenAbducibles){
+        DLStatement statement = null;
+        for (int idx = 0; idx < this.observationList.size(); idx ++){
+            if (this.observationList.get(idx).equals(givenObservation) &&
+                    this.abducibleList.get(idx).equals(givenAbducibles)){
+                statement = this.statementList.get(idx);
+            }
+        }
+        return statement;
     }
 
     protected void putStatement(Set<OWLAxiom> observation, Collection<OWLEntity> abducibles, DLStatement statement){
