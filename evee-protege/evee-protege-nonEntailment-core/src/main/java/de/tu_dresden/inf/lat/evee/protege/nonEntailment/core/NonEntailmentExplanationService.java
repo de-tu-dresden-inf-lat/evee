@@ -10,10 +10,10 @@ public interface NonEntailmentExplanationService extends OWLNonEntailmentExplain
 
     void setup(OWLEditorKit editorKit);
 
-    /**
-     * @return The name which is shown in the dropdown menu when selecting services.
-     */
-    String getName();
+//    /**
+//     * @return The name which is shown in the dropdown menu when selecting services.
+//     */
+//    String getName();
 
     /**
      * This method is called when the user hits the "compute"-button.

@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,6 +54,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     private JButton addObservationButton;
     private JButton deleteObservationButton;
     private JButton resetObservationButton;
+    private JPanel splitPaneHolderPanel;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
     private static final String COMPUTE_NAME = "Compute";
     private static final String COMPUTE_TOOLTIP = "Compute non-entailment explanation using Selected Signature and Observation";
@@ -90,14 +92,15 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 NonEntailmentExplanationService service = plugin.newInstance();
                 service.setup(this.getOWLEditorKit());
                 service.initialise();
-                this.nonEntailmentExplainerManager.registerNonEntailmentExplanationService(service);
+                service.registerListener(this);
+                this.nonEntailmentExplainerManager.registerNonEntailmentExplanationService(service, plugin.getName());
             }
             catch (Exception e){
                 this.logger.error("Error while loading non-entailment explanation plugin:\n" + e);
             }
         }
         SwingUtilities.invokeLater(() -> {
-            this.setLayout(new BorderLayout(10, 10));
+            this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             this.createGeneralSettingsComponent();
             this.createSignatureManagementComponent();
             this.createObservationComponent();
@@ -109,14 +112,17 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     private void resetView(){
-        this.signatureAndObservationPanel = new JPanel(new BorderLayout());
+        this.holderPanel = new JPanel(new GridBagLayout());
+        this.signatureAndObservationPanel = new JPanel();
+        this.signatureAndObservationPanel.setLayout(new BoxLayout(this.signatureAndObservationPanel, BoxLayout.PAGE_AXIS));
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Signature", this.signatureManagementPanel);
         tabbedPane.addTab("Observation", this.observationManagementPanel);
-        this.signatureAndObservationPanel.add(tabbedPane, BorderLayout.CENTER);
+        this.signatureAndObservationPanel.add(tabbedPane);
         this.nonEntailmentExplanationServicePanel = new JPanel();
         this.nonEntailmentExplanationServicePanel.setLayout(new BoxLayout(this.nonEntailmentExplanationServicePanel, BoxLayout.PAGE_AXIS));
-        this.resultHolderPanel = new JPanel(new BorderLayout());
+        this.resultHolderPanel = new JPanel();
+        this.resultHolderPanel.setLayout(new BoxLayout(this.resultHolderPanel, BoxLayout.PAGE_AXIS));
         NonEntailmentExplanationService explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
         if (explainer != null){
             if (explainer.getSettingsComponent() != null){
@@ -136,12 +142,30 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 this.signatureAndObservationPanel,
                 this.nonEntailmentExplanationServicePanel);
         this.outerSplitPane.setDividerLocation(0.3);
-        this.holderPanel = new JPanel();
-        this.holderPanel.setLayout(new BoxLayout(this.holderPanel, BoxLayout.PAGE_AXIS));
-        this.holderPanel.add(this.serviceSelectionPanel);
-        this.holderPanel.add(this.outerSplitPane);
+        this.splitPaneHolderPanel = new JPanel();
+        this.splitPaneHolderPanel.setLayout(new BoxLayout(this.splitPaneHolderPanel, BoxLayout.PAGE_AXIS));
+        this.splitPaneHolderPanel.add(this.outerSplitPane);
+        GridBagConstraints constraints = new GridBagConstraints();
+//        general constraints:
+        constraints.insets = this.STANDARD_INSETS;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.gridx = 0;
+//        upper panel constraints:
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.0;
+        this.holderPanel.add(this.serviceSelectionPanel, constraints);
+//        lower panel constraints:
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.9;
+        this.holderPanel.add(this.splitPaneHolderPanel, constraints);
         this.removeAll();
-        this.add(holderPanel, BorderLayout.CENTER);
+        this.add(holderPanel);
         this.repaint();
         this.revalidate();
     }
@@ -151,6 +175,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         this.signatureSelectionUI.dispose(this.getOWLModelManager());
         this.getOWLEditorKit().getOWLModelManager().removeListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().removeOntologyChangeListener(this.changeListener);
+        this.nonEntailmentExplainerManager.dispose();
     }
 
     @Override
@@ -250,13 +275,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     private JPanel createObservationTextPanel(){
-        JPanel observationEditorPanel = new JPanel(new BorderLayout());
+        JPanel observationEditorPanel = new JPanel();
+        observationEditorPanel.setLayout(new BoxLayout(observationEditorPanel, BoxLayout.PAGE_AXIS));
         OWLExpressionChecker<OWLAxiom> logicalAxiomChecker =
                 new OWLLogicalAxiomChecker(this.getOWLModelManager());
         this.observationTextEditor = new ExpressionEditor<>(this.getOWLEditorKit(), logicalAxiomChecker);
         JScrollPane editorScrollPane = ComponentFactory.createScrollPane(this.observationTextEditor);
         editorScrollPane.setPreferredSize(new Dimension(400, 400));
-        observationEditorPanel.add(editorScrollPane, BorderLayout.CENTER);
+        observationEditorPanel.add(editorScrollPane);
         observationEditorPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
@@ -272,16 +298,16 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         toolbar.setOrientation(JToolBar.HORIZONTAL);
         toolbar.setFloatable(false);
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.LINE_AXIS));
-        this.addObservationButton = this.createButton(this.ADD_OBSERVATION_COMMAND,
-                this.ADD_OBSERVATION_NAME, this.ADD_OBSERVATION_TOOLTIP);
+        this.addObservationButton = this.createButton(ADD_OBSERVATION_COMMAND,
+                ADD_OBSERVATION_NAME, ADD_OBSERVATION_TOOLTIP);
         toolbar.add(this.addObservationButton);
         toolbar.add(Box.createRigidArea(new Dimension(5, 0)));
-        this.deleteObservationButton = this.createButton(this.DELETE_OBSERVATION_COMMAND,
-                this.DELETE_OBSERVATION_NAME, this.DELETE_OBSERVATION_TOOLTIP);
+        this.deleteObservationButton = this.createButton(DELETE_OBSERVATION_COMMAND,
+                DELETE_OBSERVATION_NAME, DELETE_OBSERVATION_TOOLTIP);
         toolbar.add(this.deleteObservationButton);
         toolbar.add(Box.createRigidArea(new Dimension(5, 0)));
-        this.resetObservationButton = this.createButton(this.RESET_OBSERVATION_COMMAND,
-                this.RESET_OBSERVATION_NAME, this.RESET_OBSERVATION_TOOLTIP);
+        this.resetObservationButton = this.createButton(RESET_OBSERVATION_COMMAND,
+                RESET_OBSERVATION_NAME, RESET_OBSERVATION_TOOLTIP);
         toolbar.add(this.resetObservationButton);
         buttonHolderPanel.add(toolbar);
         buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
@@ -289,7 +315,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     private JPanel createSelectedObservationPanel(){
-        JPanel observationPanel = new JPanel(new BorderLayout());
+        JPanel observationPanel = new JPanel();
+        observationPanel.setLayout(new BoxLayout(observationPanel, BoxLayout.PAGE_AXIS));
         this.selectedObservationListModel = new OWLObjectListModel<>();
         this.selectedObservationList = new JList<>(this.selectedObservationListModel);
         this.selectedObservationList.addMouseListener(new MouseAdapter() {
@@ -312,7 +339,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         JScrollPane scrollPane = new JScrollPane(this.selectedObservationList);
         scrollPane.getViewport().setBackground(Color.WHITE);
         scrollPane.setPreferredSize(new Dimension(400, 400));
-        observationPanel.add(scrollPane, BorderLayout.CENTER);
+        observationPanel.add(scrollPane);
         observationPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(),
@@ -329,13 +356,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         serviceNamesComboBox.addActionListener(this.nonEntailmentExplainerManager);
         this.serviceSelectionPanel.add(serviceNamesComboBox);
         this.serviceSelectionPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.computeButton = this.createButton(this.COMPUTE_COMMAND, this.COMPUTE_NAME, this.COMPUTE_TOOLTIP);
+        this.computeButton = this.createButton(COMPUTE_COMMAND, COMPUTE_NAME, COMPUTE_TOOLTIP);
         this.computeButton.setEnabled(false);
         JPanel buttonHelperPanel = new JPanel();
         buttonHelperPanel.setLayout(new BoxLayout(buttonHelperPanel, BoxLayout.LINE_AXIS));
         buttonHelperPanel.add(this.computeButton);
         buttonHelperPanel.add(Box.createGlue());
         this.serviceSelectionPanel.add(buttonHelperPanel);
+        this.serviceSelectionPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         this.serviceSelectionPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),

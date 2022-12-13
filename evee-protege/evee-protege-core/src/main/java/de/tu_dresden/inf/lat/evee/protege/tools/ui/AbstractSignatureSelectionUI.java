@@ -95,8 +95,9 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
         this.ontologyIndividualsListModel.addElements(individuals);
         tabbedPane.add("Individuals", this.ontologyIndividualsJList);
         this.signatureTabPane = tabbedPane;
-        JPanel ontologySignaturePanel = new JPanel(new BorderLayout());
-        ontologySignaturePanel.add(tabbedPane, BorderLayout.CENTER);
+        JPanel ontologySignaturePanel = new JPanel();
+        ontologySignaturePanel.setLayout(new BoxLayout(ontologySignaturePanel, BoxLayout.PAGE_AXIS));
+        ontologySignaturePanel.add(tabbedPane);
         ontologySignaturePanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
@@ -198,7 +199,8 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
     }
 
     protected void createSelectedSignatureListPane(OWLEditorKit owlEditorKit){
-        this.selectedSignatureListPanel = new JPanel(new BorderLayout());
+        this.selectedSignatureListPanel = new JPanel();
+        this.selectedSignatureListPanel.setLayout(new BoxLayout(this.selectedSignatureListPanel, BoxLayout.PAGE_AXIS));
         this.selectedSignatureListModel = new OWLObjectListModel<>();
         this.selectedSignatureJList = new JList<>(this.selectedSignatureListModel);
         this.selectedSignatureJList.setCellRenderer(new OWLCellRendererSimple(owlEditorKit));

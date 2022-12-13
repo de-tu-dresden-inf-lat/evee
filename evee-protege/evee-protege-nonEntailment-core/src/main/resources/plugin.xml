@@ -1,48 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?eclipse version="3.0"?>
+<?eclipse version="3.4"?>
 
 <plugin>
-<!--    <extension-point id="custom_extension_point"-->
-<!--                     name="Custom Extension Point"/>-->
 
-    <extension-point id="service"
-                     name="Non-Entailment Explanation Service"/>
+    <extension-point id="explanation_service"
+                     name="Non-Entailment Explanation Service"
+                     schema="schema/de.tu_dresden.inf.lat.evee.nonEntailment.explanation.service.xsd"/>
 
-    <extension id="ExampleMenu"
-               point="org.protege.editor.core.application.EditorKitMenuAction">
-        <name value="ExampleMenu"/>
-        <class value="org.protege.example.extension.point.MyPluginConsumer"/>
-        <path value="org.protege.editor.core.application.menu.EditMenu/SlotZ-Z"/>
+    <extension id="NonEntailmentExplanationView"
+               point="org.protege.editor.core.application.ViewComponent">
+        <label value="Non-Entailment Explanation"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentViewComponent"/>
+        <headerColor value="@org.protege.classcolor"/>
+        <category value="@org.protege.miscellaneous"/>
         <editorKitId value="OWLEditorKit"/>
     </extension>
 
-<!--    <extension id="NonEntailmentExplanationView"-->
-<!--               point="org.protege.editor.core.application.ViewComponent">-->
-<!--        <label value="Non-Entailment Explanation"/>-->
-<!--        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentViewComponent"/>-->
-<!--        <headerColor value="@org.protege.classcolor"/>-->
-<!--        <category value="@org.protege.miscellaneous"/>-->
-<!--        <editorKitId value="OWLEditorKit"/>-->
-<!--    </extension>-->
-
 </plugin>
-
-<!--<?xml version="1.0" encoding="UTF-8" standalone="no"?>-->
-<!--<?eclipse version="3.0"?>-->
-<!--<plugin>-->
-
-<!--&lt;!&ndash;    <extension-point id="nonEntailmentExplanation" name="Non-Entailment Explanation Service" schema="schema/${nonEntailmentExplanation}.xsd"/>&ndash;&gt;-->
-<!--&lt;!&ndash;    <extension-point id="de.tu_dresden.inf.lat.evee" name="Non-Entailment Explanation Service" schema="schema/${nonEntailmentExplanation}.xsd"/>&ndash;&gt;-->
-<!--&lt;!&ndash;    <extension-point id="nonEntailmentExplanationService" name="Non-Entailment Explanation Service"/>&ndash;&gt;-->
-<!--&lt;!&ndash;    <extension-point id="de.tu-dresden.inf.lat.evee.nonEntailmentExplanationService"/>&ndash;&gt;-->
-<!--&lt;!&ndash;    <extension-point id="de.tu_dresden.inf.lat.evee" name="Non-Entailment Explanation Service" schema="schema/${nonEntailmentExplanation}.xsd"/>&ndash;&gt;-->
-
-<!--    <extension id="NonEntailmentExplanationView"-->
-<!--               point="org.protege.editor.core.application.ViewComponent">-->
-<!--        <label value="Non-Entailment Explanation"/>-->
-<!--        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentViewComponent"/>-->
-<!--        <headerColor value="@org.protege.classcolor"/>-->
-<!--        <category value="@org.protege.miscellaneous"/>-->
-<!--    </extension>-->
-
-<!--</plugin>-->

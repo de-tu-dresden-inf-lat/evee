@@ -17,8 +17,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <bundleName>${project.artifactId}</bundleName>
-        <nonEntailmentExplanation>${groupId}.protege.nonEntailmentExplanation.service</nonEntailmentExplanation>
+<!--        bundleName needs to coincide with pluginId used in constructor of pluginLoader in order to correctly declare our extension point for protege-->
+        <bundleName>de.tu_dresden.inf.lat.evee.nonEntailment</bundleName>
     </properties>
 
     <repositories>
@@ -62,6 +62,15 @@
 
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -87,14 +96,9 @@
                             scala.swing.*;resolution:=optional,
                             *
                         </Import-Package>
-                        <Private-Package>
-                            uk.ac.man.cs.lethe.internal.dl.*,
-                            uk.ac.man.cs.lethe.internal.application.benchmarks.*,
-                            uk.ac.man.cs.lethe.internal.forgetting.*,
-                            uk.ac.man.cs.lethe.internal.tools.*,
-                            uk.ac.man.cs.lethe.abduction.*,
-                            uk.ac.man.cs.lethe.interpolation.*,
-                        </Private-Package>
+                        <Export-Package>
+                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.*,
+                        </Export-Package>
                     </instructions>
                 </configuration>
                 <executions>
