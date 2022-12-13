@@ -3,7 +3,7 @@
 <plugin>
 
     <extension id="LetheNonEntailmentExplanationService"
-               point="de.tu_dresden.inf.lat.evee.nonEntailment.explanation_service">
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
         <name value="Abduction Solver (Lethe)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.abduction.LetheAbductionSolver"/>
     </extension>

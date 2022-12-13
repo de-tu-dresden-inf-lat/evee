@@ -1,5 +1,9 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationPlugin;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationPluginLoader;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.classexpression.OWLExpressionParserException;
@@ -21,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

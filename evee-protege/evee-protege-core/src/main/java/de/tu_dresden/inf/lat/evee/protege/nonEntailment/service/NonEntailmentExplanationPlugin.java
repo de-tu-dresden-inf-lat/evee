@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.service;
 
 import org.eclipse.core.runtime.IExtension;
 import org.protege.editor.core.plugin.AbstractProtegePlugin;
@@ -9,8 +9,8 @@ public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<NonEnt
     private final OWLEditorKit owlEditorKit;
 
     public static final String NAME_PARAM = "name";
-    public static final String PLUGIN_ID = "de.tu_dresden.inf.lat.evee.nonEntailment";
-    public static final String EXTENSION_POINT_ID = "explanation_service";
+    public static final String PLUGIN_ID = "de.tu_dresden.inf.lat.evee";
+    public static final String EXTENSION_POINT_ID = "nonEntailment_explanation_service";
 
     protected NonEntailmentExplanationPlugin(OWLEditorKit editorKit, IExtension extension) {
         super(extension);

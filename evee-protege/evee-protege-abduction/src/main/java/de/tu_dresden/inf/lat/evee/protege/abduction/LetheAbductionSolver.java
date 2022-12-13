@@ -2,8 +2,8 @@ package de.tu_dresden.inf.lat.evee.protege.abduction;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEventType;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;

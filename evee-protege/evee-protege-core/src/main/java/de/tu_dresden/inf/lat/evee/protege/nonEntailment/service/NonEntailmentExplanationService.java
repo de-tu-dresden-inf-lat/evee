@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.service;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLNonEntailmentExplainer;
 import org.protege.editor.core.plugin.ProtegePluginInstance;
@@ -9,11 +9,6 @@ import java.awt.*;
 public interface NonEntailmentExplanationService extends OWLNonEntailmentExplainer, ProtegePluginInstance {
 
     void setup(OWLEditorKit editorKit);
-
-//    /**
-//     * @return The name which is shown in the dropdown menu when selecting services.
-//     */
-//    String getName();
 
     /**
      * This method is called when the user hits the "compute"-button.

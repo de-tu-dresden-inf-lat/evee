@@ -41,7 +41,6 @@
         <module>evee-protege-elimination-proofs-lethe</module>
         <module>evee-protege-lethe-proof-extractor</module>
         <module>evee-protege-elk-proof-extractor</module>
-        <module>evee-protege-nonEntailment-core</module>
         <module>evee-protege-modelGeneration</module>
         <module>evee-protege-abduction</module>
     </modules>

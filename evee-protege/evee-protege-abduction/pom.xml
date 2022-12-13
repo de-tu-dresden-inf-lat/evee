@@ -58,11 +58,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-protege-nonEntailment-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lethe-abduction-owlapi4_2.12</artifactId>
             <version>0.8-SNAPSHOT</version>
@@ -98,7 +93,7 @@
                             org.protege.editor.core.*;version="4.3",
                             de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
                             scala.swing.*;resolution:=optional,
-                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.*,
+                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.*,
                             *
                         </Import-Package>
                         <Private-Package>

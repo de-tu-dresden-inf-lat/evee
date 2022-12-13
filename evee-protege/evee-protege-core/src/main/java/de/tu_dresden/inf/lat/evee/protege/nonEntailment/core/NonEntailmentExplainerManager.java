@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

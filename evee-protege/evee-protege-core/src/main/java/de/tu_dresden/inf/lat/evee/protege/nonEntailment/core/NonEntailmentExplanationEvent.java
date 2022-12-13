@@ -1,5 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
+
 public class NonEntailmentExplanationEvent {
 
     private final NonEntailmentExplanationService source;
