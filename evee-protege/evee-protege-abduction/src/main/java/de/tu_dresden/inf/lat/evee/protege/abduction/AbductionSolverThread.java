@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.AbductionViewComponent;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,7 @@ public class AbductionSolverThread extends Thread {
     public void run(){
         this.logger.debug("Abduction generation thread started");
         try{
-            this.abductionSolver.computationCompleted(this.abducer.abduce(this.observation));
+            this.abductionSolver.newExplanationComputationCompleted(this.abducer.abduce(this.observation));
         }
         catch (Throwable e){
             this.logger.error("Error during abduction generation:\n" + e);
@@ -36,7 +35,6 @@ public class AbductionSolverThread extends Thread {
         finally{
             this.logger.debug("Abduction generation completed successfully");
             this.abductionSolver.disposeLoadingScreen();
-            this.abductionSolver.showResults();
         }
     }
 

@@ -12,7 +12,7 @@ import java.util.Vector;
 
 public class NonEntailmentExplainerManager implements ActionListener {
 
-    private NonEntailmentExplanationService currentNonEntailmentExplanationService;
+    private NonEntailmentExplanationService currentNonEntailmentExplanationService = null;
     private final Map<String, NonEntailmentExplanationService> serviceMap;
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentExplainerManager.class);
 
@@ -22,6 +22,9 @@ public class NonEntailmentExplainerManager implements ActionListener {
 
     public void registerNonEntailmentExplanationService(NonEntailmentExplanationService service){
         this.serviceMap.put(service.getName(), service);
+        if (this.currentNonEntailmentExplanationService == null){
+            this.currentNonEntailmentExplanationService = service;
+        }
     }
 
     public NonEntailmentExplanationService getCurrentExplainer(){
@@ -41,12 +44,5 @@ public class NonEntailmentExplainerManager implements ActionListener {
     public Vector<String> getExplanationServiceNames(){
         return new Vector<>(this.serviceMap.keySet());
     }
-
-//    public String getCurrentAbductionGeneratorName(){
-//        if (this.currentNonEntailmentExplainer.equals(this.letheAbductionSolver)) {
-//            return this.LETHE_ABDUCTION_SOLVER;
-//        }
-//        return "";
-//    }
 
 }

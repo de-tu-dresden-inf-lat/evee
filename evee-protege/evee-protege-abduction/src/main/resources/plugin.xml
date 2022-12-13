@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+    <extension id="LetheNonEntailmentExplanationService"
+               point="de.tu-dresden.inf.lat.evee.nonEntailmentExplanationService">
+        <name value="Abduction Solver (Lethe)"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.abduction.LetheAbductionSolver"/>
+    </extension>
+
+</plugin>

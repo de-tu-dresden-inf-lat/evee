@@ -22,21 +22,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI implements ActionListener {
+public class NonEntailmentSignatureSelectionUI extends AbstractSignatureSelectionUI implements ActionListener {
 
-
-    private final AbductionViewComponent abductionViewComponent;
+    private final NonEntailmentViewComponent nonEntailmentViewComponent;
     private GivenSignatureOWLModelChangeListener givenSignatureModelManagerListener;
     private GivenSignatureOntologyChangeListener givenSignatureOntologyChangeListener;
-    private final String ADD_OBSERVATION_SIGNATURE_COMMAND = "ADD_OBSERVATION_SIGNATURE";
-    private final String ADD_OBSERVATION_SIGNATURE_NAME = "Add observation signature";
-    private final String ADD_OBSERVATION_SIGNATURE_TOOLTIP = "Adds signature of all observations";
+    private static final String ADD_OBSERVATION_SIGNATURE_COMMAND = "ADD_OBSERVATION_SIGNATURE";
+    private static final String ADD_OBSERVATION_SIGNATURE_NAME = "Add observation signature";
+    private static final String ADD_OBSERVATION_SIGNATURE_TOOLTIP = "Adds signature of all observations";
 
-    private final Logger logger = LoggerFactory.getLogger(AbductionSignatureSelectionUI.class);
+    private final Logger logger = LoggerFactory.getLogger(NonEntailmentSignatureSelectionUI.class);
 
-    public AbductionSignatureSelectionUI(AbductionViewComponent abductionViewComponent, OWLEditorKit editorKit, OWLModelManager modelManager){
+    public NonEntailmentSignatureSelectionUI(NonEntailmentViewComponent nonEntailmentViewComponent, OWLEditorKit editorKit, OWLModelManager modelManager){
         super();
-        this.abductionViewComponent = abductionViewComponent;
+        this.nonEntailmentViewComponent = nonEntailmentViewComponent;
 
     }
 
@@ -104,16 +103,16 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         modelManager.removeOntologyChangeListener(this.givenSignatureOntologyChangeListener);
     }
 
-//    todo: improve - this class should not reach all the way back to the AbductionViewComponent just to get access to the active ontology!
+//    todo: improve - this class should not reach all the way back to the NonEntailmentViewComponent just to get access to the active ontology!
     private OWLOntology getActiveOntology(){
-        return this.abductionViewComponent.getOWLEditorKit().getOWLModelManager().getActiveOntology();
+        return this.nonEntailmentViewComponent.getOWLEditorKit().getOWLModelManager().getActiveOntology();
     }
 
     @Override
     public void actionPerformed(ActionEvent e){
         if (e.getActionCommand().equals(this.ADD_OBSERVATION_SIGNATURE_COMMAND)){
             SwingUtilities.invokeLater(() -> {
-                ArrayList<OWLObject> observations = this.abductionViewComponent.getObservations();
+                ArrayList<OWLObject> observations = this.nonEntailmentViewComponent.getObservations();
                 HashSet<OWLEntity> observationEntities = new HashSet<>();
                 observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
                 this.selectedSignatureListModel.checkAndAddElements(observationEntities);
@@ -122,18 +121,18 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
         else{
             super.actionPerformed(e);
         }
-        this.abductionViewComponent.changeComputeButtonStatus();
+        this.nonEntailmentViewComponent.changeComputeButtonStatus();
     }
 
-    protected boolean listModelIsNonEmpty(){
-        return this.selectedSignatureListModel.getSize() > 0;
+    protected boolean listModelIsEmpty(){
+        return this.selectedSignatureListModel.getSize() <= 0;
     }
 
     private class GivenSignatureOWLModelChangeListener implements OWLModelManagerListener {
 
-        private AbductionSignatureSelectionUI creator;
+        private NonEntailmentSignatureSelectionUI creator;
 
-        private GivenSignatureOWLModelChangeListener(AbductionSignatureSelectionUI creator){
+        private GivenSignatureOWLModelChangeListener(NonEntailmentSignatureSelectionUI creator){
             this.creator = creator;
         }
 
@@ -160,9 +159,9 @@ public class AbductionSignatureSelectionUI extends AbstractSignatureSelectionUI 
 
     private class GivenSignatureOntologyChangeListener implements OWLOntologyChangeListener {
 
-        private AbductionSignatureSelectionUI creator;
+        private NonEntailmentSignatureSelectionUI creator;
 
-        private GivenSignatureOntologyChangeListener(AbductionSignatureSelectionUI creator){
+        private GivenSignatureOntologyChangeListener(NonEntailmentSignatureSelectionUI creator){
             this.creator = creator;
         }
 

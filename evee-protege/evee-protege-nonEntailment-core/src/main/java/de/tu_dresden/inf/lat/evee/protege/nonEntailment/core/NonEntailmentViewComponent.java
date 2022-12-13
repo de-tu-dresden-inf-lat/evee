@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLNonEntailmentExplainer;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.classexpression.OWLExpressionParserException;
@@ -32,12 +31,12 @@ import java.util.List;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 
-public class AbductionViewComponent extends AbstractOWLViewComponent implements ActionListener {
+public class NonEntailmentViewComponent extends AbstractOWLViewComponent implements ActionListener, NonEntailmentExplanationListener {
 
     private final NonEntailmentExplainerManager nonEntailmentExplainerManager;
     private final ViewComponentOntologyChangeListener changeListener;
 
-    private AbductionSignatureSelectionUI signatureSelectionUI;
+    private NonEntailmentSignatureSelectionUI signatureSelectionUI;
     private final Insets STANDARD_INSETS = new Insets(5, 5, 5, 5);
     private ExpressionEditor<OWLAxiom> observationTextEditor;
     private OWLObjectListModel<OWLAxiom> selectedObservationListModel;
@@ -45,37 +44,33 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     private JButton computeButton;
     private JPanel resultHolderPanel;
     private JPanel holderPanel;
+    private JPanel serviceSelectionPanel;
     private JPanel signatureAndObservationPanel;
     private JPanel signatureManagementPanel;
     private JPanel observationManagementPanel;
-    private JPanel settingsAndResultPanel;
-    private JPanel settingsHolderPanel;
+    private JPanel nonEntailmentExplanationServicePanel;
     private JSplitPane outerSplitPane;
     private JButton addObservationButton;
     private JButton deleteObservationButton;
     private JButton resetObservationButton;
-    private JSpinner abductionNumberSpinner;
-    private final String COMPUTE_COMMAND = "COMPUTE_ABDUCTION";
-    private final String COMPUTE_NAME = "Compute";
-    private final String COMPUTE_TOOLTIP = "Compute hypotheses using Selected Signature and Observation";
-    private final String ADD_OBSERVATION_COMMAND = "ADD_OBSERVATION";
-    private final String ADD_OBSERVATION_NAME = "Add";
-    private final String ADD_OBSERVATION_TOOLTIP = "Add axioms to observation";
-    private final String DELETE_OBSERVATION_COMMAND = "DELETE_OBSERVATION";
-    private final String DELETE_OBSERVATION_NAME = "Delete";
-    private final String DELETE_OBSERVATION_TOOLTIP = "Delete selected axioms from observation";
-    private final String RESET_OBSERVATION_COMMAND = "RESET_OBSERVATION";
-    private final String RESET_OBSERVATION_NAME = "Reset";
-    private final String RESET_OBSERVATION_TOOLTIP = "Delete all axioms from observation";
-    private final String SETTINGS_LABEL = "Maximal number of hypotheses:";
-    private final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
-//    public static final String COMPUTATION_COMPLETE = "COMPUTATION_COMPLETE";
+    private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
+    private static final String COMPUTE_NAME = "Compute";
+    private static final String COMPUTE_TOOLTIP = "Compute non-entailment explanation using Selected Signature and Observation";
+    private static final String ADD_OBSERVATION_COMMAND = "ADD_OBSERVATION";
+    private static final String ADD_OBSERVATION_NAME = "Add";
+    private static final String ADD_OBSERVATION_TOOLTIP = "Add axioms to observation";
+    private static final String DELETE_OBSERVATION_COMMAND = "DELETE_OBSERVATION";
+    private static final String DELETE_OBSERVATION_NAME = "Delete";
+    private static final String DELETE_OBSERVATION_TOOLTIP = "Delete selected axioms from observation";
+    private static final String RESET_OBSERVATION_COMMAND = "RESET_OBSERVATION";
+    private static final String RESET_OBSERVATION_NAME = "Reset";
+    private static final String RESET_OBSERVATION_TOOLTIP = "Delete all axioms from observation";
 
-    private final Logger logger = LoggerFactory.getLogger(AbductionViewComponent.class);
+    private final Logger logger = LoggerFactory.getLogger(NonEntailmentViewComponent.class);
 
-    public AbductionViewComponent(){
+    public NonEntailmentViewComponent(){
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
-        this.logger.debug("Object AbductionViewComponent created");
+        this.logger.debug("Object NonEntailmentViewComponent created");
         this.changeListener = new ViewComponentOntologyChangeListener();
     }
 
@@ -86,27 +81,30 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     @Override
     protected void initialiseOWLView() {
         this.logger.debug("initialisation started");
-        this.signatureSelectionUI = new AbductionSignatureSelectionUI(
+        this.signatureSelectionUI = new NonEntailmentSignatureSelectionUI(
                 this, this.getOWLEditorKit(),
                 this.getOWLModelManager());
-        this.setLayout(new BorderLayout(10, 10));
-        this.createSignatureManagementComponent();
-        this.createObservationComponent();
-        this.createSettingsComponent();
-        this.createResultComponent();
-        this.resetView();
-        this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
-        this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
         NonEntailmentExplanationPluginLoader loader = new NonEntailmentExplanationPluginLoader(this.getOWLEditorKit());
         for (NonEntailmentExplanationPlugin plugin : loader.getPlugins()){
             try{
                 NonEntailmentExplanationService service = plugin.newInstance();
+                service.setup(this.getOWLEditorKit());
+                service.initialise();
                 this.nonEntailmentExplainerManager.registerNonEntailmentExplanationService(service);
             }
             catch (Exception e){
-                this.logger.error("Error during non-entailment explanation service initialisation:\n" + e);
+                this.logger.error("Error while loading non-entailment explanation plugin:\n" + e);
             }
         }
+        SwingUtilities.invokeLater(() -> {
+            this.setLayout(new BorderLayout(10, 10));
+            this.createGeneralSettingsComponent();
+            this.createSignatureManagementComponent();
+            this.createObservationComponent();
+            this.resetView();
+        });
+        this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
+        this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
         this.logger.debug("initialisation completed");
     }
 
@@ -116,20 +114,33 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         tabbedPane.addTab("Signature", this.signatureManagementPanel);
         tabbedPane.addTab("Observation", this.observationManagementPanel);
         this.signatureAndObservationPanel.add(tabbedPane, BorderLayout.CENTER);
-        JSplitPane innerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                this.settingsHolderPanel, this.resultHolderPanel);
-        innerSplitPane.setDividerLocation(0.3);
-        this.settingsAndResultPanel = new JPanel();
-        this.settingsAndResultPanel.setLayout(new BoxLayout(this.settingsAndResultPanel, BoxLayout.PAGE_AXIS));
-        this.settingsAndResultPanel.add(innerSplitPane);
+        this.nonEntailmentExplanationServicePanel = new JPanel();
+        this.nonEntailmentExplanationServicePanel.setLayout(new BoxLayout(this.nonEntailmentExplanationServicePanel, BoxLayout.PAGE_AXIS));
+        this.resultHolderPanel = new JPanel(new BorderLayout());
+        NonEntailmentExplanationService explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
+        if (explainer != null){
+            if (explainer.getSettingsComponent() != null){
+                JSplitPane settingsAndResultSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                        explainer.getSettingsComponent(), this.resultHolderPanel);
+                settingsAndResultSplitPane.setDividerLocation(0.3);
+                this.nonEntailmentExplanationServicePanel.add(settingsAndResultSplitPane);
+            }
+            else {
+                this.nonEntailmentExplanationServicePanel.add(this.resultHolderPanel);
+            }
+        }
+        else {
+            this.nonEntailmentExplanationServicePanel.add(this.resultHolderPanel);
+        }
         this.outerSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 this.signatureAndObservationPanel,
-                this.settingsAndResultPanel);
+                this.nonEntailmentExplanationServicePanel);
         this.outerSplitPane.setDividerLocation(0.3);
-        this.removeAll();
         this.holderPanel = new JPanel();
         this.holderPanel.setLayout(new BoxLayout(this.holderPanel, BoxLayout.PAGE_AXIS));
+        this.holderPanel.add(this.serviceSelectionPanel);
         this.holderPanel.add(this.outerSplitPane);
+        this.removeAll();
         this.add(holderPanel, BorderLayout.CENTER);
         this.repaint();
         this.revalidate();
@@ -146,7 +157,7 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()){
             case COMPUTE_COMMAND:
-                this.computeAbductions();
+                this.computeExplanation();
                 break;
             case ADD_OBSERVATION_COMMAND:
                 this.addObservation();
@@ -157,10 +168,13 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
             case RESET_OBSERVATION_COMMAND:
                 this.resetObservation();
                 break;
-//            case COMPUTATION_COMPLETE:
-//                if (e.getSource() instanceof  AbstractNonEntailmentExplainer){
-//                    this.showResults(((AbstractNonEntailmentExplainer) e.getSource()).getResultComponent());
-//                }
+        }
+    }
+
+    @Override
+    public void handleEvent(NonEntailmentExplanationEvent event){
+        if (event.getType() == NonEntailmentExplanationEventType.COMPUTATION_COMPLETE) {
+            this.showResult(event.getSource().getResultComponent());
         }
     }
 
@@ -196,56 +210,12 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         this.signatureManagementPanel.add(listPanel, constraints);
     }
 
-    private JLabel createLabel(String labelText){
-        JLabel label = new JLabel(labelText);
-        label.setHorizontalTextPosition(JLabel.CENTER);
-        label.setVerticalTextPosition(JLabel.CENTER);
-        label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        return label;
-    }
-
     private JButton createButton(String actionCommand, String name, String toolTip){
         JButton newButton = new JButton(name);
         newButton.setActionCommand(actionCommand);
         newButton.setToolTipText(toolTip);
         newButton.addActionListener(this);
         return newButton;
-    }
-
-    private void createSettingsComponent(){
-        this.settingsHolderPanel = new JPanel();
-        this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
-        Vector<String> abductionNames = this.nonEntailmentExplainerManager.getExplanationServiceNames();
-        JComboBox<String> abductionNamesComboBox = new JComboBox<>(abductionNames);
-//        abductionNamesComboBox.setSelectedItem(this.nonEntailmentExplainerManager.getCurrentAbductionGeneratorName());
-//        abductionNamesComboBox.setSelectedIndex(0);
-        abductionNamesComboBox.addActionListener(this.nonEntailmentExplainerManager);
-        this.settingsHolderPanel.add(abductionNamesComboBox);
-        this.settingsHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        JPanel spinnerHelperPanel = new JPanel();
-        spinnerHelperPanel.setLayout(new BoxLayout(spinnerHelperPanel, BoxLayout.LINE_AXIS));
-        JLabel label = this.createLabel(this.SETTINGS_LABEL);
-        spinnerHelperPanel.add(label);
-        spinnerHelperPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 1, null, 1);
-        this.abductionNumberSpinner = new JSpinner(spinnerModel);
-        this.abductionNumberSpinner.setToolTipText(this.SETTINGS_SPINNER_TOOLTIP);
-        this.abductionNumberSpinner.setMaximumSize(new Dimension(500, this.abductionNumberSpinner.getPreferredSize().height));
-        spinnerHelperPanel.add(this.abductionNumberSpinner);
-        spinnerHelperPanel.add(Box.createGlue());
-        this.settingsHolderPanel.add(spinnerHelperPanel);
-        this.settingsHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.computeButton = this.createButton(this.COMPUTE_COMMAND, this.COMPUTE_NAME, this.COMPUTE_TOOLTIP);
-        this.computeButton.setEnabled(false);
-        JPanel buttonHelperPanel = new JPanel();
-        buttonHelperPanel.setLayout(new BoxLayout(buttonHelperPanel, BoxLayout.LINE_AXIS));
-        buttonHelperPanel.add(this.computeButton);
-        buttonHelperPanel.add(Box.createGlue());
-        this.settingsHolderPanel.add(buttonHelperPanel);
-        this.settingsHolderPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(), "Settings:"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
     }
 
     private void createObservationComponent(){
@@ -351,21 +321,45 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
         return observationPanel;
     }
 
-    private void createResultComponent(){
-        this.resultHolderPanel = new JPanel(new BorderLayout());
-        this.resultHolderPanel.setBorder(BorderFactory.createCompoundBorder(
+    private void createGeneralSettingsComponent(){
+        this.serviceSelectionPanel = new JPanel();
+        this.serviceSelectionPanel.setLayout(new BoxLayout(this.serviceSelectionPanel, BoxLayout.PAGE_AXIS));
+        Vector<String> serviceNames = this.nonEntailmentExplainerManager.getExplanationServiceNames();
+        JComboBox<String> serviceNamesComboBox = new JComboBox<>(serviceNames);
+        serviceNamesComboBox.addActionListener(this.nonEntailmentExplainerManager);
+        this.serviceSelectionPanel.add(serviceNamesComboBox);
+        this.serviceSelectionPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        this.computeButton = this.createButton(this.COMPUTE_COMMAND, this.COMPUTE_NAME, this.COMPUTE_TOOLTIP);
+        this.computeButton.setEnabled(false);
+        JPanel buttonHelperPanel = new JPanel();
+        buttonHelperPanel.setLayout(new BoxLayout(buttonHelperPanel, BoxLayout.LINE_AXIS));
+        buttonHelperPanel.add(this.computeButton);
+        buttonHelperPanel.add(Box.createGlue());
+        this.serviceSelectionPanel.add(buttonHelperPanel);
+        this.serviceSelectionPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Hypotheses:"),
+                        "Non-Entailment Explanation Service:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
     }
 
-    private void computeAbductions(){
-        OWLNonEntailmentExplainer explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
-        explainer.setOntology(this.getOWLModelManager().getActiveOntology());
-        explainer.setAbducibles(this.signatureSelectionUI.getSelectedSignature());
-        explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
-        explainer.generateHypotheses();
+    private void computeExplanation(){
+        SwingUtilities.invokeLater(() -> {
+            NonEntailmentExplanationService explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
+            explainer.setOntology(this.getOWLModelManager().getActiveOntology());
+            explainer.setSignature(this.signatureSelectionUI.getSelectedSignature());
+            explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
+            explainer.computeExplanation();
+        });
+    }
+
+    private void showResult(Component resultComponent){
+        SwingUtilities.invokeLater(() -> {
+            this.resultHolderPanel.removeAll();
+            this.resultHolderPanel.add(resultComponent);
+            this.repaint();
+            this.revalidate();
+        });
     }
 
     private void addObservation(){
@@ -415,10 +409,20 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
     }
 
     protected void changeComputeButtonStatus(){
-        SwingUtilities.invokeLater(() -> {
-                this.computeButton.setEnabled(this.selectedObservationListModel.getSize() > 0 &&
-                        this.signatureSelectionUI.listModelIsNonEmpty());
-        });
+        boolean enabled = true;
+        if (this.selectedObservationListModel.getSize() <= 0 ||
+                this.signatureSelectionUI.listModelIsEmpty()){
+            enabled = false;
+        }
+        if (this.nonEntailmentExplainerManager.getCurrentExplainer() == null){
+            enabled = false;
+        }
+        else if (!(this.nonEntailmentExplainerManager.getCurrentExplainer().supportsMultiObservation()) &&
+                this.selectedObservationListModel.getSize() != 1){
+            enabled = false;
+        }
+        boolean finalEnabled = enabled;
+        SwingUtilities.invokeLater(() -> this.computeButton.setEnabled(finalEnabled));
     }
 
     private class ViewComponentOntologyChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {
@@ -441,7 +445,6 @@ public class AbductionViewComponent extends AbstractOWLViewComponent implements 
 
         private void change(){
             nonEntailmentExplainerManager.getCurrentExplainer().setOntology(getOWLModelManager().getActiveOntology());
-            createResultComponent();
             resetView();
             changeComputeButtonStatus();
         }

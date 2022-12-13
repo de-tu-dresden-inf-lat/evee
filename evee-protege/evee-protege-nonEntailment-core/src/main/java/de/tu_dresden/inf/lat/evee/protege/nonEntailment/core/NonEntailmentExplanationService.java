@@ -8,12 +8,28 @@ import java.awt.*;
 
 public interface NonEntailmentExplanationService extends OWLNonEntailmentExplainer, ProtegePluginInstance {
 
-    public void setup(OWLEditorKit editorKit);
+    void setup(OWLEditorKit editorKit);
 
-    public String getName();
+    /**
+     * @return The name which is shown in the dropdown menu when selecting services.
+     */
+    String getName();
 
-    public void computeExplanation();
+    /**
+     * This method is called when the user hits the "compute"-button.
+     */
+    void computeExplanation();
 
-    public Component getResultComponent();
+    /**
+     * @return The component which is shown as the result of the computation performed by the service.
+     */
+    Component getResultComponent();
+
+    /**
+     * @return Either null or a component that contains all necessary settings for the service.
+     */
+    Component getSettingsComponent();
+
+    void registerListener(NonEntailmentExplanationListener listener);
 
 }
