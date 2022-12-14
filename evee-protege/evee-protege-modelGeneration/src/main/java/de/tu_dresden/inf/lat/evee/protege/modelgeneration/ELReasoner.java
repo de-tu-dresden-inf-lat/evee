@@ -1,3 +1,5 @@
+package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
+
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;

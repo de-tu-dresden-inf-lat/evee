@@ -1,19 +1,26 @@
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationService;
+package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
+
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEvent;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEventType;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class ELModelGenerator implements NonEntailmentExplanationService {
 
+
     private ELReasoner elReasoner;
-    private final static String SERVICE_NAME = "EL Model Generator";
+
 
     private OWLOntology activeOntology;
     private Set<OWLAxiom> observation;
@@ -27,17 +34,21 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
     boolean subsumed;
     boolean consistent;
     private OWLEditorKit owlEditorKit;
+    private NonEntailmentExplanationListener viewComponentListener;
+
+    private final Logger logger = LoggerFactory.getLogger(ELModelGenerator.class);
 
 
+
+
+    public ELModelGenerator() {
+        this.logger.debug("Creating de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELModelGenerator");
+        this.observation = new HashSet<>();
+        this.logger.debug("de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELModelGenerator created successfully.");
+    }
     public void setup(OWLEditorKit editorKit) {
         this.owlEditorKit = editorKit;
     }
-
-
-    public String getName() {
-        return SERVICE_NAME;
-    }
-
 
     public void computeExplanation() {
         if(observation.size()!= 1) {
@@ -60,6 +71,8 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
             incorrectAxType = true;
 //            return;
         }
+        this.viewComponentListener.handleEvent(new NonEntailmentExplanationEvent(this,
+                NonEntailmentExplanationEventType.COMPUTATION_COMPLETE));
     }
 
 
@@ -96,10 +109,25 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
         return component;
     }
 
+    @Override
+    public Component getSettingsComponent() {
+        return null;
+    }
+
+    @Override
+    public void registerListener(NonEntailmentExplanationListener listener) {
+        this.viewComponentListener = listener;
+    }
+
 
     public void setObservation(Set<OWLAxiom> owlAxioms) {
 
         this.observation = owlAxioms;
+    }
+
+    @Override
+    public void setSignature(Collection<OWLEntity> owlEntities) {
+
     }
 
 
@@ -117,6 +145,11 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
 
     public Stream<Set<OWLAxiom>> generateHypotheses() {
         return null;
+    }
+
+    @Override
+    public boolean supportsMultiObservation() {
+        return false;
     }
 
 
