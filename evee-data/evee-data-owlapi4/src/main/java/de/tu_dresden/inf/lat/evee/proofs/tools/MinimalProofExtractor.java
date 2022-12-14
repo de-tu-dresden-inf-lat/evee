@@ -104,9 +104,7 @@ public class MinimalProofExtractor<S> {
 
 	private void collectInferences(List<IInference<S>> list, S conclusion, Map<S, IInference<S>> bestInferences)
 			throws ProofGenerationFailedException {
-
-		System.out.println(conclusion);
-
+		
 		if (!bestInferences.containsKey(conclusion)) {
 			throw new ProofGenerationFailedException(
 					"No proof found - input derivation structure does not contain a proof for " + conclusion);
