@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.service;
 
 import org.eclipse.core.runtime.IExtension;
 import org.protege.editor.core.plugin.AbstractPluginLoader;
@@ -18,7 +18,6 @@ public class NonEntailmentExplanationPluginLoader extends AbstractPluginLoader<N
         super(NonEntailmentExplanationPlugin.PLUGIN_ID,
                 NonEntailmentExplanationPlugin.EXTENSION_POINT_ID);
         this.owlEditorKit = editorKit;
-        this.logger.debug("PluginLoader created");
     }
 
     @Override

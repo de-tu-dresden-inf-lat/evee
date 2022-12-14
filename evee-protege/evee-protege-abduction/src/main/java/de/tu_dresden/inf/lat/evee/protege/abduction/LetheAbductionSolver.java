@@ -2,8 +2,8 @@ package de.tu_dresden.inf.lat.evee.protege.abduction;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEventType;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
@@ -52,7 +52,7 @@ public class LetheAbductionSolver implements NonEntailmentExplanationService, Su
     private int maxLevel;
     private int currentResultAdapterIndex;
     private boolean parametersChanged = true;
-    private final static String SERVICE_NAME = "Abduction Solver (Lethe)";
+//    private final static String SERVICE_NAME = "Abduction Solver (Lethe)";
     private final static String LOADING = "LOADING";
     protected static final String SETTINGS_LABEL = "Maximal number of hypotheses:";
     protected static final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
@@ -145,10 +145,10 @@ public class LetheAbductionSolver implements NonEntailmentExplanationService, Su
         this.owlEditorKit = editorKit;
     }
 
-    @Override
-    public String getName() {
-        return SERVICE_NAME;
-    }
+//    @Override
+//    public String getName() {
+//        return SERVICE_NAME;
+//    }
 
     @Override
     public void computeExplanation() {

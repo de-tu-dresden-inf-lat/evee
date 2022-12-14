@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +21,8 @@ public class NonEntailmentExplainerManager implements ActionListener {
         this.serviceMap = new HashMap<>();
     }
 
-    public void registerNonEntailmentExplanationService(NonEntailmentExplanationService service){
-        this.serviceMap.put(service.getName(), service);
+    public void registerNonEntailmentExplanationService(NonEntailmentExplanationService service, String serviceName){
+        this.serviceMap.put(serviceName, service);
         if (this.currentNonEntailmentExplanationService == null){
             this.currentNonEntailmentExplanationService = service;
         }
@@ -33,16 +34,29 @@ public class NonEntailmentExplainerManager implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JComboBox comboBox = (JComboBox) e.getSource();
-        Object selectedItem = comboBox.getSelectedItem();
-        NonEntailmentExplanationService newService = this.serviceMap.get((String) selectedItem);
-        if (newService != null){
-            this.currentNonEntailmentExplanationService = newService;
+        if (e.getSource() instanceof JComboBox){
+            JComboBox comboBox = (JComboBox) e.getSource();
+            String serviceName = (String) comboBox.getSelectedItem();
+            NonEntailmentExplanationService newService = this.serviceMap.get(serviceName);
+            if (newService != null){
+                this.currentNonEntailmentExplanationService = newService;
+            }
         }
     }
 
     public Vector<String> getExplanationServiceNames(){
         return new Vector<>(this.serviceMap.keySet());
+    }
+
+    public void dispose(){
+        for (String serviceName : this.serviceMap.keySet()){
+            try {
+                this.serviceMap.get(serviceName).dispose();
+            } catch (Exception ex) {
+                this.logger.error("Error when disposing Non-Entailment Explanation service named \"{}\"", serviceName);
+                this.logger.error(ex.getMessage());
+            }
+        }
     }
 
 }

@@ -2,6 +2,19 @@
 <?eclipse version="3.4"?>
 <plugin>
 
+    <extension-point id="nonEntailment_explanation_service"
+                     name="Non-Entailment Explanation Service"
+                     schema="schema/de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service.xsd"/>
+
+    <extension id="NonEntailmentExplanationView"
+               point="org.protege.editor.core.application.ViewComponent">
+        <label value="Non-Entailment Explanation"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentViewComponent"/>
+        <headerColor value="@org.protege.classcolor"/>
+        <category value="@org.protege.miscellaneous"/>
+        <editorKitId value="OWLEditorKit"/>
+    </extension>
+
     <extension id="eveeProofsTopMenu"
                point="org.protege.editor.core.application.EditorKitMenuAction">
         <name value="Proofs"/>
