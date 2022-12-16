@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-<!--        bundleName needs to coincide with pluginId used in constructor of pluginLoader in order to correctly declare our extension point for protege-->
+<!--        bundleName needs to coincide with pluginId used in constructor of nonEntailment pluginLoader in order to correctly declare our extension point for protege-->
         <bundleName>de.tu_dresden.inf.lat.evee</bundleName>
 <!--        <bundleName>${artifactId}</bundleName>-->
     </properties>

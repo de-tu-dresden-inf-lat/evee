@@ -8,5 +8,5 @@ temp/
 .settings
 .classpath
 .project
-.flattened-pom.xml
 *.DS_Store
+lib/tmp/

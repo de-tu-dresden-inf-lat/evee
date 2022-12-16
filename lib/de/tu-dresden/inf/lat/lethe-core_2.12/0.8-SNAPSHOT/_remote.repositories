@@ -1,4 +1,4 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Fri Dec 16 14:16:32 CET 2022
-lethe-owlapi5_2.12-0.8-SNAPSHOT.jar>=
-lethe-owlapi5_2.12-0.8-SNAPSHOT.pom>=
+#Fri Dec 16 14:14:59 CET 2022
+lethe-core_2.12-0.8-SNAPSHOT.jar>=
+lethe-core_2.12-0.8-SNAPSHOT.pom>=
