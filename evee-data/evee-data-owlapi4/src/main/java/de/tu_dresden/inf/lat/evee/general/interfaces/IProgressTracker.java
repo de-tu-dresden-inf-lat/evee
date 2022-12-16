@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.proofs.interfaces;
+package de.tu_dresden.inf.lat.evee.general.interfaces;
 
 public interface IProgressTracker {
     void setMessage(String message);

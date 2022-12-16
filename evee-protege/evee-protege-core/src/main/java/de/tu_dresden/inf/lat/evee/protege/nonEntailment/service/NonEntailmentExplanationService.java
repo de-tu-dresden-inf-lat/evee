@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.service;
 
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.OWLNonEntailmentExplainer;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.OWLNonEntailmentExplainer;
 import org.protege.editor.core.plugin.ProtegePluginInstance;
 import org.protege.editor.owl.OWLEditorKit;
 

@@ -6,7 +6,7 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.FormattingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.FormattingException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofWriter;
 import de.tu_dresden.inf.lat.evee.proofs.tools.MinimalHypergraphProofExtractor;

@@ -10,7 +10,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInferenceEvaluator;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLTools;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 
 /**
  * Count the number of concept constructors in the conclusion that do not occur

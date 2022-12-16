@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.*;
 
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.CachingProofGenerator;

@@ -4,14 +4,15 @@ import com.typesafe.scalalogging.Logger
 import de.tu_dresden.inf.lat.dltools.DLFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.dataStructures.{Forgetter, Justifier}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.tools.{Counter, OntologyTools, TidyForgettingBasedProofs}
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker
+import de.tu_dresden.inf.lat.evee.general.tools.ProgressTrackerCollection
 import de.tu_dresden.inf.lat.evee.proofs.data.{AbstractSimpleOWLProofGenerator, Inference, Proof}
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProgressTracker, IProof, IProofGenerator, ISimpleProofGenerator}
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProof, IProofGenerator, ISimpleProofGenerator}
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model._
 import org.semanticweb.owlapi.reasoner.OWLReasoner
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.{ParsableOWLFormatter, SimpleOWLFormatter, SimpleOWLFormatterCl}
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedException
-import de.tu_dresden.inf.lat.evee.proofs.tools.ProgressTrackerCollection
 import org.semanticweb.HermiT
 import org.semanticweb.owlapi.model.parameters.Imports
 

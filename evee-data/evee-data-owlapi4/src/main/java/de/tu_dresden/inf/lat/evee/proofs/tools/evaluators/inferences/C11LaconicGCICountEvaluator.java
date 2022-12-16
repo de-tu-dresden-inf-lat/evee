@@ -20,11 +20,11 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInferenceEvaluator;
-import de.tu_dresden.inf.lat.evee.proofs.tools.ConceptNameGenerator;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLAxiomSplitter;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLSubClassExpressionUnfolder;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLSuperClassExpressionUnfolder;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLTools;
+import de.tu_dresden.inf.lat.evee.general.tools.ConceptNameGenerator;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLAxiomSplitter;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLSubClassExpressionUnfolder;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLSuperClassExpressionUnfolder;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 import de.tu_dresden.inf.lat.evee.proofs.tools.ProofTools;
 
 /**

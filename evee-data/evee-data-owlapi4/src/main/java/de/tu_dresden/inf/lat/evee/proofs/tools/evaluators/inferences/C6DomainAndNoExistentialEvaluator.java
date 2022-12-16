@@ -12,7 +12,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInferenceEvaluator;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLTools;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 
 /**
  * Determine whether there is a domain restriction on r that is used in a weird

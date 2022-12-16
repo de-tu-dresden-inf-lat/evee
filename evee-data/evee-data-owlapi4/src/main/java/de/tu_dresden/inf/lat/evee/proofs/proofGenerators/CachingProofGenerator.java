@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 

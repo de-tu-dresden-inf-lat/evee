@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.proofs.tools;
+package de.tu_dresden.inf.lat.evee.general.tools;
 
 import java.util.HashSet;
 import java.util.Iterator;

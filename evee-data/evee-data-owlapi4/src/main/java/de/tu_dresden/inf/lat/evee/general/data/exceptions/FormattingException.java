@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.proofs.data.exceptions;
+package de.tu_dresden.inf.lat.evee.general.data.exceptions;
 
 
 public class FormattingException extends Exception {

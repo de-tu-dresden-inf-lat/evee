@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.FormattingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.FormattingException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofWriter;
 

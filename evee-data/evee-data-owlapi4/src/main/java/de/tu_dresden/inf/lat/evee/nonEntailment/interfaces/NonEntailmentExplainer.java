@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.proofs.interfaces;
+package de.tu_dresden.inf.lat.evee.nonEntailment.interfaces;
 
 import java.util.Collection;
 import java.util.stream.Stream;

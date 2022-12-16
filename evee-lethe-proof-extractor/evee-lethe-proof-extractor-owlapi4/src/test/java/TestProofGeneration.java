@@ -1,7 +1,5 @@
-import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.FormattingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.FormattingException;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.lethe.LetheProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.lethe.ProofUtils;

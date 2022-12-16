@@ -10,7 +10,7 @@ import org.semanticweb.owlapi.model.OWLEntity;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInferenceEvaluator;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLTools;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 
 /**
  * Count the number of OWLEntities in the conclusion that do no occur in the

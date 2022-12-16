@@ -2,7 +2,7 @@ package de.tu_dresden.inf.lat.evee.proofs.proofGenerators;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.ProofGeneratorMain;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.tools.MinimalProofExtractor;

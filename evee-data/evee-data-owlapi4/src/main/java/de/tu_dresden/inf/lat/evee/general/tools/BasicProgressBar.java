@@ -1,6 +1,6 @@
-package de.tu_dresden.inf.lat.evee.proofs.tools;
+package de.tu_dresden.inf.lat.evee.general.tools;
 
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 
 public class BasicProgressBar implements IProgressTracker {
     private String message = "Progress:";

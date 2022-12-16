@@ -1,8 +1,8 @@
 package scala.de.tu_dresden.inf.lat.evee.eliminationProofs.fame
 
 import de.tu_dresden.inf.lat.evee.eliminationProofs.{FameBasedHeuristicProofGenerator, FameBasedSizeMinimalProofGenerator, FameBasedSymbolMinimalProofGenerator, FameBasedWeightedSizeMinimalProofGenerator}
+import de.tu_dresden.inf.lat.evee.general.tools.BasicProgressBar
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatterCl
-import de.tu_dresden.inf.lat.evee.proofs.tools.BasicProgressBar
 import org.junit.Test
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.IRI

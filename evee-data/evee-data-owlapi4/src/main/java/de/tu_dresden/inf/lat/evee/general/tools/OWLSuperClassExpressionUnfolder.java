@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.tu_dresden.inf.lat.evee.proofs.tools;
+package de.tu_dresden.inf.lat.evee.general.tools;
 
 import java.util.Collection;
 import java.util.Set;
@@ -37,19 +37,19 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
  * @author stefborg
  *
  */
-public class OWLSubClassExpressionUnfolder implements OWLClassExpressionVisitorEx<OWLClassExpression> {
+public class OWLSuperClassExpressionUnfolder implements OWLClassExpressionVisitorEx<OWLClassExpression> {
 
 	OWLOntology o;
 	Set<OWLEntity> sig;
-	OWLSuperClassExpressionUnfolder supUnfolder;
+	OWLSubClassExpressionUnfolder subUnfolder;
 
-	public OWLSubClassExpressionUnfolder(OWLOntology o, Set<OWLEntity> sig) {
+	public OWLSuperClassExpressionUnfolder(OWLOntology o, Set<OWLEntity> sig) {
 		this.o = o;
 		this.sig = sig;
 	}
 
-	public void setSupUnfolder(OWLSuperClassExpressionUnfolder supUnfolder) {
-		this.supUnfolder = supUnfolder;
+	public void setSubUnfolder(OWLSubClassExpressionUnfolder subUnfolder) {
+		this.subUnfolder = subUnfolder;
 	}
 
 	public Stream<OWLClassExpression> visit(Collection<OWLClassExpression> exprs) {
@@ -59,16 +59,15 @@ public class OWLSubClassExpressionUnfolder implements OWLClassExpressionVisitorE
 	@Override
 	public OWLClassExpression visit(OWLClass ce) {
 		if (OWLTools.isAuxiliary(ce, sig)) {
-			// search for definition of ce, i.e. all axioms where ce occurs on the rhs
+			// search for definition of ce, i.e. all axioms where ce occurs on the lhs
 			Collection<OWLSubClassOfAxiom> axs = o.getAxioms(AxiomType.SUBCLASS_OF).stream()
 					.filter(ax -> ax.containsEntityInSignature(ce)).map(ax -> (OWLSubClassOfAxiom) ax)
 					.collect(Collectors.toList());
-			if (axs.stream()
-					.noneMatch(ax -> ax.getSuperClass().getClassesInSignature().stream().anyMatch(ce::equals))) {
+			if (axs.stream().noneMatch(ax -> ax.getSubClass().getClassesInSignature().stream().anyMatch(ce::equals))) {
 				return ce;
 			}
-			Set<OWLClassExpression> def = axs.stream().filter(ax -> ax.getSuperClass().equals(ce))
-					.map(ax -> ax.getSubClass()).map(s -> s.accept(this)).collect(Collectors.toSet());
+			Set<OWLClassExpression> def = axs.stream().filter(ax -> ax.getSubClass().equals(ce))
+					.map(ax -> ax.getSuperClass()).map(s -> s.accept(this)).collect(Collectors.toSet());
 			if (def.contains(null)) {
 				return null;
 			}
@@ -78,7 +77,7 @@ public class OWLSubClassExpressionUnfolder implements OWLClassExpressionVisitorE
 			case 1:
 				return def.iterator().next();
 			default:
-				return OWLTools.odf.getOWLObjectUnionOf(def);
+				return OWLTools.odf.getOWLObjectIntersectionOf(def);
 			}
 		} else {
 			return ce;
@@ -105,7 +104,7 @@ public class OWLSubClassExpressionUnfolder implements OWLClassExpressionVisitorE
 
 	@Override
 	public OWLClassExpression visit(OWLObjectComplementOf ce) {
-		OWLClassExpression op = ce.getOperand().accept(supUnfolder);
+		OWLClassExpression op = ce.getOperand().accept(subUnfolder);
 		if (op == null) {
 			return null;
 		}

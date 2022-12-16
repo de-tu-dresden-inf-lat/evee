@@ -5,11 +5,12 @@ import de.tu_dresden.inf.lat.dltools.DLFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.dataStructures.{Forgetter, Justifier}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.tools.{SearchTreeProgressTracker, TidyForgettingBasedProofs}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.{Constants, ForgettingBasedProofGenerator}
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker
+import de.tu_dresden.inf.lat.evee.general.tools.ProgressTrackerCollection
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.{SimpleOWLFormatter, SimpleOWLFormatterCl}
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException
 import de.tu_dresden.inf.lat.evee.proofs.interfaces._
-import de.tu_dresden.inf.lat.evee.proofs.tools.ProgressTrackerCollection
 import org.semanticweb.HermiT
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model._

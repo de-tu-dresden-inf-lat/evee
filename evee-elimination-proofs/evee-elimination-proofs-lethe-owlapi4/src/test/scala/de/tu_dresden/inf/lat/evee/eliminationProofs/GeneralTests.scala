@@ -6,10 +6,10 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.grid.ForgettingBasedGridProo
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.{ApproximateProofMeasureAxiomSizeSum, ApproximateProofMeasureInferenceNumber, MinimalForgettingBasedProofGenerator, MinimalSignatureAndForgettingBasedProofGenerator, ProofEvaluatorAxiomNumber, ProofEvaluatorAxiomSizeSum, ProofEvaluatorInferenceNumber, SymbolMinimalForgettingBasedProofGenerator}
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.{LetheBasedKBProofGeneratorSkippingSteps, ProofGraphVisualiser}
+import de.tu_dresden.inf.lat.evee.general.tools.BasicProgressBar
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProofGenerator, ISignatureBasedProofGenerator, ISimpleProofGenerator, ISimpleSignatureBasedProofGenerator}
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.OWLSignatureBasedMinimalTreeProofGenerator
-import de.tu_dresden.inf.lat.evee.proofs.tools.BasicProgressBar
 import org.junit.Assert.{assertEquals, assertFalse}
 import org.junit.{Before, Test}
 import org.semanticweb.owlapi.apibinding.OWLManager

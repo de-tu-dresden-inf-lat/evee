@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.proofs.interfaces;
 
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ParsingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ParsingException;
 
 import java.io.File;
 

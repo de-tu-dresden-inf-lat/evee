@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.FormattingException;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ParsingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.FormattingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ParsingException;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofParser;
