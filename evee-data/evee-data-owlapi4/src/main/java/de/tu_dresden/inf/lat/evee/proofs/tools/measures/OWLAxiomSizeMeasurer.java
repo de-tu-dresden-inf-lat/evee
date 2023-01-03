@@ -94,6 +94,16 @@ public class OWLAxiomSizeMeasurer implements OWLAxiomVisitorEx<Double> {
 				+ cem.visit(axiom.getSuperProperty());
 	}
 
+	@Override
+	public Double visit(OWLObjectPropertyAssertionAxiom axiom) {
+		return cem.visit(axiom.getSubject()) + cem.visit(axiom.getObject()) + 1d + cem.visit(axiom.getProperty());
+	}
+
+	@Override
+	public Double visit(OWLClassAssertionAxiom axiom) {
+		return cem.visit(axiom.getIndividual()) + 1d + axiom.getClassExpression().accept(cem);
+	}
+
 	// TODO support more axioms
 
 	@Override
@@ -175,12 +185,6 @@ public class OWLAxiomSizeMeasurer implements OWLAxiomVisitorEx<Double> {
 	}
 
 	@Override
-	public Double visit(OWLObjectPropertyAssertionAxiom axiom) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Double visit(OWLFunctionalObjectPropertyAxiom axiom) {
 		// TODO Auto-generated method stub
 		return null;
@@ -212,12 +216,6 @@ public class OWLAxiomSizeMeasurer implements OWLAxiomVisitorEx<Double> {
 
 	@Override
 	public Double visit(OWLEquivalentDataPropertiesAxiom axiom) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double visit(OWLClassAssertionAxiom axiom) {
 		// TODO Auto-generated method stub
 		return null;
 	}
