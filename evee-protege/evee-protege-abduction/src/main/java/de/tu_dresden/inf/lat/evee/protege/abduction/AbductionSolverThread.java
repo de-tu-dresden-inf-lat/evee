@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction;
 
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

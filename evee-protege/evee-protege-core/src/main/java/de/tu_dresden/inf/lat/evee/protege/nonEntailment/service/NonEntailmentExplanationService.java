@@ -1,6 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.service;
 
+import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.OWLNonEntailmentExplainer;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEvent;
 import org.protege.editor.core.plugin.ProtegePluginInstance;
 import org.protege.editor.owl.OWLEditorKit;
 
@@ -25,6 +27,8 @@ public interface NonEntailmentExplanationService extends OWLNonEntailmentExplain
      */
     Component getSettingsComponent();
 
-    void registerListener(NonEntailmentExplanationListener listener);
+    void registerListener(ExplanationGenerationListener<NonEntailmentExplanationEvent> listener);
+
+    String getErrorMessage();
 
 }

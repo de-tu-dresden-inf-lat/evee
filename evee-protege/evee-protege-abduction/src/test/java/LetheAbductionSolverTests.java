@@ -1,4 +1,4 @@
-//import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.LetheAbductionSolver;
+//import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.AbstractAbductionSolver;
 //import org.junit.Assert;
 //import org.junit.Test;
 //import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -65,7 +65,7 @@
 //            abducibles.add(ebolaBat);
 //            abducibles.add(contactWith);
 //            abducibles.add(infected);
-//            LetheAbductionSolver abductionSolver = new LetheAbductionSolver();
+//            AbstractAbductionSolver abductionSolver = new AbstractAbductionSolver();
 //            abductionSolver.setAbducibles(abducibles);
 //            abductionSolver.setObservation(observation);
 //            abductionSolver.setOntology(ebolaOntology);

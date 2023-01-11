@@ -21,7 +21,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
 
     protected JPanel ontologySignatureTabbedPanel;
     protected JPanel selectedSignatureListPanel;
-    private JTabbedPane signatureTabPane;
+    protected JTabbedPane signatureTabPane;
     protected OWLObjectTree<OWLClass> classesTree;
     protected OWLObjectTree<OWLObjectProperty> propertyTree;
     protected OWLObjectListModel<OWLNamedIndividual> ontologyIndividualsListModel;
@@ -29,15 +29,15 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
     protected OWLObjectListModel<OWLEntity> selectedSignatureListModel;
     protected JList<OWLEntity> selectedSignatureJList;
     protected JButton addButton;
-    private final String ADD_BTN_COMMAND = "ADD_TO_SIGNATURE";
+    protected final String ADD_BTN_COMMAND = "ADD_TO_SIGNATURE";
     protected String ADD_BTN_NAME;
     protected String ADD_BTN_TOOLTIP;
     protected JButton deleteButton;
-    private final String DEL_BTN_COMMAND = "DELETE_FROM_SIGNATURE";
+    protected final String DEL_BTN_COMMAND = "DELETE_FROM_SIGNATURE";
     protected String DEL_BTN_NAME;
     protected String DEL_BTN_TOOLTIP;
     protected JButton clearButton;
-    private final String CLR_BTN_COMMAND = "CLEAR_SIGNATURE";
+    protected final String CLR_BTN_COMMAND = "CLEAR_SIGNATURE";
     protected String CLR_BTN_NAME;
     protected String CLR_BTN_TOOLTIP;
 

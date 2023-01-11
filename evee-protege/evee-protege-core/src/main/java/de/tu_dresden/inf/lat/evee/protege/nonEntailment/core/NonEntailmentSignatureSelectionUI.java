@@ -108,20 +108,93 @@ public class NonEntailmentSignatureSelectionUI extends AbstractSignatureSelectio
         return this.nonEntailmentViewComponent.getOWLEditorKit().getOWLModelManager().getActiveOntology();
     }
 
+//    @Override
+//    public void actionPerformed(ActionEvent e){
+//        if (e.getActionCommand().equals(this.ADD_OBSERVATION_SIGNATURE_COMMAND)){
+//            SwingUtilities.invokeLater(() -> {
+//                ArrayList<OWLObject> observations = this.nonEntailmentViewComponent.getObservations();
+//                HashSet<OWLEntity> observationEntities = new HashSet<>();
+//                observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
+//                this.selectedSignatureListModel.checkAndAddElements(observationEntities);
+//            });
+//        }
+//        else{
+//            SwingUtilities.invokeLater(() -> {
+//                super.actionPerformed(e);
+//                this.nonEntailmentViewComponent.changeComputeButtonStatus();
+//            });
+//        }
+//    }
+
     @Override
-    public void actionPerformed(ActionEvent e){
-        if (e.getActionCommand().equals(this.ADD_OBSERVATION_SIGNATURE_COMMAND)){
-            SwingUtilities.invokeLater(() -> {
-                ArrayList<OWLObject> observations = this.nonEntailmentViewComponent.getObservations();
-                HashSet<OWLEntity> observationEntities = new HashSet<>();
-                observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
-                this.selectedSignatureListModel.checkAndAddElements(observationEntities);
-            });
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+//            todo: find better way for addAction, deleteAction and clearAction (currently copied from super-class) - reason: need to enforce "this.selectedSignatureJList.clearSelection();" at end of "SwingUtilities.invokeLater()"
+            case ADD_BTN_COMMAND:
+                this.addAction();
+                break;
+            case DEL_BTN_COMMAND:
+                this.deleteAction();
+                break;
+            case CLR_BTN_COMMAND:
+                this.clearAction();
+                break;
+            case ADD_OBSERVATION_SIGNATURE_COMMAND:
+                this.addObservationSignatureAction();
         }
-        else{
-            super.actionPerformed(e);
-        }
-        this.nonEntailmentViewComponent.changeComputeButtonStatus();
+    }
+
+    private void addAction(){
+        SwingUtilities.invokeLater(() -> {
+            int tabIndex = this.signatureTabPane.getSelectedIndex();
+            if (tabIndex == 0){
+                java.util.List<OWLClass> entitiesToAdd = this.classesTree.getSelectedOWLObjects();
+                this.selectedSignatureListModel.checkAndAddElements(entitiesToAdd);
+                this.classesTree.clearSelection();
+                this.selectedSignatureJList.clearSelection();
+            }
+            else if (tabIndex == 1){
+                java.util.List<OWLObjectProperty> entitiesToAdd = this.propertyTree.getSelectedOWLObjects();
+                this.selectedSignatureListModel.checkAndAddElements(entitiesToAdd);
+                this.propertyTree.clearSelection();
+                this.selectedSignatureJList.clearSelection();
+            }
+            else{
+                java.util.List<OWLNamedIndividual> entitiesToAdd = this.ontologyIndividualsJList.getSelectedValuesList();
+                this.selectedSignatureListModel.checkAndAddElements(entitiesToAdd);
+                this.ontologyIndividualsJList.clearSelection();
+                this.selectedSignatureJList.clearSelection();
+            }
+            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+        });
+    }
+
+    private void deleteAction(){
+        SwingUtilities.invokeLater(() -> {
+            List<OWLEntity> entitiesToDelete = this.selectedSignatureJList.getSelectedValuesList();
+            this.selectedSignatureListModel.removeElements(entitiesToDelete);
+            this.selectedSignatureJList.clearSelection();
+            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+        });
+    }
+
+    protected void clearAction(){
+        SwingUtilities.invokeLater(() -> {
+            this.selectedSignatureListModel.removeAll();
+            this.selectedSignatureJList.clearSelection();
+            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+        });
+    }
+
+    protected void addObservationSignatureAction(){
+        SwingUtilities.invokeLater(() -> {
+            ArrayList<OWLObject> observations = this.nonEntailmentViewComponent.getObservations();
+            HashSet<OWLEntity> observationEntities = new HashSet<>();
+            observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
+            this.selectedSignatureListModel.checkAndAddElements(observationEntities);
+            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+        });
     }
 
     protected boolean listModelIsEmpty(){

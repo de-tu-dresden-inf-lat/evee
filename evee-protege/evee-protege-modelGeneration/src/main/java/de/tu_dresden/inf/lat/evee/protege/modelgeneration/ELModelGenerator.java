@@ -2,7 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEventType;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
@@ -34,7 +34,7 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
     boolean subsumed;
     boolean consistent;
     private OWLEditorKit owlEditorKit;
-    private NonEntailmentExplanationListener viewComponentListener;
+    private ExplanationGenerationListener<NonEntailmentExplanationEvent> viewComponentListener;
 
     private final Logger logger = LoggerFactory.getLogger(ELModelGenerator.class);
 
@@ -115,8 +115,13 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
     }
 
     @Override
-    public void registerListener(NonEntailmentExplanationListener listener) {
+    public void registerListener(ExplanationGenerationListener<NonEntailmentExplanationEvent> listener) {
         this.viewComponentListener = listener;
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return null;
     }
 
 

@@ -1,9 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationPlugin;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationPluginLoader;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.classexpression.OWLExpressionParserException;
@@ -35,7 +36,7 @@ import java.util.List;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 
-public class NonEntailmentViewComponent extends AbstractOWLViewComponent implements ActionListener, NonEntailmentExplanationListener {
+public class NonEntailmentViewComponent extends AbstractOWLViewComponent implements ActionListener, ExplanationGenerationListener<NonEntailmentExplanationEvent> {
 
     private final NonEntailmentExplainerManager nonEntailmentExplainerManager;
     private final ViewComponentOntologyChangeListener changeListener;
@@ -58,6 +59,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     private JButton deleteObservationButton;
     private JButton resetObservationButton;
     private JPanel splitPaneHolderPanel;
+    private JComboBox<String> serviceNamesComboBox;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
     private static final String COMPUTE_NAME = "Compute";
     private static final String COMPUTE_TOOLTIP = "Compute non-entailment explanation using Selected Signature and Observation";
@@ -105,6 +107,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         SwingUtilities.invokeLater(() -> {
             this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             this.createGeneralSettingsComponent();
+            this.nonEntailmentExplainerManager.setExplanationService((String) this.serviceNamesComboBox.getSelectedItem());
             this.createSignatureManagementComponent();
             this.createObservationComponent();
             this.resetView();
@@ -183,19 +186,27 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        switch (e.getActionCommand()){
-            case COMPUTE_COMMAND:
-                this.computeExplanation();
-                break;
-            case ADD_OBSERVATION_COMMAND:
-                this.addObservation();
-                break;
-            case DELETE_OBSERVATION_COMMAND:
-                this.deleteObservation();
-                break;
-            case RESET_OBSERVATION_COMMAND:
-                this.resetObservation();
-                break;
+        if (e.getSource() instanceof JComboBox){
+            JComboBox comboBox = (JComboBox) e.getSource();
+            String serviceName = (String) comboBox.getSelectedItem();
+            this.nonEntailmentExplainerManager.setExplanationService(serviceName);
+            this.changeComputeButtonStatus();
+        }
+        else{
+            switch (e.getActionCommand()){
+                case COMPUTE_COMMAND:
+                    this.computeExplanation();
+                    break;
+                case ADD_OBSERVATION_COMMAND:
+                    this.addObservation();
+                    break;
+                case DELETE_OBSERVATION_COMMAND:
+                    this.deleteObservation();
+                    break;
+                case RESET_OBSERVATION_COMMAND:
+                    this.resetObservation();
+                    break;
+            }
         }
     }
 
@@ -203,6 +214,10 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     public void handleEvent(NonEntailmentExplanationEvent event){
         if (event.getType() == NonEntailmentExplanationEventType.COMPUTATION_COMPLETE) {
             this.showResult(event.getSource().getResultComponent());
+        }
+        else if (event.getType() == NonEntailmentExplanationEventType.ERROR){
+            SwingUtilities.invokeLater(this::resetView);
+            this.showError(event.getSource().getErrorMessage());
         }
     }
 
@@ -355,9 +370,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         this.serviceSelectionPanel = new JPanel();
         this.serviceSelectionPanel.setLayout(new BoxLayout(this.serviceSelectionPanel, BoxLayout.PAGE_AXIS));
         Vector<String> serviceNames = this.nonEntailmentExplainerManager.getExplanationServiceNames();
-        JComboBox<String> serviceNamesComboBox = new JComboBox<>(serviceNames);
-        serviceNamesComboBox.addActionListener(this.nonEntailmentExplainerManager);
-        this.serviceSelectionPanel.add(serviceNamesComboBox);
+        this.serviceNamesComboBox = new JComboBox<>(serviceNames);
+        this.serviceNamesComboBox.addActionListener(this);
+        this.serviceSelectionPanel.add(this.serviceNamesComboBox);
         this.serviceSelectionPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         this.computeButton = this.createButton(COMPUTE_COMMAND, COMPUTE_NAME, COMPUTE_TOOLTIP);
         this.computeButton.setEnabled(false);
@@ -375,11 +390,16 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     private void computeExplanation(){
+        this.logger.debug("Request to compute non entailment explanation");
         SwingUtilities.invokeLater(() -> {
+            this.logger.debug("Setting parameters and computing explanation");
             NonEntailmentExplanationService explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(this.getOWLModelManager().getActiveOntology());
             explainer.setSignature(this.signatureSelectionUI.getSelectedSignature());
             explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
+            this.logger.debug("Resetting viewComponent");
+            this.resetView();
+            this.logger.debug("Computing explanation");
             explainer.computeExplanation();
         });
     }
@@ -390,6 +410,19 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             this.resultHolderPanel.add(resultComponent);
             this.repaint();
             this.revalidate();
+        });
+    }
+
+    public void showError(String message){
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
+                    this.getOWLEditorKit().getWorkspace()), "Error");
+            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                    ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace())));
+            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            errorDialog.setVisible(true);
         });
     }
 
