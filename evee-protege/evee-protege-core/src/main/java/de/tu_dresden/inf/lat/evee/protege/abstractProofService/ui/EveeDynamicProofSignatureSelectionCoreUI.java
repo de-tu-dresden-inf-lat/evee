@@ -19,22 +19,12 @@ import java.util.Collection;
 
 public class EveeDynamicProofSignatureSelectionCoreUI extends AbstractSignatureSelectionUI {
 
-    private final EveeDynamicProofSignatureSelectionUI signatureSelectionUI;
+    private final EveeDynamicProofSignatureSelectionWindow signatureSelectionUI;
 
     private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofSignatureSelectionCoreUI.class);
 
-    public EveeDynamicProofSignatureSelectionCoreUI(EveeDynamicProofSignatureSelectionUI signatureSelectionUI){
+    public EveeDynamicProofSignatureSelectionCoreUI(EveeDynamicProofSignatureSelectionWindow signatureSelectionUI){
         this.signatureSelectionUI = signatureSelectionUI;
-    }
-
-    protected void setSelectedSignature(Collection<OWLEntity> entities){
-        this.selectedSignatureListModel.removeAll();
-        this.selectedSignatureListModel.addElements(entities);
-        this.selectedSignatureJList.clearSelection();
-    }
-
-    protected void clearSelectedSignatureUISelection(){
-        this.selectedSignatureJList.clearSelection();
     }
 
     @Override

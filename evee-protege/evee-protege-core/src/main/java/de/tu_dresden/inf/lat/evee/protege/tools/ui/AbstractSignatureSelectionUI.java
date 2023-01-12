@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -216,6 +217,16 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
 
     public List<OWLEntity> getSelectedSignature(){
         return this.selectedSignatureListModel.getOwlObjects();
+    }
+
+    public void setSelectedSignature(Collection<OWLEntity> entities){
+        this.selectedSignatureListModel.removeAll();
+        this.selectedSignatureListModel.addElements(entities);
+        this.selectedSignatureJList.clearSelection();
+    }
+
+    public void clearSelectedSignatureUISelection(){
+        this.selectedSignatureJList.clearSelection();
     }
 
 }

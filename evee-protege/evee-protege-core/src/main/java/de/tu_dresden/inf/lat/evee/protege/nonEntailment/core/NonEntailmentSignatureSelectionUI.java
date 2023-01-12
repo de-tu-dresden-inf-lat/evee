@@ -74,9 +74,9 @@ public class NonEntailmentSignatureSelectionUI extends AbstractSignatureSelectio
         buttonHolderPanel.add(toolbar);
         JPanel secondRowPanel = new JPanel();
         secondRowPanel.setLayout(new BoxLayout(secondRowPanel, BoxLayout.LINE_AXIS));
-        JButton addObservationSignatureButton = new JButton(this.ADD_OBSERVATION_SIGNATURE_NAME);
-        addObservationSignatureButton.setActionCommand(this.ADD_OBSERVATION_SIGNATURE_COMMAND);
-        addObservationSignatureButton.setToolTipText(this.ADD_OBSERVATION_SIGNATURE_TOOLTIP);
+        JButton addObservationSignatureButton = new JButton(ADD_OBSERVATION_SIGNATURE_NAME);
+        addObservationSignatureButton.setActionCommand(ADD_OBSERVATION_SIGNATURE_COMMAND);
+        addObservationSignatureButton.setToolTipText(ADD_OBSERVATION_SIGNATURE_TOOLTIP);
         addObservationSignatureButton.addActionListener(this);
         secondRowPanel.add(Box.createGlue());
         secondRowPanel.add(addObservationSignatureButton);
