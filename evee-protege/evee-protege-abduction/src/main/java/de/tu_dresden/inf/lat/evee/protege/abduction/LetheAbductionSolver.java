@@ -1,7 +1,11 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction;
 
+import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionLoadingUI;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -15,24 +19,23 @@ import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.ConjunctiveDLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
 
 import javax.annotation.Nonnull;
-import javax.swing.*;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class LetheAbductionSolver extends AbstractAbductionSolver {
+public class LetheAbductionSolver extends AbstractAbductionSolver implements ExplanationGenerationListener<ExplanationEvent<ExplanationGenerator<DLStatement>>> {
 
     private OWLEditorKit owlEditorKit;
     private int maxLevel;
     private int currentResultAdapterIndex;
     private boolean computationSuccessful;
+    private String errorMessage = "";
     private final OWLAbducer abducer;
     private final List<DLStatementAdapter> hypothesesAdapterList;
     private final Map<OWLOntology, DLStatementCache> cachedResults;
     private final LetheAbductionSolverOntologyChangeListener changeListener;
     private final static String LOADING = "LOADING";
 
-    private Logger logger = LoggerFactory.getLogger(LetheAbductionSolver.class);
+    private final Logger logger = LoggerFactory.getLogger(LetheAbductionSolver.class);
 
     public LetheAbductionSolver(){
         super();
@@ -74,9 +77,22 @@ public class LetheAbductionSolver extends AbstractAbductionSolver {
         }
     }
 
-    public void showError(String message){
-        this.computationSuccessful = false;
-        super.showError(message);
+    @Override
+    public void handleEvent(ExplanationEvent<ExplanationGenerator<DLStatement>> event){
+        this.disposeLoadingScreen();
+        switch (event.getType()){
+            case COMPUTATION_COMPLETE :
+                this.explanationComputationCompleted(event.getSource().getResult());
+                break;
+            case ERROR :
+                this.explanationComputationFailed(event.getSource().getErrorMessage());
+                break;
+        }
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return this.errorMessage;
     }
 
     @Override
@@ -126,6 +142,7 @@ public class LetheAbductionSolver extends AbstractAbductionSolver {
             this.logger.debug("Parameters changed, creating new stream");
             if (this.cachedResults.get(this.activeOntology).containsStatement(this.observation, this.abducibles)){
                 this.logger.debug("Cached result found, no computation of hypotheses necessary");
+                this.computationSuccessful = true;
                 this.prepareResultComponentCreation();
                 this.createResultComponent();
             }
@@ -144,7 +161,8 @@ public class LetheAbductionSolver extends AbstractAbductionSolver {
             }
             else{
                 this.logger.debug("Last computation failed, re-displaying error message");
-                this.showError(this.errorMsg);
+                this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                        ExplanationEventType.ERROR));
             }
         }
     }
@@ -161,11 +179,23 @@ public class LetheAbductionSolver extends AbstractAbductionSolver {
         thread.start();
     }
 
-    protected void newExplanationComputationCompleted(DLStatement hypotheses){
-        this.computationSuccessful = true;
-        this.cachedResults.get(this.activeOntology).putStatement(this.observation, this.abducibles, hypotheses);
-        this.prepareResultComponentCreation();
-        this.createResultComponent();
+    protected void explanationComputationCompleted(DLStatement hypotheses){
+        if (((DisjunctiveDLStatement) hypotheses).statements().size() == 0){
+            this.explanationComputationFailed("No result found, please adjust the vocabulary");
+        }
+        else{
+            this.computationSuccessful = true;
+            this.cachedResults.get(this.activeOntology).putStatement(this.observation, this.abducibles, hypotheses);
+            this.prepareResultComponentCreation();
+            this.createResultComponent();
+        }
+    }
+
+    private void explanationComputationFailed(String errorMessage){
+        this.computationSuccessful = false;
+        this.errorMessage = errorMessage;
+        this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                ExplanationEventType.ERROR));
     }
 
     protected void prepareResultComponentCreation(){
@@ -176,7 +206,6 @@ public class LetheAbductionSolver extends AbstractAbductionSolver {
         this.maxLevel = 0;
         this.currentResultAdapterIndex = 0;
         this.hypothesesAdapterList.clear();
-//        this.logger.debug("lets see if this works... statements:" + ((DisjunctiveDLStatement) hypotheses).statements());
         ((DisjunctiveDLStatement) hypotheses).statements().foreach(statement -> {
             this.hypothesesAdapterList.add(new DLStatementAdapter((ConjunctiveDLStatement) statement));
             return null;

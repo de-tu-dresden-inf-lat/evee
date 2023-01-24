@@ -93,7 +93,7 @@
                             org.protege.editor.core.*;version="4.3",
                             de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
                             scala.swing.*;resolution:=optional,
-                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.*,
+                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.*,
                             *
                         </Import-Package>
                         <Private-Package>

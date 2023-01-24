@@ -1,9 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEvent;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEventType;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentAbductionExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-abstract public class AbstractAbductionSolver implements NonEntailmentExplanationService, Supplier<Set<OWLAxiom>> {
+abstract public class AbstractAbductionSolver implements NonEntailmentAbductionExplanationService, Supplier<Set<OWLAxiom>> {
 
     protected Set<OWLAxiom> observation = null;
     protected Set<OWLEntity> abducibles = null;
@@ -36,9 +37,8 @@ abstract public class AbstractAbductionSolver implements NonEntailmentExplanatio
     private JPanel resultHolderPanel;
     private JPanel resultScrollingPanel;
     protected int hypothesisIndex;
-    private ExplanationGenerationListener<NonEntailmentExplanationEvent> viewComponentListener;
+    protected ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> viewComponentListener;
     protected boolean parametersChanged = true;
-    protected String errorMsg = "";
     protected static final String SETTINGS_LABEL = "Maximal number of hypotheses:";
     protected static final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
     protected static final String ADD_TO_ONTO_COMMAND = "ADD_TO_ONTO";
@@ -52,11 +52,6 @@ abstract public class AbstractAbductionSolver implements NonEntailmentExplanatio
         this.hypothesisIndex = 1;
         this.createSettingsComponent();
         this.logger.debug("AbstractAbductionSolver created successfully.");
-    }
-
-    @Override
-    public String getErrorMessage(){
-        return this.errorMsg;
     }
 
     @Override
@@ -115,7 +110,7 @@ abstract public class AbstractAbductionSolver implements NonEntailmentExplanatio
     }
 
     @Override
-    public Component getResultComponent() {
+    public Component getResult() {
         return this.resultHolderPanel;
     }
 
@@ -125,7 +120,7 @@ abstract public class AbstractAbductionSolver implements NonEntailmentExplanatio
     }
 
     @Override
-    public void registerListener(ExplanationGenerationListener<NonEntailmentExplanationEvent> listener) {
+    public void registerListener(ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> listener) {
         this.viewComponentListener = listener;
     }
 
@@ -224,8 +219,9 @@ abstract public class AbstractAbductionSolver implements NonEntailmentExplanatio
             }
             this.resultHolderPanel.repaint();
             this.resultHolderPanel.revalidate();
-            this.viewComponentListener.handleEvent(new NonEntailmentExplanationEvent(this,
-                    NonEntailmentExplanationEventType.COMPUTATION_COMPLETE));
+//            event-handling needs to happen within invokeLater-Block
+            this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                    ExplanationEventType.COMPUTATION_COMPLETE));
         });
     }
 
@@ -233,11 +229,19 @@ abstract public class AbstractAbductionSolver implements NonEntailmentExplanatio
         this.loadingUI.disposeLoadingScreen();
     }
 
-    public void showError(String message){
-        this.errorMsg = message;
-        this.viewComponentListener.handleEvent(new NonEntailmentExplanationEvent(this,
-                NonEntailmentExplanationEventType.ERROR));
-    }
+//    public void showError(){
+//        SwingUtilities.invokeLater(() -> {
+//            String message = this.getErrorMessage();
+//            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+//            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
+//                    this.owlEditorKit.getWorkspace()), "Error");
+//            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+//            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+//                    ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace())));
+//            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//            errorDialog.setVisible(true);
+//        });
+//    }
 
     private class AddToOntologyButtonListener implements ActionListener {
 

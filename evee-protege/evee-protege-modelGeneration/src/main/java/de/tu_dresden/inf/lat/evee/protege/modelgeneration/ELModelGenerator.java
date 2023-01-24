@@ -1,9 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEvent;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationEventType;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentModelGenerationExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.owlapi.model.*;
@@ -16,7 +17,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ELModelGenerator implements NonEntailmentExplanationService {
+public class ELModelGenerator implements NonEntailmentModelGenerationExplanationService {
 
 
     private ELReasoner elReasoner;
@@ -34,7 +35,7 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
     boolean subsumed;
     boolean consistent;
     private OWLEditorKit owlEditorKit;
-    private ExplanationGenerationListener<NonEntailmentExplanationEvent> viewComponentListener;
+    private ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> viewComponentListener;
 
     private final Logger logger = LoggerFactory.getLogger(ELModelGenerator.class);
 
@@ -71,12 +72,12 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
             incorrectAxType = true;
 //            return;
         }
-        this.viewComponentListener.handleEvent(new NonEntailmentExplanationEvent(this,
-                NonEntailmentExplanationEventType.COMPUTATION_COMPLETE));
+        this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                ExplanationEventType.COMPUTATION_COMPLETE));
     }
 
 
-    public Component getResultComponent() {
+    public Component getResult() {
         JPanel component = new JPanel();
 
         if (incorrectAxType) {
@@ -115,13 +116,13 @@ public class ELModelGenerator implements NonEntailmentExplanationService {
     }
 
     @Override
-    public void registerListener(ExplanationGenerationListener<NonEntailmentExplanationEvent> listener) {
+    public void registerListener(ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> listener) {
         this.viewComponentListener = listener;
     }
 
     @Override
     public String getErrorMessage() {
-        return null;
+        return "";
     }
 
 

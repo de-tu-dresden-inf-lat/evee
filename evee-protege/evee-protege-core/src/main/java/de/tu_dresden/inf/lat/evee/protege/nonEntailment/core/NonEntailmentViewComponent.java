@@ -1,10 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
-import com.sun.javafx.logging.JFRInputEvent;
 import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationPlugin;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationPluginLoader;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPlugin;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import org.apache.commons.io.FilenameUtils;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
@@ -44,7 +44,18 @@ import java.util.stream.Collectors;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 
-public class NonEntailmentViewComponent extends AbstractOWLViewComponent implements ActionListener, ExplanationGenerationListener<NonEntailmentExplanationEvent> {
+public class NonEntailmentViewComponent extends AbstractOWLViewComponent implements ActionListener, ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> {
+
+//    static { System.load("E:\\Programs\\Protege\\Protege-5.5.0\\plugins\\evee-protege-core-0.2-SNAPSHOT.jar\\HelloWorld.dll"); }
+//    static {
+//        File file = new File(String.valueOf(NonEntailmentViewComponent.class.getResource("E:\\Programs\\Protege\\Protege-5.5.0\\plugins\\evee-protege-core-0.2-SNAPSHOT.jar\\HelloWorld.dll")));
+//        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+//        System.load();
+//    }
+//    working, but referencing file outside the jar:
+//    static {System.load("E:\\ProgrammingProjects\\SHK-TUD\\evee\\evee-protege\\evee-protege-core\\src\\main\\java\\de\\tu_dresden\\inf\\lat\\evee\\protege\\nonEntailment\\core\\HelloWorld.dll"); }
+
+//    public static native String getHelloWorld();
 
     private final NonEntailmentExplainerManager nonEntailmentExplainerManager;
     private final ViewComponentOntologyChangeListener changeListener;
@@ -100,8 +111,62 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
 
     public NonEntailmentViewComponent(){
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
-        this.logger.debug("Object NonEntailmentViewComponent created");
         this.changeListener = new ViewComponentOntologyChangeListener();
+        this.logger.debug("Object NonEntailmentViewComponent created");
+
+
+//        this.logger.debug("Lets try if this c-stuff works:");
+//        get root-directory of protege:
+//        this.logger.debug("current directory:" + System.getProperty("user.dir"));
+
+//        not working? (file object is null) might try again with FileCreatorTest but result should be the same
+//        File file = new File(String.valueOf(NonEntailmentViewComponent.class.getResource("E:\\Programs\\Protege\\Protege-5.5.0\\plugins\\evee-protege-core-0.2-SNAPSHOT.jar\\HelloWorld.dll")));
+//        this.logger.debug("created the following file-object via getResource: " + file.getName());
+
+//        not working: "Das System kann die angegebene Datei nicht finden"
+//        try {
+//            String filePath = NonEntailmentViewComponent.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+//            String command = filePath + "/FileCreatorTest.dll";
+//            Process process = new ProcessBuilder(command).start();
+//            int exitCode = process.waitFor();
+//        } catch (IOException | InterruptedException e) {
+//            this.logger.error("Error occurred when using ProcessBuilder: " + e);
+//        }
+
+//        this.logger.debug(getHelloWorld());
+
+//        working: unpacking files inside the jar to temporary directory, then executing binary unpacked this way
+//        Path filePath = Paths.get(System.getProperty("user.dir"), "plugins", "evee-protege-core-0.2-SNAPSHOT.jar");
+//        File fileObject = new File(String.valueOf(filePath));
+//        try {
+//            JarFile jarFile = new JarFile(fileObject);
+//            Enumeration enumEntries = jarFile.entries();
+//            while (enumEntries.hasMoreElements()) {
+//                JarEntry fileToUnpack = (JarEntry) enumEntries.nextElement();
+//                Path destinationDirectory = Paths.get(System.getProperty("user.dir"));
+//                if (fileToUnpack.getName().equals("FileCreatorTest.dll")){
+//                    File cFile = new File(destinationDirectory + java.io.File.separator + fileToUnpack.getName());
+//                    InputStream is = jarFile.getInputStream(fileToUnpack); // get the input stream
+//                    FileOutputStream fos = new FileOutputStream(cFile);
+//                    while (is.available() > 0) {  // write contents of 'is' to 'fos'
+//                        fos.write(is.read());
+//                    }
+//                    fos.close();
+//                    is.close();
+//                }
+//            }
+//            jarFile.close();
+//            String command = Paths.get(System.getProperty("user.dir"),"FileCreatorTest.dll").toString();
+//            Process process = new ProcessBuilder(command).start();
+//            int exitCode = process.waitFor();
+//        } catch (IOException | InterruptedException e) {
+//            this.logger.error("Error when doing the C-Stuff: " + e);
+//        }
+
+
+
+
+
     }
 
     protected ArrayList<OWLObject> getObservations(){
@@ -246,13 +311,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     @Override
-    public void handleEvent(NonEntailmentExplanationEvent event){
-        if (event.getType() == NonEntailmentExplanationEventType.COMPUTATION_COMPLETE) {
-            this.showResult(event.getSource().getResultComponent());
-        }
-        else if (event.getType() == NonEntailmentExplanationEventType.ERROR){
-            SwingUtilities.invokeLater(this::resetView);
-            this.showError(event.getSource().getErrorMessage());
+    public void handleEvent(ExplanationEvent<NonEntailmentExplanationService> event){
+        switch (event.getType()){
+            case COMPUTATION_COMPLETE :
+                this.showResult(event.getSource().getResult());
+                break;
+            case ERROR :
+                this.showError(event.getSource().getErrorMessage());
+                break;
         }
     }
 
