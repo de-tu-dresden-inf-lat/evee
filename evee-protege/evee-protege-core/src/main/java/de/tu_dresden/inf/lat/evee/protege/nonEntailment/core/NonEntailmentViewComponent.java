@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPlugin;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import org.apache.commons.io.FilenameUtils;
 import org.protege.editor.core.ProtegeManager;

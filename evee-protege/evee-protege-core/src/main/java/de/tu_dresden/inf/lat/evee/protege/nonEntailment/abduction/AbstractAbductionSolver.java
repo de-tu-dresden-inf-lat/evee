@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentAbductionExplanationService;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentAbductionExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;

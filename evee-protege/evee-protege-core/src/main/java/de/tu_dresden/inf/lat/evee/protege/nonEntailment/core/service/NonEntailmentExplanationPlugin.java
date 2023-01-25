@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentExplanationService;
 import org.eclipse.core.runtime.IExtension;
 import org.protege.editor.core.plugin.AbstractProtegePlugin;
 import org.protege.editor.owl.OWLEditorKit;
