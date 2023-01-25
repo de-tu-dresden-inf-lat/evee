@@ -52,7 +52,7 @@ public class OWLClassExpressionSizeMeasurer implements OWLClassExpressionVisitor
 		return (double) s.size();
 	}
 
-	private Double visit(OWLIndividual ind) {
+	public Double visit(OWLIndividual ind) {
 		return 1d;
 	}
 
