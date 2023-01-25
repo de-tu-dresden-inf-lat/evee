@@ -116,6 +116,14 @@
                 </includes>
                 <filtering>true</filtering>
             </resource>
+<!--            <resource>-->
+<!--                <directory>src/main/java/de/tu_dresden/inf/lat/evee/protege/nonEntailment/core</directory>-->
+<!--                <includes>-->
+<!--                    <include>HelloWorld.dll</include>-->
+<!--                    <include>FileCreatorTest.dll</include>-->
+<!--                </includes>-->
+<!--&lt;!&ndash;                <targetPath>de/tu_dresden/inf/lat/evee/protege/nonEntailment/core</targetPath>&ndash;&gt;-->
+<!--            </resource>-->
         </resources>
         <plugins>
             <plugin>
@@ -155,11 +163,9 @@
                             de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.dltools.*,
                             de.tu_dresden.inf.lat.prettyPrinting.*,
-                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.*,
+                            de.tu_dresden.inf.lat.evee.protege.*,
                             com.typesafe.scalalogging.*,
                             scala.*,
-                            de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
-                            de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
                             com.google.errorprone.annotations.*,
                         </Export-Package>
                         <Private-Package>

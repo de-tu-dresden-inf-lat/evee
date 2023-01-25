@@ -1,5 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
+import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.*;
 
@@ -8,6 +10,7 @@ import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.OWLSignatureBasedMinima
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeProofAdapterKnownSignaturePreferenceManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import org.liveontologies.puli.DynamicProof;
 import org.liveontologies.puli.Inference;
 import org.protege.editor.owl.OWLEditorKit;
@@ -18,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>> {
+public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>>, ExplanationGenerationListener<ExplanationEvent<ExplanationGenerator<IProof<OWLAxiom>>>> {
 
     private IProof<OWLAxiom> iProof;
     private IProofGenerator<OWLAxiom, OWLOntology> cachingProofGen = null;
@@ -74,9 +77,7 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
 
     @Override
     public void addListener(ChangeListener changeListener) {
-        if (changeListener instanceof DynamicProof.ChangeListener){
-            this.inferenceChangeListener.add(changeListener);
-        }
+        this.inferenceChangeListener.add(changeListener);
     }
 
     @Override
@@ -106,11 +107,29 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         }
     }
 
+    @Override
+    public void handleEvent(ExplanationEvent<ExplanationGenerator<IProof<OWLAxiom>>> event){
+        switch (event.getType()){
+            case COMPUTATION_COMPLETE :
+                this.proofGenerationSuccessful(event.getSource().getResult());
+                break;
+            case COMPUTATION_CANCELLED :
+                this.proofGenerationCancelled(event.getSource().getResult());
+                break;
+            case NOT_SUPPORTED :
+                this.proofNotSupported();
+                break;
+            case ERROR :
+                this.proofGenerationError(event.getSource().getErrorMessage());
+                break;
+        }
+    }
+
     protected boolean isActive(){
         return this.proofPreferencesManager.loadIsActive();
     }
 
-    protected void proofGenerationSuccess(IProof<OWLAxiom> newProof) {
+    protected void proofGenerationSuccessful(IProof<OWLAxiom> newProof) {
         this.iProof = newProof;
         this.uiWindow.proofGenerationFinished();
         this.uiWindow.disposeLoadingScreen();
@@ -206,7 +225,7 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         this.uiWindow.initialize(editorKit);
         this.uiWindow.updateMessage(this.LOADING);
         EveeProofGenerationThread proofGenThread = new EveeProofGenerationThread(entailment,
-                this.ontology, this.reasoner, this.cachingProofGen, this);
+                this.cachingProofGen, this);
         proofGenThread.start();
         this.uiWindow.showWindow();
     }
@@ -223,7 +242,6 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         boolean useSignatureChanged = this.signaturePreferencesManager.useSignatureChanged(this.signatureTimeStamp, ontologyName);
         boolean signatureChanged = this.signaturePreferencesManager.signatureChanged(this.signatureTimeStamp, ontologyName);
         if (useSignature){
-//            useSignatureChanged auch mit drin
             if (signatureChanged || useSignatureChanged){
                 this.signatureProofGen = new OWLSignatureBasedMinimalTreeProofGenerator(this.innerProofGen);
                 Set<OWLEntity> signature = this.signaturePreferencesManager.getKnownSignatureForProofGeneration(
@@ -233,7 +251,6 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
                 signature.forEach(owlEntity -> this.logger.debug(owlEntity.toString()));
                 this.signatureTimeStamp = this.signaturePreferencesManager.getTimeStamp();
             }
-//            else: was ist hiermit
         }
         if (parametersChanged || useSignatureChanged || (useSignature && signatureChanged)){
             if (useSignature){

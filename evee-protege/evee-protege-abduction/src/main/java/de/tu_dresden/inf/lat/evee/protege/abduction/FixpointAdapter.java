@@ -19,10 +19,12 @@ public class FixpointAdapter {
         this.fixpointConcept = fixpointConcept;
         this.fixpointVariable = fixpointVariable;
         this.levelToExpressionMap = new HashMap<>();
-        Concept levelZero = new Substitution(this.fixpointVariable, baseConcept).apply(
-                this.fixpointConcept);
         this.currentMaxLevel = 0;
-        this.levelToExpressionMap.put(this.currentMaxLevel, levelZero);
+        this.levelToExpressionMap.put(this.currentMaxLevel, baseConcept);
+    }
+
+    public Concept getFixpointVariable(){
+        return this.fixpointVariable;
     }
 
     public Concept getFixpoint(){

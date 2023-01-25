@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.abduction;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;

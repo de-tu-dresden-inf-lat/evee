@@ -19,11 +19,15 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
-public class EveeDynamicProofSignatureSelectionUI extends ProtegeOWLAction implements ActionListener {
+public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction implements ActionListener {
 
     private static final String INIT = "Manage signature";
     private static final String LOAD = "LOAD_SIGNATURE";
+    private static final String LOAD_NAME = "Load from file";
+    private static final String LOAD_TOOLTIP = "Load a signature from a file";
     private static final String SAVE = "SAVE_SIGNATURE";
+    private static final String SAVE_NAME = "Save to file";
+    private static final String SAVE_TOOLTIP = "Save a signature to a file";
     private static final String CANCEL = "CANCEL_SIGNATURE_SELECTION";
     private static final String APPLY = "APPLY_SIGNATURE";
     private static final String USE_SIGNATURE_DELIMITER = "##### Use Signature: #####";
@@ -46,9 +50,9 @@ public class EveeDynamicProofSignatureSelectionUI extends ProtegeOWLAction imple
     private EveeDynamicProofSignatureSelectionCoreUI signatureSelectionUI;
     private OWLOntology activeOntology;
     private boolean signatureEnabled;
-    private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofSignatureSelectionUI.class);
+    private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofSignatureSelectionWindow.class);
 
-    public EveeDynamicProofSignatureSelectionUI(){
+    public EveeDynamicProofSignatureSelectionWindow(){
         this.signaturePreferencesManager = new EveeProofSignatureUIPreferenceManager();
     }
 
@@ -231,14 +235,12 @@ public class EveeDynamicProofSignatureSelectionUI extends ProtegeOWLAction imple
         JPanel fileOperationButtonPanel = new JPanel();
         fileOperationButtonPanel.setLayout(new BoxLayout(fileOperationButtonPanel, BoxLayout.LINE_AXIS));
         this.loadButton = this.createButton(
-                LOAD, "Load from file",
-                "Load a signature from a file");
+                LOAD, LOAD_NAME, LOAD_TOOLTIP);
         this.loadButton.setEnabled(this.signatureEnabled);
         fileOperationButtonPanel.add(loadButton);
         fileOperationButtonPanel.add(Box.createGlue());
         this.saveButton = this.createButton(
-                SAVE, "Save to file",
-                "Save a signature to a file");
+                SAVE, SAVE_NAME, SAVE_TOOLTIP);
         this.saveButton.setEnabled(this.signatureEnabled);
         fileOperationButtonPanel.add(saveButton);
         this.addLowerInteractiveElementBorder(fileOperationButtonPanel);
