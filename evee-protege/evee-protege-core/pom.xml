@@ -116,14 +116,6 @@
                 </includes>
                 <filtering>true</filtering>
             </resource>
-<!--            <resource>-->
-<!--                <directory>src/main/java/de/tu_dresden/inf/lat/evee/protege/nonEntailment/core</directory>-->
-<!--                <includes>-->
-<!--                    <include>HelloWorld.dll</include>-->
-<!--                    <include>FileCreatorTest.dll</include>-->
-<!--                </includes>-->
-<!--&lt;!&ndash;                <targetPath>de/tu_dresden/inf/lat/evee/protege/nonEntailment/core</targetPath>&ndash;&gt;-->
-<!--            </resource>-->
         </resources>
         <plugins>
             <plugin>
