@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,24 +10,24 @@ import java.util.Vector;
 
 public class NonEntailmentExplainerManager {
 
-    private NonEntailmentExplanationService currentNonEntailmentExplanationService = null;
-    private final Map<String, NonEntailmentExplanationService> serviceMap;
+    private INonEntailmentExplanationService currentNonEntailmentExplanationService = null;
+    private final Map<String, INonEntailmentExplanationService> serviceMap;
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentExplainerManager.class);
 
     public NonEntailmentExplainerManager(){
         this.serviceMap = new HashMap<>();
     }
 
-    public void registerNonEntailmentExplanationService(NonEntailmentExplanationService service, String serviceName){
+    public void registerNonEntailmentExplanationService(INonEntailmentExplanationService service, String serviceName){
         this.serviceMap.put(serviceName, service);
     }
 
-    public NonEntailmentExplanationService getCurrentExplainer(){
+    public INonEntailmentExplanationService getCurrentExplainer(){
         return this.currentNonEntailmentExplanationService;
     }
 
     protected void setExplanationService(String serviceName){
-        NonEntailmentExplanationService service = this.serviceMap.get(serviceName);
+        INonEntailmentExplanationService service = this.serviceMap.get(serviceName);
         if (service != null){
             this.currentNonEntailmentExplanationService = service;
             this.logger.debug("Non entailment explanation service changed to: " + serviceName);
@@ -39,7 +39,7 @@ public class NonEntailmentExplainerManager {
 //        if (e.getSource() instanceof JComboBox){
 //            JComboBox comboBox = (JComboBox) e.getSource();
 //            String serviceName = (String) comboBox.getSelectedItem();
-//            NonEntailmentExplanationService newService = this.serviceMap.get(serviceName);
+//            INonEntailmentExplanationService newService = this.serviceMap.get(serviceName);
 //            if (newService != null){
 //                this.currentNonEntailmentExplanationService = newService;
 //                this.logger.debug("Non entailment explanation service changed to: " + serviceName);

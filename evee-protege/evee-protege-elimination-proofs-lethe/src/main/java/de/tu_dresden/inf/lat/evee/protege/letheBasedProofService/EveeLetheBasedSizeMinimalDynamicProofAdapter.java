@@ -6,7 +6,6 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifie
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ApproximateProofMeasureInferenceNumber;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.MinimalForgettingBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ProofEvaluatorInferenceNumber$;
-import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.OWLSignatureBasedMinimalTreeProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -37,7 +36,7 @@ public class EveeLetheBasedSizeMinimalDynamicProofAdapter extends AbstractEveeSu
     private void createInnerProofGenerator(){
         this.logger.debug("Creating new inner proof generator.");
         boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
-        long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
+        long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOutSeconds());
         this.innerProofGenerator = new MinimalForgettingBasedProofGenerator(
                 ProofEvaluatorInferenceNumber$.MODULE$,
                 new ApproximateProofMeasureInferenceNumber(JavaConverters.asScalaSet(new HashSet<OWLEntity>()).toSet()),
