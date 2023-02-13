@@ -9,7 +9,6 @@
     <version>${revision}</version>
 
 
-
     <packaging>pom</packaging>
 
     <properties>

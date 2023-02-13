@@ -42,7 +42,8 @@
         <module>evee-protege-lethe-proof-extractor</module>
         <module>evee-protege-elk-proof-extractor</module>
         <module>evee-protege-modelGeneration</module>
-        <module>evee-protege-abduction</module>
+        <module>evee-protege-abduction-lethe</module>
+        <module>evee-protege-abduction-capi</module>
     </modules>
 
 </project>

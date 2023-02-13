@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+    <extension id="CapiNonEntailmentExplanationService"
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
+        <name value="Connection-Minimal Abduction (CAPI)"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService.CapiAbductionSolver"/>
+    </extension>
+
+    <extension id="CapiNonEntailmentExplanationServicePreferences"
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service_preferences">
+        <label value="Connection-Minimal Abduction (CAPI)"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService.CapiPreferencesUI"/>
+    </extension>
+
+</plugin>

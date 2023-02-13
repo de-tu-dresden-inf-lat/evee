@@ -193,7 +193,6 @@ public class NonEntailmentSignatureSelectionUI extends AbstractSignatureSelectio
             observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
             this.selectedSignatureListModel.checkAndAddElements(observationEntities);
             this.nonEntailmentViewComponent.changeComputeButtonStatus();
-            this.nonEntailmentViewComponent.changeComputeButtonStatus();
         });
     }
 

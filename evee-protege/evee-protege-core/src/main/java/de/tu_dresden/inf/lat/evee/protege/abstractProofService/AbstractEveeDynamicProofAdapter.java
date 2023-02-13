@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
-import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerator;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.*;
 
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>>, ExplanationGenerationListener<ExplanationEvent<ExplanationGenerator<IProof<OWLAxiom>>>> {
+public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>>, IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<IProof<OWLAxiom>>>> {
 
     private IProof<OWLAxiom> iProof;
     private IProofGenerator<OWLAxiom, OWLOntology> cachingProofGen = null;
@@ -108,7 +108,7 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
     }
 
     @Override
-    public void handleEvent(ExplanationEvent<ExplanationGenerator<IProof<OWLAxiom>>> event){
+    public void handleEvent(ExplanationEvent<IExplanationGenerator<IProof<OWLAxiom>>> event){
         switch (event.getType()){
             case COMPUTATION_COMPLETE :
                 this.proofGenerationSuccessful(event.getSource().getResult());

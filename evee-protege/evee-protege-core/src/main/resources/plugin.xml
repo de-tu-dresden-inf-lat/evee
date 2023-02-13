@@ -5,6 +5,9 @@
     <extension-point id="nonEntailment_explanation_service"
                      name="Non-Entailment Explanation Service"
                      schema="schema/de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service.xsd"/>
+    <extension-point id="nonEntailment_explanation_service_preferences"
+                     name="Non-Entailment Explanation Service Preferences"
+                     schema="schema/de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service_preferences.xsd"/>
 
     <extension id="NonEntailmentExplanationView"
                point="org.protege.editor.core.application.ViewComponent">
@@ -29,6 +32,12 @@
         <toolTip value="Select known ontology signature"/>
         <path value="${bundleName}.eveeProofsTopMenu/SlotA-A"/>
         <editorKitId value="OWLEditorKit"/>
+    </extension>
+
+    <extension id="ProofBasedExplanationPreferences"
+               point="org.protege.editor.core.application.explanationpreferencespanel">
+        <label value="NonEntailment"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.preferences.NonEntailmentPreferencesPanel"/>
     </extension>
 
 </plugin>

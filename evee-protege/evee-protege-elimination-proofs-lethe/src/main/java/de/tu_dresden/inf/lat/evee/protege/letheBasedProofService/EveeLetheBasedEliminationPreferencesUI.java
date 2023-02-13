@@ -26,7 +26,7 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
     protected void createUiElements(){
         super.createUiElements();
         SwingUtilities.invokeLater(() -> {
-            SpinnerNumberModel timeOutSpinnerNumberModel = new SpinnerNumberModel(this.letheEliminationPreferencesManager.loadTimeOut(),
+            SpinnerNumberModel timeOutSpinnerNumberModel = new SpinnerNumberModel(this.letheEliminationPreferencesManager.loadTimeOutSeconds(),
                     0d, null, STEP_SIZE);
             this.timeOutSpinner = new JSpinner(timeOutSpinnerNumberModel);
             this.timeOutSpinner.setPreferredSize(new Dimension(this.SPINNER_WIDTH, this.timeOutSpinner.getPreferredSize().height));
