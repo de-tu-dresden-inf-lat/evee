@@ -132,7 +132,9 @@ public class LetheAbductionSolver extends AbstractAbductionSolver implements Exp
                 return result;
             }
         }
-        return null;
+        return null; // TODO returning null should be avoided - maybe this method can be changed in a way that
+                     // we get an exception (no explanation), an empty set (empty explanation), or an optional
+                     // (in case it is not exceptional to not have an explanation)
     }
 
 

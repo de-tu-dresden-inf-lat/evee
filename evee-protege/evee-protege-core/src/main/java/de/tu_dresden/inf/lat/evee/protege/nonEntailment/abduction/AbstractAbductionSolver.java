@@ -172,6 +172,22 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
         });
     }
 
+    /**
+     * Compare two results based on the string representation. Shorter results should come first.
+     */
+    private Comparator<Set<OWLAxiom>> resultComparator = (result1, result2) -> {
+        if(result1.size()!=result2.size())
+            return result1.size()-result2.size();
+        else {
+            String r1 = result1.stream().map(Object::toString).reduce("", (a,b) -> a+b);
+            String r2 = result2.stream().map(Object::toString).reduce("", (a,b) -> a+b);
+            if(r1.length()!=r2.length())
+                return r1.length()-r2.length();
+            else
+                return r1.compareTo(r2);
+        }
+    };
+
     protected void createResultComponent(){
         SwingUtilities.invokeLater(() -> {
             int resultNumber = (int) this.abductionNumberSpinner.getValue();
@@ -183,7 +199,7 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
                     hypotheses.add(result);}
             });
             this.logger.debug("Actually showing {} results of abduction generation process", hypotheses.size());
-            for (Set<OWLAxiom> result : hypotheses) {
+            hypotheses.stream().sorted(resultComparator).forEach(result -> {
                 JPanel singleResultPanel = new JPanel();
                 singleResultPanel.setLayout(new BorderLayout());
                 singleResultPanel.setBorder(new CompoundBorder(
@@ -216,7 +232,7 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
                 singleResultScrollPane.setPreferredSize(resultList.getPreferredSize());
                 singleResultPanel.add(singleResultScrollPane, BorderLayout.CENTER);
                 this.resultScrollingPanel.add(singleResultPanel);
-            }
+            });
             this.resultHolderPanel.repaint();
             this.resultHolderPanel.revalidate();
 //            event-handling needs to happen within invokeLater-Block
