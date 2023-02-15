@@ -1,5 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
+
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
@@ -10,7 +12,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ELReasoner {
+public class ELSmallModelGenerator implements IOWLModelGenerator {
     public Map<OWLNamedIndividual, Set<OWLClassExpression>> map;
     public OWLOntology ont;
     private OWLDataFactory df;
@@ -20,90 +22,76 @@ public class ELReasoner {
     private boolean makeChange;
     private boolean T1makeChange;
     private OWLReasonerFactory rf;
-    private boolean subsumption;
     private OWLClassExpression B;
     private OWLNamedIndividual a;
     private boolean subsumed;
     private OWLOntologyManager man;
     public Set<OWLAxiom> TBoxAxioms;
     public Set<OWLAxiom> ABoxAxioms;
-    private Object[][] conceptData;
-    private Object[][]  roleData;
+    private Map<String,List<OWLClass>> indClassMapData;
     private int numRemoved;
-    //    public int numUses;
-    //    public int numGenerated;
     public boolean bigModel;
-    //    public boolean trueEntalement;
-    //    private Set<OWLAxiom> axioms;
-    //	public OWLClassExpression newExp;
-    //	private boolean getExp;
-    //    public boolean failure;
-    //    public Set<OWLAxiom> additionalINf;
+    private Set<OWLAxiom> model;
 
 
 
-    public ELReasoner() {
+
+    public ELSmallModelGenerator() {
         this.rf = new ReasonerFactory();
         this.man = OWLManager.createOWLOntologyManager();
         this.df = man.getOWLDataFactory();
         this.a = df.getOWLNamedIndividual(IRI.create("root-Ind"));
         this.B = df.getOWLClass(IRI.create("FreshClass"));
+        model = new HashSet<>();
 
     }
 
-    public Object[][] getConceptData() {
-        return conceptData;
-    }
     public boolean getSubsumed() {
         return subsumed;
     }
     public boolean getConsistent() {
         return consistent;
     }
-    public Object[][] getRoleData() {
-        return roleData;
-    }
+
 
     public int getNumRemoved() {
         return numRemoved;
     }
     public void setOntology(OWLOntology ont) {
-        this.TBoxAxioms = ont.getTBoxAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
-        this.ABoxAxioms = ont.getABoxAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
+        Set<OWLAxiom> Axioms = ont.getAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
+        OWLOntology ontology = null;
+        try {
+            ontology = man.createOntology(Axioms);
+        } catch (OWLOntologyCreationException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        this.ont = ontology;
+
     }
 
-    //	public void trueSub(OWLClassExpression C,OWLClassExpression D) {
-//		res.flush();
-//		if (res.isConsistent()) {
-//		trueEntalement = res.isEntailed(df.getOWLSubClassOfAxiom(C, D));
-//		}
-//	}
-//
-//	public void trueCon() {
-//		res.flush();
-//		trueEntalement = res.isConsistent();
-//	}
+    @Override
+    public Set<OWLAxiom> generateModel()  {
+        res = rf.createReasoner(ont);
+        reset();
+        getModel();
+        return model;
+    }
     private void reset () {
-
-//        this.additionalINf = new HashSet<>();
         this.consistent = true;
         this.curName = 0;
         this.makeChange = true;
-        this.subsumption = false;
-//		this.getExp = true;
         this.subsumed = false;
-//        this.numUses = 0;
-
         this.map = new HashMap<>();
-
     }
 
+
+
+
+
     public void checkSubsumption(OWLClassExpression C,OWLClassExpression D, boolean bigModel) {
-
         this.reset();
-        this.subsumption = true;
         this.bigModel = bigModel;
-
         OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(C, a);
         OWLSubClassOfAxiom axiom2 = df.getOWLSubClassOfAxiom(D, B);
         this.ont = null;
@@ -125,15 +113,10 @@ public class ELReasoner {
         this.numRemoved = normaliser.getNumRemoved();
         this.res = rf.createReasoner(ont);
         this.getModel();
-        this.generateData();
 
     }
 
-
-
-
-    public void getModel() {
-
+    private void getModel() {
         while(this.makeChange ) {
             this.makeChange = false;
             this.A1();
@@ -154,26 +137,15 @@ public class ELReasoner {
             }
             A3();
         }
+        map.entrySet().stream().forEach(e ->
+                e.getValue().stream()
+                        .filter(cl -> cl.isClassExpressionLiteral())
+                        .map(cl -> cl.asOWLClass())
+                        .forEach(cl -> model.add(df.getOWLClassAssertionAxiom(cl,e.getKey()))));
+        model.addAll(ont.getABoxAxioms(Imports.INCLUDED).stream()
+                .filter(ax-> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
+                .collect(Collectors.toSet()));
     }
-//    public void checkConsistensy() {
-//        this.reset();
-//
-//        if(consistent) {
-//            System.out.println("consistent. model:");
-////			map.entrySet().forEach(e -> System.out.println(e));
-//        } else {
-//            System.out.println("inconsistent");
-////			map.entrySet().forEach(e -> System.out.println(e));
-//        }
-//
-//
-//    }
-
-//	public void getNewAx() {
-//		ont.getNestedClassExpressions().stream().takeWhile(exp -> getExp).
-//			filter(exp -> exp.getClassExpressionType()==ClassExpressionType.OBJECT_INTERSECTION_OF)
-//			.forEach(exp -> {newExp = exp;getExp=false;});
-//	}
 
     private boolean findSuccessor(OWLClassExpression expr,OWLNamedIndividual passedInd) {
         OWLObjectSomeValuesFrom obj = (OWLObjectSomeValuesFrom) expr;
@@ -208,18 +180,11 @@ public class ELReasoner {
             }
             if (!hasSuccessor) {
 
-                OWLNamedIndividual a = df.getOWLNamedIndividual(IRI.create("Ind-"+String.valueOf(curName)));
-//					a.getSignature().add(passedInd)
+                OWLNamedIndividual a = df.getOWLNamedIndividual(IRI.create("Ind-"+ curName));
+
                 man.addAxiom(this.ont,df.getOWLObjectPropertyAssertionAxiom(obj.getProperty(), passedInd, a));
                 man.addAxiom(this.ont,df.getOWLClassAssertionAxiom(obj.getFiller(), a));
 
-//					OWLDeclarationAxiom dAx = df.getOWLDeclarationAxiom(a);
-//					additionalINf.add(dAx);
-//					OWLAnnotationProperty prop = df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI());
-//					OWLLiteral lit = df.getOWLLiteral("SuccessorIndividual"+curName);
-//					OWLAnnotation ann = df.getOWLAnnotation(prop, lit);
-//					OWLEntity entity = df.getOWLEntity(EntityType.NAMED_INDIVIDUAL, a.getIRI());
-//					additionalINf.add(df.getOWLAnnotationAssertionAxiom(entity.getIRI(), ann));
 
                 curName = curName+1;
                 hasSuccessor = true;
@@ -231,8 +196,7 @@ public class ELReasoner {
         return hasSuccessor;
     }
 
-    public void A3(){
-
+    private void A3(){
         this.makeChange =  map.entrySet().stream()
                 .anyMatch(entry -> entry.getValue().stream()
                         .filter(expr -> expr.getClassExpressionType() == ClassExpressionType.OBJECT_SOME_VALUES_FROM)
@@ -240,8 +204,7 @@ public class ELReasoner {
                 );
     }
 
-    public void A2() {
-
+    private void A2() {
         ont.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)
                 .forEach(ax -> {Set<OWLClassExpression> toAdd = new HashSet<>();
                     map.get(ax.getObject()).stream()
@@ -254,7 +217,7 @@ public class ELReasoner {
                 });
     }
 
-    public void A1() {
+    private void A1() {
         ont.getAxioms(AxiomType.CLASS_ASSERTION).forEach(ax -> {
             map.merge((OWLNamedIndividual) ax.getIndividual(), ax.getClassExpression().asConjunctSet(), (a, b) -> {
                 a.addAll(b);
@@ -263,7 +226,7 @@ public class ELReasoner {
         });
     }
 
-    public void T1() {
+    private void T1() {
         T1makeChange = true;
         while (T1makeChange) {
             T1makeChange = false;
@@ -287,42 +250,5 @@ public class ELReasoner {
         }
     }
 
-
-//	private Object[][] getArray(Map<Object,Object> map) {
-//
-//		Object[] keys = map.keySet().toArray();
-//		Object[] values = map.values().toArray();
-//		Object[][] matrix = {keys,values};
-//		int column = 2;
-//		int row = keys.length;
-//		Object[][] transpose = new Object[row][column];
-//        for(int i = 0; i < column; i++) {
-//            for (int j = 0; j < row; j++) {
-//                transpose[j][i] = matrix[i][j];
-//            }
-//        }
-//		return transpose;
-//	}
-
-    public void generateData() {
-
-        List<List<Object>> conceptList = new ArrayList<>();
-        List<List<Object>> roleList = new ArrayList<>();
-
-        map.entrySet().stream().forEach(e ->
-                e.getValue().stream().filter(c -> c.isClassExpressionLiteral())
-                        .filter(cl ->!( cl.toString().startsWith("<X")|| cl.toString().equals("<FreshClass>")))
-                        .forEach(c -> conceptList.add(Arrays.asList(e.getKey().toString().substring(1, e.getKey().toString().length() - 1), c))));
-        this.conceptData = conceptList.stream()
-                .map(l -> l.stream().toArray(Object[]::new))
-                .toArray(Object[][]::new);
-
-        ont.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION).forEach(a ->
-                roleList.add(Arrays.asList( a.getSubject().toString().substring(1, a.getSubject().toString().length() - 1),a.getProperty(), a.getObject().toString().substring(1, a.getObject().toString().length() - 1))));
-
-        this.roleData = roleList.stream()
-                .map(l -> l.stream().toArray(Object[]::new))
-                .toArray(Object[][]::new);
-    }
 
 }
