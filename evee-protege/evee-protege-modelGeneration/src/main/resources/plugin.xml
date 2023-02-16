@@ -2,10 +2,10 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-    <extension id="de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELModelGenerator"
+    <extension id="de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELCounterexampleGenerator"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
-        <name value="EL Model Generator"/>
-        <class value="de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELModelGenerator"/>
+        <name value="Counterexample (EL)"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELCounterexampleGenerator"/>
     </extension>
 
 </plugin>
