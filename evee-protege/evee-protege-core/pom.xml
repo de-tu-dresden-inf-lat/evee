@@ -113,6 +113,8 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>plugin.xml</include>
+                    <include>downArrow.png</include>
+                    <include>upArrow.png</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>

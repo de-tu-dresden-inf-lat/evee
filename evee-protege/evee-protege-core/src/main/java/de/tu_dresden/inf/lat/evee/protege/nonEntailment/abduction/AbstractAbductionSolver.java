@@ -393,7 +393,8 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
 
     protected void resetCache(){
         OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-        this.logger.debug("Resetting AbductionCache for ontology " + ontology.getOntologyID().getOntologyIRI());
+        this.logger.debug("Resetting AbductionCache for ontology " + ontology.getOntologyID().getOntologyIRI()
+                .or(IRI.create("")));
         AbductionCache<Result> newCache = new AbductionCache<>();
         this.cachedResults.put(ontology, newCache);
         this.cacheValidated = false;

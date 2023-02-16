@@ -1,6 +1,15 @@
 package de.tu_dresden.inf.lat.evee.protege.tools.ui;
 
+import org.osgi.framework.Bundle;
+import org.protege.editor.core.ProtegeManager;
+import org.protege.editor.core.plugin.PluginUtilities;
+import org.protege.editor.owl.OWLEditorKit;
+
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicArrowButton;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.net.URL;
 
 public class Util {
 
@@ -10,6 +19,84 @@ public class Util {
         label.setVerticalTextPosition(JLabel.CENTER);
         label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         return label;
+    }
+
+    public static JButton createNamedButton(String actionCommand, String name, String toolTip, ActionListener listener){
+        JButton button = new JButton(name);
+        button.setActionCommand(actionCommand);
+        button.setToolTipText(toolTip);
+        button.addActionListener(listener);
+        return button;
+    }
+
+    /**
+     * requires the file to be in the directory "resources" of evee-protege-core
+     * @param actionCommand
+     * @param url
+     * @param tooltip
+     * @param listener
+     * @return
+     */
+    public static JButton createIconButton(String actionCommand, URL url,
+                                           String tooltip, ActionListener listener){
+        JButton button = new JButton();
+        button.setActionCommand(actionCommand);
+        button.setToolTipText(tooltip);
+        button.addActionListener(listener);
+        Icon icon = new ImageIcon(url);
+        button.setIcon(icon);
+        return button;
+    }
+
+    public static JButton createArrowButton(String actionCommand, int direction,
+                                            String toolTip, ActionListener listener){
+        assert (direction == BasicArrowButton.EAST || direction == BasicArrowButton.WEST
+                || direction == BasicArrowButton.NORTH || direction == BasicArrowButton.SOUTH);
+        JButton button = new BasicArrowButton(direction, UIManager.getColor("control"),
+                Color.BLACK, Color.BLACK, UIManager.getColor("controlLtHighlight"));
+        button.setActionCommand(actionCommand);
+        button.setToolTipText(toolTip);
+        button.addActionListener(listener);
+        return button;
+    }
+
+    public static JButton createDoubleArrowButton(String actionCommand, int direction,
+                                                  String toolTip, ActionListener listener){
+        assert (direction == BasicArrowButton.EAST || direction == BasicArrowButton.WEST
+                || direction == BasicArrowButton.NORTH || direction == BasicArrowButton.SOUTH);
+        JButton button = new DoubleArrowButton(direction);
+        button.setActionCommand(actionCommand);
+        button.setToolTipText(toolTip);
+        button.addActionListener(listener);
+        return button;
+    }
+
+    public static void showError(String message, OWLEditorKit owlEditorKit){
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
+                    owlEditorKit.getWorkspace()), "Error");
+            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
+            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            errorDialog.setVisible(true);
+        });
+    }
+
+    private static class DoubleArrowButton extends BasicArrowButton {
+
+        public DoubleArrowButton(int direction) {
+            super(direction, UIManager.getColor("control"), Color.BLACK,
+                    Color.BLACK, UIManager.getColor("controlLtHighlight"));
+        }
+
+        @Override
+        public void paintTriangle(Graphics g, int x, int y, int size,
+                                  int direction, boolean isEnabled) {
+            super.paintTriangle(g, x, y - (size / 2), size, direction, isEnabled);
+            super.paintTriangle(g, x, y + (size / 2), size, direction, isEnabled);
+        }
     }
 
 }

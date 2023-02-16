@@ -20,8 +20,8 @@ import java.util.Set;
 
 abstract public class AbstractSignatureSelectionUI implements ActionListener {
 
-    protected JPanel ontologySignatureTabbedPanel;
-    protected JPanel selectedSignatureListPanel;
+//    protected JTabbedPane ontologySignatureTabbedPanel;
+    protected JPanel selectedSignaturePanel;
     protected JTabbedPane signatureTabPane;
     protected OWLObjectTree<OWLClass> classesTree;
     protected OWLObjectTree<OWLObjectProperty> propertyTree;
@@ -94,43 +94,32 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
         this.ontologyIndividualsJList.setCellRenderer(new OWLCellRendererSimple(owlEditorKit));
         Set<OWLNamedIndividual> individuals = owlEditorKit.getOWLModelManager().getActiveOntology().getIndividualsInSignature(Imports.INCLUDED);
         this.ontologyIndividualsListModel.addElements(individuals);
-        tabbedPane.add("Individuals", this.ontologyIndividualsJList);
-        this.signatureTabPane = tabbedPane;
-        JPanel ontologySignaturePanel = new JPanel();
-        ontologySignaturePanel.setLayout(new BoxLayout(ontologySignaturePanel, BoxLayout.PAGE_AXIS));
-        ontologySignaturePanel.add(tabbedPane);
-        ontologySignaturePanel.setBorder(BorderFactory.createCompoundBorder(
+        tabbedPane.addTab("Individuals", this.ontologyIndividualsJList);
+        tabbedPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
                         "Ontology signature:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        this.ontologySignatureTabbedPanel = ontologySignaturePanel;
+        this.signatureTabPane = tabbedPane;
+//        JPanel ontologySignaturePanel = new JPanel();
+//        ontologySignaturePanel.setLayout(new BoxLayout(ontologySignaturePanel, BoxLayout.PAGE_AXIS));
+//        ontologySignaturePanel.add(tabbedPane);
+//        ontologySignaturePanel.setBorder(BorderFactory.createCompoundBorder(
+//                BorderFactory.createTitledBorder(
+//                        BorderFactory.createEmptyBorder(5, 5, 5, 5),
+//                        "Ontology signature:"),
+//                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+//        this.ontologySignatureTabbedPanel = this.signatureTabPane;
     }
 
-    public JPanel getOntologySignatureTabbedPanel(){
-        return this.ontologySignatureTabbedPanel;
+    public JComponent getOntologySignatureTabbedComponent(){
+        return this.signatureTabPane;
     }
 
-    private void createButtons(){
-        this.addButton = this.createSingleButton(this.ADD_BTN_COMMAND, this.ADD_BTN_NAME, this.ADD_BTN_TOOLTIP);
-        this.deleteButton = this.createSingleButton(this.DEL_BTN_COMMAND, this.DEL_BTN_NAME, this.DEL_BTN_TOOLTIP);
-        this.clearButton = this.createSingleButton(this.CLR_BTN_COMMAND, this.CLR_BTN_NAME, this.CLR_BTN_TOOLTIP);
-    }
-
-    protected JButton createSingleButton(String actionCommand, String name, String toolTip){
-        JButton newButton = new JButton(name);
-        newButton.setActionCommand(actionCommand);
-        newButton.setToolTipText(toolTip);
-        newButton.addActionListener(this);
-        return newButton;
-    }
-
-    protected JLabel createLabel(String labelText){
-        JLabel label = new JLabel(labelText);
-        label.setHorizontalTextPosition(JLabel.CENTER);
-        label.setVerticalTextPosition(JLabel.CENTER);
-        label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        return label;
+    protected void createButtons(){
+        this.addButton = Util.createNamedButton(this.ADD_BTN_COMMAND, this.ADD_BTN_NAME, this.ADD_BTN_TOOLTIP, this);
+        this.deleteButton = Util.createNamedButton(this.DEL_BTN_COMMAND, this.DEL_BTN_NAME, this.DEL_BTN_TOOLTIP, this);
+        this.clearButton = Util.createNamedButton(this.CLR_BTN_COMMAND, this.CLR_BTN_NAME, this.CLR_BTN_TOOLTIP, this);
     }
 
     public JButton getAddButton(){
@@ -200,19 +189,19 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
     }
 
     protected void createSelectedSignatureListPane(OWLEditorKit owlEditorKit){
-        this.selectedSignatureListPanel = new JPanel();
-        this.selectedSignatureListPanel.setLayout(new BoxLayout(this.selectedSignatureListPanel, BoxLayout.PAGE_AXIS));
+        this.selectedSignaturePanel = new JPanel();
+        this.selectedSignaturePanel.setLayout(new BoxLayout(this.selectedSignaturePanel, BoxLayout.PAGE_AXIS));
         this.selectedSignatureListModel = new OWLObjectListModel<>();
         this.selectedSignatureJList = new JList<>(this.selectedSignatureListModel);
         this.selectedSignatureJList.setCellRenderer(new OWLCellRendererSimple(owlEditorKit));
         JScrollPane scrollPane = new JScrollPane(this.selectedSignatureJList);
         scrollPane.getViewport().setBackground(Color.WHITE);
         scrollPane.setPreferredSize(new Dimension(400, 400));
-        this.selectedSignatureListPanel.add(scrollPane);
+        this.selectedSignaturePanel.add(scrollPane);
     }
 
-    public JPanel getSelectedSignatureListPanel(){
-        return this.selectedSignatureListPanel;
+    public JPanel getSelectedSignaturePanel(){
+        return this.selectedSignaturePanel;
     }
 
     public List<OWLEntity> getSelectedSignature(){
