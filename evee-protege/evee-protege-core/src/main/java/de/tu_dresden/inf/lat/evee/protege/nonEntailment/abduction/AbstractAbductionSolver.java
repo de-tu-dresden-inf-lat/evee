@@ -1,11 +1,12 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentAbductionExplanationService;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
-import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
@@ -13,6 +14,7 @@ import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -25,11 +27,15 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-abstract public class AbstractAbductionSolver implements NonEntailmentAbductionExplanationService, Supplier<Set<OWLAxiom>> {
+abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OWLAxiom>>,
+        INonEntailmentExplanationService<OWLAxiom>, IOWLAbductionSolver {
 
     protected Set<OWLAxiom> observation = null;
+    protected Set<OWLAxiom> lastUsedObservation = null;
     protected Set<OWLEntity> abducibles = null;
-    protected OWLOntology activeOntology = null;
+    protected Set<OWLEntity> lastUsedAbducibles = null;
+    protected OWLOntology ontology = null;
+    protected OWLOntology lastUsedOntology = null;
     protected AbductionLoadingUI loadingUI;
     protected JPanel settingsHolderPanel;
     private JSpinner abductionNumberSpinner;
@@ -37,8 +43,12 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
     private JPanel resultHolderPanel;
     private JPanel resultScrollingPanel;
     protected int hypothesisIndex;
-    protected ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> viewComponentListener;
-    protected boolean parametersChanged = true;
+    private boolean computationSuccessful;
+    private boolean cacheValidated;
+    private final AbductionSolverOntologyChangeListener ontologyChangeListener;
+    protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
+//    protected boolean parametersChanged = true;
+    protected final Map<OWLOntology, AbductionCache<Result>> cachedResults;
     protected static final String SETTINGS_LABEL = "Maximal number of hypotheses:";
     protected static final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
     protected static final String ADD_TO_ONTO_COMMAND = "ADD_TO_ONTO";
@@ -50,8 +60,33 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
     public AbstractAbductionSolver(){
         this.logger.debug("Creating AbstractAbductionSolver");
         this.hypothesisIndex = 1;
+        this.cachedResults = new HashMap<>();
+        this.ontologyChangeListener = new AbductionSolverOntologyChangeListener();
         this.createSettingsComponent();
         this.logger.debug("AbstractAbductionSolver created successfully.");
+    }
+
+    public void setComputationSuccessful(boolean successful){
+        this.computationSuccessful = successful;
+    }
+
+    public boolean computationSuccessful(){
+        return this.computationSuccessful;
+    }
+
+    @Override
+    public void initialise(){
+        this.logger.debug("Initialising AbductionSolver");
+        this.owlEditorKit.getOWLModelManager().addOntologyChangeListener(this.ontologyChangeListener);
+        this.resetCache();
+        this.logger.debug("AbductionSolver initialised");
+    }
+
+    @Override
+    public void dispose() {
+        this.logger.debug("Disposing AbductionSolver");
+        this.owlEditorKit.getOWLModelManager().removeOntologyChangeListener(this.ontologyChangeListener);
+        this.logger.debug("AbductionSolver disposed");
     }
 
     @Override
@@ -59,11 +94,9 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
         this.logger.debug("Setting observation");
         if (this.observation == null){
             this.observation = observation;
-            this.parametersChanged = true;
         }
         else if (! this.observation.equals(observation)){
             this.observation = observation;
-            this.parametersChanged = true;
         }
     }
 
@@ -73,35 +106,30 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
         HashSet<OWLEntity> abduciblesAsSet = new HashSet<>(abducibles);
         if (this.abducibles == null){
             this.abducibles = abduciblesAsSet;
-            this.parametersChanged = true;
         }
         else if (! this.abducibles.equals(abduciblesAsSet)){
             this.abducibles = abduciblesAsSet;
-            this.parametersChanged = true;
         }
     }
 
     @Override
     public void setOntology(OWLOntology ontology) {
         this.logger.debug("Setting ontology");
-        if (this.activeOntology == null){
-            this.activeOntology = ontology;
-            this.parametersChanged = true;
+        if (this.ontology == null){
+            this.ontology = ontology;
         }
-        else if (! this.activeOntology.equals(ontology)){
-            this.activeOntology = ontology;
-            this.parametersChanged = true;
+        else if (! this.ontology.equals(ontology)){
+            this.ontology = ontology;
+        }
+        if (this.cachedResults.get(ontology) == null){
+            this.cachedResults.put(ontology, new AbductionCache<>());
+            this.cacheValidated = false;
         }
     }
 
     @Override
-    public Stream<Set<OWLAxiom>> generateHypotheses() {
+    public Stream<Set<OWLAxiom>> generateExplanation() {
         return Stream.generate(this);
-    }
-
-    @Override
-    public boolean supportsMultiObservation() {
-        return true;
     }
 
     @Override
@@ -120,17 +148,53 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
     }
 
     @Override
-    public void registerListener(ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> listener) {
+    public void registerListener(IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
         this.viewComponentListener = listener;
     }
 
-    protected JLabel createLabel(String labelText){
-        JLabel label = new JLabel(labelText);
-        label.setHorizontalTextPosition(JLabel.CENTER);
-        label.setVerticalTextPosition(JLabel.CENTER);
-        label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        return label;
+    @Override
+    public void computeExplanation() {
+        this.logger.debug("Computing explanation");
+        assert (this.ontology != null);
+        assert (this.observation != null);
+        assert (this.abducibles != null);
+        if (this.parametersChanged()){
+            this.lastUsedObservation = this.observation;
+            this.lastUsedAbducibles = this.abducibles;
+            this.lastUsedOntology = this.ontology;
+            this.logger.debug("Parameters changed, creating new stream");
+            if (this.cacheValidated &&
+                    this.cachedResults.get(this.ontology).containsResultFor(
+                            this.observation, this.abducibles)){
+                this.logger.debug("Cached result found, no computation of hypotheses necessary");
+                this.computationSuccessful = true;
+                this.redisplayCachedExplanation();
+            }
+            else{
+                this.logger.debug("No cached result found, computing new hypotheses");
+                this.createNewExplanation();
+            }
+            this.hypothesisIndex = 1;
+        }
+        else{
+            this.logger.debug("Parameters unchanged");
+            if (this.computationSuccessful){
+                this.logger.debug("Last computation was successful, continuing old stream");
+                this.createResultComponent();
+            }
+            else{
+                this.logger.debug("Last computation failed, re-displaying error message");
+                this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                        ExplanationEventType.ERROR));
+            }
+        }
     }
+
+    abstract protected void redisplayCachedExplanation();
+
+    abstract protected void createNewExplanation();
+
+    abstract protected void prepareResultComponentCreation();
 
     private void createSettingsComponent(){
         SwingUtilities.invokeLater(() -> {
@@ -138,7 +202,7 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
             this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
             JPanel spinnerHelperPanel = new JPanel();
             spinnerHelperPanel.setLayout(new BoxLayout(spinnerHelperPanel, BoxLayout.LINE_AXIS));
-            JLabel label = this.createLabel(SETTINGS_LABEL);
+            JLabel label = Util.createLabel(SETTINGS_LABEL);
             spinnerHelperPanel.add(label);
             spinnerHelperPanel.add(Box.createRigidArea(new Dimension(5, 0)));
             SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 1, null, 1);
@@ -172,18 +236,34 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
         });
     }
 
+    /**
+     * Compare two results based on the string representation. Shorter results should come first.
+     */
+    private Comparator<Set<OWLAxiom>> resultComparator = (result1, result2) -> {
+        if(result1.size()!=result2.size())
+            return result1.size()-result2.size();
+        else {
+            String r1 = result1.stream().map(Object::toString).reduce("", (a,b) -> a+b);
+            String r2 = result2.stream().map(Object::toString).reduce("", (a,b) -> a+b);
+            if(r1.length()!=r2.length())
+                return r1.length()-r2.length();
+            else
+                return r1.compareTo(r2);
+        }
+    };
+
     protected void createResultComponent(){
         SwingUtilities.invokeLater(() -> {
             int resultNumber = (int) this.abductionNumberSpinner.getValue();
             this.logger.debug("Trying to show {} results of abduction generation process", resultNumber);
             List<Set<OWLAxiom>> hypotheses = new ArrayList<>();
-            Stream<Set<OWLAxiom>> resultStream = this.generateHypotheses();
+            Stream<Set<OWLAxiom>> resultStream = this.generateExplanation();
             resultStream.limit(resultNumber).forEach(result -> {
                 if (result != null){
                     hypotheses.add(result);}
             });
             this.logger.debug("Actually showing {} results of abduction generation process", hypotheses.size());
-            for (Set<OWLAxiom> result : hypotheses) {
+            hypotheses.stream().sorted(resultComparator).forEach(result -> {
                 JPanel singleResultPanel = new JPanel();
                 singleResultPanel.setLayout(new BorderLayout());
                 singleResultPanel.setBorder(new CompoundBorder(
@@ -202,7 +282,7 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
                 addToOntologyButton.setToolTipText(ADD_TO_ONTO_TOOLTIP);
                 addToOntologyButton.setActionCommand(ADD_TO_ONTO_COMMAND);
                 addToOntologyButton.addActionListener(new AddToOntologyButtonListener(
-                        this.activeOntology, resultList, this.hypothesisIndex));
+                        this.ontology, resultList, this.hypothesisIndex));
                 this.hypothesisIndex++;
                 labelAndButtonPanel.add(addToOntologyButton);
                 singleResultPanel.add(labelAndButtonPanel, BorderLayout.PAGE_START);
@@ -216,7 +296,7 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
                 singleResultScrollPane.setPreferredSize(resultList.getPreferredSize());
                 singleResultPanel.add(singleResultScrollPane, BorderLayout.CENTER);
                 this.resultScrollingPanel.add(singleResultPanel);
-            }
+            });
             this.resultHolderPanel.repaint();
             this.resultHolderPanel.revalidate();
 //            event-handling needs to happen within invokeLater-Block
@@ -225,8 +305,22 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
         });
     }
 
+//    todo: move loadingUI to Lethe- and Capi-Solver (not every abduction solver might need a loading screen)
     public void disposeLoadingScreen(){
-        this.loadingUI.disposeLoadingScreen();
+        if (this.loadingUI != null) {
+            this.loadingUI.disposeLoadingScreen();
+        }
+    }
+
+    protected boolean parametersChanged(){
+        return (! this.cacheValidated) ||
+                (! this.abducibles.equals(this.lastUsedAbducibles)) ||
+                (! this.observation.equals(this.lastUsedObservation)) ||
+                (! this.ontology.equals(this.lastUsedOntology));
+    }
+
+    protected void validateCache(){
+        this.cacheValidated = true;
     }
 
 //    public void showError(){
@@ -295,6 +389,28 @@ abstract public class AbstractAbductionSolver implements NonEntailmentAbductionE
             }
         }
 
+    }
+
+    protected void resetCache(){
+        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+        this.logger.debug("Resetting AbductionCache for ontology " + ontology.getOntologyID().getOntologyIRI());
+        AbductionCache<Result> newCache = new AbductionCache<>();
+        this.cachedResults.put(ontology, newCache);
+        this.cacheValidated = false;
+    }
+
+    protected void resetCompleteCache(){
+        this.logger.debug("Resetting complete cache");
+        this.cachedResults.clear();
+        this.resetCache();
+    }
+
+    private class AbductionSolverOntologyChangeListener implements OWLOntologyChangeListener {
+
+        @Override
+        public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> list) {
+            resetCache();
+        }
     }
 
 }

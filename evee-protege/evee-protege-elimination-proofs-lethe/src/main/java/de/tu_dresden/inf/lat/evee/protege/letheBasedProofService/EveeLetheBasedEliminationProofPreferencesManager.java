@@ -62,7 +62,7 @@ public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEv
         this.activationDefaultPreferences.get(WEIGHTED_SIZE_MINIMAL).setBooleanDefaultValue(false);
     }
 
-    public double loadTimeOut(){
+    public double loadTimeOutSeconds(){
         this.timeOutLastUsedValue = this.internalLoadTimeOut();
         return timeOutLastUsedValue;
     }

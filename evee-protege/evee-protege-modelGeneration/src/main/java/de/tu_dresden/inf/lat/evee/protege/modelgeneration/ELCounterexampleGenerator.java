@@ -1,0 +1,152 @@
+package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
+
+
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator  {
+
+    private OWLClassExpression subClass;
+    private OWLClassExpression superClass;
+    private int removedAxioms = 0;
+    boolean subsumed;
+
+    private final Logger logger = LoggerFactory.getLogger(ELCounterexampleGenerator.class);
+//    private String errorMessage ="";
+
+    private OWLDataFactory df;
+    private OWLOntologyManager man;
+
+    public ELCounterexampleGenerator() {
+        this.logger.debug("Creating de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELCounterExampleGenerator");
+        this.observation = new HashSet<>();
+        this.errorMessage = "";
+        this.man = OWLManager.createOWLOntologyManager();
+        this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+        this.logger.debug("de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELCounterExampleGenerator created successfully.");
+    }
+
+    public void computeExplanation() {
+        try {
+            OWLOntology workingCopy = null;
+            checkObservation(observation.iterator().next());
+            workingCopy = getWorkingCopy();
+            modelGenerator = new ELSmallModelGenerator();
+            modelGenerator.setOntology(workingCopy);
+            model = modelGenerator.generateModel();
+            checkConsistency(model);
+            subsumed = checkSubsumption(model);
+            model = filterAxioms(model);
+            this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                    ExplanationEventType.COMPUTATION_COMPLETE));
+        } catch (Exception e) {
+            this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                    ExplanationEventType.ERROR));
+        }
+    }
+    private OWLOntology getWorkingCopy() throws Exception {
+        OWLNamedIndividual rootInd = df.getOWLNamedIndividual(IRI.create("root-Ind"));
+        OWLClass freshClass = df.getOWLClass(IRI.create("FreshClass"));
+        OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(subClass, rootInd);
+        OWLSubClassOfAxiom axiom2 = df.getOWLSubClassOfAxiom(superClass, freshClass);
+        Set<OWLAxiom> TBoxAxioms = activeOntology.getTBoxAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
+        OWLOntology workingCopy = man.createOntology(TBoxAxioms);
+        man.addAxiom(workingCopy, axiom2);
+        ELNormaliser normaliser = new ELNormaliser();
+        normaliser.setOntology(workingCopy);
+        workingCopy = normaliser.normalise();
+        man.addAxiom(workingCopy, axiom1);
+        this.removedAxioms = normaliser.getNumRemoved();
+        return workingCopy;
+    }
+    private void checkConsistency(Set<OWLAxiom> model) throws Exception {
+        if (model.isEmpty()) {
+            this.errorMessage = "The Ontology is inconsistent";
+            throw new Exception();
+        }
+    }
+    private boolean checkSubsumption(Set<OWLAxiom> model) {
+        return model.contains(df.getOWLClassAssertionAxiom(df.getOWLClass(IRI.create("FreshClass")), df.getOWLNamedIndividual(IRI.create("root-Ind"))));
+    }
+    void checkObservation(OWLAxiom axiom) throws Exception {
+
+        if(! (axiom instanceof OWLSubClassOfAxiom)) {
+            this.errorMessage = "Incorrect Axiom Type";
+            throw new Exception();
+        }
+        OWLClassExpression subClass = ((OWLSubClassOfAxiom) axiom).getSubClass();
+        OWLClassExpression superClass = ((OWLSubClassOfAxiom) axiom).getSuperClass();
+        if(!isELExpressions(subClass)||!isELExpressions(superClass)) {
+            this.errorMessage = "ClassExpressions is not in EL";
+            throw new Exception();
+        }
+        this.subClass = subClass;
+        this.superClass = superClass;
+    }
+    private boolean isELExpressions(OWLClassExpression expression) {
+
+        Set<OWLClassExpression> nestedClassExpressions = expression.getNestedClassExpressions();
+        for(OWLClassExpression exp:nestedClassExpressions) {
+            if(!(exp instanceof OWLObjectSomeValuesFrom
+                    || exp instanceof OWLObjectIntersectionOf
+                    || exp instanceof OWLClass) ) {
+                return  false;
+            }
+        }
+        return true;
+    }
+    public Component getResult() {
+
+            JPanel component = new JPanel();
+            component.setLayout(new BoxLayout(component,BoxLayout.PAGE_AXIS));
+            JTabbedPane tabbedPane = getTabbedPane();
+            JPanel textPanel = getTextPanel();
+            component.add(textPanel);
+            component.add(Box.createRigidArea(new Dimension(20,20)));
+            component.add(tabbedPane);
+            return component;
+    }
+
+    private JPanel getTextPanel() {
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel,BoxLayout.PAGE_AXIS));
+
+        if(subsumed) {
+            textPanel.add(new JLabel("Subsumption relation holds. A model is shown below."));
+        } else {
+            textPanel.add(new JLabel("Subsumption relation does not hold. A counterexample is shown below. "));
+        }
+        textPanel.add(new JLabel(removedAxioms +" axioms are not supported. Reasoning results may be incorrect."));
+
+        return textPanel;
+    }
+
+    private Set<OWLAxiom> filterAxioms(Set<OWLAxiom> axioms) {
+        Set<OWLAxiom> filtered = axioms.stream()
+                .filter(ax -> ax.isOfType(AxiomType.CLASS_ASSERTION))
+                .map(ax -> (OWLClassAssertionAxiom) ax)
+                .filter(ax -> !(ax.getClassExpression().toString().startsWith("<X")
+                        || ax.getClassExpression().toString().equals("<FreshClass>")))
+                .collect(Collectors.toSet());
+        filtered.addAll(axioms.stream().filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION)).collect(Collectors.toSet()));
+        return filtered;
+    }
+
+
+
+
+//    @Override
+//    public Set<OWLAxiom> generateModel() {
+//        return null;
+//    }
+}

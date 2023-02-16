@@ -1,10 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentExplanationService;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentModelGenerationExplanationService;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
-import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.owlapi.model.*;
@@ -17,7 +17,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ELModelGenerator implements NonEntailmentModelGenerationExplanationService {
+public class ELModelGenerator implements INonEntailmentExplanationService<OWLIndividualAxiom>, IOWLModelGenerator {
 
 
     private ELReasoner elReasoner;
@@ -35,7 +35,7 @@ public class ELModelGenerator implements NonEntailmentModelGenerationExplanation
     boolean subsumed;
     boolean consistent;
     private OWLEditorKit owlEditorKit;
-    private ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> viewComponentListener;
+    private IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
 
     private final Logger logger = LoggerFactory.getLogger(ELModelGenerator.class);
 
@@ -116,8 +116,13 @@ public class ELModelGenerator implements NonEntailmentModelGenerationExplanation
     }
 
     @Override
-    public void registerListener(ExplanationGenerationListener<ExplanationEvent<NonEntailmentExplanationService>> listener) {
+    public void registerListener(IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
         this.viewComponentListener = listener;
+    }
+
+    @Override
+    public String getSupportsExplanationMessage() {
+        return "";
     }
 
     @Override
@@ -149,12 +154,12 @@ public class ELModelGenerator implements NonEntailmentModelGenerationExplanation
 
 
 
-    public Stream<Set<OWLAxiom>> generateHypotheses() {
+    public Stream<Set<OWLIndividualAxiom>> generateExplanation() {
         return null;
     }
 
     @Override
-    public boolean supportsMultiObservation() {
+    public boolean supportsExplanation() {
         return false;
     }
 

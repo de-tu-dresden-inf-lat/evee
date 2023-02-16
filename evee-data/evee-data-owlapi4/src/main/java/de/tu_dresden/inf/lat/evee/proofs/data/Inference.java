@@ -23,7 +23,9 @@ public class Inference<SENTENCE> implements IInference<SENTENCE> {
 	private final List<? extends SENTENCE> premises; // we want to keep the ordering fixed, hence List
 
 	@JsonCreator
-	public Inference(@JsonProperty("conclusion") SENTENCE conclusion, @JsonProperty("ruleName") String ruleName,
+	public Inference(
+			@JsonProperty("conclusion") SENTENCE conclusion,
+			@JsonProperty("ruleName") String ruleName,
 			@JsonProperty("premises") List<? extends SENTENCE> premises) {
 		this.conclusion = conclusion;
 		this.ruleName = ruleName;

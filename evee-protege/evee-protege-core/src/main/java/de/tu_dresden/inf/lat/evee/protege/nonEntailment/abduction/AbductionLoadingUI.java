@@ -22,7 +22,7 @@ public class AbductionLoadingUI {
 //            todo: cancellation possible??
             this.loadingScreen.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
             JPanel holderPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-            JLabel label = new JLabel("Generating abductions", SwingConstants.CENTER);
+            JLabel label = new JLabel("Generating hypotheses", SwingConstants.CENTER);
             label.setHorizontalTextPosition(JLabel.CENTER);
             label.setVerticalTextPosition(JLabel.CENTER);
             label.setAlignmentX(JLabel.CENTER_ALIGNMENT);
