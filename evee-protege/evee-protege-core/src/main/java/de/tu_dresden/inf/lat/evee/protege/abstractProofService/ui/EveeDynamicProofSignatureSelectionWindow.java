@@ -1,6 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeProofSignatureUIPreferenceManager;
+import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureIO;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
 import org.apache.commons.io.FilenameUtils;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
@@ -30,12 +32,12 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
     private static final String SAVE_TOOLTIP = "Save a signature to a file";
     private static final String CANCEL = "CANCEL_SIGNATURE_SELECTION";
     private static final String APPLY = "APPLY_SIGNATURE";
-    private static final String USE_SIGNATURE_DELIMITER = "##### Use Signature: #####";
-    private static final String TRUE = "TRUE";
-    private static final String FALSE = "FALSE";
-    private static final String CLASSES_DELIMITER = "##### Classes: #####";
-    private static final String OBJECT_PROPERTIES_DELIMITER = "##### Object Properties: #####";
-    private static final String INDIVIDUAL_DELIMITER = "##### Individuals: #####";
+//    private static final String USE_SIGNATURE_DELIMITER = "##### Use Signature: #####";
+//    private static final String TRUE = "TRUE";
+//    private static final String FALSE = "FALSE";
+//    private static final String CLASSES_DELIMITER = "##### Classes: #####";
+//    private static final String OBJECT_PROPERTIES_DELIMITER = "##### Object Properties: #####";
+//    private static final String INDIVIDUAL_DELIMITER = "##### Individuals: #####";
     private static final String ANONYMOUS_ONTOLOGY_ERROR_MSG = "<html><center>Ontology has no IRI.</center><center>Changes to the signature are only allowed if the ontology has an IRI.</center>";
     private static final String SIGNATURE_SAVING_ERROR_MSG = "<html><center>Error while saving signature</center>";
 //    todo: improve wording
@@ -91,7 +93,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
             this.activeOntology = this.getOWLModelManager().getActiveOntology();
         }
         else{
-            this.showError(ANONYMOUS_ONTOLOGY_ERROR_MSG);
+            Util.showError(ANONYMOUS_ONTOLOGY_ERROR_MSG, this.getOWLEditorKit());
             return;
         }
         String ontoName = this.activeOntology.getOntologyID().getOntologyIRI().get().toString();
@@ -152,7 +154,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
         this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
         boolean useSignature = this.signaturePreferencesManager.getUseSignatureForUI(ontologyName);
         this.signatureSelectionUI.enableSignature(useSignature);
-        JPanel ontologySignaturePanel = this.signatureSelectionUI.getOntologySignatureTabbedPanel();
+        JComponent ontologySignaturePanel = this.signatureSelectionUI.getOntologySignatureTabbedComponent();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -164,7 +166,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
         this.holderPanel.add(ontologySignaturePanel, gbc);
-        JPanel selectedSignaturePanel = this.signatureSelectionUI.getSelectedSignatureListPanel();
+        JPanel selectedSignaturePanel = this.signatureSelectionUI.getSelectedSignaturePanel();
         gbc.gridx = 2;
         this.holderPanel.add(selectedSignaturePanel, gbc);
     }
@@ -280,145 +282,31 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
     }
 
     private void load(){
-        this.logger.debug("Loading known signature form file");
-        JFileChooser fileChooser = this.createFileChooser();
-        int result = fileChooser.showOpenDialog(this.dialog);
-        List<IRI> classes = new ArrayList<>();
-        List<IRI> objectProperties = new ArrayList<>();
-        List<IRI> individuals = new ArrayList<>();
-        List<IRI> currentList = classes;
-        if (result == JFileChooser.APPROVE_OPTION){
-            File file = fileChooser.getSelectedFile();
-            try (FileReader fileReader = new FileReader(file);
-                 BufferedReader bufferedReader = new BufferedReader(fileReader)){
-                String line;
-                while ((line = bufferedReader.readLine()) != null){
-                    this.logger.debug("line:" + line);
-                    switch (line) {
-                        case USE_SIGNATURE_DELIMITER:
-                            break;
-                        case TRUE:
-                            this.useSignatureCheckBox.setSelected(true);
-                            this.enableButtons(true);
-                            this.logger.debug("UseSignature activated");
-                            break;
-                        case FALSE:
-                            this.useSignatureCheckBox.setSelected(false);
-                            this.enableButtons(false);
-                            this.logger.debug("UseSignature deactivated");
-                            break;
-                        case CLASSES_DELIMITER:
-                            this.logger.debug("loading classes");
-                            currentList = classes;
-                            break;
-                        case OBJECT_PROPERTIES_DELIMITER:
-                            this.logger.debug("loading object properties");
-                            currentList = objectProperties;
-                            break;
-                        case INDIVIDUAL_DELIMITER:
-                            this.logger.debug("loading individuals");
-                            currentList = individuals;
-                            break;
-                        default:
-                            currentList.add(IRI.create(line));
-                            break;
-                    }
-                }
-            }
-            catch (IOException e){
-                this.logger.error("Error when loading from file: ", e);
+        SwingUtilities.invokeLater(() -> {
+            try{
+                Collection<OWLEntity> knownEntitySet = SignatureIO.loadSignature(this.getOWLEditorKit());
+                this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
+                this.signatureSelectionUI.clearSelectedSignatureUISelection();
+            } catch (IOException e) {
+//                error-message already shown in SignatureIO
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
-                this.showError("Error: " + e);
             }
-        }
-        if (classes.size() == 0 && objectProperties.size() == 0 && individuals.size() == 0){
-            return;
-        }
-        Set<OWLEntity> knownEntitySet = new HashSet<>();
-        this.activeOntology.getClassesInSignature(Imports.INCLUDED).forEach(owlClass -> {
-            if (classes.contains(owlClass.getIRI())){
-                knownEntitySet.add(owlClass);
-            }});
-        this.activeOntology.getObjectPropertiesInSignature(Imports.INCLUDED).forEach(objectProperty -> {
-            if (objectProperties.contains(objectProperty.getIRI())){
-                knownEntitySet.add(objectProperty);
-            }});
-        this.activeOntology.getIndividualsInSignature(Imports.INCLUDED).forEach(individual -> {
-            if (individuals.contains(individual.getIRI())){
-                knownEntitySet.add(individual);
-            }});
-//        classes.forEach(iri ->
-//                knownEntitySet.addAll(
-//                        this.activeOntology.getEntitiesInSignature(
-//                                iri)));
-//        ontologyEntitySet.removeAll(knownEntitySet);
-        this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
-        this.signatureSelectionUI.clearSelectedSignatureUISelection();
+        });
     }
 
     private void save(){
-        ArrayList<OWLEntity> classes = new ArrayList<>();
-        ArrayList<OWLEntity> objectProperties = new ArrayList<>();
-        ArrayList<OWLEntity> individuals = new ArrayList<>();
-        this.signatureSelectionUI.getSelectedSignature().forEach(owlEntity -> {
-            if (owlEntity.isOWLClass()){
-                classes.add(owlEntity);
-            }
-            else if (owlEntity.isOWLObjectProperty()){
-                objectProperties.add(owlEntity);
-            }
-            else if (owlEntity.isOWLNamedIndividual()){
-                individuals.add(owlEntity);
-            }
-        });
-        JFileChooser fileChooser = this.createFileChooser();
-        int result = fileChooser.showSaveDialog(this.dialog);
-        if (result == JFileChooser.APPROVE_OPTION){
-            File file = fileChooser.getSelectedFile();
-            if (! FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("txt")) {
-                file = new File(file.getParentFile(), FilenameUtils.getBaseName(file.getName()) + ".txt");
-            }
-            try (FileWriter fileWriter = new FileWriter(file);
-                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)){
-                bufferedWriter.write(USE_SIGNATURE_DELIMITER + "\n");
-                if (this.signaturePreferencesManager.getUseSignatureForUI(
-                        this.activeOntology.getOntologyID().getOntologyIRI().get().toString())){
-                    bufferedWriter.write(TRUE + "\n");
-                }
-                else {
-                    bufferedWriter.write(FALSE + "\n");
-                }
-                bufferedWriter.write(CLASSES_DELIMITER + "\n");
-                for (OWLEntity entity : classes){
-                    bufferedWriter.write(entity.getIRI() + "\n");
-                }
-                bufferedWriter.write(OBJECT_PROPERTIES_DELIMITER + "\n");
-                for (OWLEntity entity : objectProperties){
-                    bufferedWriter.write(entity.getIRI() + "\n");
-                }
-                bufferedWriter.write(INDIVIDUAL_DELIMITER + "\n");
-                for (OWLEntity entity : individuals){
-                    bufferedWriter.write(entity.getIRI() + "\n");
-                }
-            }
-            catch (IOException e){
-                this.logger.error("Error when saving to file: ", e);
+        SwingUtilities.invokeLater(() -> {
+            try{
+                SignatureIO.saveSignature(this.getOWLEditorKit(),
+                        this.signatureSelectionUI.getSelectedSignature());
+                this.signatureSelectionUI.clearSelectedSignatureUISelection();
+            } catch (IOException e){
+//                error-message already shown in SignatureIO
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
-                this.showError("Error: " + e);
             }
-        }
-        this.signatureSelectionUI.clearSelectedSignatureUISelection();
-    }
-
-    private JFileChooser createFileChooser(){
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        FileNameExtensionFilter fileFilter = new FileNameExtensionFilter(
-                "txt files (*.txt)", "txt");
-        fileChooser.setFileFilter(fileFilter);
-        return fileChooser;
+        });
     }
 
     private void cancel(){
@@ -446,7 +334,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
                 this.logger.error("Error while saving signature to Protege Preferences.");
                 this.logger.error(e.toString());
                 String errorString = "<center>" + e + "</center>";
-                this.showError(SIGNATURE_SAVING_ERROR_MSG + errorString);
+                Util.showError(SIGNATURE_SAVING_ERROR_MSG + errorString, this.getOWLEditorKit());
             }
             finally{
                 this.dialog.dispose();
@@ -455,17 +343,17 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
         });
     }
 
-    private void showError(String message){
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()), "Error");
-            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace())));
-            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            errorDialog.setVisible(true);
-        });
-    }
+//    private void showError(String message){
+//        SwingUtilities.invokeLater(() -> {
+//            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+//            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()), "Error");
+//            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+//            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+//                    ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace())));
+//            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//            errorDialog.setVisible(true);
+//        });
+//    }
 
     private void enableButtons(boolean enable){
         this.loadButton.setEnabled(enable);

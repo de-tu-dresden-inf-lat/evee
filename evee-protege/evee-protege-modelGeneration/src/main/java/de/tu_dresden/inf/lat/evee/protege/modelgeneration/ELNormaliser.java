@@ -18,9 +18,23 @@ import java.util.stream.Collectors;
 public class ELNormaliser {
 
     private int numRemoved;
+    private OWLOntology ontology;
+    private OWLOntologyManager manager;
+    private OWLDataFactory factory;
+    private Set<OWLClass> usedNames;
+    private OWLOntology normalisedOntology;
+    private int freshConceptCounter = 0;
+    private OWLClass nextFreshConcept;
+    /**
+     * the following are used so that we can reuse the same concept name
+     * for the same complex concept even if it appears several times.
+     */
+    private Set<OWLClassExpression> lhsAxiomAdded;
+    private Set<OWLClassExpression> rhsAxiomAdded;
+    private Map<OWLClassExpression, OWLClass> mappedConceptNames;
 
     public static void main(String[] args) throws OWLOntologyCreationException, FileNotFoundException, OWLOntologyStorageException {
-        if(args.length!=1){
+        if (args.length != 1) {
             System.out.println("You need to provide an ontology file name");
             System.exit(1);
         }
@@ -35,28 +49,12 @@ public class ELNormaliser {
         OWLOntology normalised = normaliser.normalise();
 
         manager.saveOntology(normalised,
-                new FileOutputStream(new File(filename+".normalised.owl")));
+                new FileOutputStream(new File(filename + ".normalised.owl")));
 
     }
 
-    private OWLOntology ontology;
-    private OWLOntologyManager manager;
-    private OWLDataFactory factory;
-    private Set<OWLClass> usedNames;
-    private OWLOntology normalisedOntology;
-    private int freshConceptCounter = 0;
-    private OWLClass nextFreshConcept;
-
-    /**
-     * the following are used so that we can reuse the same concept name
-     * for the same complex concept even if it appears several times.
-     */
-    private Set<OWLClassExpression> lhsAxiomAdded;
-    private Set<OWLClassExpression> rhsAxiomAdded;
-    private Map<OWLClassExpression,OWLClass> mappedConceptNames;
-
-    public void setOntology(OWLOntology ontology){
-        this.ontology=ontology;
+    public void setOntology(OWLOntology ontology) {
+        this.ontology = ontology;
         this.manager = ontology.getOWLOntologyManager();
 
         this.factory = manager.getOWLDataFactory();
@@ -150,9 +148,9 @@ public class ELNormaliser {
                 ));*/
             } else {
 //                System.out.println("Not supported: " + axiom);
-                this.numRemoved = this.numRemoved +1;
+                this.numRemoved = this.numRemoved + 1;
             }
-        } else if(axiom instanceof OWLDisjointClassesAxiom) {
+        } else if (axiom instanceof OWLDisjointClassesAxiom) {
             OWLDisjointClassesAxiom disj = (OWLDisjointClassesAxiom) axiom;
             disj.asPairwiseAxioms().forEach(ax -> {
                 OWLClassExpression first = ax.getClassExpressionsAsList()
@@ -163,7 +161,7 @@ public class ELNormaliser {
                         factory.getOWLNothing()
                 ));
             });
-        } else if (axiom instanceof OWLSubClassOfAxiomShortCut){
+        } else if (axiom instanceof OWLSubClassOfAxiomShortCut) {
             OWLSubClassOfAxiomShortCut shortCut = (OWLSubClassOfAxiomShortCut) axiom;
             addNormalised(shortCut.asOWLSubClassOfAxiom());
         } else if (axiom instanceof OWLSubClassOfAxiomSetShortCut) {
@@ -172,22 +170,22 @@ public class ELNormaliser {
             shortCut.asOWLSubClassOfAxioms().forEach(this::addNormalised);
         } else {
 //            System.out.println("Not supported: "+axiom);
-            this.numRemoved = this.numRemoved +1;
+            this.numRemoved = this.numRemoved + 1;
         }
     }
 
     private OWLClass toOWLClassLHS(OWLClassExpression owlClassExpression) {
-        if(owlClassExpression instanceof OWLClass)
+        if (owlClassExpression instanceof OWLClass)
             return (OWLClass) owlClassExpression;
         else if (lhsAxiomAdded.contains(owlClassExpression)) {
             return mappedConceptNames.get(owlClassExpression);
         } else {
             OWLClass cl;
-            if(mappedConceptNames.containsKey(owlClassExpression))
+            if (mappedConceptNames.containsKey(owlClassExpression))
                 cl = mappedConceptNames.get(owlClassExpression);
             else {
                 cl = getFreshConcept();
-                mappedConceptNames.put(owlClassExpression,cl);
+                mappedConceptNames.put(owlClassExpression, cl);
             }
             addNormalised(factory.getOWLSubClassOfAxiom(owlClassExpression, cl));
             lhsAxiomAdded.add(owlClassExpression);
@@ -196,26 +194,27 @@ public class ELNormaliser {
     }
 
     private OWLClass toOWLClassRHS(OWLClassExpression owlClassExpression) {
-        if(owlClassExpression instanceof OWLClass)
+        if (owlClassExpression instanceof OWLClass)
             return (OWLClass) owlClassExpression;
         else if (rhsAxiomAdded.contains(owlClassExpression)) {
             return mappedConceptNames.get(owlClassExpression);
         } else {
             OWLClass cl;
-            if(mappedConceptNames.containsKey(owlClassExpression))
+            if (mappedConceptNames.containsKey(owlClassExpression))
                 cl = mappedConceptNames.get(owlClassExpression);
             else {
                 cl = getFreshConcept();
-                mappedConceptNames.put(owlClassExpression,cl);
+                mappedConceptNames.put(owlClassExpression, cl);
             }
             addNormalised(factory.getOWLSubClassOfAxiom(cl, owlClassExpression));
             rhsAxiomAdded.add(owlClassExpression);
             return cl;
         }
     }
-    private OWLClass getFreshConcept(){
-        while(usedNames.contains(nextFreshConcept)){
-            nextFreshConcept = factory.getOWLClass(IRI.create("X"+freshConceptCounter));
+
+    private OWLClass getFreshConcept() {
+        while (usedNames.contains(nextFreshConcept)) {
+            nextFreshConcept = factory.getOWLClass(IRI.create("X" + freshConceptCounter));
             freshConceptCounter++;
         }
         usedNames.add(nextFreshConcept);

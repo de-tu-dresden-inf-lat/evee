@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
-import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.general.interfaces.ExplanationGenerator;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -14,11 +14,11 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedEx
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 
-public class EveeProofGenerationThread extends Thread implements ExplanationGenerator<IProof<OWLAxiom>> {
+public class EveeProofGenerationThread extends Thread implements IExplanationGenerator<IProof<OWLAxiom>> {
 
 	private final OWLAxiom entailment;
 	private final IProofGenerator<OWLAxiom, OWLOntology> proofGenerator;
-	private final ExplanationGenerationListener<ExplanationEvent<ExplanationGenerator<IProof<OWLAxiom>>>> explanationGenerationListener;
+	private final IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<IProof<OWLAxiom>>>> explanationGenerationListener;
 	private IProof<OWLAxiom> result;
 	private String errorMessage = "";
 
@@ -26,7 +26,7 @@ public class EveeProofGenerationThread extends Thread implements ExplanationGene
 
 	public EveeProofGenerationThread(OWLAxiom entailment,
 									 IProofGenerator<OWLAxiom, OWLOntology> proofGenerator,
-									 ExplanationGenerationListener<ExplanationEvent<ExplanationGenerator<IProof<OWLAxiom>>>> explanationGenerationListener) {
+									 IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<IProof<OWLAxiom>>>> explanationGenerationListener) {
 		super.setName("Evee Proof Generation Thread");
 		this.entailment = entailment;
 		this.proofGenerator = proofGenerator;

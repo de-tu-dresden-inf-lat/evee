@@ -14,7 +14,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 
 
 public class EveeDynamicProofSignatureSelectionCoreUI extends AbstractSignatureSelectionUI {
@@ -38,15 +37,15 @@ public class EveeDynamicProofSignatureSelectionCoreUI extends AbstractSignatureS
     }
 
     @Override
-    public JPanel getOntologySignatureTabbedPanel(){
-        JPanel resultPanel = super.getOntologySignatureTabbedPanel();
+    public JComponent getOntologySignatureTabbedComponent(){
+        JComponent resultPanel = super.getOntologySignatureTabbedComponent();
         resultPanel.setPreferredSize(new Dimension(400, 600));
         return resultPanel;
     }
 
     @Override
-    public JPanel getSelectedSignatureListPanel(){
-        JPanel resultPanel = super.getSelectedSignatureListPanel();
+    public JPanel getSelectedSignaturePanel(){
+        JPanel resultPanel = super.getSelectedSignaturePanel();
         resultPanel.setPreferredSize(new Dimension(400, 600));
         return resultPanel;
     }
@@ -54,7 +53,7 @@ public class EveeDynamicProofSignatureSelectionCoreUI extends AbstractSignatureS
     @Override
     protected void createSelectedSignatureListPane(OWLEditorKit owlEditorKit){
         super.createSelectedSignatureListPane(owlEditorKit);
-        this.selectedSignatureListPanel.setBorder(BorderFactory.createCompoundBorder(
+        this.selectedSignaturePanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
                         "Known signature:"),

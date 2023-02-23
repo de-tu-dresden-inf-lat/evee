@@ -1,11 +1,11 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.NonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import org.eclipse.core.runtime.IExtension;
 import org.protege.editor.core.plugin.AbstractProtegePlugin;
 import org.protege.editor.owl.OWLEditorKit;
 
-public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<NonEntailmentExplanationService> {
+public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<INonEntailmentExplanationService> {
 
     private final OWLEditorKit owlEditorKit;
 
@@ -22,9 +22,9 @@ public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<NonEnt
         return getPluginProperty(NAME_PARAM, "Non-Entailment Explanation Service");
     }
 
-    public NonEntailmentExplanationService newInstance() throws ClassNotFoundException, IllegalAccessException,
+    public INonEntailmentExplanationService newInstance() throws ClassNotFoundException, IllegalAccessException,
             InstantiationException {
-        NonEntailmentExplanationService pluginInstance = super.newInstance();
+        INonEntailmentExplanationService pluginInstance = super.newInstance();
         pluginInstance.setup(this.owlEditorKit);
         return pluginInstance;
     }

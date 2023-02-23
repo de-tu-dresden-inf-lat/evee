@@ -5,7 +5,6 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ApproximateProofMeasureAxiomSizeSum;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.MinimalForgettingBasedProofGenerator;
-import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.OWLSignatureBasedMinimalTreeProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.tools.RecursiveProofEvaluator;
 import de.tu_dresden.inf.lat.evee.proofs.tools.measures.OWLAxiomSizeWeightedTreeSizeMeasure;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
@@ -38,7 +37,7 @@ public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends Abstra
     private void createInnerProofGenerator(){
         this.logger.debug("Creating new inner proof generator.");
         boolean skipSteps = this.proofPreferencesManager.loadSkipSteps();
-        long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOut());
+        long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOutSeconds());
         this.innerProofGenerator = new MinimalForgettingBasedProofGenerator(
                 new RecursiveProofEvaluator<>(new OWLAxiomSizeWeightedTreeSizeMeasure()),
                 new ApproximateProofMeasureAxiomSizeSum(JavaConverters.asScalaSet(new HashSet<OWLEntity>()).toSet()),

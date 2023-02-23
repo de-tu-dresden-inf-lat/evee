@@ -13,6 +13,8 @@ import java.util.List;
 public class OWLObjectListModel<O extends OWLObject>
         extends AbstractListModel<O>{
 
+    private static final long serialVersionUID = 7889399632276626077L;
+
     private final List<O> owlObjects;
     private final Logger logger = LoggerFactory.getLogger(OWLObjectListModel.class);
 
