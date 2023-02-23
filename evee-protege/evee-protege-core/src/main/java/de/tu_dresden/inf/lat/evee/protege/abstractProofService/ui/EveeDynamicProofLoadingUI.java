@@ -1,15 +1,15 @@
-package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
+package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeDynamicProofAdapter;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
-public class EveeDynamicProofLoadingUI implements ItemListener {
+public class EveeDynamicProofLoadingUI {
 
     private JFrame frame;
     private JPanel panel;
@@ -20,18 +20,16 @@ public class EveeDynamicProofLoadingUI implements ItemListener {
     private boolean showLoadingScreen;
     private boolean showCancelScreen;
     private boolean proofGenerationFinished;
-    private final EveeDynamicProofAdapter proofAdapter;
-    private final OWLEditorKit editorKit;
-    private final AbstractEveeProofPreferencesManager proofPreferencesManager;
+    private final AbstractEveeDynamicProofAdapter proofAdapter;
+    protected final OWLEditorKit editorKit;
     private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofLoadingUI.class);
 
-    public EveeDynamicProofLoadingUI(EveeDynamicProofAdapter proofAdapter, String uiTitle, OWLEditorKit editorKit, AbstractEveeProofPreferencesManager proofPreferencesManager){
+    public EveeDynamicProofLoadingUI(AbstractEveeDynamicProofAdapter proofAdapter, String uiTitle, OWLEditorKit editorKit){
         this.showLoadingScreen = false;
         this.showCancelScreen = false;
         this.proofGenerationFinished = false;
         this.proofAdapter = proofAdapter;
         this.editorKit = editorKit;
-        this.proofPreferencesManager = proofPreferencesManager;
         SwingUtilities.invokeLater(() -> {
             this.frame = new JFrame(uiTitle);
             this.panel = new JPanel(new GridLayout(3, 1, 5, 5));
@@ -171,7 +169,7 @@ public class EveeDynamicProofLoadingUI implements ItemListener {
     }
 
     public void showSubOptimalProofMessage(){
-        if (this.proofPreferencesManager.getProtegeShowSuboptimalProofMessage()){
+        if (! this.proofPreferencesManager.loadShowSuboptimalProofWarning()){
             return;
         }
         SwingUtilities.invokeLater(() -> {
@@ -205,8 +203,4 @@ public class EveeDynamicProofLoadingUI implements ItemListener {
         this.proofGenerationFinished = true;
     }
 
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        this.proofPreferencesManager.setProtegeShowSuboptimalProofMessage(true);
-    }
 }

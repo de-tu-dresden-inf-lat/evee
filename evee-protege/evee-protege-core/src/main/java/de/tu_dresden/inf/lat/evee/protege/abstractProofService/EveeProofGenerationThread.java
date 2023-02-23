@@ -17,11 +17,11 @@ public class EveeProofGenerationThread extends Thread {
 	protected OWLOntology ontology;
 	protected OWLReasoner reasoner;
 	protected IProofGenerator<OWLAxiom, OWLOntology> proofGenerator;
-	protected EveeDynamicProofAdapter proofAdapter;
+	protected AbstractEveeDynamicProofAdapter proofAdapter;
 	protected final Logger logger = LoggerFactory.getLogger(EveeProofGenerationThread.class);
 
 	public EveeProofGenerationThread(OWLAxiom entailment, OWLOntology ontology, OWLReasoner reasoner,
-									 IProofGenerator<OWLAxiom, OWLOntology> proofGenerator, EveeDynamicProofAdapter proofAdapter) {
+									 IProofGenerator<OWLAxiom, OWLOntology> proofGenerator, AbstractEveeDynamicProofAdapter proofAdapter) {
 		super.setName("Evee Proof Generation Thread");
 		this.entailment = entailment;
 		this.ontology = ontology;
@@ -33,8 +33,6 @@ public class EveeProofGenerationThread extends Thread {
 	public void run() {
 		this.logger.debug("Proof generation thread started");
 		try {
-// todo: for testing purposes only!
-//            Thread.sleep(10000);
 			if (this.proofGenerator.supportsProof(this.entailment)) {
 				this.logger.debug("Proof supported for axiom {}", this.entailment);
 				IProof<OWLAxiom> proof = proofGenerator.getProof(this.entailment);

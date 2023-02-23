@@ -1,44 +1,71 @@
 package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofPreferencesManager;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.EveeProofPreferenceBoolean;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.EveeProofPreferenceInteger;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.abstractEliminationProofService.preferences.AbstractEveeEliminationProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeDoubleProofPreference;
+import org.protege.editor.core.prefs.Preferences;
 
-import java.util.HashMap;
+public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEveeEliminationProofPreferencesManager {
 
-public class EveeLetheBasedEliminationProofPreferencesManager extends AbstractEveeProofPreferencesManager {
+    protected static final String SET_ID = "EVEE_PROOF_SERVICE_LETHE_ELIMINATION";
+    protected static final String PREFERENCE_ID = "EVEE_PREFERENCES_MANAGER_LETHE_ELIMINATION";
+    protected static final String HEURISTIC = "Elimination Proof (LETHE)";
+    protected static final String SIZE_MINIMAL = "Elimination Proof, optimized for size (LETHE)";
+    protected static final String SYMBOL_MINIMAL = "Elimination Proof, optimized for eliminated names (LETHE)";
+    protected static final String WEIGHTED_SIZE_MINIMAL = "Elimination Proof, optimized for weighted size (LETHE)";
+    public final String TIME_OUT = "timeOut";
+    protected final double TIME_OUT_DEFAULT_VALUE = 2d;
+    protected final String TIME_OUT_UNIT = "Seconds";
+    protected final String TIME_OUT_LABEL = "Forgetting timeout:";
+    protected final String TIME_OUT_TOOL_TIP = "Sets the timeout for each elimination step (in seconds)";
+    private EveeDoubleProofPreference timeOutDefaultPreference;
 
-    private static final String SET_ID = "EVEE_PROOF_LETHE_ELIMINATION";
-    private static final String PREFERENCE_ID = "EVEE_PREFERENCES_MANAGER_LETHE_ELIMINATION";
-    protected static final HashMap<String, EveeProofPreferenceBoolean> defaultBooleanPreferences = new HashMap<String, EveeProofPreferenceBoolean>();
-    protected static final HashMap<String, EveeProofPreferenceInteger> defaultIntegerPreferences = new HashMap<String, EveeProofPreferenceInteger>();
+    public EveeLetheBasedEliminationProofPreferencesManager(String identifier) {
+        super(SET_ID, PREFERENCE_ID, identifier);
+        this.initializeTimeOutDefaultPreference();
+        this.correctActivationDefaultPreferences();
+    }
 
-    public EveeLetheBasedEliminationProofPreferencesManager(String baseKey) {
-        super(baseKey);
+    public EveeLetheBasedEliminationProofPreferencesManager() {
+        super(SET_ID, PREFERENCE_ID, AbstractEveeEliminationProofPreferencesManager.PREFERENCE_UI);
+        this.initializeTimeOutDefaultPreference();
+        this.correctActivationDefaultPreferences();
+    }
+
+    private void initializeTimeOutDefaultPreference(){
+        this.timeOutDefaultPreference = new EveeDoubleProofPreference(
+                this.TIME_OUT_DEFAULT_VALUE, this.TIME_OUT_LABEL, this.TIME_OUT_TOOL_TIP);
     }
 
     @Override
-    public String getSetId() {
-        return SET_ID;
+    protected void createIdentifierSet() {
+        this.proofServiceNameSet.add(HEURISTIC);
+        this.proofServiceNameSet.add(SIZE_MINIMAL);
+        this.proofServiceNameSet.add(SYMBOL_MINIMAL);
+        this.proofServiceNameSet.add(WEIGHTED_SIZE_MINIMAL);
     }
 
-    @Override
-    public String getPreferenceId() {
-        return PREFERENCE_ID;
+    protected void correctActivationDefaultPreferences(){
+        this.activationDefaultPreferences.get(SIZE_MINIMAL).setBooleanDefaultValue(false);
+        this.activationDefaultPreferences.get(SYMBOL_MINIMAL).setBooleanDefaultValue(false);
+        this.activationDefaultPreferences.get(WEIGHTED_SIZE_MINIMAL).setBooleanDefaultValue(false);
     }
 
-    @Override
-    public HashMap<String, EveeProofPreferenceBoolean> getDefaultBooleanPreferences() {
-        return defaultBooleanPreferences;
+    protected double loadTimeOut(){
+        Preferences preferences = this.getProtegePreferences();
+        return preferences.getDouble(TIME_OUT, this.timeOutDefaultPreference.getDefaultDoubleValue());
     }
 
-    @Override
-    public HashMap<String, EveeProofPreferenceInteger> getDefaultIntegerPreferences() {
-        return defaultIntegerPreferences;
+    protected void saveTimeOut(double newValue){
+        Preferences preferences = this.getProtegePreferences();
+        preferences.putDouble(TIME_OUT, newValue);
     }
 
-    public EveeLetheBasedEliminationProofPreferencesManager(){
-        super(AbstractEveeProofPreferencesManager.GENERAL_NAME);
+    protected String getTimeOutUILabel(){
+        return this.timeOutDefaultPreference.getUiLabel();
+    }
+
+    protected String getTimeOutUIToolTip(){
+        return this.timeOutDefaultPreference.getUiToolTip();
     }
 
 }

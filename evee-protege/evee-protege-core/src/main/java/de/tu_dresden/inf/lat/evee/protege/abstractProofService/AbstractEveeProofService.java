@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import org.liveontologies.protege.explanation.proof.service.ProofService;
 import org.liveontologies.puli.DynamicProof;
 import org.liveontologies.puli.Inference;
@@ -18,11 +17,13 @@ public abstract class AbstractEveeProofService extends ProofService implements O
 
     protected OWLOntology ontology;
     protected OWLReasoner reasoner;
-    protected EveeDynamicProofAdapter proofAdapter;
+    protected AbstractEveeDynamicProofAdapter proofAdapter;
     protected Logger logger = LoggerFactory.getLogger(AbstractEveeProofService.class);
 
-    protected AbstractEveeProofService(IProofGenerator<OWLAxiom,OWLOntology> iProofGen, String uiTitle, AbstractEveeProofPreferencesManager proofPreferencesManager){
-        this.proofAdapter = new EveeDynamicProofAdapter(this.ontology, this.reasoner, iProofGen, uiTitle, proofPreferencesManager);
+    protected AbstractEveeProofService(AbstractEveeDynamicProofAdapter proofAdapter){
+        this.proofAdapter = proofAdapter;
+        this.proofAdapter.setOntology(this.ontology);
+        this.proofAdapter.setReasoner(this.reasoner);
     }
 
     @Override

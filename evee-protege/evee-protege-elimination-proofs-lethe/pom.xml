@@ -77,6 +77,9 @@
                             de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             scala.swing.*;resolution:=optional,
+                            org.protege.editor.core.prefs.*;version="4.3",
+                            org.protege.editor.core.ui.preferences.*;version="4.3",
+                            org.protege.editor.owl.ui.preferences.*;version="4.3",
                             *
                         </Import-Package>
                         <Private-Package>
