@@ -7,12 +7,12 @@ import org.slf4j.LoggerFactory;
 public class EveeProofPluginProgressTracker implements IProgressTracker {
 
 
-    private final EveeDynamicProofUIWindow uiWindow;
+    private final EveeDynamicProofLoadingUI uiWindow;
     private long progress;
     private long maximum;
     private final Logger logger = LoggerFactory.getLogger(EveeProofPluginProgressTracker.class);
 
-    public EveeProofPluginProgressTracker(EveeDynamicProofUIWindow uiWindow){
+    public EveeProofPluginProgressTracker(EveeDynamicProofLoadingUI uiWindow){
         this.progress = 0;
         this.maximum = 0;
         this.uiWindow = uiWindow;
