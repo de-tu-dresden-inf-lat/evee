@@ -21,8 +21,8 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
             EveeLetheBasedEliminationProofPreferencesManager proofPreferencesManager =
                     (EveeLetheBasedEliminationProofPreferencesManager) this.proofPreferencesManager;
             SpinnerNumberModel timeOutSpinnerNumberModel = new SpinnerNumberModel(proofPreferencesManager.loadTimeOut(),
-//                    todo: min required for non-negative numbers, what should stepSize be?
-                    0d, null, 0.001);
+//                    todo: what should stepSize be? set min/max to avoid checking before value is used for proofGenerator?
+                    null, null, 0.001);
             this.timeOutSpinner = new JSpinner(timeOutSpinnerNumberModel);
             this.timeOutSpinner.setPreferredSize(new Dimension(this.SPINNER_WIDTH, this.timeOutSpinner.getPreferredSize().height));
             this.timeOutSpinner.setToolTipText(proofPreferencesManager.getTimeOutUIToolTip());
@@ -35,25 +35,22 @@ public class EveeLetheBasedEliminationPreferencesUI extends AbstractEveeEliminat
         SwingUtilities.invokeLater(() -> {
             EveeLetheBasedEliminationProofPreferencesManager prefManager =
                     (EveeLetheBasedEliminationProofPreferencesManager) this.proofPreferencesManager;
-            JPanel timeOutPanel = new JPanel();
-            timeOutPanel.setLayout(new BoxLayout(timeOutPanel, BoxLayout.X_AXIS));
+            JPanel timeOutPanel = new JPanel(new GridBagLayout());
             this.miscellaneousPreferencesPanel.addGroupComponent(timeOutPanel);
             JLabel timeOutLabel = new JLabel(prefManager.getTimeOutUILabel());
-            timeOutPanel.add(timeOutLabel);
-            timeOutPanel.add(this.timeOutSpinner);
+            GridBagConstraints labelConstraints = new GridBagConstraints();
+            labelConstraints.gridx = 0;
+            labelConstraints.gridy = 0;
+            timeOutPanel.add(timeOutLabel, labelConstraints);
+            GridBagConstraints spinnerConstraints = new GridBagConstraints();
+            spinnerConstraints.gridx = 1;
+            spinnerConstraints.gridy = 0;
+            timeOutPanel.add(this.timeOutSpinner, spinnerConstraints);
             JLabel timeOutUnit = new JLabel(prefManager.TIME_OUT_UNIT);
-            timeOutPanel.add(timeOutUnit);
-            timeOutPanel.setMaximumSize(new Dimension(
-                    timeOutLabel.getWidth() + this.SPINNER_WIDTH + timeOutUnit.getWidth(),
-                    this.timeOutSpinner.getHeight()));
-            this.logger.debug("front label preferred size: " + timeOutLabel.getPreferredSize());
-            this.logger.debug("spinner preferred size: " + this.timeOutSpinner.getPreferredSize());
-            this.logger.debug("back label preferred size: " + timeOutUnit.getPreferredSize());
-            this.logger.debug("timeoutPanel max size: " + timeOutPanel.getMaximumSize());
-            this.logger.debug("timeoutPanel pref size: " + timeOutPanel.getPreferredSize());
-            this.logger.debug("timeoutPanel width: " + timeOutPanel.getWidth());
-            this.logger.debug("window width? " + this.getWidth());
-            this.logger.debug("spinner minimum width" + this.timeOutSpinner.getMinimumSize());
+            GridBagConstraints unitConstraints = new GridBagConstraints();
+            unitConstraints.gridx = 2;
+            unitConstraints.gridy = 0;
+            timeOutPanel.add(timeOutUnit, unitConstraints);
         });
     }
 

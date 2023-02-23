@@ -121,11 +121,11 @@ public class EveeDynamicProofLoadingUI {
         this.disposeCancelDialog();
         SwingUtilities.invokeLater( () -> {
             if (this.showLoadingScreen){
-            this.showLoadingScreen = false;
-            if (! this.progressBar.isIndeterminate()){
-                this.progressBar.setValue(this.progressBar.getMaximum());
-            }
-            this.frame.dispose();
+                this.showLoadingScreen = false;
+                if (! this.progressBar.isIndeterminate()){
+                    this.progressBar.setValue(this.progressBar.getMaximum());
+                }
+                this.frame.dispose();
             }
         });
     }
@@ -165,37 +165,6 @@ public class EveeDynamicProofLoadingUI {
                 this.cancelDialog.setModal(false);
                 this.cancelDialog.dispose();
             }
-        });
-    }
-
-    public void showSubOptimalProofMessage(){
-        if (! this.proofPreferencesManager.loadShowSuboptimalProofWarning()){
-            return;
-        }
-        SwingUtilities.invokeLater(() -> {
-            JDialog subOptimalProofMessageDialog = new JDialog(ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
-            subOptimalProofMessageDialog.setTitle("Proof generation cancelled");
-            subOptimalProofMessageDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            JPanel subOptimalProofMessagePanel = new JPanel(new GridLayout(3, 1, 5, 5));
-            JLabel subOptimalProofMessageLabel = new JLabel(
-                    "Due to cancellation of the proof generation, you might be seeing a sub-optimal proof",
-                    SwingConstants.CENTER);
-            subOptimalProofMessageLabel.setHorizontalTextPosition(JLabel.CENTER);
-            subOptimalProofMessageLabel.setVerticalTextPosition(JLabel.CENTER);
-            JCheckBox subOptimalProofMessageCheckBox = new JCheckBox("Don't show this message again", false);
-            subOptimalProofMessageCheckBox.addItemListener(this);
-            JButton subOptimalProofMessageButton = new JButton("OK");
-            subOptimalProofMessageButton.addActionListener(e -> subOptimalProofMessageDialog.dispose());
-            subOptimalProofMessageCheckBox.setHorizontalAlignment(JCheckBox.CENTER);
-            subOptimalProofMessagePanel.add(subOptimalProofMessageLabel);
-            subOptimalProofMessagePanel.add(subOptimalProofMessageCheckBox);
-            subOptimalProofMessagePanel.add(subOptimalProofMessageButton);
-            subOptimalProofMessageDialog.getContentPane().add(subOptimalProofMessagePanel);
-            subOptimalProofMessageDialog.pack();
-            subOptimalProofMessageDialog.setSize(600, 150);
-            subOptimalProofMessageDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
-            subOptimalProofMessageDialog.setVisible(true);
         });
     }
 

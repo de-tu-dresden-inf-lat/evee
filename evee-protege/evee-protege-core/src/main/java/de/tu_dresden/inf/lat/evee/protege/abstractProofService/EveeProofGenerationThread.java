@@ -50,7 +50,7 @@ public class EveeProofGenerationThread extends Thread {
 				this.proofAdapter.proofNotSupported();
 			}
 		} catch (ProofGenerationCancelledException e) {
-			this.logger.error("Proof generation cancelled, no proof found: ", e);
+			this.logger.debug("Proof generation cancelled, no proof found: ", e);
 			this.proofAdapter.proofGenerationError("Proof generation cancelled, no proof found");
 		} catch (ProofGenerationFailedException e) {
 			this.logger.error("Proof generation failed: ", e);
