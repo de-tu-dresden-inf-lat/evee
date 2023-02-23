@@ -94,8 +94,14 @@ public class Util {
         @Override
         public void paintTriangle(Graphics g, int x, int y, int size,
                                   int direction, boolean isEnabled) {
-            super.paintTriangle(g, x, y - (size / 2), size, direction, isEnabled);
-            super.paintTriangle(g, x, y + (size / 2), size, direction, isEnabled);
+            if (direction == BasicArrowButton.NORTH || direction == BasicArrowButton.SOUTH){
+                super.paintTriangle(g, x, y - (size / 2), size, direction, isEnabled);
+                super.paintTriangle(g, x, y + (size / 2), size, direction, isEnabled);
+            }
+            else {
+                super.paintTriangle(g, x - (size / 2), y, size, direction, isEnabled);
+                super.paintTriangle(g, x + (size / 2), y, size, direction, isEnabled);
+            }
         }
     }
 
