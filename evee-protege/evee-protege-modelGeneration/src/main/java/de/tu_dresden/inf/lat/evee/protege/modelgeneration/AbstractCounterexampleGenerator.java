@@ -2,7 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterExampleGenerator;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
@@ -16,14 +16,14 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
 
-abstract public class AbstractCounterexampleGenerator implements INonEntailmentExplanationService<OWLAxiom>, IOWLCounterExampleGenerator {
+abstract public class AbstractCounterexampleGenerator implements INonEntailmentExplanationService<OWLIndividualAxiom>, IOWLCounterexampleGenerator {
 
     protected OWLEditorKit owlEditorKit;
     protected String errorMessage;
     protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     protected Set<OWLAxiom> observation;
     protected OWLOntology activeOntology;
-    protected Set<OWLAxiom> model;
+    protected Set<OWLIndividualAxiom> model;
     protected IOWLModelGenerator modelGenerator;
 
 
@@ -68,7 +68,7 @@ abstract public class AbstractCounterexampleGenerator implements INonEntailmentE
     }
 
     @Override
-    public Set<OWLAxiom> generateModel() {
+    public Set<OWLIndividualAxiom> generateModel() {
         return modelGenerator.generateModel();
     }
 
@@ -102,7 +102,7 @@ abstract public class AbstractCounterexampleGenerator implements INonEntailmentE
     }
 
     @Override
-    public Stream generateExplanation() {
+    public Stream generateExplanations() {
         return Stream.of(generateModel());
     }
 

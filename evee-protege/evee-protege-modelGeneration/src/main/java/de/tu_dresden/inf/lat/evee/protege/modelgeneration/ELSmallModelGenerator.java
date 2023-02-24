@@ -31,7 +31,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     private final OWLOntologyManager man;
     private Map<String, List<OWLClass>> indClassMapData;
     private int numRemoved;
-    private final Set<OWLAxiom> model;
+    private final Set<OWLIndividualAxiom> model;
 
 
     public ELSmallModelGenerator() {
@@ -71,7 +71,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
     @Override
-    public Set<OWLAxiom> generateModel() {
+    public Set<OWLIndividualAxiom> generateModel() {
         res = rf.createReasoner(ont);
         reset();
         getModel();
@@ -144,6 +144,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                         .forEach(cl -> model.add(df.getOWLClassAssertionAxiom(cl, e.getKey()))));
         model.addAll(ont.getABoxAxioms(Imports.INCLUDED).stream()
                 .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
+                .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
                 .collect(Collectors.toSet()));
     }
 

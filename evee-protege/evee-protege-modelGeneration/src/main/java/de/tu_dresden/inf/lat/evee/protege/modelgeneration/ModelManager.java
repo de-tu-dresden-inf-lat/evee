@@ -2,7 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
 
 import com.google.common.collect.Sets;
-import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterExampleGenerator;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import org.graphstream.graph.Edge;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
 import org.graphstream.ui.graphicGraph.GraphicNode;
@@ -35,17 +35,17 @@ public class ModelManager {
     private final OWLOntologyManager man;
     private final OWLEditorKit owlEditorKit;
     private final OWLDataFactory df;
-    private final IOWLCounterExampleGenerator counterExampleGenerator;
+    private final IOWLCounterexampleGenerator counterExampleGenerator;
     private final OWLOntology ont;
     private OWLReasoner res;
-    private Set<OWLAxiom> model;
+    private Set<OWLIndividualAxiom> model;
     private Map<String, List<OWLClass>> classMap;
     private Object[][] roleData;
     private Object[][] conceptData;
     private Viewer viewer;
     private GraphicGraph graph;
 
-    public ModelManager(Set<OWLAxiom> model, OWLEditorKit owlEditorKit, IOWLCounterExampleGenerator counterExampleGenerator, OWLOntology ont) {
+    public ModelManager(Set<OWLIndividualAxiom> model, OWLEditorKit owlEditorKit, IOWLCounterexampleGenerator counterExampleGenerator, OWLOntology ont) {
         this.ont = ont;
         this.man = OWLManager.createOWLOntologyManager();
         this.counterExampleGenerator = counterExampleGenerator;

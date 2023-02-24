@@ -6,5 +6,5 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.Set;
 
-public interface OWLNonEntailmentExplainer<T extends OWLAxiom> extends INonEntailmentExplainer<Set<OWLAxiom>, OWLEntity, OWLOntology, Set<T>> {
+public interface IOWLNonEntailmentExplainer<T extends OWLAxiom> extends INonEntailmentExplainer<Set<OWLAxiom>, OWLEntity, OWLOntology, Set<T>> {
 }

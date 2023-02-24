@@ -69,14 +69,14 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
         return workingCopy;
     }
 
-    private void checkConsistency(Set<OWLAxiom> model) throws Exception {
+    private void checkConsistency(Set<OWLIndividualAxiom> model) throws Exception {
         if (model.isEmpty()) {
             this.errorMessage = "The Ontology is inconsistent";
             throw new Exception();
         }
     }
 
-    private boolean checkSubsumption(Set<OWLAxiom> model) {
+    private boolean checkSubsumption(Set<OWLIndividualAxiom> model) {
         return model.contains(df.getOWLClassAssertionAxiom(df.getOWLClass(IRI.create("FreshClass")), df.getOWLNamedIndividual(IRI.create("root-Ind"))));
     }
 
@@ -131,8 +131,8 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
         return textPanel;
     }
 
-    private Set<OWLAxiom> filterAxioms(Set<OWLAxiom> axioms) {
-        Set<OWLAxiom> filtered = axioms.stream()
+    private Set<OWLIndividualAxiom> filterAxioms(Set<OWLIndividualAxiom> axioms) {
+        Set<OWLIndividualAxiom> filtered = axioms.stream()
                 .filter(ax -> ax.isOfType(AxiomType.CLASS_ASSERTION))
                 .map(ax -> (OWLClassAssertionAxiom) ax)
                 .filter(ax -> !(ax.getClassExpression().toString().startsWith("<X")
@@ -143,7 +143,7 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
     }
 
     @Override
-    public Set<OWLAxiom> generateModel() {
+    public Set<OWLIndividualAxiom> generateModel() {
         OWLOntology workingCopy = null;
 
         try {

@@ -11,10 +11,10 @@ public interface INonEntailmentExplainer<Observation, Symbol, Ontology, Explanat
 
     void setOntology(Ontology ontology);
 
-    Stream<Explanation> generateExplanation();
+    Stream<Explanation> generateExplanations();
 
     /**
-     * @return True iff this explainer is able to generate an explanation for the observation, symbol and ontology
+     * @return True iff this explainer is able to generate an explanation for the observation, signature and ontology
      */
     boolean supportsExplanation();
 
