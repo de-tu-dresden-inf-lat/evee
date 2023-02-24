@@ -128,7 +128,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     }
 
     @Override
-    public Stream<Set<OWLAxiom>> generateExplanation() {
+    public Stream<Set<OWLAxiom>> generateExplanations() {
         return Stream.generate(this);
     }
 
@@ -257,7 +257,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
             int resultNumber = (int) this.abductionNumberSpinner.getValue();
             this.logger.debug("Trying to show {} results of abduction generation process", resultNumber);
             List<Set<OWLAxiom>> hypotheses = new ArrayList<>();
-            Stream<Set<OWLAxiom>> resultStream = this.generateExplanation();
+            Stream<Set<OWLAxiom>> resultStream = this.generateExplanations();
             resultStream.limit(resultNumber).forEach(result -> {
                 if (result != null){
                     hypotheses.add(result);}
