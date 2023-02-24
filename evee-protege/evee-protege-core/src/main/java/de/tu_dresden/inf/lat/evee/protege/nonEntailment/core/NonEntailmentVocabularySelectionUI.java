@@ -1,11 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
-import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureEnum;
-import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureIO;
+import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
-import org.apache.commons.io.FilenameUtils;
-import org.protege.editor.core.ProtegeManager;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
@@ -26,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -145,38 +141,38 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
         ArrayList<JButton> buttonList = new ArrayList<>();
         URL addURL = getClass().getResource(ADD_BTN_ICON);
-        JButton addButton = Util.createArrowButton(ADD_BTN_COMMAND,
+        JButton addButton = UIUtilities.createArrowButton(ADD_BTN_COMMAND,
                 BasicArrowButton.SOUTH, ADD_BTN_TOOLTIP, this);
         buttonList.add(addButton);
         URL delURL = getClass().getResource(DEL_BTN_ICON);
-        JButton deleteButton = Util.createArrowButton(DEL_BTN_COMMAND,
+        JButton deleteButton = UIUtilities.createArrowButton(DEL_BTN_COMMAND,
                 BasicArrowButton.NORTH, DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);
         JToolBar firstToolbar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(firstToolbar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton addAllButton = Util.createDoubleArrowButton(ADD_ALL_BTN_COMMAND,
+        JButton addAllButton = UIUtilities.createDoubleArrowButton(ADD_ALL_BTN_COMMAND,
                 BasicArrowButton.SOUTH, ADD_ALL_BTN_TOOLTIP, this);
         buttonList.add(addAllButton);
-        JButton deleteAllButton = Util.createDoubleArrowButton(DEL_ALL_BTN_COMMAND,
+        JButton deleteAllButton = UIUtilities.createDoubleArrowButton(DEL_ALL_BTN_COMMAND,
                 BasicArrowButton.NORTH, DEL_ALL_BTN_TOOLTIP, this);
         buttonList.add(deleteAllButton);
         JToolBar secondToolBar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(secondToolBar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton addObservationSignatureButton = Util.createNamedButton(ADD_OBSERVATION_SIGNATURE_BTN_COMMAND,
+        JButton addObservationSignatureButton = UIUtilities.createNamedButton(ADD_OBSERVATION_SIGNATURE_BTN_COMMAND,
                 ADD_OBSERVATION_SIGNATURE_BTN_NAME, ADD_OBSERVATION_SIGNATURE_BTN_TOOLTIP, this);
         buttonList.add(addObservationSignatureButton);
         JToolBar thirdToolBar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(thirdToolBar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton saveSignatureButton = Util.createNamedButton(SAVE_SIGNATURE_COMMAND,
+        JButton saveSignatureButton = UIUtilities.createNamedButton(SAVE_SIGNATURE_COMMAND,
                 SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
         buttonList.add(saveSignatureButton);
-        JButton loadSignatureButton = Util.createNamedButton(LOAD_SIGNATURE_COMMAND,
+        JButton loadSignatureButton = UIUtilities.createNamedButton(LOAD_SIGNATURE_COMMAND,
                 LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
         buttonList.add(loadSignatureButton);
         JToolBar fourthToolBar = this.createButtonToolBar(buttonList);
@@ -381,14 +377,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private void loadSignatureAction(){
         SwingUtilities.invokeLater(() -> {
             try{
-                Set<OWLEntity> knownEntitySet = new HashSet<>(SignatureIO.loadSignature(this.owlEditorKit));
+                SignatureFileHandler signatureFileHandler = new SignatureFileHandler(this.owlEditorKit);
+                signatureFileHandler.loadFile();
+                Set<OWLEntity> knownEntitySet = new HashSet<>(signatureFileHandler.getSignature());
 //                deleting from one list = adding to other list
                 this.addAll2VocabularySelection(1);
                 this.add2VocabularyList(knownEntitySet, 0);
                 this.clearVocabularySelection();
 //                this.vocabularyTabbedPane.setSelectedIndex(0);
             } catch (IOException ignored){
-//                error-message already shown in SignatureIO
+//                error-message already shown in SignatureFileHandler
             }
         });
     }
@@ -396,11 +394,13 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private void saveSignatureAction(){
         SwingUtilities.invokeLater( () -> {
             try{
-                SignatureIO.saveSignature(this.owlEditorKit,
-                        this.permittedVocabularyListModel.getOwlObjects());
+                SignatureFileHandler signatureFileHandler = new SignatureFileHandler(this.owlEditorKit);
+                signatureFileHandler.setSignature(this.permittedVocabularyListModel.getOwlObjects());
+                signatureFileHandler.setUseSignature(false);
+                signatureFileHandler.saveSignature();
                 this.clearVocabularySelection();
             } catch (IOException ignored){
-//                error-message already shown in SignatureIO
+//                error-message already shown in SignatureFileHandler
             }
         });
     }

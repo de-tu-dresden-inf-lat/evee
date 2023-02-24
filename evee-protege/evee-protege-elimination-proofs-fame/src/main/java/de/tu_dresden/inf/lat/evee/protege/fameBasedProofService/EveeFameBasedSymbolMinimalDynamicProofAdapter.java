@@ -23,6 +23,7 @@ public class EveeFameBasedSymbolMinimalDynamicProofAdapter extends AbstractEveeS
         this.innerProofGenerator = proofGen;
         this.setVaryJustifications();
         super.setInnerProofGenerator(this.innerProofGenerator);
+        super.resetCachingProofGenerator();
         this.logger.debug("Dynamic proof adapter created.");
     }
 

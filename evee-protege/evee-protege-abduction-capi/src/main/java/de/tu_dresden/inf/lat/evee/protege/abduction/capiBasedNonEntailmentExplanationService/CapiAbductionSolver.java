@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertNotNull;
+
 public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>> implements IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<List<Solution>>>> {
 
     private String errorMessage = "";
@@ -98,7 +100,7 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
 
     @Override
     protected void createNewExplanation() {
-        assert (this.ontology != null);
+        assertNotNull(this.ontology);
         assert (this.observation.size() != 0);
         final ArrayList<OWLSubClassOfAxiom> observationList = new ArrayList<>();
         this.observation.forEach(axiom -> {

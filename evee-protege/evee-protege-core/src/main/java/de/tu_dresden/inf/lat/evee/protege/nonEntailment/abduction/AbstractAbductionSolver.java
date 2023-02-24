@@ -6,7 +6,7 @@ import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
@@ -26,6 +26,8 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import static org.junit.Assert.assertNotNull;
 
 abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OWLAxiom>>,
         INonEntailmentExplanationService<OWLAxiom>, IOWLAbductionSolver {
@@ -155,9 +157,9 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     @Override
     public void computeExplanation() {
         this.logger.debug("Computing explanation");
-        assert (this.ontology != null);
-        assert (this.observation != null);
-        assert (this.abducibles != null);
+        assertNotNull(this.ontology);
+        assertNotNull(this.observation);
+        assertNotNull(this.abducibles);
         if (this.parametersChanged()){
             this.lastUsedObservation = this.observation;
             this.lastUsedAbducibles = this.abducibles;
@@ -202,7 +204,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
             this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
             JPanel spinnerHelperPanel = new JPanel();
             spinnerHelperPanel.setLayout(new BoxLayout(spinnerHelperPanel, BoxLayout.LINE_AXIS));
-            JLabel label = Util.createLabel(SETTINGS_LABEL);
+            JLabel label = UIUtilities.createLabel(SETTINGS_LABEL);
             spinnerHelperPanel.add(label);
             spinnerHelperPanel.add(Box.createRigidArea(new Dimension(5, 0)));
             SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 1, null, 1);

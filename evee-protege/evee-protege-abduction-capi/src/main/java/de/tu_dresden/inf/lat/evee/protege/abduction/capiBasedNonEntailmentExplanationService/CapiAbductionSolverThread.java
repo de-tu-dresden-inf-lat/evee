@@ -20,6 +20,8 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertNotNull;
+
 public class CapiAbductionSolverThread extends Thread implements IExplanationGenerator<List<Solution>> {
 
     private final IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<List<Solution>>>> listener;
@@ -80,7 +82,7 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
 
     public void run(){
         this.logger.debug("Starting Thread");
-        assert (this.spassPath != null);
+        assertNotNull(this.spassPath);
         File spassFile = new File(this.spassPath);
 //        todo: adapt for linux
         if (! spassFile.exists() || ! this.spassPath.endsWith("SPASS.exe")){

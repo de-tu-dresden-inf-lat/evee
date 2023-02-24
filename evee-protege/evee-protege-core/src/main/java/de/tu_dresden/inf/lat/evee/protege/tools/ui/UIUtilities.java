@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.net.URL;
 
-public class Util {
+public class UIUtilities {
 
     public static JLabel createLabel(String labelText){
         JLabel label = new JLabel(labelText);

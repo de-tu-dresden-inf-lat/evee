@@ -117,9 +117,9 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
     }
 
     protected void createButtons(){
-        this.addButton = Util.createNamedButton(this.ADD_BTN_COMMAND, this.ADD_BTN_NAME, this.ADD_BTN_TOOLTIP, this);
-        this.deleteButton = Util.createNamedButton(this.DEL_BTN_COMMAND, this.DEL_BTN_NAME, this.DEL_BTN_TOOLTIP, this);
-        this.clearButton = Util.createNamedButton(this.CLR_BTN_COMMAND, this.CLR_BTN_NAME, this.CLR_BTN_TOOLTIP, this);
+        this.addButton = UIUtilities.createNamedButton(this.ADD_BTN_COMMAND, this.ADD_BTN_NAME, this.ADD_BTN_TOOLTIP, this);
+        this.deleteButton = UIUtilities.createNamedButton(this.DEL_BTN_COMMAND, this.DEL_BTN_NAME, this.DEL_BTN_TOOLTIP, this);
+        this.clearButton = UIUtilities.createNamedButton(this.CLR_BTN_COMMAND, this.CLR_BTN_NAME, this.CLR_BTN_TOOLTIP, this);
     }
 
     public JButton getAddButton(){

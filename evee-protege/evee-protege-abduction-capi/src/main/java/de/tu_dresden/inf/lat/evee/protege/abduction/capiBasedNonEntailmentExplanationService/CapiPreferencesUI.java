@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService;
 
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ui.preferences.PreferencesLayoutPanel;
 import org.protege.editor.owl.ui.preferences.OWLPreferencesPanel;
 import org.slf4j.Logger;
@@ -48,7 +48,7 @@ public class CapiPreferencesUI extends OWLPreferencesPanel implements ActionList
             this.add(holderPanel, BorderLayout.NORTH);
             holderPanel.addGroup("SPASS:");
             JPanel spassPathPanel = new JPanel(new GridBagLayout());
-            JLabel spassPathLabel = Util.createLabel(PATH_LABEL_TEXT);
+            JLabel spassPathLabel = UIUtilities.createLabel(PATH_LABEL_TEXT);
             Insets insets = new Insets(0, 0, 0, 5);
             GridBagConstraints pathConstraints = new GridBagConstraints();
 //            path label constraints
@@ -78,7 +78,7 @@ public class CapiPreferencesUI extends OWLPreferencesPanel implements ActionList
             holderPanel.addGroupComponent(spassPathPanel);
 
             JPanel spassTimeLimitPanel = new JPanel(new GridBagLayout());
-            JLabel spassTimeLimitFrontLabel = Util.createLabel(TIME_LIMIT_LABEL_TEXT);
+            JLabel spassTimeLimitFrontLabel = UIUtilities.createLabel(TIME_LIMIT_LABEL_TEXT);
             GridBagConstraints timeLimitConstraints = new GridBagConstraints();
 //            time limit front label constraints
             timeLimitConstraints.gridx = 0;
@@ -93,7 +93,7 @@ public class CapiPreferencesUI extends OWLPreferencesPanel implements ActionList
 //            time limit spinner constraints
             timeLimitConstraints.gridx = 1;
             spassTimeLimitPanel.add(this.timeLimitSpinner, timeLimitConstraints);
-            JLabel spassTimeLimitBackLabel = Util.createLabel(TIME_LIMIT_UNIT);
+            JLabel spassTimeLimitBackLabel = UIUtilities.createLabel(TIME_LIMIT_UNIT);
 //            time limit back label constraints
             timeLimitConstraints.gridx = 2;
             spassTimeLimitPanel.add(spassTimeLimitBackLabel, timeLimitConstraints);

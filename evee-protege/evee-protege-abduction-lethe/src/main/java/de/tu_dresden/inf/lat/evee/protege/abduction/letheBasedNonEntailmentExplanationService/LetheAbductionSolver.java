@@ -19,6 +19,8 @@ import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
 import java.util.*;
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
+
 public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> implements IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<DLStatement>>> {
 
     private OWLEditorKit owlEditorKit;
@@ -166,7 +168,7 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
         this.resetResultComponent();
         DLStatement hypotheses = this.cachedResults.get(this.ontology).getResult(
                 this.observation, this.abducibles);
-        assert (hypotheses != null);
+        assertNotNull(hypotheses);
         this.maxLevel = 0;
         this.currentResultAdapterIndex = 0;
         this.hypothesesAdapterList.clear();

@@ -21,6 +21,7 @@ public class EveeFameBasedForgettingDynamicProofAdapter extends AbstractEveeSubo
         this.proofPreferencesManager = proofPreferencesManager;
         this.innerProofGenerator = proofGen;
         super.setInnerProofGenerator(this.innerProofGenerator);
+        super.resetCachingProofGenerator();
         this.logger.debug("Dynamic proof adapter created.");
     }
 

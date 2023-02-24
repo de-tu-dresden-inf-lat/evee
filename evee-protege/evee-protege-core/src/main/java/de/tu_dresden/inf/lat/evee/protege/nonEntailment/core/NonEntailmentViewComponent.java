@@ -5,9 +5,11 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailme
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.apache.commons.io.FilenameUtils;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
+import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.classexpression.OWLExpressionParserException;
 import org.protege.editor.owl.model.event.EventType;
@@ -42,6 +44,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
+
+import static org.junit.Assert.assertNotNull;
 
 public class NonEntailmentViewComponent extends AbstractOWLViewComponent implements ActionListener, IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> {
 
@@ -306,7 +310,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 this.showResult(event.getSource().getResult());
                 break;
             case ERROR :
-                Util.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
+                this.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
                 break;
         }
     }
@@ -479,7 +483,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         buttonHelperPanel.setLayout(new BoxLayout(buttonHelperPanel, BoxLayout.LINE_AXIS));
         buttonHelperPanel.add(this.computeButton);
         buttonHelperPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        this.computeMessageLabel = Util.createLabel("");
+        this.computeMessageLabel = UIUtilities.createLabel("");
         buttonHelperPanel.add(this.computeMessageLabel);
         buttonHelperPanel.add(Box.createGlue());
         this.serviceSelectionComponent.add(buttonHelperPanel);
@@ -493,7 +497,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
 
     private void computeExplanation(){
         this.logger.debug("Request to compute non entailment explanation");
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             this.logger.debug("Setting parameters and computing explanation");
             INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(this.getOWLModelManager().getActiveOntology());
@@ -503,7 +507,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             this.resetMainComponent();
             this.logger.debug("Computing explanation");
             explainer.computeExplanation();
-        });
+//        });
     }
 
     private void showResult(Component resultComponent){
@@ -512,6 +516,19 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             this.resultHolderComponent.add(resultComponent);
             this.repaint();
             this.revalidate();
+        });
+    }
+
+    public void showError(String message, OWLEditorKit owlEditorKit){
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
+                    owlEditorKit.getWorkspace()), "Error");
+            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
+            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            errorDialog.setVisible(true);
         });
     }
 
@@ -577,7 +594,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                                         axiom.getSignature())).collect(Collectors.toSet());
             } catch (OWLOntologyCreationException e) {
                 this.logger.error("Error when loading observation from file: " + e);
-                Util.showError(e.getMessage(), this.getOWLEditorKit());
+                UIUtilities.showError(e.getMessage(), this.getOWLEditorKit());
             }
         }
         this.selectedObservationListModel.removeAll();
@@ -602,7 +619,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 ontologyManager.saveOntology(observationOntology, new RDFXMLDocumentFormat(), new FileOutputStream(file));
             } catch (OWLOntologyCreationException | OWLOntologyStorageException | FileNotFoundException exception) {
                 this.logger.error("Error when saving observation ontology to file: " + exception);
-                Util.showError(exception.getMessage(), this.getOWLEditorKit());
+                UIUtilities.showError(exception.getMessage(), this.getOWLEditorKit());
             }
         }
         this.selectedObservationList.clearSelection();
@@ -624,9 +641,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             if (currentExplainer == null) {
                 this.computeButton.setEnabled(false);
             } else {
-                assert (this.getOWLModelManager().getActiveOntology() != null);
-                assert (this.signatureSelectionUI.getPermittedVocabulary() != null);
-                assert (this.selectedObservationListModel.getOwlObjects() != null);
+                assertNotNull(this.getOWLModelManager().getActiveOntology());
+                assertNotNull(this.signatureSelectionUI.getPermittedVocabulary());
+                assertNotNull(this.selectedObservationListModel.getOwlObjects());
                 currentExplainer.setOntology(this.getOWLModelManager().getActiveOntology());
                 currentExplainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());
                 currentExplainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));

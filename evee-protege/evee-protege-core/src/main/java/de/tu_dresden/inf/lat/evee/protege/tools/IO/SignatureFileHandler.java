@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.tools.IO;
 
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
@@ -17,16 +17,42 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
 import java.util.*;
 
-public class SignatureIO {
+public class SignatureFileHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(SignatureIO.class);
+    private boolean useSignature;
+    private final Set<OWLEntity> signature;
+    private final OWLEditorKit owlEditorKit;
 
-    public static Collection<OWLEntity> loadSignature(OWLEditorKit owlEditorKit) throws IOException {
-        logger.debug("Loading signature form file");
-        Set<OWLEntity> knownEntitySet = new HashSet<>();
-        JFileChooser fileChooser = createFileChooser();
+    private final Logger logger = LoggerFactory.getLogger(SignatureFileHandler.class);
+
+    public SignatureFileHandler(OWLEditorKit owlEditorKit){
+        this.useSignature = false;
+        this.owlEditorKit = owlEditorKit;
+        this.signature = new HashSet<>();
+    }
+
+    public boolean getUseSignature(){
+        return this.useSignature;
+    }
+
+    public Collection<OWLEntity> getSignature(){
+        return this.signature;
+    }
+
+    public void setUseSignature(boolean useSignature){
+        this.useSignature = useSignature;
+    }
+
+    public void setSignature(Collection<OWLEntity> signature){
+        this.signature.clear();
+        this.signature.addAll(signature);
+    }
+
+    public void loadFile() throws IOException {
+        this.logger.debug("Loading signature form file");
+        JFileChooser fileChooser = this.createFileChooser();
         int result = fileChooser.showOpenDialog(ProtegeManager.getInstance()
-                .getFrame(owlEditorKit.getWorkspace()));
+                .getFrame(this.owlEditorKit.getWorkspace()));
         List<IRI> classes = new ArrayList<>();
         List<IRI> objectProperties = new ArrayList<>();
         List<IRI> individuals = new ArrayList<>();
@@ -50,13 +76,15 @@ public class SignatureIO {
                         case USE_SIGNATURE:
                             break;
                         case TRUE:
-                            logger.debug("Reading UseSignature==TRUE, ignored for nonEntailment");
+                            logger.debug("reading useSignature = true");
+                            this.useSignature = true;
                             break;
                         case FALSE:
-                            logger.debug("Reading UseSignature==FALSE, ignored for nonEntailment");
+                            logger.debug("loading useSignature = false");
+                            this.useSignature = false;
                             break;
                         case CLASSES:
-                            logger.debug("Loading classes");
+                            logger.debug("loading classes");
                             currentList = classes;
                             break;
                         case OBJECT_PROPERTIES:
@@ -86,7 +114,7 @@ public class SignatureIO {
                 }
         } catch (IOException e){
                 logger.error("Error when loading signature from file: ", e);
-                Util.showError("Error: " + e, owlEditorKit);
+                UIUtilities.showError("Error: " + e, this.owlEditorKit);
                 throw e;
             }
         }
@@ -96,43 +124,42 @@ public class SignatureIO {
 //        if (classes.size() == 0 && objectProperties.size() == 0 && individuals.size() == 0){
 //            return knownEntitySet;
 //        }
-        OWLOntology activeOntology = owlEditorKit.getOWLModelManager().getActiveOntology();
+        OWLOntology activeOntology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
         activeOntology.getClassesInSignature(Imports.INCLUDED).forEach(owlClass -> {
             if (classes.contains(owlClass.getIRI())){
-                knownEntitySet.add(owlClass);
+                this.signature.add(owlClass);
             }});
         activeOntology.getObjectPropertiesInSignature(Imports.INCLUDED).forEach(objectProperty -> {
             if (objectProperties.contains(objectProperty.getIRI())){
-                knownEntitySet.add(objectProperty);
+                this.signature.add(objectProperty);
             }});
         activeOntology.getIndividualsInSignature(Imports.INCLUDED).forEach(individual -> {
             if (individuals.contains(individual.getIRI())){
-                knownEntitySet.add(individual);
+                this.signature.add(individual);
             }});
-        OWLDataFactory dataFactory = owlEditorKit.getOWLModelManager().getOWLDataFactory();
+        OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
         if (includeOWLThing){
-            knownEntitySet.add(dataFactory.getOWLThing());
+            this.signature.add(dataFactory.getOWLThing());
         }
         if (includeOWLNothing){
-            knownEntitySet.add(dataFactory.getOWLNothing());
+            this.signature.add(dataFactory.getOWLNothing());
         }
         if (includeOWLTopObjectProp){
-            knownEntitySet.add(dataFactory.getOWLTopObjectProperty());
+            this.signature.add(dataFactory.getOWLTopObjectProperty());
         }
 //        classes.forEach(iri ->
 //                knownEntitySet.addAll(
 //                        this.activeOntology.getEntitiesInSignature(
 //                                iri)));
 //        ontologyEntitySet.removeAll(knownEntitySet);
-        return knownEntitySet;
     }
 
-    public static void saveSignature(OWLEditorKit owlEditorKit, Collection<OWLEntity> signature) throws IOException {
-        logger.debug("Saving signature to file");
+    public void saveSignature() throws IOException {
+        this.logger.debug("Saving signature to file");
         ArrayList<OWLEntity> classes = new ArrayList<>();
         ArrayList<OWLEntity> objectProperties = new ArrayList<>();
         ArrayList<OWLEntity> individuals = new ArrayList<>();
-        signature.forEach(owlEntity -> {
+        this.signature.forEach(owlEntity -> {
             if (owlEntity.isOWLClass()){
                 classes.add(owlEntity);
             }
@@ -143,9 +170,9 @@ public class SignatureIO {
                 individuals.add(owlEntity);
             }
         });
-        JFileChooser fileChooser = createFileChooser();
+        JFileChooser fileChooser = this.createFileChooser();
         int result = fileChooser.showSaveDialog(ProtegeManager.getInstance()
-                .getFrame(owlEditorKit.getWorkspace()));
+                .getFrame(this.owlEditorKit.getWorkspace()));
         if (result == JFileChooser.APPROVE_OPTION){
             File file = fileChooser.getSelectedFile();
             if (! FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("txt")) {
@@ -154,7 +181,11 @@ public class SignatureIO {
             try (FileWriter fileWriter = new FileWriter(file);
                  BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)){
                 bufferedWriter.write(SignatureEnum.USE_SIGNATURE + "\n");
-                bufferedWriter.write(SignatureEnum.TRUE + "\n"); // written to keep compatibility between proofSignature-File and nonEntailmentSignature-File
+                if (this.useSignature) {
+                    bufferedWriter.write(SignatureEnum.TRUE + "\n");
+                } else{
+                    bufferedWriter.write(SignatureEnum.FALSE + "\n");
+                }
                 bufferedWriter.write(SignatureEnum.CLASSES + "\n");
                 for (OWLEntity entity : classes){
                     if (entity.isTopEntity()){
@@ -179,7 +210,7 @@ public class SignatureIO {
                 }
             } catch (IOException e){
                 logger.error("Error when saving signature to file: ", e);
-                Util.showError("Error: " + e, owlEditorKit);
+                UIUtilities.showError("Error: " + e, this.owlEditorKit);
                 throw e;
             }
         }
@@ -188,7 +219,7 @@ public class SignatureIO {
         }
     }
 
-    public static JFileChooser createFileChooser(){
+    public JFileChooser createFileChooser(){
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter fileFilter = new FileNameExtensionFilter(
