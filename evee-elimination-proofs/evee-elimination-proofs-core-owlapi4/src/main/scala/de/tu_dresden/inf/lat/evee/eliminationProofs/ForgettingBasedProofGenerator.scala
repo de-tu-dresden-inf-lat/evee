@@ -86,6 +86,9 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
 
     println("Ontology changed!")
 
+    if(ontology!=null && manager.contains(ontology))
+      manager.removeOntology(ontology)
+
     ontology = filter.filteredCopy(owlOntology,manager)
 
     owlDataFactory = manager.getOWLDataFactory

@@ -27,8 +27,14 @@ public class OWLTools {
 	public static OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	public static OWLDataFactory odf = OWLManager.getOWLDataFactory();
 
+	public static OWLOntologyManager getManager() {
+			//return manager;
+			return OWLManager.createOWLOntologyManager();
+	}
+
 	public static OWLOntology createOntology(Stream<? extends OWLAxiom> axioms) {
 		try {
+			OWLOntologyManager manager = getManager();
 			OWLOntology ontology = manager.createOntology();
 			manager.addAxioms(ontology, axioms.collect(Collectors.toSet()));
 			return ontology;
@@ -42,6 +48,7 @@ public class OWLTools {
 
 	public static OWLOntology createOntology(Set<? extends OWLAxiom> axioms) {
 		try {
+			OWLOntologyManager manager = getManager();
 			OWLOntology ontology = manager.createOntology();
 			manager.addAxioms(ontology, axioms);
 			return ontology;

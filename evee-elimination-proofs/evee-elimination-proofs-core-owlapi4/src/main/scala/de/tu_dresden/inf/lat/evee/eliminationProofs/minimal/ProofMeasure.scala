@@ -19,8 +19,6 @@ import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
 class SignatureOptimisedProofEvaluator(proofEvaluator: IProofEvaluator[OWLAxiom], signature: Set[OWLEntity])
   extends IProofEvaluator[OWLAxiom] {
 
-  println("Hey guys, my signature is: "+signature.map(SimpleOWLFormatter.format))
-
   override def evaluate(proof: IProof[OWLAxiom]): Double = {
   //  println("  --- The proof: "+proof)
   //  println("  .... Filters to: "+filterProof(proof))
@@ -71,7 +69,7 @@ class SignatureOptimisedProofEvaluator(proofEvaluator: IProofEvaluator[OWLAxiom]
 
   private def ignorePremises(axiom: OWLAxiom) = {
     val result = JavaConverters.asScalaSet(axiom.getSignature).forall(signature)
-    if(result) println("Ignore: "+SimpleOWLFormatter.format(axiom))
+    //if(result) println("Ignore: "+SimpleOWLFormatter.format(axiom))
     result
   }
 

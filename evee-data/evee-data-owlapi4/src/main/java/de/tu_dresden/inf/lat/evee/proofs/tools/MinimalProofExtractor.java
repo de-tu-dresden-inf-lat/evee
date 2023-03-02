@@ -78,7 +78,7 @@ public class MinimalProofExtractor<S> {
 				if ((!currentBestProofValues.containsKey(ax)) || (newProofSize < currentBestProofValues.get(ax))) {
 					currentBestProofValues.put(ax, newProofSize);
 					currentBestInferences.put(ax, inf);
-					//System.out.println("Added new best inference for " + ax + ": " + inf);
+					// System.out.println("Added new best inference for " + ax + ": " + inf);
 				}
 
 			});
@@ -104,7 +104,7 @@ public class MinimalProofExtractor<S> {
 
 	private void collectInferences(List<IInference<S>> list, S conclusion, Map<S, IInference<S>> bestInferences)
 			throws ProofGenerationFailedException {
-
+		
 		if (!bestInferences.containsKey(conclusion)) {
 			throw new ProofGenerationFailedException(
 					"No proof found - input derivation structure does not contain a proof for " + conclusion);
