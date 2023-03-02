@@ -20,6 +20,8 @@ public enum SignatureEnum {
 
     OWL_TOP_OBJECT_PROPERTY,
 
+    OWL_BOTTOM_OBJECT_PROPERTY,
+
     DEFAULT
 
 }

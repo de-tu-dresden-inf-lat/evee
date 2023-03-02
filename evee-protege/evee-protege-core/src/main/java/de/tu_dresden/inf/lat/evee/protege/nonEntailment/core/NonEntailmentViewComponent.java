@@ -118,20 +118,21 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 this.logger.error("Error while loading non-entailment explanation plugin:\n" + e);
             }
         }
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             this.createGeneralSettingsComponent();
             this.nonEntailmentExplainerManager.setExplanationService((String) this.serviceNamesComboBox.getSelectedItem());
             this.createSignatureManagementComponent();
             this.createObservationManagementComponent();
             this.resetMainComponent();
-        });
+//        });
         this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
         this.logger.debug("initialisation completed");
     }
 
     private void resetMainComponent(){
+        this.logger.debug("Resetting viewComponent");
         this.holderPanel = new JPanel(new GridBagLayout());
         this.signatureAndObservationComponent = new JPanel();
         this.signatureAndObservationComponent.setLayout(new BoxLayout(this.signatureAndObservationComponent, BoxLayout.PAGE_AXIS));
@@ -496,16 +497,13 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     private void computeExplanation(){
-        this.logger.debug("Request to compute non entailment explanation");
+        this.logger.debug("Computation of explanation requested");
 //        SwingUtilities.invokeLater(() -> {
-            this.logger.debug("Setting parameters and computing explanation");
             INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(this.getOWLModelManager().getActiveOntology());
             explainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());
             explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
-            this.logger.debug("Resetting viewComponent");
             this.resetMainComponent();
-            this.logger.debug("Computing explanation");
             explainer.computeExplanation();
 //        });
     }

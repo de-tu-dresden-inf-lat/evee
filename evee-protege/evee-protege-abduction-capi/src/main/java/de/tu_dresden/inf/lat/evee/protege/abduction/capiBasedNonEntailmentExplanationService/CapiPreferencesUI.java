@@ -21,12 +21,10 @@ public class CapiPreferencesUI extends OWLPreferencesPanel implements ActionList
     private JCheckBox simplifyConjunctionsCheckBox;
     private JCheckBox semanticallyOrderedCheckBox;
 //    public final static String PATH_TEXT_FIELD_COMMAND = "PATH_TEXT_FIELD_COMMAND";
-//    todo: adapt for linux
-    public final static String PATH_LABEL_TEXT = "Path to SPASS:";
-    public final static String PATH_TEXT_FIELD_TOOL_TIP = "Currently used path to SPASS.exe";
+    public final static String PATH_LABEL_TEXT = "Path to SPASS executable:";
+    public final static String PATH_TEXT_FIELD_TOOL_TIP = "Currently used path to the SPASS executable";
     public final static String PATH_BROWSE_BUTTON_COMMAND = "PATH_BROWSE_COMMAND";
-//    todo: adapt for linux
-    public final static String PATH_BROWSE_BUTTON_TOOL_TIP = "Change path to SPASS.exe";
+    public final static String PATH_BROWSE_BUTTON_TOOL_TIP = "Change path to the SPASS executable";
     public final static String TIME_LIMIT_LABEL_TEXT = "SPASS time limit:";
     public final static String TIME_LIMIT_TOOL_TIP = "Time limit for SPASS in seconds";
     public final static String TIME_LIMIT_UNIT = "Seconds";

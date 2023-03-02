@@ -1,10 +1,9 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.preferences;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences;
 
 import org.eclipse.core.runtime.IExtension;
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.core.plugin.AbstractProtegePlugin;
 import org.protege.editor.core.ui.preferences.PreferencesPanel;
-import org.protege.editor.owl.OWLEditorKit;
 
 public class NonEntailmentPreferencesPanelPlugin extends AbstractProtegePlugin<PreferencesPanel> {
 
@@ -12,7 +11,7 @@ public class NonEntailmentPreferencesPanelPlugin extends AbstractProtegePlugin<P
 
     public static final String LABEL_PARAM = "label";
     public static final String PLUGIN_ID = "de.tu_dresden.inf.lat.evee";
-    public static final String EXTENSION_POINT_ID = "nonEntailment_explanation_service_preferences";
+    public static final String EXTENSION_POINT_ID = "nonEntailment_preferences";
 
     protected NonEntailmentPreferencesPanelPlugin(EditorKit editorKit, IExtension extension) {
         super(extension);

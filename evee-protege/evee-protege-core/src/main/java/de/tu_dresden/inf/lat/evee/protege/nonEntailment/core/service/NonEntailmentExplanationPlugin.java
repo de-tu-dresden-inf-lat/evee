@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.IExtension;
 import org.protege.editor.core.plugin.AbstractProtegePlugin;
 import org.protege.editor.owl.OWLEditorKit;
 
-public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<INonEntailmentExplanationService> {
+public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<INonEntailmentExplanationService<?>> {
 
     private final OWLEditorKit owlEditorKit;
 
@@ -22,9 +22,9 @@ public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<INonEn
         return getPluginProperty(NAME_PARAM, "Non-Entailment Explanation Service");
     }
 
-    public INonEntailmentExplanationService newInstance() throws ClassNotFoundException, IllegalAccessException,
+    public INonEntailmentExplanationService<?> newInstance() throws ClassNotFoundException, IllegalAccessException,
             InstantiationException {
-        INonEntailmentExplanationService pluginInstance = super.newInstance();
+        INonEntailmentExplanationService<?> pluginInstance = super.newInstance();
         pluginInstance.setup(this.owlEditorKit);
         return pluginInstance;
     }

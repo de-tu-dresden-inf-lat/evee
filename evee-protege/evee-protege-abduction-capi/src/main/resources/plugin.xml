@@ -9,7 +9,7 @@
     </extension>
 
     <extension id="CapiNonEntailmentExplanationServicePreferences"
-               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service_preferences">
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_preferences">
         <label value="Connection-Minimal Abduction (CAPI)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService.CapiPreferencesUI"/>
     </extension>

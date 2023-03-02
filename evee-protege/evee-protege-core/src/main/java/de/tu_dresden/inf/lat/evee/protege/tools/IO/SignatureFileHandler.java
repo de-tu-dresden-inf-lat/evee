@@ -48,6 +48,9 @@ public class SignatureFileHandler {
         this.signature.addAll(signature);
     }
 
+    /**
+     * will only load those OWLEntities that are present in the signature of the currently active ontology
+     */
     public void loadFile() throws IOException {
         this.logger.debug("Loading signature form file");
         JFileChooser fileChooser = this.createFileChooser();
@@ -60,6 +63,7 @@ public class SignatureFileHandler {
         boolean includeOWLThing = false;
         boolean includeOWLNothing = false;
         boolean includeOWLTopObjectProp = false;
+        boolean includeOWLBotObjectProp = false;
         if (result == JFileChooser.APPROVE_OPTION){
             File file = fileChooser.getSelectedFile();
             try (FileReader fileReader = new FileReader(file);
@@ -107,6 +111,10 @@ public class SignatureFileHandler {
                             logger.debug("including owl:TopObjectProperty");
                             includeOWLTopObjectProp = true;
                             break;
+                        case OWL_BOTTOM_OBJECT_PROPERTY:
+                            logger.debug("including owl:BottomObjectProperty");
+                            includeOWLBotObjectProp = true;
+                            break;
                         default:
                             currentList.add(IRI.create(line));
                             break;
@@ -146,6 +154,9 @@ public class SignatureFileHandler {
         }
         if (includeOWLTopObjectProp){
             this.signature.add(dataFactory.getOWLTopObjectProperty());
+        }
+        if (includeOWLBotObjectProp){
+            this.signature.add(dataFactory.getOWLBottomObjectProperty());
         }
 //        classes.forEach(iri ->
 //                knownEntitySet.addAll(
@@ -200,6 +211,8 @@ public class SignatureFileHandler {
                 for (OWLEntity entity : objectProperties){
                     if (entity.isTopEntity()){
                         bufferedWriter.write(SignatureEnum.OWL_TOP_OBJECT_PROPERTY + "\n");
+                    } else if (entity.isBottomEntity()){
+                        bufferedWriter.write(SignatureEnum.OWL_BOTTOM_OBJECT_PROPERTY + "\n");
                     } else{
                         bufferedWriter.write(entity.getIRI() + "\n");
                     }

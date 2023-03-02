@@ -73,6 +73,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+<!--        todo: try version 1.8.0-beta1-SNAPSHOT to remove warning during compilation?-->
             <version>1.7.30</version>
         </dependency>
 <!--        <dependency>-->
@@ -154,7 +155,7 @@
                             de.tu_dresden.inf.lat.evee.general.interfaces.*,
                             de.tu_dresden.inf.lat.evee.general.tools.*,
                             de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.*,
-<!--                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.preferences.*,-->
+<!--                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.*,-->
                             de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.dltools.*,
                             de.tu_dresden.inf.lat.prettyPrinting.*,

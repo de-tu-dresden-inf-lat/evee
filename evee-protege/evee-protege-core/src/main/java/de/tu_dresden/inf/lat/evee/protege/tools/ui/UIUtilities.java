@@ -1,9 +1,9 @@
 package de.tu_dresden.inf.lat.evee.protege.tools.ui;
 
-import org.osgi.framework.Bundle;
 import org.protege.editor.core.ProtegeManager;
-import org.protege.editor.core.plugin.PluginUtilities;
 import org.protege.editor.owl.OWLEditorKit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicArrowButton;
@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 
 public class UIUtilities {
+
+    private static Logger logger = LoggerFactory.getLogger(UIUtilities.class);
 
     public static JLabel createLabel(String labelText){
         JLabel label = new JLabel(labelText);
@@ -31,11 +33,6 @@ public class UIUtilities {
 
     /**
      * requires the file to be in the directory "resources" of evee-protege-core
-     * @param actionCommand
-     * @param url
-     * @param tooltip
-     * @param listener
-     * @return
      */
     public static JButton createIconButton(String actionCommand, URL url,
                                            String tooltip, ActionListener listener){

@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.preferences;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
 import org.eclipse.core.runtime.IExtension;

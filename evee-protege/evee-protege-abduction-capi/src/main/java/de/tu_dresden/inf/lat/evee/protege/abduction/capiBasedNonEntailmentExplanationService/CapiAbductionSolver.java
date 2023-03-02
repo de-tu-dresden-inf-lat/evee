@@ -38,7 +38,7 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     private boolean lastUsedSemanticallyOrdered;
     private final CapiPreferencesManager preferencesManager;
     private final static String LOADING = "LOADING";
-    private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to SPASS and hit 'Compute' again</html>";
+    private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to the SPASS executable and hit 'Compute' again</html>";
     private final Logger logger = LoggerFactory.getLogger(CapiAbductionSolver.class);
 
     public CapiAbductionSolver(){
