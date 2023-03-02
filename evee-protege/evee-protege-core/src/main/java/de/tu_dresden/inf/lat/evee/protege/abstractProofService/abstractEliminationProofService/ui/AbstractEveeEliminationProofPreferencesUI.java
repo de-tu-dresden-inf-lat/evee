@@ -25,14 +25,14 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
         AbstractEveeEliminationProofPreferencesManager proofPreferencesManager =
                 (AbstractEveeEliminationProofPreferencesManager) this.proofPreferencesManager;
         SwingUtilities.invokeLater(() -> {
-            this.protegeReasonerCheckBox = new JCheckBox(
-                    proofPreferencesManager.getUseProtegeReasonerUILabel(),
-                    proofPreferencesManager.loadUseProtegeReasoner());
-            this.protegeReasonerCheckBox.setToolTipText(
-                    proofPreferencesManager.getUseProtegeReasonerUIToolTip());
-            this.skipStepsCheckBox = new JCheckBox(proofPreferencesManager.getSkipStepsUILabel(),
-                    proofPreferencesManager.loadSkipSteps());
-            this.skipStepsCheckBox.setToolTipText(proofPreferencesManager.getSkipStepsUIToolTip());
+//            this.protegeReasonerCheckBox = new JCheckBox(
+//                    proofPreferencesManager.getUseProtegeReasonerUILabel(),
+//                    proofPreferencesManager.loadUseProtegeReasoner());
+//            this.protegeReasonerCheckBox.setToolTipText(
+//                    proofPreferencesManager.getUseProtegeReasonerUIToolTip());
+//            this.skipStepsCheckBox = new JCheckBox(proofPreferencesManager.getSkipStepsUILabel(),
+//                    proofPreferencesManager.loadSkipSteps());
+//            this.skipStepsCheckBox.setToolTipText(proofPreferencesManager.getSkipStepsUIToolTip());
             this.suboptimalMsgCheckBox = new JCheckBox(
                     proofPreferencesManager.getSuboptimalProofWarningUILabel(),
                     proofPreferencesManager.loadShowSuboptimalProofWarning());
@@ -47,9 +47,9 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
             this.miscellaneousPreferencesPanel = new PreferencesLayoutPanel();
             this.holderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
             this.holderPanel.add(this.miscellaneousPreferencesPanel);
-            this.miscellaneousPreferencesPanel.addGroup(MISC_OPTIONS);
-            this.miscellaneousPreferencesPanel.addGroupComponent(this.protegeReasonerCheckBox);
-            this.miscellaneousPreferencesPanel.addGroupComponent(this.skipStepsCheckBox);
+//            this.miscellaneousPreferencesPanel.addGroup(MISC_OPTIONS);
+//            this.miscellaneousPreferencesPanel.addGroupComponent(this.protegeReasonerCheckBox);
+//            this.miscellaneousPreferencesPanel.addGroupComponent(this.skipStepsCheckBox);
             this.miscellaneousPreferencesPanel.addGroupComponent(this.suboptimalMsgCheckBox);
         });
     }
@@ -60,8 +60,8 @@ public abstract class AbstractEveeEliminationProofPreferencesUI extends Abstract
         SwingUtilities.invokeLater(() -> {
             AbstractEveeEliminationProofPreferencesManager prefManager =
                     (AbstractEveeEliminationProofPreferencesManager) this.proofPreferencesManager;
-            prefManager.saveUseProtegeReasoner(this.protegeReasonerCheckBox.isSelected());
-            prefManager.saveSkipSteps(this.skipStepsCheckBox.isSelected());
+//            prefManager.saveUseProtegeReasoner(this.protegeReasonerCheckBox.isSelected());
+//            prefManager.saveSkipSteps(this.skipStepsCheckBox.isSelected());
             prefManager.saveShowSuboptimalProofWarning(this.suboptimalMsgCheckBox.isSelected());
         });
     }
