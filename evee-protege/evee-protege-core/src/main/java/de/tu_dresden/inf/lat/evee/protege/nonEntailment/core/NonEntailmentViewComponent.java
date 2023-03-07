@@ -256,10 +256,10 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
 //    }
 
     private void repaintComponents(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             this.repaint();
             this.revalidate();
-        });
+//        });
     }
 
 
@@ -308,10 +308,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     public void handleEvent(ExplanationEvent<INonEntailmentExplanationService<?>> event){
         switch (event.getType()){
             case COMPUTATION_COMPLETE :
-                this.showResult(event.getSource().getResult());
+                SwingUtilities.invokeLater(() ->{
+                    this.showResult(event.getSource().getResult());
+                });
                 break;
             case ERROR :
-                this.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
+                SwingUtilities.invokeLater(() -> {
+                    this.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
+                });
                 break;
         }
     }
@@ -503,22 +507,23 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             explainer.setOntology(this.getOWLModelManager().getActiveOntology());
             explainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());
             explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
-            this.resetMainComponent();
+//            todo: culprit found for waiting time after error!
+//            this.resetMainComponent();
             explainer.computeExplanation();
 //        });
     }
 
     private void showResult(Component resultComponent){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             this.resultHolderComponent.removeAll();
             this.resultHolderComponent.add(resultComponent);
             this.repaint();
             this.revalidate();
-        });
+//        });
     }
 
     public void showError(String message, OWLEditorKit owlEditorKit){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
             JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
                     owlEditorKit.getWorkspace()), "Error");
@@ -527,11 +532,11 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                     ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
             errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             errorDialog.setVisible(true);
-        });
+//        });
     }
 
     private void addObservation(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             try{
                 OWLAxiom axiomToAdd = this.observationTextEditor.createObject();
                 this.selectedObservationListModel.checkAndAddElement(axiomToAdd);
@@ -544,26 +549,26 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 this.observationTextEditor.setText("");
                 this.changeComputeButtonStatus();
             }
-        });
+//        });
     }
 
     private void deleteObservation(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             List<OWLAxiom> toDelete = this.selectedObservationList.getSelectedValuesList();
             this.selectedObservationListModel.removeElements(toDelete);
             this.selectedObservationList.clearSelection();
             this.observationTextEditor.setText("");
             this.changeComputeButtonStatus();
-        });
+//        });
     }
 
     private void resetObservation(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             this.selectedObservationListModel.removeAll();
             this.selectedObservationList.clearSelection();
             this.observationTextEditor.setText("");
             this.changeComputeButtonStatus();
-        });
+//        });
     }
 
     private JFileChooser createFileChooser(){
@@ -634,8 +639,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     protected void changeComputeButtonStatus(){
+        this.logger.debug("Changing Compute-Button status");
         INonEntailmentExplanationService<?> currentExplainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             if (currentExplainer == null) {
                 this.computeButton.setEnabled(false);
             } else {
@@ -654,7 +660,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 this.computeButton.setEnabled(enabled);
 //                this.resetView();
             }
-        });
+//        });
         this.repaintComponents();
     }
 
@@ -665,22 +671,26 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             SwingUtilities.invokeLater(() -> {
                 if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
                         changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
+                    logger.debug("Change or reload of active ontology detected");
                     selectedObservationListModel.removeAll();
-                    change();
                 }
             });
+            change();
         }
 
         @Override
         public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> list) {
+            logger.debug("Change to ontology detected");
             change();
         }
 
         private void change(){
             INonEntailmentExplanationService<?> explainer = nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(getOWLModelManager().getActiveOntology());
-            resetMainComponent();
-            changeComputeButtonStatus();
+            SwingUtilities.invokeLater(() -> {
+                resetMainComponent();
+                changeComputeButtonStatus();
+            });
         }
     }
 
