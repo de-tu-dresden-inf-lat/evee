@@ -13,7 +13,7 @@ import java.net.URL;
 
 public class UIUtilities {
 
-    private static Logger logger = LoggerFactory.getLogger(UIUtilities.class);
+    private static final Logger logger = LoggerFactory.getLogger(UIUtilities.class);
 
     public static JLabel createLabel(String labelText){
         JLabel label = new JLabel(labelText);
@@ -69,6 +69,7 @@ public class UIUtilities {
     }
 
     public static void showError(String message, OWLEditorKit owlEditorKit){
+        logger.debug("Displaying error message: {}", message);
         SwingUtilities.invokeLater(() -> {
             JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
             JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
