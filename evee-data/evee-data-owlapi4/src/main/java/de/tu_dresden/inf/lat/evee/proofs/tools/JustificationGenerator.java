@@ -39,8 +39,6 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
 
     public Collection<Set<SENTENCE>> getJustifications(SENTENCE sentence) throws ProofGenerationException {
         IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
-        System.out.println("Proof: ");
-        System.out.println(proof);
         justificationBuffer.clear();
         return getJustifications(proof, proof.getFinalConclusion(), new HashSet<>());
     }
@@ -50,11 +48,11 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
     private Set<Set<SENTENCE>> getJustifications(IProof<SENTENCE> proof, SENTENCE sentence, Set<SENTENCE> branch) {
         if(justificationBuffer.containsKey(sentence)){
             return justificationBuffer.get(sentence);
-        }else if(branch.contains(sentence))
+        } else if(branch.contains(sentence))
             return Collections.emptySet();
         else {
             Set<Set<SENTENCE>> justifications = new HashSet<>();
-            proof.getInferences(sentence).forEach((IInference<SENTENCE> inference) -> {
+            for(IInference<SENTENCE> inference: proof.getInferences(sentence)){
                 if (ProofTools.isAsserted(inference))
                     justifications.add(Collections.singleton(sentence));
                 else {
@@ -65,7 +63,8 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
                             .forEach(s -> premiseJustifications.add(getJustifications(proof, s, branch2)));
                     justifications.addAll(GeneralTools.unions(premiseJustifications));
                 }
-            });
+            }
+            System.out.println("Putting as justifications: "+justifications);
             justificationBuffer.put(sentence, justifications);
             return justifications;
         }
