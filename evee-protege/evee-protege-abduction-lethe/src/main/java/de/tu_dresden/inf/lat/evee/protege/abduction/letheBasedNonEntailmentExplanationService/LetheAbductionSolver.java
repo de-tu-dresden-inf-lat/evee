@@ -150,7 +150,7 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
         else{
             this.setComputationSuccessful(true);
             this.cachedResults.get(this.ontology).putResult(this.observation, this.abducibles, hypotheses);
-            this.validateCache();
+            this.setResultValid(true);
             this.prepareResultComponentCreation();
             this.createResultComponent();
         }
@@ -158,6 +158,7 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
 
     private void explanationComputationFailed(String errorMessage){
         this.setComputationSuccessful(false);
+        this.setResultValid(true);
         this.errorMessage = errorMessage;
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                 ExplanationEventType.ERROR));

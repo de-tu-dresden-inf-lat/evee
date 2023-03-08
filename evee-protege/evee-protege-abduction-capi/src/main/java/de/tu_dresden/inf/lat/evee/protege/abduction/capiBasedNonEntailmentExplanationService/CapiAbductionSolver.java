@@ -2,7 +2,6 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExpla
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionCache;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionLoadingUI;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
@@ -183,13 +182,14 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     private void computationSuccessful(List<Solution> solutions){
         this.setComputationSuccessful(true);
         this.cachedResults.get(this.ontology).putResult(this.observation, this.abducibles, solutions);
-        this.validateCache();
+        this.setResultValid(true);
         this.prepareResultComponentCreation();
         this.createResultComponent();
     }
 
     private void computationFailed(String errorMessage){
         this.setComputationSuccessful(false);
+        this.setResultValid(true);
         this.errorMessage = errorMessage;
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this, ExplanationEventType.ERROR));

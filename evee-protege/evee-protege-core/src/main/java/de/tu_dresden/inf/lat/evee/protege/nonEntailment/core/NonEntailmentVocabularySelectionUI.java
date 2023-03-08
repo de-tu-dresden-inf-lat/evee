@@ -24,12 +24,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -130,8 +135,6 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.propertyTree.setCellRenderer(new ProtegeTreeNodeRenderer(this.owlEditorKit));
         this.propertyTree.setOWLObjectComparator(this.owlEditorKit.getOWLModelManager().getOWLObjectComparator());
         tabbedPane.addTab("Object properties", propertyPane);
-//        adding owl:Nothing and owl:BottomObjectProperty
-        this.addBottomEntities2Trees();
 //        individuals
         this.ontologyIndividualsListModel = new OWLObjectListModel<>();
         this.ontologyIndividualsJList = new JList<>(this.ontologyIndividualsListModel);
@@ -147,22 +150,30 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.ontologySignatureTabbedPane = tabbedPane;
     }
 
-    private void addBottomEntities2Trees(){
-        OWLEntity owlNothing = this.owlEditorKit.getModelManager().getOWLDataFactory().getOWLNothing();
-        OWLObjectTreeNode<OWLClass> owlNothingNode = new OWLObjectTreeNode<>(
-                owlNothing, this.classesTree);
-        DefaultMutableTreeNode owlThingNode = ((DefaultMutableTreeNode) (
-                (OWLObjectTreeRootNode<OWLClass>) this.classesTree.getModel().getRoot()).getFirstChild());
-        ((DefaultTreeModel) this.classesTree.getModel()).insertNodeInto(
-                owlNothingNode, owlThingNode, 0);
-        OWLEntity owlBotObjectProperty = this.owlEditorKit.getOWLModelManager().getOWLDataFactory()
-                .getOWLBottomObjectProperty();
-        OWLObjectTreeNode<OWLObjectProperty> owlBotObjectPropertyNode = new OWLObjectTreeNode<>(
-                owlBotObjectProperty, this.propertyTree);
-        DefaultMutableTreeNode owlTopObjectPropertyNode = ((DefaultMutableTreeNode) (
-                (OWLObjectTreeRootNode<OWLObjectProperty>) this.propertyTree.getModel().getRoot()).getFirstChild());
-        ((DefaultTreeModel) this.propertyTree.getModel()).insertNodeInto(
-                owlBotObjectPropertyNode, owlTopObjectPropertyNode, 0);
+//    private void addBottomEntities2Trees(){
+//        OWLEntity owlNothing = this.owlEditorKit.getModelManager().getOWLDataFactory().getOWLNothing();
+//        OWLObjectTreeNode<OWLClass> owlNothingNode = new OWLObjectTreeNode<>(
+//                owlNothing, this.classesTree);
+//        DefaultMutableTreeNode owlThingNode = ((DefaultMutableTreeNode) (
+//                (OWLObjectTreeRootNode<OWLClass>) this.classesTree.getModel().getRoot()).getFirstChild());
+//        ((DefaultTreeModel) this.classesTree.getModel()).insertNodeInto(
+//                owlNothingNode, owlThingNode, 0);
+//        OWLEntity owlBotObjectProperty = this.owlEditorKit.getOWLModelManager().getOWLDataFactory()
+//                .getOWLBottomObjectProperty();
+//        OWLObjectTreeNode<OWLObjectProperty> owlBotObjectPropertyNode = new OWLObjectTreeNode<>(
+//                owlBotObjectProperty, this.propertyTree);
+//        DefaultMutableTreeNode owlTopObjectPropertyNode = ((DefaultMutableTreeNode) (
+//                (OWLObjectTreeRootNode<OWLObjectProperty>) this.propertyTree.getModel().getRoot()).getFirstChild());
+//        ((DefaultTreeModel) this.propertyTree.getModel()).insertNodeInto(
+//                owlBotObjectPropertyNode, owlTopObjectPropertyNode, 0);
+//    }
+
+    private void removeTopAndBottomEntities(Collection<? extends OWLEntity> entities){
+        OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
+        entities.remove(dataFactory.getOWLThing());
+        entities.remove(dataFactory.getOWLNothing());
+        entities.remove(dataFactory.getOWLTopObjectProperty());
+        entities.remove(dataFactory.getOWLBottomObjectProperty());
     }
 
     private void createButtonHolderPanel(){
@@ -254,30 +265,31 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     }
 
     private Collection<OWLEntity> getCompleteOntologySignature(){
-        Collection<OWLEntity> signature = this.owlEditorKit.getOWLModelManager().getActiveOntology()
-                .getSignature(Imports.INCLUDED)
+        Collection<OWLEntity> completeSignature = this.owlEditorKit.getOWLModelManager()
+                .getActiveOntology().getSignature(Imports.INCLUDED)
                 .stream().filter(ax ->
-                    ax instanceof OWLClass || ax instanceof OWLObjectProperty || ax instanceof OWLNamedIndividual)
+                        ax instanceof OWLClass || ax instanceof OWLObjectProperty ||
+                                ax instanceof OWLNamedIndividual)
                 .collect(Collectors.toSet());
-        this.addTopAndBottomEntities2Collection(signature);
-        return signature;
+        this.removeTopAndBottomEntities(completeSignature);
+        return completeSignature;
     }
 
-    private void addTopAndBottomEntities2Collection(Collection<OWLEntity> collection){
-        OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
-        if (! collection.contains(dataFactory.getOWLThing())){
-            collection.add(dataFactory.getOWLThing());
-        }
-        if (! collection.contains(dataFactory.getOWLNothing())){
-            collection.add(dataFactory.getOWLNothing());
-        }
-        if (! collection.contains(dataFactory.getOWLTopObjectProperty())){
-            collection.add(dataFactory.getOWLTopObjectProperty());
-        }
-        if (!collection.contains(dataFactory.getOWLBottomObjectProperty())) {
-            collection.add(dataFactory.getOWLBottomObjectProperty());
-        }
-    }
+//    private void addTopAndBottomEntities2Collection(Collection<OWLEntity> collection){
+//        OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
+//        if (! collection.contains(dataFactory.getOWLThing())){
+//            collection.add(dataFactory.getOWLThing());
+//        }
+//        if (! collection.contains(dataFactory.getOWLNothing())){
+//            collection.add(dataFactory.getOWLNothing());
+//        }
+//        if (! collection.contains(dataFactory.getOWLTopObjectProperty())){
+//            collection.add(dataFactory.getOWLTopObjectProperty());
+//        }
+//        if (!collection.contains(dataFactory.getOWLBottomObjectProperty())) {
+//            collection.add(dataFactory.getOWLBottomObjectProperty());
+//        }
+//    }
 
     public void dispose(OWLModelManager modelManager){
         if (this.classesTree != null){
@@ -340,9 +352,11 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             List<? extends OWLEntity> entitiesToAdd;
             if (ontologySignatureTabIndex == 0){
                 entitiesToAdd = this.classesTree.getSelectedOWLObjects();
+                this.removeTopAndBottomEntities(entitiesToAdd);
             }
             else if (ontologySignatureTabIndex == 1){
                 entitiesToAdd = this.propertyTree.getSelectedOWLObjects();
+                this.removeTopAndBottomEntities(entitiesToAdd);
             }
             else{
                 entitiesToAdd = this.ontologyIndividualsJList.getSelectedValuesList();
@@ -397,6 +411,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             ArrayList<OWLObject> observations = this.nonEntailmentViewComponent.getObservations();
             HashSet<OWLEntity> observationEntities = new HashSet<>();
             observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
+            this.removeTopAndBottomEntities(observationEntities);
 //            deleting entities from one list = adding entities to other list
             int tabIndex = this.vocabularyTabbedPane.getSelectedIndex();
             this.moveEntities2VocabularyList(observationEntities,
@@ -437,6 +452,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                 SignatureFileHandler signatureFileHandler = new SignatureFileHandler(this.owlEditorKit);
                 signatureFileHandler.loadFile();
                 Set<OWLEntity> knownEntitySet = new HashSet<>(signatureFileHandler.getSignature());
+                this.removeTopAndBottomEntities(knownEntitySet);
 //                deleting from one list = adding to other list
                 this.addAll2VocabularyList(VocabularyTab.Forbidden);
                 this.moveEntities2VocabularyList(knownEntitySet, VocabularyTab.Permitted);
@@ -473,7 +489,6 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             SwingUtilities.invokeLater(() -> {
                 if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) || changeEvent.isType(EventType.ONTOLOGY_RELOADED)){
 //                    ontology signature component:
-                    addBottomEntities2Trees();
                     ontologyIndividualsListModel.removeAll();
                     ontologyIndividualsListModel.addElements(
                             owlEditorKit.getOWLModelManager().getActiveOntology()
@@ -533,13 +548,11 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                         .getObjectPropertiesInSignature(Imports.INCLUDED));
                 entitiesToAdd.addAll(activeOntology
                         .getIndividualsInSignature(Imports.INCLUDED));
-                addTopAndBottomEntities2Collection(entitiesToAdd);
                 entitiesToAdd = entitiesToAdd.stream().filter(entity ->
                         ! listToCheck.getOwlObjects().contains(entity))
                         .collect(Collectors.toSet());
+                removeTopAndBottomEntities(entitiesToAdd);
                 listToAdd.checkAndAddElements(entitiesToAdd);
-//                adding owl:Nothing and owl:BottomObjectProperty to trees again:
-                addBottomEntities2Trees();
             });
         }
     }

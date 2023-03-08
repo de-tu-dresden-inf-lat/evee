@@ -7,9 +7,7 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmen
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.apache.commons.io.FilenameUtils;
-import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
-import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.classexpression.OWLExpressionParserException;
 import org.protege.editor.owl.model.event.EventType;
@@ -62,10 +60,11 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     private JPanel holderPanel;
     private JPanel serviceSelectionComponent;
     private JPanel signatureAndObservationComponent;
+    private JTabbedPane signatureAndObservationTabbedPane;
     private JPanel signatureManagementPanel;
     private JPanel observationManagementPanel;
     private JPanel nonEntailmentExplanationServiceComponent;
-    private JSplitPane leftRightSplitPane;
+    private JSplitPane horizontalSplitPane;
 //    private JPanel splitPaneHolderComponent;
     private JComboBox<String> serviceNamesComboBox;
     private JLabel computeMessageLabel;
@@ -118,54 +117,90 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 this.logger.error("Error while loading non-entailment explanation plugin:\n" + e);
             }
         }
-//        SwingUtilities.invokeLater(() -> {
-            this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-            this.createGeneralSettingsComponent();
-            this.nonEntailmentExplainerManager.setExplanationService((String) this.serviceNamesComboBox.getSelectedItem());
-            this.createSignatureManagementComponent();
-            this.createObservationManagementComponent();
-            this.resetMainComponent();
-//        });
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        this.createGeneralSettingsComponent();
+        this.nonEntailmentExplainerManager.setExplanationService((String) this.serviceNamesComboBox.getSelectedItem());
+        this.createSignatureManagementComponent();
+        this.createObservationManagementComponent();
+        this.resetMainComponent();
         this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
         this.logger.debug("initialisation completed");
     }
 
     private void resetMainComponent(){
-        this.logger.debug("Resetting viewComponent");
-        this.holderPanel = new JPanel(new GridBagLayout());
+        this.logger.debug("Resetting entire view component");
+        this.resetSignatureAndObservationComponent();
+        this.resetExplanationServiceComponent();
+        this.resetHorizontalSplitPane();
+        this.resetHolderPanel();
+        this.addHolderPanel();
+    }
+
+//    private void resetServiceSelectionComponent(){
+//        SwingUtilities.invokeLater(() -> {
+//            String currentExplainer = null;
+//            if (this.serviceNamesComboBox != null){
+//                currentExplainer = (String) this.serviceNamesComboBox.getSelectedItem();
+//            }
+//            this.createGeneralSettingsComponent();
+//            if (currentExplainer != null){
+//                this.serviceNamesComboBox.setSelectedItem(currentExplainer);
+//            }
+//            this.changeComputeButtonStatus();
+//        });
+//    }
+//
+    private void resetSignatureAndObservationComponent(){
+        this.logger.debug("Resetting signature and observation component");
         this.signatureAndObservationComponent = new JPanel();
         this.signatureAndObservationComponent.setLayout(new BoxLayout(this.signatureAndObservationComponent, BoxLayout.PAGE_AXIS));
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Signature", this.signatureManagementPanel);
-        tabbedPane.addTab("Observation", this.observationManagementPanel);
-        this.signatureAndObservationComponent.add(tabbedPane);
-        this.nonEntailmentExplanationServiceComponent = new JPanel();
-        this.nonEntailmentExplanationServiceComponent.setLayout(new BoxLayout(this.nonEntailmentExplanationServiceComponent, BoxLayout.PAGE_AXIS));
-        this.resultHolderComponent = new JPanel();
-        this.resultHolderComponent.setLayout(new BoxLayout(this.resultHolderComponent, BoxLayout.PAGE_AXIS));
-        INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
-        if (explainer != null){
-            if (explainer.getSettingsComponent() != null){
-                JSplitPane serviceSettingsAndResultSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                        explainer.getSettingsComponent(), this.resultHolderComponent);
-                serviceSettingsAndResultSplitPane.setDividerLocation(0.2);
-                this.nonEntailmentExplanationServiceComponent.add(serviceSettingsAndResultSplitPane);
+        int idx = 0;
+        if (this.signatureAndObservationTabbedPane != null){
+            idx = this.signatureAndObservationTabbedPane.getSelectedIndex();
+        }
+        this.signatureAndObservationTabbedPane = new JTabbedPane();
+        this.signatureAndObservationTabbedPane.addTab("Signature", this.signatureManagementPanel);
+        this.signatureAndObservationTabbedPane.addTab("Observation", this.observationManagementPanel);
+        this.signatureAndObservationTabbedPane.setSelectedIndex(idx);
+        this.signatureAndObservationComponent.add(this.signatureAndObservationTabbedPane);
+    }
+//
+    private void resetExplanationServiceComponent(){
+        this.logger.debug("Resetting explanation service component");
+            this.nonEntailmentExplanationServiceComponent = new JPanel();
+            this.nonEntailmentExplanationServiceComponent.setLayout(new BoxLayout(
+                    this.nonEntailmentExplanationServiceComponent, BoxLayout.PAGE_AXIS));
+            this.resultHolderComponent = new JPanel();
+            this.resultHolderComponent.setLayout(new BoxLayout(this.resultHolderComponent, BoxLayout.PAGE_AXIS));
+            INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
+            if (explainer != null){
+                if (explainer.getSettingsComponent() != null){
+                    JSplitPane serviceSettingsAndResultSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                            explainer.getSettingsComponent(), this.resultHolderComponent);
+                    serviceSettingsAndResultSplitPane.setDividerLocation(0.3);
+                    this.nonEntailmentExplanationServiceComponent.add(serviceSettingsAndResultSplitPane);
+                }
+                else {
+                    this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
+                }
             }
             else {
                 this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
             }
-        }
-        else {
-            this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
-        }
-        this.leftRightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+    }
+
+    private void resetHorizontalSplitPane(){
+        this.logger.debug("Resetting horizontal split-pane");
+        this.horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 this.signatureAndObservationComponent,
                 this.nonEntailmentExplanationServiceComponent);
-        this.leftRightSplitPane.setDividerLocation(0.3);
-//        this.splitPaneHolderComponent = new JPanel();
-//        this.splitPaneHolderComponent.setLayout(new BoxLayout(this.splitPaneHolderComponent, BoxLayout.PAGE_AXIS));
-//        this.splitPaneHolderComponent.add(this.leftRightSplitPane);
+        this.horizontalSplitPane.setDividerLocation(0.3);
+    }
+
+    private void resetHolderPanel(){
+        this.logger.debug("Resetting main holder panel");
+        this.holderPanel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 //        general constraints:
         constraints.insets = this.STANDARD_INSETS;
@@ -184,85 +219,18 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         constraints.gridy = 1;
         constraints.weightx = 0.5;
         constraints.weighty = 0.9;
-        this.holderPanel.add(this.leftRightSplitPane, constraints);
+        this.holderPanel.add(this.horizontalSplitPane, constraints);
+    }
+
+    private void addHolderPanel(){
         this.removeAll();
         this.add(holderPanel);
-//        this.repaint();
-//        this.revalidate();
     }
-
-//    private void resetServiceSelectionComponent(){
-//        SwingUtilities.invokeLater(() -> {
-//            String currentExplainer = null;
-//            if (this.serviceNamesComboBox != null){
-//                currentExplainer = (String) this.serviceNamesComboBox.getSelectedItem();
-//            }
-//            this.createGeneralSettingsComponent();
-//            if (currentExplainer != null){
-//                this.serviceNamesComboBox.setSelectedItem(currentExplainer);
-//            }
-//            this.changeComputeButtonStatus();
-//        });
-//    }
-//
-//    private void resetSignatureAndObservationComponent(){
-////        improve: temporary save indices of selected tabs and reselect these tabs on the new panel
-//        SwingUtilities.invokeLater(() -> {
-//            this.createSignatureManagementComponent();
-//            this.createObservationManagementComponent();
-//            this.signatureAndObservationComponent = new JPanel();
-//            this.signatureAndObservationComponent.setLayout(new BoxLayout(this.signatureAndObservationComponent, BoxLayout.PAGE_AXIS));
-//            JTabbedPane tabbedPane = new JTabbedPane();
-//            tabbedPane.addTab("Signature", this.signatureManagementPanel);
-//            tabbedPane.addTab("Observation", this.observationManagementPanel);
-//            this.signatureAndObservationComponent.add(tabbedPane);
-//        });
-//    }
-//
-//    private void resetExplanationServiceComponent(){
-//        SwingUtilities.invokeLater(() -> {
-//            this.nonEntailmentExplanationServiceComponent = new JPanel();
-//            this.nonEntailmentExplanationServiceComponent.setLayout(new BoxLayout(this.nonEntailmentExplanationServiceComponent, BoxLayout.PAGE_AXIS));
-//            this.resultHolderComponent = new JPanel();
-//            this.resultHolderComponent.setLayout(new BoxLayout(this.resultHolderComponent, BoxLayout.PAGE_AXIS));
-//            INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
-//            if (explainer != null){
-//                if (explainer.getSettingsComponent() != null){
-//                    JSplitPane serviceSettingsAndResultSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-//                            explainer.getSettingsComponent(), this.resultHolderComponent);
-//                    serviceSettingsAndResultSplitPane.setDividerLocation(0.3);
-//                    this.nonEntailmentExplanationServiceComponent.add(serviceSettingsAndResultSplitPane);
-//                }
-//                else {
-//                    this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
-//                }
-//            }
-//            else {
-//                this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
-//            }
-//        });
-//    }
-//
-//    private void resetSignatureObservationAndResultSplitPane(){
-//        SwingUtilities.invokeLater(() -> {
-//            this.leftRightSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-//                    this.signatureAndObservationComponent,
-//                    this.nonEntailmentExplanationServiceComponent);
-//            this.leftRightSplitPane.setDividerLocation(0.3);
-//            this.splitPaneHolderComponent = new JPanel();
-//            this.splitPaneHolderComponent.setLayout(new BoxLayout(this.splitPaneHolderComponent, BoxLayout.PAGE_AXIS));
-//            this.splitPaneHolderComponent.add(this.leftRightSplitPane);
-//        });
-//    }
 
     private void repaintComponents(){
-        SwingUtilities.invokeLater(() -> {
             this.repaint();
             this.revalidate();
-        });
     }
-
-
 
     @Override
     protected void disposeOWLView() {
@@ -308,10 +276,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     public void handleEvent(ExplanationEvent<INonEntailmentExplanationService<?>> event){
         switch (event.getType()){
             case COMPUTATION_COMPLETE :
-                this.showResult(event.getSource().getResult());
+                SwingUtilities.invokeLater(() ->{
+                    this.showResult(event.getSource().getResult());
+                });
                 break;
             case ERROR :
-                this.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
+                SwingUtilities.invokeLater(() -> {
+                    UIUtilities.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
+                });
                 break;
         }
     }
@@ -498,40 +470,24 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
 
     private void computeExplanation(){
         this.logger.debug("Computation of explanation requested");
-//        SwingUtilities.invokeLater(() -> {
-            INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
-            explainer.setOntology(this.getOWLModelManager().getActiveOntology());
-            explainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());
-            explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
-            this.resetMainComponent();
-            explainer.computeExplanation();
-//        });
+        INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
+        explainer.setOntology(this.getOWLModelManager().getActiveOntology());
+        explainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());
+        explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
+        this.resetMainComponent();
+        this.repaintComponents();
+        explainer.computeExplanation();
     }
 
     private void showResult(Component resultComponent){
-        SwingUtilities.invokeLater(() -> {
-            this.resultHolderComponent.removeAll();
-            this.resultHolderComponent.add(resultComponent);
-            this.repaint();
-            this.revalidate();
-        });
-    }
-
-    public void showError(String message, OWLEditorKit owlEditorKit){
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
-                    owlEditorKit.getWorkspace()), "Error");
-            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
-            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            errorDialog.setVisible(true);
-        });
+        this.resultHolderComponent.removeAll();
+        this.resultHolderComponent.add(resultComponent);
+        this.repaint();
+        this.revalidate();
     }
 
     private void addObservation(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             try{
                 OWLAxiom axiomToAdd = this.observationTextEditor.createObject();
                 this.selectedObservationListModel.checkAndAddElement(axiomToAdd);
@@ -544,26 +500,26 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 this.observationTextEditor.setText("");
                 this.changeComputeButtonStatus();
             }
-        });
+//        });
     }
 
     private void deleteObservation(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             List<OWLAxiom> toDelete = this.selectedObservationList.getSelectedValuesList();
             this.selectedObservationListModel.removeElements(toDelete);
             this.selectedObservationList.clearSelection();
             this.observationTextEditor.setText("");
             this.changeComputeButtonStatus();
-        });
+//        });
     }
 
     private void resetObservation(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             this.selectedObservationListModel.removeAll();
             this.selectedObservationList.clearSelection();
             this.observationTextEditor.setText("");
             this.changeComputeButtonStatus();
-        });
+//        });
     }
 
     private JFileChooser createFileChooser(){
@@ -634,8 +590,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     protected void changeComputeButtonStatus(){
+        this.logger.debug("Changing Compute-Button status");
         INonEntailmentExplanationService<?> currentExplainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             if (currentExplainer == null) {
                 this.computeButton.setEnabled(false);
             } else {
@@ -654,7 +611,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 this.computeButton.setEnabled(enabled);
 //                this.resetView();
             }
-        });
+//        });
         this.repaintComponents();
     }
 
@@ -665,22 +622,26 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             SwingUtilities.invokeLater(() -> {
                 if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
                         changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
+                    logger.debug("Change or reload of active ontology detected");
                     selectedObservationListModel.removeAll();
-                    change();
                 }
             });
+            change();
         }
 
         @Override
         public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> list) {
+            logger.debug("Change to ontology detected");
             change();
         }
 
         private void change(){
             INonEntailmentExplanationService<?> explainer = nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(getOWLModelManager().getActiveOntology());
-            resetMainComponent();
-            changeComputeButtonStatus();
+            SwingUtilities.invokeLater(() -> {
+                resetMainComponent();
+                changeComputeButtonStatus();
+            });
         }
     }
 
