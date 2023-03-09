@@ -1,11 +1,9 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
-import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureEnum;
-import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureIO;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
-import org.apache.commons.io.FilenameUtils;
-import org.protege.editor.core.ProtegeManager;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
@@ -26,13 +24,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -46,6 +48,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private final OWLEditorKit owlEditorKit;
     private final SignatureOWLModelChangeListener SignatureModelManagerListener;
     private final SignatureOntologyChangeListener SignatureOntologyChangeListener;
+    private final NonEntailmentGeneralPreferencesManager preferencesManager;
     private JTabbedPane ontologySignatureTabbedPane;
     private OWLObjectTree<OWLClass> classesTree;
     private OWLObjectTree<OWLObjectProperty> propertyTree;
@@ -79,6 +82,20 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentVocabularySelectionUI.class);
 
+
+
+    private VocabularyTab tabIndex2Name(int tabIndex){
+        if (tabIndex == 0){
+            return VocabularyTab.Permitted;
+        } else{
+            return VocabularyTab.Forbidden;
+        }
+    }
+
+    private VocabularyTab tabIndex2ComplementName(int tabIndex){
+        return this.tabIndex2Name(1 - tabIndex);
+    }
+
     public NonEntailmentVocabularySelectionUI(NonEntailmentViewComponent nonEntailmentViewComponent, OWLEditorKit editorKit){
         this.nonEntailmentViewComponent = nonEntailmentViewComponent;
         this.owlEditorKit = editorKit;
@@ -87,11 +104,12 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.SignatureOntologyChangeListener = new SignatureOntologyChangeListener();
         this.owlEditorKit.getOWLModelManager().addOntologyChangeListener(
                 this.SignatureOntologyChangeListener);
-        SwingUtilities.invokeLater(() -> {
+        this.preferencesManager = new NonEntailmentGeneralPreferencesManager();
+//        SwingUtilities.invokeLater(() -> {
             this.createOntologySignatureTabbedPane();
             this.createButtonHolderPanel();
             this.createSelectedVocabularyListPane();
-        });
+//        });
     }
 
     private void createOntologySignatureTabbedPane(){
@@ -102,13 +120,6 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.classesTree = new OWLModelManagerTree<>(
                 this.owlEditorKit,
                 this.owlEditorKit.getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider());
-        OWLEntity bot = this.owlEditorKit.getModelManager().getOWLDataFactory().getOWLNothing();
-        OWLObjectTreeNode<OWLClass> newNode = new OWLObjectTreeNode<>(
-                bot, this.classesTree);
-        DefaultMutableTreeNode parentNode = ((DefaultMutableTreeNode) (
-                (OWLObjectTreeRootNode<OWLClass>) this.classesTree.getModel().getRoot()).getFirstChild());
-        ((DefaultTreeModel) this.classesTree.getModel()).insertNodeInto(
-                newNode, parentNode, 0);
         JScrollPane classesPane = new JScrollPane(this.classesTree);
         classesPane.getViewport().setBackground(Color.WHITE);
         this.classesTree.setCellRenderer(new ProtegeTreeNodeRenderer(this.owlEditorKit));
@@ -139,44 +150,70 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.ontologySignatureTabbedPane = tabbedPane;
     }
 
+//    private void addBottomEntities2Trees(){
+//        OWLEntity owlNothing = this.owlEditorKit.getModelManager().getOWLDataFactory().getOWLNothing();
+//        OWLObjectTreeNode<OWLClass> owlNothingNode = new OWLObjectTreeNode<>(
+//                owlNothing, this.classesTree);
+//        DefaultMutableTreeNode owlThingNode = ((DefaultMutableTreeNode) (
+//                (OWLObjectTreeRootNode<OWLClass>) this.classesTree.getModel().getRoot()).getFirstChild());
+//        ((DefaultTreeModel) this.classesTree.getModel()).insertNodeInto(
+//                owlNothingNode, owlThingNode, 0);
+//        OWLEntity owlBotObjectProperty = this.owlEditorKit.getOWLModelManager().getOWLDataFactory()
+//                .getOWLBottomObjectProperty();
+//        OWLObjectTreeNode<OWLObjectProperty> owlBotObjectPropertyNode = new OWLObjectTreeNode<>(
+//                owlBotObjectProperty, this.propertyTree);
+//        DefaultMutableTreeNode owlTopObjectPropertyNode = ((DefaultMutableTreeNode) (
+//                (OWLObjectTreeRootNode<OWLObjectProperty>) this.propertyTree.getModel().getRoot()).getFirstChild());
+//        ((DefaultTreeModel) this.propertyTree.getModel()).insertNodeInto(
+//                owlBotObjectPropertyNode, owlTopObjectPropertyNode, 0);
+//    }
+
+    private void removeTopAndBottomEntities(Collection<? extends OWLEntity> entities){
+        OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
+        entities.remove(dataFactory.getOWLThing());
+        entities.remove(dataFactory.getOWLNothing());
+        entities.remove(dataFactory.getOWLTopObjectProperty());
+        entities.remove(dataFactory.getOWLBottomObjectProperty());
+    }
+
     private void createButtonHolderPanel(){
         this.buttonHolderPanel = new JPanel();
         this.buttonHolderPanel.setLayout(new BoxLayout(this.buttonHolderPanel, BoxLayout.PAGE_AXIS));
         this.buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
         ArrayList<JButton> buttonList = new ArrayList<>();
         URL addURL = getClass().getResource(ADD_BTN_ICON);
-        JButton addButton = Util.createArrowButton(ADD_BTN_COMMAND,
+        JButton addButton = UIUtilities.createArrowButton(ADD_BTN_COMMAND,
                 BasicArrowButton.SOUTH, ADD_BTN_TOOLTIP, this);
         buttonList.add(addButton);
         URL delURL = getClass().getResource(DEL_BTN_ICON);
-        JButton deleteButton = Util.createArrowButton(DEL_BTN_COMMAND,
+        JButton deleteButton = UIUtilities.createArrowButton(DEL_BTN_COMMAND,
                 BasicArrowButton.NORTH, DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);
         JToolBar firstToolbar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(firstToolbar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton addAllButton = Util.createDoubleArrowButton(ADD_ALL_BTN_COMMAND,
+        JButton addAllButton = UIUtilities.createDoubleArrowButton(ADD_ALL_BTN_COMMAND,
                 BasicArrowButton.SOUTH, ADD_ALL_BTN_TOOLTIP, this);
         buttonList.add(addAllButton);
-        JButton deleteAllButton = Util.createDoubleArrowButton(DEL_ALL_BTN_COMMAND,
+        JButton deleteAllButton = UIUtilities.createDoubleArrowButton(DEL_ALL_BTN_COMMAND,
                 BasicArrowButton.NORTH, DEL_ALL_BTN_TOOLTIP, this);
         buttonList.add(deleteAllButton);
         JToolBar secondToolBar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(secondToolBar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton addObservationSignatureButton = Util.createNamedButton(ADD_OBSERVATION_SIGNATURE_BTN_COMMAND,
+        JButton addObservationSignatureButton = UIUtilities.createNamedButton(ADD_OBSERVATION_SIGNATURE_BTN_COMMAND,
                 ADD_OBSERVATION_SIGNATURE_BTN_NAME, ADD_OBSERVATION_SIGNATURE_BTN_TOOLTIP, this);
         buttonList.add(addObservationSignatureButton);
         JToolBar thirdToolBar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(thirdToolBar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton saveSignatureButton = Util.createNamedButton(SAVE_SIGNATURE_COMMAND,
+        JButton saveSignatureButton = UIUtilities.createNamedButton(SAVE_SIGNATURE_COMMAND,
                 SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
         buttonList.add(saveSignatureButton);
-        JButton loadSignatureButton = Util.createNamedButton(LOAD_SIGNATURE_COMMAND,
+        JButton loadSignatureButton = UIUtilities.createNamedButton(LOAD_SIGNATURE_COMMAND,
                 LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
         buttonList.add(loadSignatureButton);
         JToolBar fourthToolBar = this.createButtonToolBar(buttonList);
@@ -203,7 +240,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.forbiddenVocabularyListModel = new OWLObjectListModel<>();
         this.forbiddenVocabularyList = new JList<>(this.forbiddenVocabularyListModel);
         this.forbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.forbiddenVocabularyListModel.addElements(this.getCompleteOntologySignature());
+        this.resetVocabularyListModels();
         this.vocabularyTabbedPane = new JTabbedPane();
         this.vocabularyTabbedPane.setPreferredSize(new Dimension(400, 400));
         this.vocabularyTabbedPane.addTab("Permitted vocabulary",
@@ -217,17 +254,42 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
     }
 
-    private Collection<OWLEntity> getCompleteOntologySignature(){
-        Collection<OWLEntity> signature = this.owlEditorKit.getOWLModelManager().getActiveOntology()
-                .getSignature(Imports.INCLUDED)
-                .stream().filter(ax ->
-                    ax instanceof OWLClass || ax instanceof OWLObjectProperty || ax instanceof OWLNamedIndividual)
-                .collect(Collectors.toSet());
-        signature.add(this.owlEditorKit.getOWLModelManager().getOWLDataFactory().getOWLThing());
-        signature.add(this.owlEditorKit.getOWLModelManager().getOWLDataFactory().getOWLNothing());
-        signature.add(this.owlEditorKit.getOWLModelManager().getOWLDataFactory().getOWLTopObjectProperty());
-        return signature;
+    private void resetVocabularyListModels(){
+        this.permittedVocabularyListModel.removeAll();
+        this.forbiddenVocabularyListModel.removeAll();
+        if (this.preferencesManager.loadDefaultVocabularyTab().equals(VocabularyTab.Permitted)){
+            this.permittedVocabularyListModel.addElements(this.getCompleteOntologySignature());
+        } else{
+            this.forbiddenVocabularyListModel.addElements(this.getCompleteOntologySignature());
+        }
     }
+
+    private Collection<OWLEntity> getCompleteOntologySignature(){
+        Collection<OWLEntity> completeSignature = this.owlEditorKit.getOWLModelManager()
+                .getActiveOntology().getSignature(Imports.INCLUDED)
+                .stream().filter(ax ->
+                        ax instanceof OWLClass || ax instanceof OWLObjectProperty ||
+                                ax instanceof OWLNamedIndividual)
+                .collect(Collectors.toSet());
+        this.removeTopAndBottomEntities(completeSignature);
+        return completeSignature;
+    }
+
+//    private void addTopAndBottomEntities2Collection(Collection<OWLEntity> collection){
+//        OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
+//        if (! collection.contains(dataFactory.getOWLThing())){
+//            collection.add(dataFactory.getOWLThing());
+//        }
+//        if (! collection.contains(dataFactory.getOWLNothing())){
+//            collection.add(dataFactory.getOWLNothing());
+//        }
+//        if (! collection.contains(dataFactory.getOWLTopObjectProperty())){
+//            collection.add(dataFactory.getOWLTopObjectProperty());
+//        }
+//        if (!collection.contains(dataFactory.getOWLBottomObjectProperty())) {
+//            collection.add(dataFactory.getOWLBottomObjectProperty());
+//        }
+//    }
 
     public void dispose(OWLModelManager modelManager){
         if (this.classesTree != null){
@@ -286,19 +348,22 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 
     private void addAction(){
         SwingUtilities.invokeLater(() -> {
-            int upperTabIndex = this.ontologySignatureTabbedPane.getSelectedIndex();
-            int lowerTabIndex = this.vocabularyTabbedPane.getSelectedIndex();
+            int ontologySignatureTabIndex = this.ontologySignatureTabbedPane.getSelectedIndex();
             List<? extends OWLEntity> entitiesToAdd;
-            if (upperTabIndex == 0){
+            if (ontologySignatureTabIndex == 0){
                 entitiesToAdd = this.classesTree.getSelectedOWLObjects();
+                this.removeTopAndBottomEntities(entitiesToAdd);
             }
-            else if (upperTabIndex == 1){
+            else if (ontologySignatureTabIndex == 1){
                 entitiesToAdd = this.propertyTree.getSelectedOWLObjects();
+                this.removeTopAndBottomEntities(entitiesToAdd);
             }
             else{
                 entitiesToAdd = this.ontologyIndividualsJList.getSelectedValuesList();
             }
-            this.add2VocabularyList(entitiesToAdd, lowerTabIndex);
+            int selectedVocabularyTabIndex = this.vocabularyTabbedPane.getSelectedIndex();
+            this.moveEntities2VocabularyList(entitiesToAdd,
+                    this.tabIndex2Name(selectedVocabularyTabIndex));
             this.clearVocabularySelection();
             this.nonEntailmentViewComponent.changeComputeButtonStatus();
         });
@@ -307,8 +372,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private void addAllAction(){
         SwingUtilities.invokeLater(() -> {
 //            deleting entities from one list = adding entities to other list
-            int tabIndex = this.vocabularyTabbedPane.getSelectedIndex();
-            this.addAll2VocabularySelection(tabIndex);
+            VocabularyTab tabToAdd = this.tabIndex2Name(this.vocabularyTabbedPane.getSelectedIndex());
+            this.addAll2VocabularyList(tabToAdd);
             this.clearVocabularySelection();
             this.nonEntailmentViewComponent.changeComputeButtonStatus();
         });
@@ -324,7 +389,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                 entitiesToDelete = this.forbiddenVocabularyList.getSelectedValuesList();
             }
 //            deleting entities from one list = adding entities to other list
-            this.add2VocabularyList(entitiesToDelete, 1 - deleteFromTabIndex);
+            this.moveEntities2VocabularyList(entitiesToDelete,
+                    this.tabIndex2ComplementName(deleteFromTabIndex));
             this.clearVocabularySelection();
             this.nonEntailmentViewComponent.changeComputeButtonStatus();
         });
@@ -333,8 +399,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private void deleteAllAction(){
         SwingUtilities.invokeLater(() -> {
 //            deleting entities from one list = adding entities to other list
-            int tabIndex = 1 - this.vocabularyTabbedPane.getSelectedIndex();
-            this.addAll2VocabularySelection(tabIndex);
+            VocabularyTab tabToAdd = this.tabIndex2ComplementName(this.vocabularyTabbedPane.getSelectedIndex());
+            this.addAll2VocabularyList(tabToAdd);
             this.clearVocabularySelection();
             this.nonEntailmentViewComponent.changeComputeButtonStatus();
         });
@@ -345,17 +411,19 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             ArrayList<OWLObject> observations = this.nonEntailmentViewComponent.getObservations();
             HashSet<OWLEntity> observationEntities = new HashSet<>();
             observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
+            this.removeTopAndBottomEntities(observationEntities);
 //            deleting entities from one list = adding entities to other list
             int tabIndex = this.vocabularyTabbedPane.getSelectedIndex();
-            this.add2VocabularyList(observationEntities, tabIndex);
+            this.moveEntities2VocabularyList(observationEntities,
+                    this.tabIndex2Name(tabIndex));
             this.nonEntailmentViewComponent.changeComputeButtonStatus();
         });
     }
 
-    private void add2VocabularyList(Collection<? extends OWLEntity> entitiesToAdd, int vocabularyTabIndex){
+    private void moveEntities2VocabularyList(Collection<? extends OWLEntity> entitiesToAdd, VocabularyTab addToTab){
         OWLObjectListModel<OWLEntity> listToAdd;
         OWLObjectListModel<OWLEntity> listToDelete;
-        if (vocabularyTabIndex == 0){
+        if (addToTab == VocabularyTab.Permitted){
             listToAdd = this.permittedVocabularyListModel;
             listToDelete = this.forbiddenVocabularyListModel;
         } else{
@@ -374,21 +442,24 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.forbiddenVocabularyList.clearSelection();
     }
 
-    private void addAll2VocabularySelection(int tabIndex){
-        this.add2VocabularyList(this.getCompleteOntologySignature(), tabIndex);
+    private void addAll2VocabularyList(VocabularyTab addToTab){
+        this.moveEntities2VocabularyList(this.getCompleteOntologySignature(), addToTab);
     }
 
     private void loadSignatureAction(){
         SwingUtilities.invokeLater(() -> {
             try{
-                Set<OWLEntity> knownEntitySet = new HashSet<>(SignatureIO.loadSignature(this.owlEditorKit));
+                SignatureFileHandler signatureFileHandler = new SignatureFileHandler(this.owlEditorKit);
+                signatureFileHandler.loadFile();
+                Set<OWLEntity> knownEntitySet = new HashSet<>(signatureFileHandler.getSignature());
+                this.removeTopAndBottomEntities(knownEntitySet);
 //                deleting from one list = adding to other list
-                this.addAll2VocabularySelection(1);
-                this.add2VocabularyList(knownEntitySet, 0);
+                this.addAll2VocabularyList(VocabularyTab.Forbidden);
+                this.moveEntities2VocabularyList(knownEntitySet, VocabularyTab.Permitted);
                 this.clearVocabularySelection();
 //                this.vocabularyTabbedPane.setSelectedIndex(0);
             } catch (IOException ignored){
-//                error-message already shown in SignatureIO
+//                error-message already shown in SignatureFileHandler
             }
         });
     }
@@ -396,11 +467,13 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private void saveSignatureAction(){
         SwingUtilities.invokeLater( () -> {
             try{
-                SignatureIO.saveSignature(this.owlEditorKit,
-                        this.permittedVocabularyListModel.getOwlObjects());
+                SignatureFileHandler signatureFileHandler = new SignatureFileHandler(this.owlEditorKit);
+                signatureFileHandler.setSignature(this.permittedVocabularyListModel.getOwlObjects());
+                signatureFileHandler.setUseSignature(true);
+                signatureFileHandler.saveSignature();
                 this.clearVocabularySelection();
             } catch (IOException ignored){
-//                error-message already shown in SignatureIO
+//                error-message already shown in SignatureFileHandler
             }
         });
     }
@@ -422,7 +495,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                                     .getIndividualsInSignature(Imports.INCLUDED));
                     ontologyIndividualsJList.clearSelection();
 //                    selected vocabulary component:
-                    addAll2VocabularySelection(1);
+                    resetVocabularyListModels();
+                    clearVocabularySelection();
                 }
             });
         }
@@ -443,10 +517,11 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                                 Imports.INCLUDED));
                 ontologyIndividualsJList.clearSelection();
 //                selected vocabulary component:
+//                deleting individuals removed from vocabulary (permitted and forbidden):
                 Set<OWLEntity> deletedEntities = new HashSet<>();
-                OWLEntityCollector entityCollector = new OWLEntityCollector(deletedEntities);
+                OWLEntityCollector deletedEntityCollector = new OWLEntityCollector(deletedEntities);
                 ontologyChanges.stream().filter(OWLOntologyChange::isRemoveAxiom).forEach(
-                        removedAxiom -> removedAxiom.getAxiom().accept(entityCollector));
+                        removedAxiom -> removedAxiom.getAxiom().accept(deletedEntityCollector));
                 Set<OWLEntity> entitiesToDelete = new HashSet<>();
                 for (OWLEntity deletedEntity : deletedEntities){
                     if (! owlEditorKit.getOWLModelManager().getActiveOntology()
@@ -456,6 +531,28 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                 }
                 permittedVocabularyListModel.removeElements(entitiesToDelete);
                 forbiddenVocabularyListModel.removeElements(entitiesToDelete);
+//                adding new entities to default vocabulary list:
+                OWLObjectListModel<OWLEntity> listToAdd;
+                OWLObjectListModel<OWLEntity> listToCheck;
+                if (preferencesManager.loadDefaultVocabularyTab().equals(VocabularyTab.Permitted)){
+                    listToAdd = permittedVocabularyListModel;
+                    listToCheck = forbiddenVocabularyListModel;
+                } else{
+                    listToAdd = forbiddenVocabularyListModel;
+                    listToCheck = permittedVocabularyListModel;
+                }
+                OWLOntology activeOntology = owlEditorKit.getOWLModelManager().getActiveOntology();
+                Set<OWLEntity> entitiesToAdd = new HashSet<>(activeOntology
+                        .getClassesInSignature(Imports.INCLUDED));
+                entitiesToAdd.addAll(activeOntology
+                        .getObjectPropertiesInSignature(Imports.INCLUDED));
+                entitiesToAdd.addAll(activeOntology
+                        .getIndividualsInSignature(Imports.INCLUDED));
+                entitiesToAdd = entitiesToAdd.stream().filter(entity ->
+                        ! listToCheck.getOwlObjects().contains(entity))
+                        .collect(Collectors.toSet());
+                removeTopAndBottomEntities(entitiesToAdd);
+                listToAdd.checkAndAddElements(entitiesToAdd);
             });
         }
     }

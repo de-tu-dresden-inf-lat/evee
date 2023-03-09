@@ -1,25 +1,21 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeProofSignatureUIPreferenceManager;
-import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureIO;
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
-import org.apache.commons.io.FilenameUtils;
+import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction implements ActionListener {
 
@@ -93,7 +89,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
             this.activeOntology = this.getOWLModelManager().getActiveOntology();
         }
         else{
-            Util.showError(ANONYMOUS_ONTOLOGY_ERROR_MSG, this.getOWLEditorKit());
+            UIUtilities.showError(ANONYMOUS_ONTOLOGY_ERROR_MSG, this.getOWLEditorKit());
             return;
         }
         String ontoName = this.activeOntology.getOntologyID().getOntologyIRI().get().toString();
@@ -284,11 +280,16 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
     private void load(){
         SwingUtilities.invokeLater(() -> {
             try{
-                Collection<OWLEntity> knownEntitySet = SignatureIO.loadSignature(this.getOWLEditorKit());
+                SignatureFileHandler signatureFileHandler = new SignatureFileHandler(this.getOWLEditorKit());
+                signatureFileHandler.loadFile();
+                boolean enableSignature = signatureFileHandler.getUseSignature();
+                Collection<OWLEntity> knownEntitySet = signatureFileHandler.getSignature();
+                this.signatureSelectionUI.enableSignature(enableSignature);
+                this.useSignatureCheckBox.setSelected(enableSignature);
                 this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
                 this.signatureSelectionUI.clearSelectedSignatureUISelection();
             } catch (IOException e) {
-//                error-message already shown in SignatureIO
+//                error-message already shown in SignatureFileHandler
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
             }
@@ -298,11 +299,14 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
     private void save(){
         SwingUtilities.invokeLater(() -> {
             try{
-                SignatureIO.saveSignature(this.getOWLEditorKit(),
-                        this.signatureSelectionUI.getSelectedSignature());
+                SignatureFileHandler signatureFileHandler = new SignatureFileHandler(this.getOWLEditorKit());
+                //        note: getOntologyIRI().isPresent() was checked earlier during UI-creation
+                signatureFileHandler.setUseSignature(this.useSignatureCheckBox.isSelected());
+                signatureFileHandler.setSignature(this.signatureSelectionUI.getSelectedSignature());
+                signatureFileHandler.saveSignature();
                 this.signatureSelectionUI.clearSelectedSignatureUISelection();
             } catch (IOException e){
-//                error-message already shown in SignatureIO
+//                error-message already shown in SignatureFileHandler
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
             }
@@ -334,7 +338,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
                 this.logger.error("Error while saving signature to Protege Preferences.");
                 this.logger.error(e.toString());
                 String errorString = "<center>" + e + "</center>";
-                Util.showError(SIGNATURE_SAVING_ERROR_MSG + errorString, this.getOWLEditorKit());
+                UIUtilities.showError(SIGNATURE_SAVING_ERROR_MSG + errorString, this.getOWLEditorKit());
             }
             finally{
                 this.dialog.dispose();

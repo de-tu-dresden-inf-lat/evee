@@ -89,6 +89,11 @@
                             de.tu_dresden.lat.capi.*,
                             org.semanticweb.elk.*;-split-package:=merge-last,
                             org.liveontologies.owlapi.proof.*,
+                            org.junit.*,
+                            junit.extensions.*,
+                            junit.framework.*,
+                            junit.runner.*,
+                            org.hamcrest.*,
                         </Private-Package>
                     </instructions>
                 </configuration>

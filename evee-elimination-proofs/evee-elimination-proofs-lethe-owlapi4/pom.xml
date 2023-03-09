@@ -24,7 +24,7 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lethe-owlapi4_2.12</artifactId>
-            <version>0.8-SNAPSHOT</version>
+            <version>${LETHE.Version}</version>
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>

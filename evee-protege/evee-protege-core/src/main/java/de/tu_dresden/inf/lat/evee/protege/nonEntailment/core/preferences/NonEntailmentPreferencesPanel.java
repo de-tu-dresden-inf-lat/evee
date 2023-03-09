@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.preferences;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences;
 
 import org.protege.editor.core.ui.preferences.PreferencesPanel;
 import org.slf4j.Logger;

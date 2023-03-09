@@ -14,6 +14,8 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedEx
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 
+import static org.junit.Assert.assertNotNull;
+
 public class EveeProofGenerationThread extends Thread implements IExplanationGenerator<IProof<OWLAxiom>> {
 
 	private final OWLAxiom entailment;
@@ -39,7 +41,7 @@ public class EveeProofGenerationThread extends Thread implements IExplanationGen
 			if (this.proofGenerator.supportsProof(this.entailment)) {
 				this.logger.debug("Proof supported for axiom {}", this.entailment);
 				this.result = proofGenerator.getProof(this.entailment);
-				assert (this.result != null);
+				assertNotNull(this.result);
 				if (proofGenerator.successful()){
 					this.logger.debug("Proof generation completed successfully");
 					this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(

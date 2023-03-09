@@ -6,7 +6,7 @@ import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.Util;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static org.junit.Assert.assertNotNull;
+
 abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OWLAxiom>>,
         INonEntailmentExplanationService<OWLAxiom>, IOWLAbductionSolver {
 
@@ -44,7 +46,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     private JPanel resultScrollingPanel;
     protected int hypothesisIndex;
     private boolean computationSuccessful;
-    private boolean cacheValidated;
+    private boolean resultValid;
     private final AbductionSolverOntologyChangeListener ontologyChangeListener;
     protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
 //    protected boolean parametersChanged = true;
@@ -116,14 +118,16 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     public void setOntology(OWLOntology ontology) {
         this.logger.debug("Setting ontology");
         if (this.ontology == null){
+            this.logger.debug("No ontology has been set yet, setting ontology");
             this.ontology = ontology;
         }
         else if (! this.ontology.equals(ontology)){
+            this.logger.debug("Different ontology detected, setting ontology");
             this.ontology = ontology;
         }
         if (this.cachedResults.get(ontology) == null){
+            this.logger.debug("No cache for ontology, creating new cache");
             this.cachedResults.put(ontology, new AbductionCache<>());
-            this.cacheValidated = false;
         }
     }
 
@@ -155,15 +159,15 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     @Override
     public void computeExplanation() {
         this.logger.debug("Computing explanation");
-        assert (this.ontology != null);
-        assert (this.observation != null);
-        assert (this.abducibles != null);
+        assertNotNull(this.ontology);
+        assertNotNull(this.observation);
+        assertNotNull(this.abducibles);
         if (this.parametersChanged()){
+            this.logger.debug("Parameters changed, creating new stream");
             this.lastUsedObservation = this.observation;
             this.lastUsedAbducibles = this.abducibles;
             this.lastUsedOntology = this.ontology;
-            this.logger.debug("Parameters changed, creating new stream");
-            if (this.cacheValidated &&
+            if (this.resultValid &&
                     this.cachedResults.get(this.ontology).containsResultFor(
                             this.observation, this.abducibles)){
                 this.logger.debug("Cached result found, no computation of hypotheses necessary");
@@ -178,14 +182,23 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
         }
         else{
             this.logger.debug("Parameters unchanged");
-            if (this.computationSuccessful){
-                this.logger.debug("Last computation was successful, continuing old stream");
-                this.createResultComponent();
-            }
-            else{
-                this.logger.debug("Last computation failed, re-displaying error message");
-                this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
-                        ExplanationEventType.ERROR));
+            if (this.resultValid){
+                this.logger.debug("Last result is still valid");
+                if (this.computationSuccessful){
+                    this.logger.debug("Last computation was successful, continuing old stream");
+                    this.createResultComponent();
+                } else {
+                    this.logger.debug("Last computation failed, re-displaying error message");
+                    this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                            ExplanationEventType.ERROR));
+                }
+            } else{
+                this.logger.debug("Last result is no longer valid, re-computation of hypotheses necessary");
+                this.lastUsedObservation = this.observation;
+                this.lastUsedAbducibles = this.abducibles;
+                this.lastUsedOntology = this.ontology;
+                this.createNewExplanation();
+                this.hypothesisIndex = 1;
             }
         }
     }
@@ -202,7 +215,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
             this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
             JPanel spinnerHelperPanel = new JPanel();
             spinnerHelperPanel.setLayout(new BoxLayout(spinnerHelperPanel, BoxLayout.LINE_AXIS));
-            JLabel label = Util.createLabel(SETTINGS_LABEL);
+            JLabel label = UIUtilities.createLabel(SETTINGS_LABEL);
             spinnerHelperPanel.add(label);
             spinnerHelperPanel.add(Box.createRigidArea(new Dimension(5, 0)));
             SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 1, null, 1);
@@ -313,14 +326,13 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     }
 
     protected boolean parametersChanged(){
-        return (! this.cacheValidated) ||
-                (! this.abducibles.equals(this.lastUsedAbducibles)) ||
+        return (! this.abducibles.equals(this.lastUsedAbducibles)) ||
                 (! this.observation.equals(this.lastUsedObservation)) ||
                 (! this.ontology.equals(this.lastUsedOntology));
     }
 
-    protected void validateCache(){
-        this.cacheValidated = true;
+    protected void setResultValid(boolean valid){
+        this.resultValid = valid;
     }
 
 //    public void showError(){
@@ -397,7 +409,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
                 .or(IRI.create("")));
         AbductionCache<Result> newCache = new AbductionCache<>();
         this.cachedResults.put(ontology, newCache);
-        this.cacheValidated = false;
+        this.resultValid = false;
     }
 
     protected void resetCompleteCache(){
