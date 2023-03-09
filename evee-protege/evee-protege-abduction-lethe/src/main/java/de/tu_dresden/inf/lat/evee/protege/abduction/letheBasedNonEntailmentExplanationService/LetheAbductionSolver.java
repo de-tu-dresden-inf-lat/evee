@@ -126,13 +126,6 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
                      // (in case it is not exceptional to not have an explanation)
     }
 
-
-    @Override
-    protected void redisplayCachedExplanation(){
-        this.prepareResultComponentCreation();
-        this.createResultComponent();
-    }
-
     @Override
     protected void createNewExplanation() {
         this.abducer.setBackgroundOntology(this.ontology);
@@ -150,7 +143,7 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
         else{
             this.setComputationSuccessful(true);
             this.cachedResults.get(this.ontology).putResult(this.observation, this.abducibles, hypotheses);
-            this.setResultValid(true);
+            this.setActiveOntologyEditedExternally(false);
             this.prepareResultComponentCreation();
             this.createResultComponent();
         }
@@ -158,7 +151,7 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
 
     private void explanationComputationFailed(String errorMessage){
         this.setComputationSuccessful(false);
-        this.setResultValid(true);
+        this.setActiveOntologyEditedExternally(false);
         this.errorMessage = errorMessage;
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                 ExplanationEventType.ERROR));
@@ -166,7 +159,6 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
 
     @Override
     protected void prepareResultComponentCreation(){
-        this.resetResultComponent();
         DLStatement hypotheses = this.cachedResults.get(this.ontology).getResult(
                 this.observation, this.abducibles);
         assertNotNull(hypotheses);
