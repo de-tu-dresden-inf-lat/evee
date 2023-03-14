@@ -8,6 +8,8 @@ public enum ExplanationEventType {
 
     COMPUTATION_CANCELLED,
 
-    NOT_SUPPORTED
+    NOT_SUPPORTED,
+
+    RESULT_RESET
 
 }

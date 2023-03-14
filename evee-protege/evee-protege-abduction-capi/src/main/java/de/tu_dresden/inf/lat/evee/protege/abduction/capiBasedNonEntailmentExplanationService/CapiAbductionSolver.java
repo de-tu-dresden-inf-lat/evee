@@ -92,12 +92,6 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     }
 
     @Override
-    protected void redisplayCachedExplanation() {
-        this.prepareResultComponentCreation();
-        this.createResultComponent();
-    }
-
-    @Override
     protected void createNewExplanation() {
         assertNotNull(this.ontology);
         assert (this.observation.size() != 0);
@@ -182,14 +176,14 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     private void computationSuccessful(List<Solution> solutions){
         this.setComputationSuccessful(true);
         this.cachedResults.get(this.ontology).putResult(this.observation, this.abducibles, solutions);
-        this.setResultValid(true);
+        this.setActiveOntologyEditedExternally(false);
         this.prepareResultComponentCreation();
         this.createResultComponent();
     }
 
     private void computationFailed(String errorMessage){
         this.setComputationSuccessful(false);
-        this.setResultValid(true);
+        this.setActiveOntologyEditedExternally(false);
         this.errorMessage = errorMessage;
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this, ExplanationEventType.ERROR));
@@ -197,7 +191,6 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
 
     @Override
     protected void prepareResultComponentCreation(){
-        this.resetResultComponent();
         this.solutions = this.cachedResults.get(this.ontology).getResult(this.observation, this.abducibles);
         this.currentSolutionIndex = 0;
     }
