@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static org.junit.Assert.assertNotNull;
+
 public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>>, IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<IProof<OWLAxiom>>>> {
 
     private IProof<OWLAxiom> iProof;
@@ -56,9 +58,23 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         this.proofGeneratorChanged = true;
     }
 
-    protected void setCachingProofGenerator(IProofGenerator<OWLAxiom, OWLOntology> innerProofGenerator){
-        this.logger.debug("New CachingProofGenerator created with empty cache.");
-        this.cachingProofGen = new CachingProofGenerator<>(innerProofGenerator);
+    protected void resetCachingProofGenerator(){
+        this.logger.debug("Resetting CachingProofGenerator");
+        boolean useSignature = false;
+        if (this.ontology != null) {
+            if (this.ontology.getOntologyID().getOntologyIRI().isPresent()){
+                useSignature = this.signaturePreferencesManager.useSignature(
+                        this.ontology.getOntologyID().getOntologyIRI().get().toString());
+            }
+        }
+        if (useSignature){
+            this.cachingProofGen = new CachingProofGenerator<>(this.signatureProofGen);
+            this.logger.debug("New CachingProofGenerator created with empty cache, using SignatureProofGenerator.");
+        }
+        else {
+            this.cachingProofGen = new CachingProofGenerator<>(this.innerProofGen);
+            this.logger.debug("New CachingProofGenerator created with empty cache, NOT using SignatureProofGenerator.");
+        }
         this.proofGeneratorChanged = true;
     }
 
@@ -212,7 +228,6 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
 
     public void start(OWLAxiom entailment, OWLEditorKit editorKit){
         this.logger.debug("DynamicProofAdapter started.");
-        assert (this.cachingProofGen != null);
         this.setProofGeneratorParameters(false);
         this.generationComplete = false;
         this.generationSuccess = false;
@@ -232,7 +247,6 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
 
     protected void setProofGeneratorParameters(boolean parametersChanged){
         this.logger.debug("Checking signature.");
-//        assert (this.signatureProofGen != null);
         if (! this.ontology.getOntologyID().getOntologyIRI().isPresent()){
             this.logger.warn("Anonymous ontology detected. Signature related parameters could not be set.");
             return;
@@ -242,7 +256,9 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         boolean useSignatureChanged = this.signaturePreferencesManager.useSignatureChanged(this.signatureTimeStamp, ontologyName);
         boolean signatureChanged = this.signaturePreferencesManager.signatureChanged(this.signatureTimeStamp, ontologyName);
         if (useSignature){
+            this.logger.debug("Signature used");
             if (signatureChanged || useSignatureChanged){
+                this.logger.debug("Change to signature detected, resetting signatureProofGen with current signature");
                 this.signatureProofGen = new OWLSignatureBasedMinimalTreeProofGenerator(this.innerProofGen);
                 Set<OWLEntity> signature = this.signaturePreferencesManager.getKnownSignatureForProofGeneration(
                         this.ontology, ontologyName);
@@ -250,18 +266,15 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
                 this.logger.debug("Signature of known OWLEntities set to:");
                 signature.forEach(owlEntity -> this.logger.debug(owlEntity.toString()));
                 this.signatureTimeStamp = this.signaturePreferencesManager.getTimeStamp();
+            } else{
+                this.logger.debug("No change to signature detected, no resetting of signatureProofGen necessary");
             }
         }
         if (parametersChanged || useSignatureChanged || (useSignature && signatureChanged)){
-            if (useSignature){
-                this.cachingProofGen = new CachingProofGenerator<>(this.signatureProofGen);
-                this.logger.debug("New CachingProofGenerator created with empty cache, using SignatureProofGenerator.");
-            }
-            else {
-                this.cachingProofGen = new CachingProofGenerator<>(this.innerProofGen);
-                this.logger.debug("New CachingProofGenerator created with empty cache, NOT using SignatureProofGenerator.");
-            }
-            this.proofGeneratorChanged = true;
+            this.logger.debug("Change in parameters or signature detected, resetting cache");
+            this.resetCachingProofGenerator();
+        } else{
+            this.logger.debug("No change in parameters or signature detected, no changes made to cache");
         }
     }
 

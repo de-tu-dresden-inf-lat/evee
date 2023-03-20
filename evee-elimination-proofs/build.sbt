@@ -60,7 +60,7 @@ lazy val evee_elimination_proofs_core_owlapi5 = Project(
 //      "net.sourceforge.owlapi" % "owlapi-distribution" % "3.5.2",
 //      "com.hermit-reasoner" % "org.semanticweb.hermit" % "1.3.8.4",
       "net.sourceforge.owlapi" % "org.semanticweb.hermit" % "1.4.3.517",
-      "net.sourceforge.owlapi" % "owlapi-distribution" % "5.1.7",
+      "net.sourceforge.owlapi" % "owlapi-distribution" % "5.1.17",
     )
   )
 
@@ -101,7 +101,7 @@ lazy val evee_elimination_proofs_lethe_owlapi5 = Project(
     unmanagedJars in Compile += file(createString("lethe", 5) + "/../../lib/de/tu-dresden/inf/lat/lethe-core_2.12/0.8-SNAPSHOT/lethe-core_2.12-0.8-SNAPSHOT.jar"),
     unmanagedJars in Compile += file(createString("lethe", 5) + "/../../lib/de/tu-dresden/inf/lat/lethe-owlapi5_2.12/0.8-SNAPSHOT/lethe-owlapi5_2.12-0.8-SNAPSHOT.jar"),
     libraryDependencies ++= Seq(
-      "net.sourceforge.owlapi" % "owlapi-distribution" % "5.1.7",
+      "net.sourceforge.owlapi" % "owlapi-distribution" % "5.1.17",
     ))
   .dependsOn(evee_elimination_proofs_core_owlapi5)
 

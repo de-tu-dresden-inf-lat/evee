@@ -1,0 +1,2 @@
+command to install files to local repository using pom:
+mvn org.apache.maven.plugins:maven-install-plugin:3.1.0:install-file  -Dpackaging=jar -DlocalRepositoryPath=lib -DpomFile="Path_To_Pom" -Dfile="Path_To_File"

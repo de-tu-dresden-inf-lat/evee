@@ -15,25 +15,23 @@ import java.util.stream.Collectors;
 public class ELSmallModelGenerator implements IOWLModelGenerator {
     public Map<OWLNamedIndividual, Set<OWLClassExpression>> map;
     public OWLOntology ont;
-    private OWLDataFactory df;
-    private boolean consistent;
-    private OWLReasoner res;
     public int curName;
-    private boolean makeChange;
-    private boolean T1makeChange;
-    private OWLReasonerFactory rf;
-    private OWLClassExpression B;
-    private OWLNamedIndividual a;
-    private boolean subsumed;
-    private OWLOntologyManager man;
     public Set<OWLAxiom> TBoxAxioms;
     public Set<OWLAxiom> ABoxAxioms;
-    private Map<String,List<OWLClass>> indClassMapData;
-    private int numRemoved;
     public boolean bigModel;
-    private Set<OWLAxiom> model;
-
-
+    private final OWLDataFactory df;
+    private boolean consistent;
+    private OWLReasoner res;
+    private boolean makeChange;
+    private boolean T1makeChange;
+    private final OWLReasonerFactory rf;
+    private final OWLClassExpression B;
+    private final OWLNamedIndividual a;
+    private boolean subsumed;
+    private final OWLOntologyManager man;
+    private Map<String, List<OWLClass>> indClassMapData;
+    private int numRemoved;
+    private final Set<OWLIndividualAxiom> model;
 
 
     public ELSmallModelGenerator() {
@@ -49,6 +47,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     public boolean getSubsumed() {
         return subsumed;
     }
+
     public boolean getConsistent() {
         return consistent;
     }
@@ -57,6 +56,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     public int getNumRemoved() {
         return numRemoved;
     }
+
     public void setOntology(OWLOntology ont) {
         Set<OWLAxiom> Axioms = ont.getAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
         OWLOntology ontology = null;
@@ -71,13 +71,14 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
     @Override
-    public Set<OWLAxiom> generateModel()  {
+    public Set<OWLIndividualAxiom> generateModel() {
         res = rf.createReasoner(ont);
         reset();
         getModel();
         return model;
     }
-    private void reset () {
+
+    private void reset() {
         this.consistent = true;
         this.curName = 0;
         this.makeChange = true;
@@ -86,10 +87,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
 
-
-
-
-    public void checkSubsumption(OWLClassExpression C,OWLClassExpression D, boolean bigModel) {
+    public void checkSubsumption(OWLClassExpression C, OWLClassExpression D, boolean bigModel) {
         this.reset();
         this.bigModel = bigModel;
         OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(C, a);
@@ -106,9 +104,11 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
         ELNormaliser normaliser = new ELNormaliser();
         normaliser.setOntology(this.ont);
 
-        try {this.ont = normaliser.normalise();}
-        catch (OWLOntologyCreationException e){// TODO Auto-generated catch block
-            e.printStackTrace();}
+        try {
+            this.ont = normaliser.normalise();
+        } catch (OWLOntologyCreationException e) {// TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         man.addAxiom(ont, axiom1);
         this.numRemoved = normaliser.getNumRemoved();
         this.res = rf.createReasoner(ont);
@@ -117,19 +117,19 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
     private void getModel() {
-        while(this.makeChange ) {
+        while (this.makeChange) {
             this.makeChange = false;
             this.A1();
             this.A2();
             this.T1();
             boolean buf = this.makeChange;
-            while(this.makeChange) {
+            while (this.makeChange) {
                 this.makeChange = false;
                 this.A2();
                 this.T1();
             }
             makeChange = buf;
-            if(!this.consistent) {
+            if (!this.consistent) {
                 break;
             }
             if (this.subsumed) {
@@ -141,13 +141,14 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                 e.getValue().stream()
                         .filter(cl -> cl.isClassExpressionLiteral())
                         .map(cl -> cl.asOWLClass())
-                        .forEach(cl -> model.add(df.getOWLClassAssertionAxiom(cl,e.getKey()))));
+                        .forEach(cl -> model.add(df.getOWLClassAssertionAxiom(cl, e.getKey()))));
         model.addAll(ont.getABoxAxioms(Imports.INCLUDED).stream()
-                .filter(ax-> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
+                .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
+                .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
                 .collect(Collectors.toSet()));
     }
 
-    private boolean findSuccessor(OWLClassExpression expr,OWLNamedIndividual passedInd) {
+    private boolean findSuccessor(OWLClassExpression expr, OWLNamedIndividual passedInd) {
         OWLObjectSomeValuesFrom obj = (OWLObjectSomeValuesFrom) expr;
         boolean hasSuccessor = this.ont.getObjectPropertyAssertionAxioms(passedInd).stream()
                 .filter(ax -> ax.getProperty().equals(obj.getProperty()))
@@ -155,14 +156,14 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
 
         if (!hasSuccessor) {
             Set<OWLAxiom> toAdd = new HashSet<>();
-            if(!this.bigModel) {
+            if (!this.bigModel) {
                 for (OWLNamedIndividual ind : this.ont.getIndividualsInSignature()) {
                     OWLAxiom clAs = this.df.getOWLClassAssertionAxiom(obj.getFiller(), ind);
                     OWLAxiom prAs = this.df.getOWLObjectPropertyAssertionAxiom(obj.getProperty(), passedInd, ind);
-                    if(this.ont.containsAxiom(clAs)==false) {
+                    if (!this.ont.containsAxiom(clAs)) {
                         toAdd.add(clAs);
                     }
-                    if(this.ont.containsAxiom(prAs)==false) {
+                    if (!this.ont.containsAxiom(prAs)) {
                         toAdd.add(prAs);
                     }
                     this.man.addAxioms(ont, toAdd);
@@ -180,24 +181,23 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
             }
             if (!hasSuccessor) {
 
-                OWLNamedIndividual a = df.getOWLNamedIndividual(IRI.create("Ind-"+ curName));
+                OWLNamedIndividual a = df.getOWLNamedIndividual(IRI.create("Ind-" + curName));
 
-                man.addAxiom(this.ont,df.getOWLObjectPropertyAssertionAxiom(obj.getProperty(), passedInd, a));
-                man.addAxiom(this.ont,df.getOWLClassAssertionAxiom(obj.getFiller(), a));
+                man.addAxiom(this.ont, df.getOWLObjectPropertyAssertionAxiom(obj.getProperty(), passedInd, a));
+                man.addAxiom(this.ont, df.getOWLClassAssertionAxiom(obj.getFiller(), a));
 
 
-                curName = curName+1;
+                curName = curName + 1;
                 hasSuccessor = true;
             }
-        }
-        else {
+        } else {
             hasSuccessor = false;
         }
         return hasSuccessor;
     }
 
-    private void A3(){
-        this.makeChange =  map.entrySet().stream()
+    private void A3() {
+        this.makeChange = map.entrySet().stream()
                 .anyMatch(entry -> entry.getValue().stream()
                         .filter(expr -> expr.getClassExpressionType() == ClassExpressionType.OBJECT_SOME_VALUES_FROM)
                         .anyMatch(expr -> findSuccessor(expr, entry.getKey()))
@@ -206,10 +206,11 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
 
     private void A2() {
         ont.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)
-                .forEach(ax -> {Set<OWLClassExpression> toAdd = new HashSet<>();
+                .forEach(ax -> {
+                    Set<OWLClassExpression> toAdd = new HashSet<>();
                     map.get(ax.getObject()).stream()
                             .filter(expr -> expr.getClassExpressionType() != ClassExpressionType.OBJECT_SOME_VALUES_FROM)
-                            .forEach(expr -> toAdd.add(df.getOWLObjectSomeValuesFrom((OWLObjectProperty) ax.getProperty(),expr)));
+                            .forEach(expr -> toAdd.add(df.getOWLObjectSomeValuesFrom(ax.getProperty(), expr)));
                     map.merge(ax.getSubject().asOWLNamedIndividual(), toAdd, (a, b) -> {
                         a.addAll(b);
                         return a;
@@ -235,12 +236,13 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                         map.entrySet().stream()
                                 .filter(entry -> entry.getValue().containsAll(ax.getSubClass().asConjunctSet()))
                                 .filter(entry -> !entry.getValue().contains(ax.getSuperClass()))
-                                .forEach(entry -> {entry.getValue().add(ax.getSuperClass());
-                                    if(ax.getSuperClass().isBottomEntity()) {
-                                        consistent=false;
+                                .forEach(entry -> {
+                                    entry.getValue().add(ax.getSuperClass());
+                                    if (ax.getSuperClass().isBottomEntity()) {
+                                        consistent = false;
                                     }
-                                    if(entry.getKey().equals(a) && ax.getSuperClass().equals(B)) {
-                                        subsumed=true;
+                                    if (entry.getKey().equals(a) && ax.getSuperClass().equals(B)) {
+                                        subsumed = true;
                                     }
 
                                     T1makeChange = true;

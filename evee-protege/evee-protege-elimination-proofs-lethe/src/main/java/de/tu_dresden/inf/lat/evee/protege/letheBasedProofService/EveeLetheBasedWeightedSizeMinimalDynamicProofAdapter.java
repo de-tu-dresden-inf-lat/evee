@@ -31,6 +31,7 @@ public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends Abstra
         this.proofPreferencesManager = proofPreferencesManager;
         this.createInnerProofGenerator();
         super.setInnerProofGenerator(this.innerProofGenerator);
+        super.resetCachingProofGenerator();
         this.logger.debug("Dynamic proof adapter created.");
     }
 

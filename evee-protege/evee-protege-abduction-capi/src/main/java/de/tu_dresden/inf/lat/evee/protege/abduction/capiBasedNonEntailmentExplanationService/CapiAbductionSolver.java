@@ -2,7 +2,6 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExpla
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionCache;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionLoadingUI;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
@@ -22,6 +21,8 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertNotNull;
+
 public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>> implements IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<List<Solution>>>> {
 
     private String errorMessage = "";
@@ -36,7 +37,7 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     private boolean lastUsedSemanticallyOrdered;
     private final CapiPreferencesManager preferencesManager;
     private final static String LOADING = "LOADING";
-    private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to SPASS and hit 'Compute' again</html>";
+    private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to the SPASS executable and hit 'Compute' again</html>";
     private final Logger logger = LoggerFactory.getLogger(CapiAbductionSolver.class);
 
     public CapiAbductionSolver(){
@@ -91,14 +92,8 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     }
 
     @Override
-    protected void redisplayCachedExplanation() {
-        this.prepareResultComponentCreation();
-        this.createResultComponent();
-    }
-
-    @Override
     protected void createNewExplanation() {
-        assert (this.ontology != null);
+        assertNotNull(this.ontology);
         assert (this.observation.size() != 0);
         final ArrayList<OWLSubClassOfAxiom> observationList = new ArrayList<>();
         this.observation.forEach(axiom -> {
@@ -181,13 +176,14 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     private void computationSuccessful(List<Solution> solutions){
         this.setComputationSuccessful(true);
         this.cachedResults.get(this.ontology).putResult(this.observation, this.abducibles, solutions);
-        this.validateCache();
+        this.setActiveOntologyEditedExternally(false);
         this.prepareResultComponentCreation();
         this.createResultComponent();
     }
 
     private void computationFailed(String errorMessage){
         this.setComputationSuccessful(false);
+        this.setActiveOntologyEditedExternally(false);
         this.errorMessage = errorMessage;
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this, ExplanationEventType.ERROR));
@@ -195,7 +191,6 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
 
     @Override
     protected void prepareResultComponentCreation(){
-        this.resetResultComponent();
         this.solutions = this.cachedResults.get(this.ontology).getResult(this.observation, this.abducibles);
         this.currentSolutionIndex = 0;
     }

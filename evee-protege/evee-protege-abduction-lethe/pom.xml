@@ -60,12 +60,12 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lethe-abduction-owlapi4_2.12</artifactId>
-            <version>0.8-SNAPSHOT</version>
+            <version>${LETHE.Version}</version>
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lethe-owlapi4_2.12</artifactId>
-            <version>0.8-SNAPSHOT</version>
+            <version>${LETHE.Version}</version>
         </dependency>
     </dependencies>
 
@@ -103,6 +103,11 @@
                             uk.ac.man.cs.lethe.internal.tools.*,
                             uk.ac.man.cs.lethe.abduction.*,
                             uk.ac.man.cs.lethe.interpolation.*,
+                            org.junit.*,
+                            junit.extensions.*,
+                            junit.framework.*,
+                            junit.runner.*,
+                            org.hamcrest.*,
                         </Private-Package>
                     </instructions>
                 </configuration>

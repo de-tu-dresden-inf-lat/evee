@@ -19,6 +19,7 @@ public class EveeElkBasedDynamicProofAdapter extends AbstractEveeDynamicProofAda
                                            EveeDynamicProofLoadingUI uiWindow) {
         super(proofPreferencesManager, uiWindow);
         super.setInnerProofGenerator(proofGen);
+        super.resetCachingProofGenerator();
         this.logger.debug("Dynamic proof adapter created.");
     }
 

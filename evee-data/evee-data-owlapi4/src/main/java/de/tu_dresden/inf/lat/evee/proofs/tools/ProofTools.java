@@ -14,8 +14,14 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 
 public class ProofTools {
 
+	public static String ASSERTED_1 = "asserted";
+	public static String ASSERTED_2 = "Asserted Conclusion";
+
+	/**
+	 * TODO a bit unclean - it would be better to have this as property in the inference object (isAsserted)
+	 */
 	public static <S> boolean isAsserted(IInference<S> inf) {
-		return inf.getRuleName().equals("asserted") || inf.getRuleName().equals("Asserted Conclusion");
+		return inf.getRuleName().equals(ASSERTED_1) || inf.getRuleName().equals(ASSERTED_2);
 	}
 
 	public static boolean isCorrect(IInference<OWLAxiom> inf) {

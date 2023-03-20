@@ -25,6 +25,7 @@ public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEvee
         this.proofPreferencesManager = proofPreferencesManager;
         this.createInnerProofGenerator();
         super.setInnerProofGenerator(innerProofGenerator);
+        super.resetCachingProofGenerator();
         this.logger.debug("Dynamic proof adapter created.");
     }
 

@@ -9,4 +9,3 @@ temp/
 .classpath
 .project
 *.DS_Store
-lib/tmp/
