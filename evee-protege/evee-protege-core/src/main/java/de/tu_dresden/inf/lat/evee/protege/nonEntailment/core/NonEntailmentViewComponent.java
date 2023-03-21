@@ -563,6 +563,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         this.selectedObservationListModel.removeAll();
         this.selectedObservationListModel.addElements(observationAxioms);
         this.selectedObservationList.clearSelection();
+        this.changeComputeButtonStatus();
     }
 
     private void saveObservation(){

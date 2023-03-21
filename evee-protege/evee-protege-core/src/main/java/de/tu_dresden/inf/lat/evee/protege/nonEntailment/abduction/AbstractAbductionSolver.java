@@ -244,6 +244,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     }
 
     protected void redisplayCachedExplanation() {
+        this.resetResultComponent();
         this.prepareResultComponentCreation();
         this.createResultComponent();
     }

@@ -210,12 +210,12 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.buttonHolderPanel.add(thirdToolBar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton saveSignatureButton = UIUtilities.createNamedButton(SAVE_SIGNATURE_COMMAND,
-                SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
-        buttonList.add(saveSignatureButton);
         JButton loadSignatureButton = UIUtilities.createNamedButton(LOAD_SIGNATURE_COMMAND,
                 LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
         buttonList.add(loadSignatureButton);
+        JButton saveSignatureButton = UIUtilities.createNamedButton(SAVE_SIGNATURE_COMMAND,
+                SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
+        buttonList.add(saveSignatureButton);
         JToolBar fourthToolBar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(fourthToolBar);
     }
