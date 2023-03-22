@@ -175,20 +175,21 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             this.resultHolderComponent.setLayout(new BoxLayout(this.resultHolderComponent, BoxLayout.PAGE_AXIS));
             INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             if (explainer != null){
-                if (explainer.getResult() != null){
-                    this.resultHolderComponent.add(explainer.getResult());
-                }
+                this.logger.debug("Explainer available");
                 if (explainer.getSettingsComponent() != null){
+                    this.logger.debug("Adding settings to explanationServiceComponent");
                     JSplitPane serviceSettingsAndResultSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                             explainer.getSettingsComponent(), this.resultHolderComponent);
                     serviceSettingsAndResultSplitPane.setDividerLocation(0.3);
                     this.nonEntailmentExplanationServiceComponent.add(serviceSettingsAndResultSplitPane);
                 }
                 else {
+                    this.logger.debug("No settings available");
                     this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
                 }
             }
             else {
+                this.logger.debug("No explainer available");
                 this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
             }
     }
@@ -231,8 +232,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     private void repaintComponents(){
-            this.repaint();
-            this.revalidate();
+        this.repaint();
+        this.revalidate();
     }
 
     @Override
@@ -285,13 +286,18 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 break;
             case ERROR :
                 SwingUtilities.invokeLater(() -> {
+                    this.resetMainComponent();
+                    this.repaintComponents();
                     UIUtilities.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
                 });
                 break;
             case RESULT_RESET:
                 SwingUtilities.invokeLater(() -> {
-                    this.resetMainComponent();
-                    this.repaintComponents();
+                    resetExplanationServiceComponent();
+                    resetHorizontalSplitPane();
+                    resetHolderPanel();
+                    addHolderPanel();
+                    repaintComponents();
                 });
                 break;
         }
@@ -484,15 +490,13 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         explainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());
         explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
         explainer.computeExplanation();
-        this.resetMainComponent();
-        this.repaintComponents();
     }
 
     private void showResult(Component resultComponent){
+        this.resetMainComponent();
         this.resultHolderComponent.removeAll();
         this.resultHolderComponent.add(resultComponent);
-        this.repaint();
-        this.revalidate();
+        this.repaintComponents();
     }
 
     private void addObservation(){
@@ -646,7 +650,11 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         private void change(){
             INonEntailmentExplanationService<?> explainer = nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(getOWLModelManager().getActiveOntology());
-            resetMainComponent();
+//            resetExplanationServiceComponent();
+//            resetHorizontalSplitPane();
+//            resetHolderPanel();
+//            addHolderPanel();
+//            repaintComponents();
             changeComputeButtonStatus();
         }
     }

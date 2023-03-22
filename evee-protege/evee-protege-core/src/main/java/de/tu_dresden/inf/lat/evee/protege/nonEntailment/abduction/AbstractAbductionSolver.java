@@ -254,7 +254,6 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     abstract protected void prepareResultComponentCreation();
 
     private void createSettingsComponent(){
-        SwingUtilities.invokeLater(() -> {
             this.settingsHolderPanel = new JPanel();
             this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
             JPanel spinnerHelperPanel = new JPanel();
@@ -274,7 +273,6 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
                     BorderFactory.createTitledBorder(
                             BorderFactory.createEmptyBorder(), "Settings:"),
                     BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        });
     }
 
     protected void resetResultComponent(){
@@ -589,18 +587,16 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
 
         @Override
         public void handleChange(OWLModelManagerChangeEvent owlModelManagerChangeEvent) {
-            SwingUtilities.invokeLater(() -> {
-                if (owlModelManagerChangeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
-                        owlModelManagerChangeEvent.isType(EventType.ONTOLOGY_RELOADED)){
-                    this.logger.debug("Change/Reload of active ontology detected");
-                    activeOntologyChanged = true;
-                    resetAbductionParameters();
-                    resetResultComponent();
-                    resetEditOntologyStatus();
-                    viewComponentListener.handleEvent(new ExplanationEvent<>(
-                            AbstractAbductionSolver.this, ExplanationEventType.RESULT_RESET));
-                }
-            });
+            if (owlModelManagerChangeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
+                    owlModelManagerChangeEvent.isType(EventType.ONTOLOGY_RELOADED)){
+                this.logger.debug("Change/Reload of active ontology detected");
+                activeOntologyChanged = true;
+                resetAbductionParameters();
+                resetResultComponent();
+                resetEditOntologyStatus();
+                viewComponentListener.handleEvent(new ExplanationEvent<>(
+                        AbstractAbductionSolver.this, ExplanationEventType.RESULT_RESET));
+            }
         }
     }
 
