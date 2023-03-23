@@ -51,7 +51,7 @@ public class SignatureFileHandler {
     /**
      * will only load those OWLEntities that are present in the signature of the currently active ontology
      */
-    public void loadFile() throws IOException {
+    public void loadFile() throws IOException, LoadingAbortedException {
         this.logger.debug("Loading signature form file");
         JFileChooser fileChooser = this.createFileChooser();
         int result = fileChooser.showOpenDialog(ProtegeManager.getInstance()
@@ -127,7 +127,8 @@ public class SignatureFileHandler {
             }
         }
         else{
-            logger.debug("Loading aborted");
+            logger.debug("Loading aborted by user");
+            throw new LoadingAbortedException("Loading aborted");
         }
 //        if (classes.size() == 0 && objectProperties.size() == 0 && individuals.size() == 0){
 //            return knownEntitySet;

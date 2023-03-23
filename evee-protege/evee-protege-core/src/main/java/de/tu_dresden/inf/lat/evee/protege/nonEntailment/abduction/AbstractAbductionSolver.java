@@ -12,6 +12,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
+import org.protege.editor.owl.ui.explanation.ExplanationDialog;
 import org.protege.editor.owl.ui.explanation.ExplanationManager;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.owlapi.model.*;
@@ -24,8 +25,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
@@ -54,6 +54,8 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     private boolean activeOntologyChanged = false;
     private boolean ignoreOntologyChangeEvent = false;
     private final List<JButton> addButtonList, addAndProveButtonList, deleteButtonList;
+//    todo: conceptual imrpovement needed! this shouldn't be a list of listeners -> split up classes
+    private final List<EditOntologyButtonListener> addAndProveButtonListenerList;
     private final AbductionSolverOntologyChangeListener ontologyChangeListener;
     protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     protected final Map<OWLOntology, AbductionCache<Result>> cachedResults;
@@ -80,6 +82,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
         this.addAndProveButtonList = new ArrayList<>();
         this.deleteButtonList = new ArrayList<>();
         this.ontologyChangeListener = new AbductionSolverOntologyChangeListener();
+        this.addAndProveButtonListenerList = new ArrayList<>();
         this.createSettingsComponent();
         this.logger.debug("AbstractAbductionSolver created successfully.");
     }
@@ -106,6 +109,13 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
         this.logger.debug("Disposing AbductionSolver");
         this.owlEditorKit.getOWLModelManager().removeOntologyChangeListener(this.ontologyChangeListener);
         this.owlEditorKit.getOWLModelManager().removeListener(this.ontologyChangeListener);
+        this.addButtonList.clear();
+        this.addAndProveButtonList.clear();
+        this.deleteButtonList.clear();
+        for (EditOntologyButtonListener listener : this.addAndProveButtonListenerList){
+            listener.dispose();
+        }
+        this.addAndProveButtonListenerList.clear();
         this.logger.debug("AbductionSolver disposed");
     }
 
@@ -244,6 +254,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     }
 
     protected void redisplayCachedExplanation() {
+        this.resetResultComponent();
         this.prepareResultComponentCreation();
         this.createResultComponent();
     }
@@ -253,7 +264,6 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     abstract protected void prepareResultComponentCreation();
 
     private void createSettingsComponent(){
-        SwingUtilities.invokeLater(() -> {
             this.settingsHolderPanel = new JPanel();
             this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
             JPanel spinnerHelperPanel = new JPanel();
@@ -273,7 +283,6 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
                     BorderFactory.createTitledBorder(
                             BorderFactory.createEmptyBorder(), "Settings:"),
                     BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        });
     }
 
     protected void resetResultComponent(){
@@ -300,6 +309,10 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
         this.addButtonList.clear();
         this.addAndProveButtonList.clear();
         this.deleteButtonList.clear();
+        for (EditOntologyButtonListener listener : this.addAndProveButtonListenerList){
+            listener.dispose();
+        }
+        this.addAndProveButtonListenerList.clear();
     }
 
     protected void resetAbductionParameters(){
@@ -357,10 +370,12 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
                 labelAndButtonPanel.add(addToOntologyButton);
                 this.addButtonList.add(addToOntologyButton);
                 labelAndButtonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+                EditOntologyButtonListener addAndProveListener = new EditOntologyButtonListener(
+                        this.ontology, resultList, this.hypothesisIndex);
                 JButton addAndProveButton = UIUtilities.createNamedButton(
                         ADD_TO_ONTO_AND_PROVE_COMMAND, ADD_TO_ONTO_AND_PROVE_NAME,
-                        ADD_TO_ONTO_AND_PROVE_TOOLTIP, new EditOntologyButtonListener(
-                                this.ontology, resultList, this.hypothesisIndex));
+                        ADD_TO_ONTO_AND_PROVE_TOOLTIP, addAndProveListener);
+                this.addAndProveButtonListenerList.add(addAndProveListener);
                 labelAndButtonPanel.add(addAndProveButton);
                 this.addAndProveButtonList.add(addAndProveButton);
                 labelAndButtonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -436,6 +451,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
         private final OWLOntology ontology;
         private final JList<OWLAxiom> axiomList;
         private final int hypothesisIndex;
+        private ExplanationDialogPanel explanationDialogPanel;
         private final Logger logger = LoggerFactory.getLogger(EditOntologyButtonListener.class);
 
         private EditOntologyButtonListener(OWLOntology ontology, JList<OWLAxiom> axiomList, int index){
@@ -492,12 +508,13 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
             this.logger.debug("Adding axioms of hypothesis {} to ontology and showing proof for observation",
                     this.hypothesisIndex+1);
             this.add();
-            OWLAxiom observation = new ArrayList<>(lastUsedObservation).get(0);
-            ExplanationManager explanationManager = owlEditorKit.getOWLModelManager().getExplanationManager();
-            if (explanationManager.hasExplanation(observation)) {
-                JFrame frame = ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace());
-                explanationManager.handleExplain(frame, observation);
-            }
+            this.showProveDialog();
+//            OWLAxiom observation = new ArrayList<>(lastUsedObservation).get(0);
+//            ExplanationManager explanationManager = owlEditorKit.getOWLModelManager().getExplanationManager();
+//            if (explanationManager.hasExplanation(observation)) {
+//                JFrame frame = ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace());
+//                explanationManager.handleExplain(frame, observation);
+//            }
         }
 
         private void add(){
@@ -509,6 +526,47 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
             }
             this.ontology.getOWLOntologyManager().addAxioms(this.ontology, axiomsToAdd);
             this.axiomList.clearSelection();
+        }
+
+        private void showProveDialog(){
+            JComboBox<OWLAxiom> observationComboBox = new JComboBox<>(
+                    new Vector<>(lastUsedObservation));
+            observationComboBox.setSelectedIndex(0);
+            this.explanationDialogPanel = new ExplanationDialogPanel(
+                    owlEditorKit.getOWLModelManager().getExplanationManager(),
+                    (OWLAxiom) observationComboBox.getSelectedItem());
+            observationComboBox.addActionListener(this.explanationDialogPanel);
+            JPanel explanationHolderPanel = new JPanel();
+            this.explanationDialogPanel.refreshPanel();
+            explanationHolderPanel.setLayout(new BoxLayout(
+                    explanationHolderPanel, BoxLayout.PAGE_AXIS));
+            explanationHolderPanel.add(observationComboBox);
+            explanationHolderPanel.add(this.explanationDialogPanel);
+            JOptionPane optionPane = new JOptionPane(explanationHolderPanel,
+                    JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION);
+            JDialog dialog = optionPane.createDialog(
+                    ProtegeManager.getInstance().getFrame(
+                            owlEditorKit.getWorkspace()),
+                    "Explanation for hypothesis " + (this.hypothesisIndex+1));
+            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            dialog.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    explanationDialogPanel.dispose();
+                    explanationDialogPanel = null;
+                }
+            });
+            dialog.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentHidden(ComponentEvent e) {
+                    explanationDialogPanel.dispose();
+                    explanationDialogPanel = null;
+                }
+            });
+            dialog.setModalityType(Dialog.ModalityType.MODELESS);
+            dialog.setResizable(true);
+            dialog.pack();
+            dialog.setVisible(true);
         }
 
         private void deleteFromOntology(){
@@ -533,6 +591,14 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
             msgDialog.setVisible(true);
         }
 
+        public void dispose(){
+            this.logger.debug("Disposing");
+            if (this.explanationDialogPanel != null){
+                this.explanationDialogPanel.dispose();
+                this.explanationDialogPanel = null;
+            }
+            this.logger.debug("Disposed");
+        }
     }
 
     private void saveCache(){
@@ -588,18 +654,60 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
 
         @Override
         public void handleChange(OWLModelManagerChangeEvent owlModelManagerChangeEvent) {
-            SwingUtilities.invokeLater(() -> {
-                if (owlModelManagerChangeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
-                        owlModelManagerChangeEvent.isType(EventType.ONTOLOGY_RELOADED)){
-                    this.logger.debug("Change/Reload of active ontology detected");
-                    activeOntologyChanged = true;
-                    resetAbductionParameters();
-                    resetResultComponent();
-                    resetEditOntologyStatus();
-                    viewComponentListener.handleEvent(new ExplanationEvent<>(
-                            AbstractAbductionSolver.this, ExplanationEventType.RESULT_RESET));
-                }
-            });
+            if (owlModelManagerChangeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
+                    owlModelManagerChangeEvent.isType(EventType.ONTOLOGY_RELOADED)){
+                this.logger.debug("Change/Reload of active ontology detected");
+                activeOntologyChanged = true;
+                resetAbductionParameters();
+                resetResultComponent();
+                resetEditOntologyStatus();
+                viewComponentListener.handleEvent(new ExplanationEvent<>(
+                        AbstractAbductionSolver.this, ExplanationEventType.RESULT_RESET));
+            }
+        }
+    }
+
+    private class ExplanationDialogPanel extends JPanel implements ActionListener{
+
+        private final ExplanationManager explanationManager;
+        private OWLAxiom observation;
+        private ExplanationDialog internalExplanationDialog = null;
+
+        private final Logger logger = LoggerFactory.getLogger(ExplanationDialogPanel.class);
+
+        private ExplanationDialogPanel(ExplanationManager manager, OWLAxiom observation){
+            this.explanationManager = manager;
+            this.observation = observation;
+            this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+            this.logger.debug("ExplanationDialogPanel created");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            this.observation = (OWLAxiom) ((JComboBox) e.getSource()).getSelectedItem();
+            this.logger.debug("Selected observation: {}", this.observation);
+            this.refreshPanel();
+        }
+
+        protected void refreshPanel(){
+            this.logger.debug("Refreshing panel");
+            if (this.internalExplanationDialog != null){
+                this.internalExplanationDialog.dispose();
+            }
+            this.internalExplanationDialog = new ExplanationDialog(
+                    this.explanationManager, this.observation);
+            this.removeAll();
+            this.add(this.internalExplanationDialog);
+            this.revalidate();
+            this.repaint();
+            this.logger.debug("Panel refreshed");
+        }
+
+        public void dispose(){
+            if (this.internalExplanationDialog != null){
+                this.internalExplanationDialog.dispose();
+            }
+            this.logger.debug("Internal explanation dialog disposed");
         }
     }
 

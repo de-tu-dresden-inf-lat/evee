@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.proofs.tools;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
@@ -26,6 +27,7 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
     public void setOntology(ONTOLOGY ontology) {
         this.proofGenerator.setOntology(ontology);
     }
+
     public Collection<Set<SENTENCE>> getJustifications(SENTENCE sentence) throws ProofGenerationException {
         IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
 
@@ -56,7 +58,7 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
             boolean cycle = false;
             for(IInference<SENTENCE> inference: proof.getInferences(sentence)){
 //                System.out.println("Justifications based on ");
-                System.out.println(inference);
+//                System.out.println(inference);
                 if (ProofTools.isAsserted(inference)) {
                     justifications.add(Collections.singleton(sentence));
 //                    System.out.println("For "+sentence);
@@ -97,13 +99,6 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
             if(just.contains(include))
                 result.add(just);
         return result;
-    }
-
-
-    public Set<Set<SENTENCE>> getJustifications2(SENTENCE sentence) throws ProofGenerationException {
-        IProof proof = proofGenerator.getProof(sentence);
-        Iterable<IInference<SENTENCE>> toProcess = ProofTools. proof.getInferences()
-
     }
 
 
