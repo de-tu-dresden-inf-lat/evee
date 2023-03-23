@@ -26,17 +26,6 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
     public void setOntology(ONTOLOGY ontology) {
         this.proofGenerator.setOntology(ontology);
     }
-
-    @Deprecated
-    public Set<Set<SENTENCE>> getJustifications3(SENTENCE sentence) throws ProofGenerationException {
-        IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
-        System.out.println("Proof: ");
-        System.out.println(proof);
-        Queue<SENTENCE> toProcess = new LinkedList<>();
-        toProcess.add(sentence);
-        return getJustifications(proof, toProcess, new HashSet<>());
-    }
-
     public Collection<Set<SENTENCE>> getJustifications(SENTENCE sentence) throws ProofGenerationException {
         IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
 
@@ -97,59 +86,6 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
         }
     }
 
-    @Deprecated
-    public Collection<Set<SENTENCE>> getJustifications2(SENTENCE sentence) throws ProofGenerationException {
-        IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
-        System.out.println("Proof: ");
-        System.out.println(proof);
-
-        Set<IInference<SENTENCE>> reachableInf = new HashSet<>();
-        fillReachableInferences(proof, proof.getFinalConclusion(), reachableInf);
-
-        Set<SENTENCE> reachableAss = new HashSet<>();
-        for(IInference<SENTENCE> inf:reachableInf){
-            if(ProofTools.isAsserted(inf))
-                reachableAss.add(inf.getConclusion());
-        }
-
-        Multimap<SENTENCE, Set<SENTENCE>> justifications = HashMultimap.create();
-        reachableAss.forEach(a -> justifications.put(a, Collections.singleton(a)));
-
-        Set<IInference<SENTENCE>> unprocessed = new HashSet<>(reachableInf);
-        while(!unprocessed.isEmpty()){
-            IInference<SENTENCE> next = unprocessed.iterator().next();
-            unprocessed.remove(next);
-
-        }
-
-        return justifications.get(sentence);
-    }
-
-    @Deprecated
-    public Set<SENTENCE> reachableAssertions(IProof<SENTENCE> proof) {
-        Set<IInference<SENTENCE>> reachableInf = new HashSet<>();
-        fillReachableInferences(proof, proof.getFinalConclusion(), reachableInf);
-        Set<SENTENCE> reachableAss = new HashSet<>();
-        for(IInference<SENTENCE> inf:reachableInf){
-            if(ProofTools.isAsserted(inf))
-                reachableAss.add(inf.getConclusion());
-        }
-        return reachableAss;
-    }
-
-    @Deprecated
-    private void fillReachableInferences(IProof<SENTENCE> proof, SENTENCE conclusion, Set<IInference<SENTENCE>> toFill) {
-        if(toFill.contains(conclusion))
-            return;
-        else {
-            proof.getInferences(conclusion).forEach( inf -> {
-               toFill.add(inf);
-               inf.getPremises().forEach(p -> fillReachableInferences(proof,p,toFill));
-            });
-            return;
-        }
-    }
-
     /**
      * Get all justifications that include the given sentence.
      *
@@ -163,44 +99,11 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
         return result;
     }
 
-    /**
-     * Probably not optimal - just implemented first approach that came to mind.
-     */
-    @Deprecated
-    private Set<Set<SENTENCE>> getJustifications(IProof<SENTENCE> proof, Queue<SENTENCE> toProcess,
-                                                 Set<SENTENCE> currentBranch) {
-        if(currentBranch.contains(toProcess.peek())) {
-            return new HashSet<>();
-        }
-        else if(toProcess.isEmpty()) {
-            return Collections.singleton(Collections.emptySet());
-        }
-        else {
-            System.out.println("to process: "+toProcess);
-            SENTENCE head = toProcess.poll();
-            currentBranch.add(head); // <-- we know it cannot contain it
-            Set<Set<SENTENCE>> result = new HashSet<>();
-            for(IInference<SENTENCE> inference: proof.getInferences(head)) {
-                if(ProofTools.isAsserted(inference)) {
-                    for(Set<SENTENCE> justification: getJustifications(proof, toProcess,currentBranch)){
-                        justification.add(head);
-                        result.add(justification);
-                    }
-                } else {
-                    toProcess.addAll(inference.getPremises());
-                    result.addAll(getJustifications(proof,toProcess,currentBranch));
 
-                    // we poll once for every premise, instead of just remove the premises
-                    // otherwise, we might accidentally remove duplicate occurrences of a premise
-                    for(SENTENCE prem:inference.getPremises()){
-                        toProcess.poll();
-                    }
-                }
-            }
-            toProcess.add(head);
-            currentBranch.remove(head); // <-- we know there cannot have been duplicate additions
-            return result;
-        }
+    public Set<Set<SENTENCE>> getJustifications2(SENTENCE sentence) throws ProofGenerationException {
+        IProof proof = proofGenerator.getProof(sentence);
+        Iterable<IInference<SENTENCE>> toProcess = ProofTools. proof.getInferences()
+
     }
 
 
