@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.tools.IO.LoadingAbortedException;
 import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
@@ -460,6 +461,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 //                this.vocabularyTabbedPane.setSelectedIndex(0);
             } catch (IOException ignored){
 //                error-message already shown in SignatureFileHandler
+            } catch (LoadingAbortedException ignored){
+//                no handling necessary
             }
         });
     }
