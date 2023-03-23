@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.proofs.tools;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
@@ -30,8 +31,8 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
     @Deprecated
     public Set<Set<SENTENCE>> getJustifications3(SENTENCE sentence) throws ProofGenerationException {
         IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
-        System.out.println("Proof: ");
-        System.out.println(proof);
+        //System.out.println("Proof: ");
+        //System.out.println(proof);
         Queue<SENTENCE> toProcess = new LinkedList<>();
         toProcess.add(sentence);
         return getJustifications(proof, toProcess, new HashSet<>());
@@ -67,7 +68,7 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
             boolean cycle = false;
             for(IInference<SENTENCE> inference: proof.getInferences(sentence)){
 //                System.out.println("Justifications based on ");
-                System.out.println(inference);
+//                System.out.println(inference);
                 if (ProofTools.isAsserted(inference)) {
                     justifications.add(Collections.singleton(sentence));
 //                    System.out.println("For "+sentence);
@@ -100,11 +101,11 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
     @Deprecated
     public Collection<Set<SENTENCE>> getJustifications2(SENTENCE sentence) throws ProofGenerationException {
         IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
-        System.out.println("Proof: ");
-        System.out.println(proof);
+//        System.out.println("Proof: ");
+//        System.out.println(proof);
 
         Set<IInference<SENTENCE>> reachableInf = new HashSet<>();
-        fillReachableInferences(proof, proof.getFinalConclusion(), reachableInf);
+        ProofTools.fillReachableInferences(proof, proof.getFinalConclusion(), reachableInf);
 
         Set<SENTENCE> reachableAss = new HashSet<>();
         for(IInference<SENTENCE> inf:reachableInf){
@@ -123,31 +124,6 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
         }
 
         return justifications.get(sentence);
-    }
-
-    @Deprecated
-    public Set<SENTENCE> reachableAssertions(IProof<SENTENCE> proof) {
-        Set<IInference<SENTENCE>> reachableInf = new HashSet<>();
-        fillReachableInferences(proof, proof.getFinalConclusion(), reachableInf);
-        Set<SENTENCE> reachableAss = new HashSet<>();
-        for(IInference<SENTENCE> inf:reachableInf){
-            if(ProofTools.isAsserted(inf))
-                reachableAss.add(inf.getConclusion());
-        }
-        return reachableAss;
-    }
-
-    @Deprecated
-    private void fillReachableInferences(IProof<SENTENCE> proof, SENTENCE conclusion, Set<IInference<SENTENCE>> toFill) {
-        if(toFill.contains(conclusion))
-            return;
-        else {
-            proof.getInferences(conclusion).forEach( inf -> {
-               toFill.add(inf);
-               inf.getPremises().forEach(p -> fillReachableInferences(proof,p,toFill));
-            });
-            return;
-        }
     }
 
     /**
@@ -176,7 +152,7 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
             return Collections.singleton(Collections.emptySet());
         }
         else {
-            System.out.println("to process: "+toProcess);
+//            System.out.println("to process: "+toProcess);
             SENTENCE head = toProcess.poll();
             currentBranch.add(head); // <-- we know it cannot contain it
             Set<Set<SENTENCE>> result = new HashSet<>();
