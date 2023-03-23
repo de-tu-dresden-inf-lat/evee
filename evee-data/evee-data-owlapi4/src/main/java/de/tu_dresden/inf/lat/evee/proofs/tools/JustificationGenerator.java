@@ -2,6 +2,8 @@ package de.tu_dresden.inf.lat.evee.proofs.tools;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
@@ -9,6 +11,7 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Extract justifications from the derivation structures provided by the proof generator.
@@ -101,6 +104,88 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
         return result;
     }
 
+    public Set<Set<SENTENCE>> getJustifications2(SENTENCE sentence, SENTENCE include) throws ProofGenerationException {
+        Set<Set<SENTENCE>> result = new HashSet<>();
+        for(Set<SENTENCE> just:getJustifications2(sentence))
+            if(just.contains(include))
+                result.add(just);
+        return result;
+    }
+    public Set<Set<SENTENCE>> getJustifications2(SENTENCE sentence) throws ProofGenerationException {
+        IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
 
+        if(proof.getInferences(sentence).isEmpty()){
+            System.out.println("No proof, no justification");
+            return Collections.emptySet();
+        }
+
+        System.out.println(proof);
+
+        Set<IInference<SENTENCE>> inferences = new HashSet<>(proof.getInferences());
+        //ProofTools.fillReachableInferences(proof, sentence, inferences);
+
+        System.out.println("Starting with "+inferences.size());
+
+        SetMultimap<SENTENCE,Set<SENTENCE>> sentence2justification = HashMultimap.create();
+
+        Set<IInference<SENTENCE>> toProcess = new HashSet<>(inferences);
+
+        Set<SENTENCE> changed = new HashSet<>();
+        Set<IInference<SENTENCE>> remove = new HashSet<>();
+
+        for(IInference<SENTENCE> inference: inferences){
+            SENTENCE conclusion = inference.getConclusion();
+            if(inference.getPremises().isEmpty()){
+                changed.add(conclusion);
+                remove.add(inference);
+                if(ProofTools.isAsserted(inference))
+                    sentence2justification.put(conclusion, Collections.singleton(conclusion));
+                else
+                    sentence2justification.put(conclusion, Collections.emptySet());
+            }
+        }
+        inferences.remove(remove);
+
+        System.out.println("changed: "+changed);
+        System.out.println("inferences: "+inferences.size());
+
+        while(!changed.isEmpty()){
+            System.out.println("New round!");
+            System.out.println("changed: "+changed.size());
+            Set<SENTENCE> newChanged = new HashSet<>();
+            for(IInference<SENTENCE> inference: inferences){
+
+                if(inference.getPremises()
+                        .stream()
+                        .anyMatch(changed::contains) &&
+                    inference.getPremises()
+                            .stream()
+                            .allMatch(sentence2justification::containsKey)){
+
+                    //System.out.println("Dirty inference: ");
+                    //System.out.println(inference);
+
+                    Collection<Set<Set<SENTENCE>>> justs = inference.getPremises()
+                            .stream()
+                            .map(sentence2justification::get)
+                            .collect(Collectors.toSet());
+                    Set<Set<SENTENCE>> newJust = GeneralTools.unions(justs);
+
+                    SENTENCE conclusion = inference.getConclusion();
+
+                    if(!sentence2justification.get(conclusion).containsAll(newJust)) {
+                        sentence2justification.putAll(inference.getConclusion(),
+                                newJust);
+                        newChanged.add(inference.getConclusion());
+                    }
+                }
+            }
+            changed=newChanged;
+        }
+        if(sentence2justification.containsKey(sentence))
+            return sentence2justification.get(sentence);
+        else
+            return new HashSet<>();
+    }
 
 }

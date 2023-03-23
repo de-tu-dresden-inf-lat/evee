@@ -67,7 +67,7 @@ public class ProofTools {
 
 	public static <SENTENCE> void fillReachableInferences(
 			IProof<SENTENCE> proof, SENTENCE conclusion, Set<IInference<SENTENCE>> toFill) {
-		fillReachableInferences(proof,conclusion,toFill, new HashSet<>());
+		fillReachableInferences(proof, conclusion, toFill, new HashSet<>());
 	}
 
 	private static <SENTENCE> void fillReachableInferences(
