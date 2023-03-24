@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
 
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -71,11 +72,15 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
     @Override
-    public Set<OWLIndividualAxiom> generateModel() {
+    public Set<OWLIndividualAxiom> generateModel() throws ModelGenerationException {
         res = rf.createReasoner(ont);
         reset();
-        getModel();
-        return model;
+        if (!res.isConsistent()) {
+            throw new ModelGenerationException("Inconsistent ontology");
+        } else {
+            getModel();
+            return model;
+        }
     }
 
     private void reset() {
@@ -144,7 +149,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                         .forEach(cl -> model.add(df.getOWLClassAssertionAxiom(cl, e.getKey()))));
         model.addAll(ont.getABoxAxioms(Imports.INCLUDED).stream()
                 .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
-                .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
+                        .map(ax -> (OWLIndividualAxiom) ax)
                 .collect(Collectors.toSet()));
     }
 
