@@ -175,17 +175,21 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
             this.resultHolderComponent.setLayout(new BoxLayout(this.resultHolderComponent, BoxLayout.PAGE_AXIS));
             INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             if (explainer != null){
+                this.logger.debug("Explainer available");
                 if (explainer.getSettingsComponent() != null){
+                    this.logger.debug("Adding settings to explanationServiceComponent");
                     JSplitPane serviceSettingsAndResultSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                             explainer.getSettingsComponent(), this.resultHolderComponent);
                     serviceSettingsAndResultSplitPane.setDividerLocation(0.3);
                     this.nonEntailmentExplanationServiceComponent.add(serviceSettingsAndResultSplitPane);
                 }
                 else {
+                    this.logger.debug("No settings available");
                     this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
                 }
             }
             else {
+                this.logger.debug("No explainer available");
                 this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
             }
     }
@@ -228,8 +232,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
     }
 
     private void repaintComponents(){
-            this.repaint();
-            this.revalidate();
+        this.repaint();
+        this.revalidate();
     }
 
     @Override
@@ -282,7 +286,18 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 break;
             case ERROR :
                 SwingUtilities.invokeLater(() -> {
+                    this.resetMainComponent();
+                    this.repaintComponents();
                     UIUtilities.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
+                });
+                break;
+            case RESULT_RESET:
+                SwingUtilities.invokeLater(() -> {
+                    resetExplanationServiceComponent();
+                    resetHorizontalSplitPane();
+                    resetHolderPanel();
+                    addHolderPanel();
+                    repaintComponents();
                 });
                 break;
         }
@@ -474,16 +489,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         explainer.setOntology(this.getOWLModelManager().getActiveOntology());
         explainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());
         explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
-        this.resetMainComponent();
-        this.repaintComponents();
         explainer.computeExplanation();
     }
 
     private void showResult(Component resultComponent){
+        this.resetMainComponent();
         this.resultHolderComponent.removeAll();
         this.resultHolderComponent.add(resultComponent);
-        this.repaint();
-        this.revalidate();
+        this.repaintComponents();
     }
 
     private void addObservation(){
@@ -554,6 +567,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         this.selectedObservationListModel.removeAll();
         this.selectedObservationListModel.addElements(observationAxioms);
         this.selectedObservationList.clearSelection();
+        this.changeComputeButtonStatus();
     }
 
     private void saveObservation(){
@@ -619,13 +633,11 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
 
         @Override
         public void handleChange(OWLModelManagerChangeEvent changeEvent) {
-            SwingUtilities.invokeLater(() -> {
-                if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
-                        changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
-                    logger.debug("Change or reload of active ontology detected");
-                    selectedObservationListModel.removeAll();
-                }
-            });
+            if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
+                    changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
+                logger.debug("Change or reload of active ontology detected");
+                selectedObservationListModel.removeAll();
+            }
             change();
         }
 
@@ -638,10 +650,12 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
         private void change(){
             INonEntailmentExplanationService<?> explainer = nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(getOWLModelManager().getActiveOntology());
-            SwingUtilities.invokeLater(() -> {
-                resetMainComponent();
-                changeComputeButtonStatus();
-            });
+//            resetExplanationServiceComponent();
+//            resetHorizontalSplitPane();
+//            resetHolderPanel();
+//            addHolderPanel();
+//            repaintComponents();
+            changeComputeButtonStatus();
         }
     }
 

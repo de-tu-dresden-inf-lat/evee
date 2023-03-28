@@ -1,7 +1,9 @@
 package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
 
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
+
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
@@ -24,26 +26,27 @@ abstract public class AbstractCounterexampleGenerator implements INonEntailmentE
     protected Set<OWLAxiom> observation;
     protected OWLOntology activeOntology;
     protected Set<OWLIndividualAxiom> model;
+    protected OWLOntology workingCopy;
     protected IOWLModelGenerator modelGenerator;
 
 
-    protected JTabbedPane getTabbedPane() {
-
-        ModelManager man = new ModelManager(this.model, this.owlEditorKit, this, this.activeOntology);
-        Component graphComponent = man.getGraphModel();
-        Component tableComponent = man.getTableModel();
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setPreferredSize(new Dimension(400, 400));
-        tabbedPane.addTab("Graph View", graphComponent);
-        tabbedPane.addTab("Table View", tableComponent);
-        return tabbedPane;
-    }
+//    protected JTabbedPane getTabbedPane() {
+//
+//        ModelManager man = new ModelManager(this.model, this.owlEditorKit, this, this.workingCopy);
+//        Component graphComponent = man.getGraphModel();
+//        Component tableComponent = man.getTableModel();
+//        JTabbedPane tabbedPane = new JTabbedPane();
+//        tabbedPane.setPreferredSize(new Dimension(400, 400));
+//        tabbedPane.addTab("Graph View", graphComponent);
+//        tabbedPane.addTab("Table View", tableComponent);
+//        return tabbedPane;
+//    }
 
     public void computeExplanation() {
         try {
 
             modelGenerator = new ELSmallModelGenerator();
-            modelGenerator.setOntology(activeOntology);
+            modelGenerator.setOntology(workingCopy);
             model = modelGenerator.generateModel();
             this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                     ExplanationEventType.COMPUTATION_COMPLETE));
@@ -54,7 +57,8 @@ abstract public class AbstractCounterexampleGenerator implements INonEntailmentE
     }
 
     public Component getResult() {
-        return getTabbedPane();
+        ModelManager man = new ModelManager(this.model, this.owlEditorKit, this, this.workingCopy);
+        return man.getGraphModel();
     }
 
     @Override
@@ -68,7 +72,7 @@ abstract public class AbstractCounterexampleGenerator implements INonEntailmentE
     }
 
     @Override
-    public Set<OWLIndividualAxiom> generateModel() {
+    public Set<OWLIndividualAxiom> generateModel() throws ModelGenerationException {
         return modelGenerator.generateModel();
     }
 
@@ -103,7 +107,11 @@ abstract public class AbstractCounterexampleGenerator implements INonEntailmentE
 
     @Override
     public Stream generateExplanations() {
-        return Stream.of(generateModel());
+        try {
+            return Stream.of(generateModel());
+        } catch (ModelGenerationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -1,6 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
 
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -9,8 +11,6 @@ import org.semanticweb.owlapi.model.parameters.Imports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,7 +21,7 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
     private OWLClassExpression subClass;
     private OWLClassExpression superClass;
     private int removedAxioms = 0;
-//    private String errorMessage ="";
+
     private final OWLDataFactory df;
     private final OWLOntologyManager man;
 
@@ -36,18 +36,15 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
 
     public void computeExplanation() {
         try {
-            OWLOntology workingCopy = null;
             checkObservation(observation.iterator().next());
             workingCopy = getWorkingCopy();
-            modelGenerator = new ELSmallModelGenerator();
-            modelGenerator.setOntology(workingCopy);
-            model = modelGenerator.generateModel();
-            checkConsistency(model);
+            model = generateModel();
+
             subsumed = checkSubsumption(model);
-            model = filterAxioms(model);
             this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                     ExplanationEventType.COMPUTATION_COMPLETE));
         } catch (Exception e) {
+            this.errorMessage = e.getMessage();
             this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                     ExplanationEventType.ERROR));
         }
@@ -69,12 +66,12 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
         return workingCopy;
     }
 
-    private void checkConsistency(Set<OWLIndividualAxiom> model) throws Exception {
-        if (model.isEmpty()) {
-            this.errorMessage = "The Ontology is inconsistent";
-            throw new Exception();
-        }
-    }
+//    private void checkConsistency(Set<OWLAxiom> model) throws Exception {
+//        if (model.isEmpty()) {
+//            this.errorMessage = "The Ontology is inconsistent";
+//            throw new Exception();
+//        }
+//    }
 
     private boolean checkSubsumption(Set<OWLIndividualAxiom> model) {
         return model.contains(df.getOWLClassAssertionAxiom(df.getOWLClass(IRI.create("FreshClass")), df.getOWLNamedIndividual(IRI.create("root-Ind"))));
@@ -87,8 +84,8 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
             this.subClass = subClass;
             this.superClass = superClass;
         } else {
-            this.errorMessage = "ClassExpressions is not in EL";
-            throw new Exception();
+//            this.errorMessage = ;
+            throw new Exception("ClassExpressions is not in EL");
         }
     }
 
@@ -105,31 +102,31 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
         return true;
     }
 
-    public Component getResult() {
+//    public Component getResult() {
+//
+////        JPanel component = new JPanel();
+////        component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
+////        JTabbedPane tabbedPane = getTabbedPane();
+////        JPanel textPanel = getTextPanel();
+////        component.add(textPanel);
+////        component.add(Box.createRigidArea(new Dimension(20, 20)));
+////        component.add(tabbedPane);
+//        return component;
+//    }
 
-        JPanel component = new JPanel();
-        component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
-        JTabbedPane tabbedPane = getTabbedPane();
-        JPanel textPanel = getTextPanel();
-        component.add(textPanel);
-        component.add(Box.createRigidArea(new Dimension(20, 20)));
-        component.add(tabbedPane);
-        return component;
-    }
-
-    private JPanel getTextPanel() {
-        JPanel textPanel = new JPanel();
-        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.PAGE_AXIS));
-
-        if (subsumed) {
-            textPanel.add(new JLabel("Subsumption relation holds. A model is shown below."));
-        } else {
-            textPanel.add(new JLabel("Subsumption relation does not hold. A counterexample is shown below. "));
-        }
-        textPanel.add(new JLabel(removedAxioms + " axioms are not supported. Reasoning results may be incorrect."));
-
-        return textPanel;
-    }
+//    private JPanel getTextPanel() {
+//        JPanel textPanel = new JPanel();
+//        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.PAGE_AXIS));
+//
+//        if (subsumed) {
+//            textPanel.add(new JLabel("Subsumption relation holds. A model is shown below."));
+//        } else {
+//            textPanel.add(new JLabel("Subsumption relation does not hold. A counterexample is shown below. "));
+//        }
+//        textPanel.add(new JLabel(removedAxioms + " axioms are not supported. Reasoning results may be incorrect."));
+//
+//        return textPanel;
+//    }
 
     private Set<OWLIndividualAxiom> filterAxioms(Set<OWLIndividualAxiom> axioms) {
         Set<OWLIndividualAxiom> filtered = axioms.stream()
@@ -143,19 +140,20 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
     }
 
     @Override
-    public Set<OWLIndividualAxiom> generateModel() {
-        OWLOntology workingCopy = null;
-
-        try {
-            workingCopy = this.getWorkingCopy();
-        } catch (Exception var3) {
-            throw new RuntimeException(var3);
-        }
-
-        this.modelGenerator = new ELSmallModelGenerator();
-        this.modelGenerator.setOntology(workingCopy);
-        this.model = this.modelGenerator.generateModel();
-        this.model = this.filterAxioms(this.model);
-        return this.model;
+    public Set<OWLIndividualAxiom> generateModel() throws ModelGenerationException {
+        IOWLModelGenerator modelGenerator = new ELSmallModelGenerator();
+        modelGenerator.setOntology(workingCopy);
+        Set<OWLIndividualAxiom> model = modelGenerator.generateModel();
+        model = this.filterAxioms(model);
+        return model;
     }
+
+    public int getRemovedAxioms() {
+        return removedAxioms;
+    }
+    public boolean getSubsumed() {
+        return subsumed;
+    }
+
+
 }

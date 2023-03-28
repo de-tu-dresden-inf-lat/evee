@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeProofSignatureUIPreferenceManager;
+import de.tu_dresden.inf.lat.evee.protege.tools.IO.LoadingAbortedException;
 import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
@@ -292,6 +293,8 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
 //                error-message already shown in SignatureFileHandler
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
+            } catch(LoadingAbortedException ignored){
+//                no handling necessary
             }
         });
     }

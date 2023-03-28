@@ -2,6 +2,8 @@ package de.tu_dresden.inf.lat.evee.protege.modelgeneration;
 
 
 import com.google.common.collect.Sets;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import org.graphstream.graph.Edge;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
@@ -59,17 +61,31 @@ public class ModelManager {
         this.conceptData = this.createConceptData();
     }
 
+    public void refreshModel(Set<OWLAxiom> additionalAxioms) throws ModelGenerationException {
+        this.man.addAxioms(this.ont, additionalAxioms);
+        try {
+            this.model = this.counterExampleGenerator.generateModel();
+            this.res = this.rf.createReasoner(this.ont);
+            this.classMap = this.sortClassMap(this.createClassMap());
+            this.roleData = this.createRoleData();
+            this.conceptData = this.createConceptData();
+            this.graph = this.createGraph(this.classMap, this.roleData);
+            this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+            this.viewer.enableAutoLayout();
+            this.man.removeAxioms(this.ont, additionalAxioms);
+        } catch (ModelGenerationException e) {
+            this.man.removeAxioms(this.ont, additionalAxioms);
+            throw e;
+        }
+    }
+
     public Component getTableModel() {
-
-
         JPanel component = new JPanel();
         component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
-
         String[] columnC = {"Indivdual", "Concept Names"};
         String[] columnR = {"Subject Individual", "Object Property", "Object Individual"};
         DefaultTableModel resultModelC = new DefaultTableModel();
         DefaultTableModel resultModelR = new DefaultTableModel();
-
         resultModelC.setDataVector(conceptData, columnC);
         resultModelR.setDataVector(roleData, columnR);
         component.setBorder(new EmptyBorder(new Insets(20, 20, 20, 20)));
@@ -93,7 +109,7 @@ public class ModelManager {
         this.graph = this.createGraph(this.classMap, this.roleData);
         this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         this.viewer.enableAutoLayout();
-        GraphModelComponent component = new GraphModelComponent(this.viewer, this.graph, this.classMap, this, this.owlEditorKit);
+        GraphModelComponent component = new GraphModelComponent( this, this.owlEditorKit);
         return component;
     }
 
@@ -172,22 +188,7 @@ public class ModelManager {
         return finalList;
     }
 
-    public void refreshModel(Set<OWLAxiom> additionalAxioms) {
-        this.man.addAxioms(this.ont, additionalAxioms);
-        this.model = this.counterExampleGenerator.generateModel();
-        this.res = this.rf.createReasoner(this.ont);
-        if (!this.res.isConsistent()) {
-            this.man.removeAxioms(this.ont, additionalAxioms);
-        } else {
-            this.classMap = this.sortClassMap(this.createClassMap());
-            this.roleData = this.createRoleData();
-            this.conceptData = this.createConceptData();
-            this.graph = this.createGraph(this.classMap, this.roleData);
-            this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-            this.viewer.enableAutoLayout();
-            this.man.removeAxioms(this.ont, additionalAxioms);
-        }
-    }
+
 
     private List<List<OWLClass>> compareClassExpressions(List<OWLClass> classList) {
         Set<OWLClass> subsumed = new HashSet<>();
@@ -289,6 +290,10 @@ public class ModelManager {
 
     public Object[][] getRoleData() {
         return this.roleData;
+    }
+
+    protected OWLOntology getOnt() {
+        return this.ont;
     }
 
     public GraphicGraph getGraph() {

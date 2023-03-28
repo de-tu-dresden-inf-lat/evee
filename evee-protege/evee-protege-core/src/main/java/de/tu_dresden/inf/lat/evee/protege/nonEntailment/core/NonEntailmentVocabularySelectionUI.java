@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.tools.IO.LoadingAbortedException;
 import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
@@ -210,12 +211,12 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.buttonHolderPanel.add(thirdToolBar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton saveSignatureButton = UIUtilities.createNamedButton(SAVE_SIGNATURE_COMMAND,
-                SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
-        buttonList.add(saveSignatureButton);
         JButton loadSignatureButton = UIUtilities.createNamedButton(LOAD_SIGNATURE_COMMAND,
                 LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
         buttonList.add(loadSignatureButton);
+        JButton saveSignatureButton = UIUtilities.createNamedButton(SAVE_SIGNATURE_COMMAND,
+                SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
+        buttonList.add(saveSignatureButton);
         JToolBar fourthToolBar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(fourthToolBar);
     }
@@ -460,6 +461,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 //                this.vocabularyTabbedPane.setSelectedIndex(0);
             } catch (IOException ignored){
 //                error-message already shown in SignatureFileHandler
+            } catch (LoadingAbortedException ignored){
+//                no handling necessary
             }
         });
     }
