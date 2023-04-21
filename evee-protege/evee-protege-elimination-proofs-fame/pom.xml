@@ -116,6 +116,7 @@
                             com.google.common.base.*;-split-package:=merge-last,
                             com.google.common.math.*;-split-package:=merge-last,
                             com.google.common.primitives.*;-split-package:=merge-last,
+                            com.google.errorprone.annotations.*;-split-package:=merge-last,
                         </Private-Package>
                     </instructions>
                 </configuration>
