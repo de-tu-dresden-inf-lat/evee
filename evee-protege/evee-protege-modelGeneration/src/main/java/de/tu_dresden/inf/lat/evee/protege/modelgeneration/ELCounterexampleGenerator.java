@@ -156,4 +156,8 @@ public class ELCounterexampleGenerator extends AbstractCounterexampleGenerator {
     }
 
 
+    @Override
+    public IRI getRoot() {
+        return null;
+    }
 }
