@@ -45,9 +45,9 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
     }
 
     @Override
-    public void setup(OWLEditorKit editorKit) {
-        this.owlEditorKit = editorKit;
-        super.setup(editorKit);
+    public void setup(OWLEditorKit owlEditorKit) {
+        this.owlEditorKit = owlEditorKit;
+        super.setup(owlEditorKit);
     }
 
     @Override
