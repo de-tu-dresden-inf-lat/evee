@@ -10,6 +10,7 @@ import java.util.Set;
 
 public class AbductionCache<Result> {
 
+//    todo: improve -> map instead of two lists
     private final List<Set<OWLAxiom>> observationList;
     private final List<Collection<OWLEntity>> abducibleList;
     private final List<Result> results;

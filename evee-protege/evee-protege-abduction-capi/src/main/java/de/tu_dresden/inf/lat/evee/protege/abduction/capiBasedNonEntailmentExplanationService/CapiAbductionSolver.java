@@ -52,9 +52,9 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     }
 
     @Override
-    public void setup(OWLEditorKit editorKit){
-        this.owlEditorKit = editorKit;
-        super.setup(editorKit);
+    public void setup(OWLEditorKit owlEditorKit){
+        this.owlEditorKit = owlEditorKit;
+        super.setup(owlEditorKit);
     }
 
     @Override

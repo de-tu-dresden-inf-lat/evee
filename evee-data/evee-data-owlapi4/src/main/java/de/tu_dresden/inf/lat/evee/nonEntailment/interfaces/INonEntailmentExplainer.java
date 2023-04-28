@@ -18,4 +18,7 @@ public interface INonEntailmentExplainer<Observation, Symbol, Ontology, Explanat
      */
     boolean supportsExplanation();
 
+//    todo:
+//    boolean ignoresPartsOfOntology();
+
 }

@@ -45,7 +45,9 @@ import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 
 import static org.junit.Assert.assertNotNull;
 
-public class NonEntailmentViewComponent extends AbstractOWLViewComponent implements ActionListener, IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> {
+public class NonEntailmentViewComponent extends AbstractOWLViewComponent
+        implements ActionListener,
+        IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> {
 
     private final NonEntailmentExplainerManager nonEntailmentExplainerManager;
     private final ViewComponentOntologyChangeListener changeListener;
@@ -278,6 +280,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
 
     @Override
     public void handleEvent(ExplanationEvent<INonEntailmentExplanationService<?>> event){
+        this.logger.debug("Handling explanationEvent: {}", event.getType());
         switch (event.getType()){
             case COMPUTATION_COMPLETE :
                 SwingUtilities.invokeLater(() ->{
@@ -293,11 +296,16 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent impleme
                 break;
             case RESULT_RESET:
                 SwingUtilities.invokeLater(() -> {
-                    resetExplanationServiceComponent();
-                    resetHorizontalSplitPane();
-                    resetHolderPanel();
-                    addHolderPanel();
-                    repaintComponents();
+                    if (event.getSource().equals(
+                            this.nonEntailmentExplainerManager.getCurrentExplainer())){
+                        resetExplanationServiceComponent();
+                        resetHorizontalSplitPane();
+                        resetHolderPanel();
+                        addHolderPanel();
+                        repaintComponents();
+                    } else{
+                        this.logger.debug("EventSource is NOT the current explainer, event ignored");
+                    }
                 });
                 break;
         }
