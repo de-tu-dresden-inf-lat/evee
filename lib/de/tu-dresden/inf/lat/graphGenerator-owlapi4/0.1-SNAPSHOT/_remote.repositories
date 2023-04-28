@@ -1,0 +1,7 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Mar 24 17:54:06 MSK 2023
+graphGenerator-owlapi4-0.1-SNAPSHOT.jar>=
+graphGenerator-owlapi4-0.1-SNAPSHOT-main-resources.jar>=
+graphGenerator-owlapi4-0.1-SNAPSHOT.pom>=
+graphGenerator-owlapi4-0.1-SNAPSHOT-sources.jar>=
+graphGenerator-owlapi4-0.1-SNAPSHOT-test-sources.jar>=

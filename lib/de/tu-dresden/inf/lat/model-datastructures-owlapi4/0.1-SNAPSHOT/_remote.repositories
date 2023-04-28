@@ -1,0 +1,7 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Tue Apr 25 17:18:57 MSK 2023
+model-datastructures-owlapi4-0.1-SNAPSHOT.jar>=
+model-datastructures-owlapi4-0.1-SNAPSHOT-main-resources.jar>=
+model-datastructures-owlapi4-0.1-SNAPSHOT-test-sources.jar>=
+model-datastructures-owlapi4-0.1-SNAPSHOT-sources.jar>=
+model-datastructures-owlapi4-0.1-SNAPSHOT.pom>=

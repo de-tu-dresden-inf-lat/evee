@@ -106,6 +106,24 @@
             <artifactId>jackson-core</artifactId>
             <version>2.13.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.graphstream</groupId>
+            <artifactId>gs-ui-swing</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graphstream</groupId>
+            <artifactId>gs-core</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.swt.win32.win32</groupId>
+            <artifactId>x86</artifactId>
+            <version>3.3.0-v3346</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -171,6 +189,10 @@
                             junit.framework.*,
                             junit.runner.*,
                             org.hamcrest.*,
+
+                            org.graphstream.*,
+                            javax.xml.stream.*,
+                            org.miv.*
 <!--                            guru.nidi.graphviz.attribute.*,-->
 <!--                            guru.nidi.graphviz.engine.*,-->
 <!--                            guru.nidi.graphviz.model.*,-->
