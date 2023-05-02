@@ -45,7 +45,7 @@ public class ModelManager {
     private Map<String, List<OWLClass>> classMap;
     private Object[][] roleData;
     private Object[][] conceptData;
-    private IRI root;
+    private Set<IRI> root;
     private Viewer viewer;
     private GraphicGraph graph;
     private OWLSubClassOfAxiom observation;
@@ -56,7 +56,7 @@ public class ModelManager {
         this.ont = ont;
         this.man = OWLManager.createOWLOntologyManager();
         this.counterExampleGenerator = counterExampleGenerator;
-        this.root = counterExampleGenerator.getRoot();
+        this.root = counterExampleGenerator.getMarkedIndividuals();
         this.model = model;
         this.owlEditorKit = owlEditorKit;
         this.rf = new ReasonerFactory();
@@ -76,7 +76,7 @@ public class ModelManager {
             }
             logger.info("Ontology with the additional axioms is consistent");
             this.model = this.counterExampleGenerator.generateModel();
-            this.root = counterExampleGenerator.getRoot();
+            this.root = counterExampleGenerator.getMarkedIndividuals();
             this.classMap = this.sortClassMap(this.createClassMap());
             this.roleData = this.createRoleData();
             this.conceptData = this.createConceptData();
@@ -99,8 +99,7 @@ public class ModelManager {
         OWLReasoner reasoner = rf.createReasoner(this.ont);
         boolean isConsistent = reasoner.isConsistent();
         this.man.removeAxiom(this.ont,newAx);
-
-                return isConsistent;
+        return isConsistent;
     }
 
     public Component getTableModel() {
@@ -214,8 +213,6 @@ public class ModelManager {
         return finalList;
     }
 
-
-
     private List<List<OWLClass>> compareClassExpressions(List<OWLClass> classList) {
         Set<OWLClass> subsumed = new HashSet<>();
         Set<OWLClass> subsumers = new HashSet<>();
@@ -238,15 +235,16 @@ public class ModelManager {
     }
 
     private GraphicGraph createNodes(GraphicGraph graph, Map<String, List<OWLClass>> classMap) {
-        logger.info(root.getShortForm());
 
         classMap.keySet().stream().forEach(k -> {
             GraphicNode n = (GraphicNode) graph.addNode(k);
-            if (n.getId().equalsIgnoreCase(root.getShortForm()) ) {
-                n.setAttribute("ui.style", "fill-color: #000000;");
+            for(IRI iri:this.root) {
+                if(iri.getShortForm().equalsIgnoreCase(n.getId())) {
+                    n.setAttribute("ui.style", "fill-color: #000000;");
+                }
             }
         });
-        logger.info("nodes are created: "+graph.nodes().collect(Collectors.toList()));
+        logger.debug("nodes are created: "+graph.nodes().collect(Collectors.toList()));
         return graph;
     }
 
@@ -254,21 +252,7 @@ public class ModelManager {
                                      Object[][] roleData) {
         GraphicGraph graph = new GraphicGraph("model");
         createNodes(graph, classMap);
-//        Map<String, List<String>> map = new HashMap<>();
 
-//        Arrays.stream(conceptData).forEach(e -> {
-//            String ind = (String)e[0];
-//            OWLClass owlclass = (OWLClass) e[1];
-//            String stringCl = owlclass.getIRI().getShortForm().toString();
-//            GraphicNode n = (GraphicNode) graph.addNode(ind);
-//            if (n.getId()=="root-Ind") {
-//                n.setAttribute("ui.style","fill-color: #000000;");
-//            }
-//            map.merge(ind, Lists.newArrayList(stringCl), (a, b) -> {
-//                a.addAll(b);
-//                return a;
-//            });
-//        });
         Arrays.stream(roleData).forEach(e -> {
             String desc = (String) e[0];
             String succ = (String) e[2];

@@ -1,9 +1,0 @@
-<archetype>
-  <id>evee-protege-counterexample-ELKRelevant-beta</id>
-  <sources>
-    <source>src/main/java/App.java</source>
-  </sources>
-  <testSources>
-    <source>src/test/java/AppTest.java</source>
-  </testSources>
-</archetype>

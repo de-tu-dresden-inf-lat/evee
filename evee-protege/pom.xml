@@ -44,11 +44,7 @@
         <module>evee-protege-counterexample-EL</module>
         <module>evee-protege-abduction-lethe</module>
         <module>evee-protege-abduction-capi</module>
-        <module>evee-protege-counterexample-ELKRelevant-alpha</module>
-        <module>evee-protege-counterexample-ELKRelevant-diff</module>
-        <module>evee-protege-counterexample-ELKRelevant-beta</module>
-        <module>evee-protege-counterexample-ELKRelevant-flatdiff</module>
-        <module>evee-protege-counterexample-ELKRelevant-canonical</module>
+        <module>evee-protege-counterexample-ELKRelevant</module>
     </modules>
 
 </project>
