@@ -41,6 +41,7 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     private final Logger logger = Logger.getLogger(AbstractCounterexampleGenerationService.class);
 
 
+
 //    protected JTabbedPane getTabbedPane() {
 //
 //        ModelManager man = new ModelManager(this.model, this.owlEditorKit, this, this.workingCopy);
@@ -56,11 +57,9 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     public void computeExplanation() {
         try {
             checkSubsumption((OWLSubClassOfAxiom) observation.stream().findFirst().get());
-            ((IOWLNonEntailmentExplainer) counterexampleGenerator).setOntology(workingCopy);
-            counterexampleGenerator.setObservation(observation);
+//            ((IOWLNonEntailmentExplainer) counterexampleGenerator).setOntology(workingCopy);
             model = counterexampleGenerator.generateModel();
-            logger.debug(model);
-
+            logger.debug("model is generated:"+model);
             this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                     ExplanationEventType.COMPUTATION_COMPLETE));
         } catch (Exception e) {
@@ -81,8 +80,7 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     }
 
     public boolean supportsExplanation() {
-        return this.observation.size() == 1 && this.observation.stream()
-                .anyMatch((ax) -> ax.isOfType(AxiomType.SUBCLASS_OF));
+        return this.counterexampleGenerator.supportsExplanation();
     }
 
     private void checkSubsumption(OWLSubClassOfAxiom ax) throws Exception {
@@ -106,6 +104,7 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException(e);
         }
+        ((IOWLNonEntailmentExplainer) counterexampleGenerator).setOntology(workingCopy);
     }
 
     @Override
@@ -132,6 +131,7 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
 
     public void setObservation(Set<OWLAxiom> owlAxioms) {
         this.observation = owlAxioms;
+        this.counterexampleGenerator.setObservation(observation);
     }
 
     @Override

@@ -45,7 +45,7 @@ public class ModelManager {
     private Map<String, List<OWLClass>> classMap;
     private Object[][] roleData;
     private Object[][] conceptData;
-    private Set<IRI> root;
+    private Set<IRI> markedIndividuals;
     private Viewer viewer;
     private GraphicGraph graph;
     private OWLSubClassOfAxiom observation;
@@ -56,7 +56,7 @@ public class ModelManager {
         this.ont = ont;
         this.man = OWLManager.createOWLOntologyManager();
         this.counterExampleGenerator = counterExampleGenerator;
-        this.root = counterExampleGenerator.getMarkedIndividuals();
+        this.markedIndividuals = counterExampleGenerator.getMarkedIndividuals();
         this.model = model;
         this.owlEditorKit = owlEditorKit;
         this.rf = new ReasonerFactory();
@@ -76,7 +76,7 @@ public class ModelManager {
             }
             logger.info("Ontology with the additional axioms is consistent");
             this.model = this.counterExampleGenerator.generateModel();
-            this.root = counterExampleGenerator.getMarkedIndividuals();
+            this.markedIndividuals = counterExampleGenerator.getMarkedIndividuals();
             this.classMap = this.sortClassMap(this.createClassMap());
             this.roleData = this.createRoleData();
             this.conceptData = this.createConceptData();
@@ -235,10 +235,10 @@ public class ModelManager {
     }
 
     private GraphicGraph createNodes(GraphicGraph graph, Map<String, List<OWLClass>> classMap) {
-
+        logger.debug("root inds:"+this.markedIndividuals);
         classMap.keySet().stream().forEach(k -> {
             GraphicNode n = (GraphicNode) graph.addNode(k);
-            for(IRI iri:this.root) {
+            for(IRI iri:this.markedIndividuals) {
                 if(iri.getShortForm().equalsIgnoreCase(n.getId())) {
                     n.setAttribute("ui.style", "fill-color: #000000;");
                 }

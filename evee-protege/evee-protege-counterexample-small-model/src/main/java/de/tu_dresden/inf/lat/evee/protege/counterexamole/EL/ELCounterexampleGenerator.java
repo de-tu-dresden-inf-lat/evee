@@ -18,44 +18,28 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
 
     private final Logger logger = LoggerFactory.getLogger(ELCounterexampleGenerator.class);
 //    boolean subsumed;
-    private OWLClassExpression subClass;
-    private OWLClassExpression superClass;
+    private OWLClassExpression subClassExpr;
+    private OWLClassExpression superClassExpr;
 //    private int removedAxioms = 0;
     private OWLOntology activeOntology;
     private OWLOntology workingCopy;
     private final IRI root = IRI.create("root-Ind");
-//    private Set<OWLAxiom> observation;
+    private Set<OWLAxiom> observation;
     private final OWLDataFactory df;
     private final OWLOntologyManager man;
+    private Collection<OWLEntity> signature;
 
     public ELCounterexampleGenerator() {
-        this.logger.debug("Creating de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELCounterExampleGenerator");
-//        this.observation = new HashSet<>();
+        this.observation = new HashSet<>();
         this.man = OWLManager.createOWLOntologyManager();
         this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
     }
 
-//    public void computeExplanation() {
-//        try {
-//            checkObservation(observation.iterator().next());
-//            workingCopy = getWorkingCopy();
-//            model = generateModel();
-//
-//            subsumed = checkSubsumption(model);
-//            this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
-//                    ExplanationEventType.COMPUTATION_COMPLETE));
-//        } catch (Exception e) {
-//            this.errorMessage = e.getMessage();
-//            this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
-//                    ExplanationEventType.ERROR));
-//        }
-//    }
-
     private OWLOntology getWorkingCopy() throws ModelGenerationException {
         OWLNamedIndividual rootInd = df.getOWLNamedIndividual(root);
         OWLClass freshClass = df.getOWLClass(IRI.create("FreshClass"));
-        OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(subClass, rootInd);
-        OWLSubClassOfAxiom axiom2 = df.getOWLSubClassOfAxiom(superClass, freshClass);
+        OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(subClassExpr, rootInd);
+        OWLSubClassOfAxiom axiom2 = df.getOWLSubClassOfAxiom(superClassExpr, freshClass);
         Set<OWLAxiom> TBoxAxioms = activeOntology.getTBoxAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
         OWLOntology workingCopy = null;
         ELNormaliser normaliser = new ELNormaliser();
@@ -72,21 +56,10 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
         return workingCopy;
     }
 
-//    private void checkConsistency(Set<OWLAxiom> model) throws Exception {
-//        if (model.isEmpty()) {
-//            this.errorMessage = "The Ontology is inconsistent";
-//            throw new Exception();
-//        }
-//    }
+    void checkClassExpressions() throws ModelGenerationException {
 
-//    private boolean checkSubsumption(Set<OWLIndividualAxiom> model) {
-//        return model.contains(df.getOWLClassAssertionAxiom(df.getOWLClass(IRI.create("FreshClass")), df.getOWLNamedIndividual(IRI.create("root-Ind"))));
-//    }
-
-    void checkObservation() throws ModelGenerationException {
-
-        if (!(this.isELExpressions(subClass) && this.isELExpressions(superClass))) {
-            throw new ModelGenerationException("ClassExpressions is not in EL");
+        if (!(this.isELExpressions(subClassExpr) && this.isELExpressions(superClassExpr))) {
+            throw new ModelGenerationException("ClassExpressions are not in EL");
         }
     }
 
@@ -103,46 +76,28 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
         return true;
     }
 
-//    public Component getResult() {
-//
-////        JPanel component = new JPanel();
-////        component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
-////        JTabbedPane tabbedPane = getTabbedPane();
-////        JPanel textPanel = getTextPanel();
-////        component.add(textPanel);
-////        component.add(Box.createRigidArea(new Dimension(20, 20)));
-////        component.add(tabbedPane);
-//        return component;
-//    }
-
-//    private JPanel getTextPanel() {
-//        JPanel textPanel = new JPanel();
-//        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.PAGE_AXIS));
-//
-//        if (subsumed) {
-//            textPanel.add(new JLabel("Subsumption relation holds. A model is shown below."));
-//        } else {
-//            textPanel.add(new JLabel("Subsumption relation does not hold. A counterexample is shown below. "));
-//        }
-//        textPanel.add(new JLabel(removedAxioms + " axioms are not supported. Reasoning results may be incorrect."));
-//
-//        return textPanel;
-//    }
-
     private Set<OWLIndividualAxiom> filterAxioms(Set<OWLIndividualAxiom> axioms) {
         Set<OWLIndividualAxiom> filtered = axioms.stream()
                 .filter(ax -> ax.isOfType(AxiomType.CLASS_ASSERTION))
                 .map(ax -> (OWLClassAssertionAxiom) ax)
-                .filter(ax -> !(ax.getClassExpression().toString().startsWith("<X")
-                        || ax.getClassExpression().toString().equals("<FreshClass>")))
+                .filter(ax -> this.signature.containsAll(ax.getClassExpression().getSignature()))
+//                .filter(ax -> !(ax.getClassExpression().toString().startsWith("<X")
+//                        || ax.getClassExpression().toString().equals("<FreshClass>")))
                 .collect(Collectors.toSet());
-        filtered.addAll(axioms.stream().filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION)).collect(Collectors.toSet()));
+        filtered.addAll(axioms.stream()
+                .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
+                        .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
+                        .filter(ax -> signature.contains(ax.getProperty()))
+                .collect(Collectors.toSet()));
         return filtered;
     }
 
     @Override
     public Set<OWLIndividualAxiom> generateModel() throws ModelGenerationException {
-        checkObservation();
+        OWLAxiom observation = this.observation.iterator().next();
+        subClassExpr = ((OWLSubClassOfAxiom) observation).getSubClass();
+        superClassExpr = ((OWLSubClassOfAxiom) observation).getSuperClass();
+        checkClassExpressions();
         workingCopy = getWorkingCopy();
         IOWLModelGenerator modelGenerator = new ELSmallModelGenerator();
         modelGenerator.setOntology(workingCopy);
@@ -153,14 +108,12 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
 
     @Override
     public void setObservation(Set<OWLAxiom> axioms) {
-        OWLAxiom observation = axioms.iterator().next();
-        subClass = ((OWLSubClassOfAxiom) observation).getSubClass();
-        superClass = ((OWLSubClassOfAxiom) observation).getSuperClass();
+        this.observation = axioms;
     }
 
     @Override
     public void setSignature(Collection<OWLEntity> signature) {
-
+        this.signature = signature;
     }
 
     @Override
@@ -179,17 +132,15 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
 
     @Override
     public boolean supportsExplanation() {
-        return false;
-    }
-
-    @Override
-    public IRI getRoot() {
-        return root;
+        return this.observation.size() == 1 && this.observation.stream()
+                .anyMatch((ax) -> ax.isOfType(AxiomType.SUBCLASS_OF));
     }
 
 
     @Override
-    public IRI getRoot() {
-        return null;
+    public Set<IRI> getMarkedIndividuals() {
+        Set<IRI> markedIndividuals = new HashSet<>();
+        markedIndividuals.add(root);
+        return markedIndividuals;
     }
 }

@@ -10,7 +10,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>evee-protege-counterexample-EL</artifactId>
+    <artifactId>evee-protege-counterexample-small-model</artifactId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -114,11 +114,9 @@
                             de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
                             scala.swing.*;resolution:=optional,
                             de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.*,
-
                             *
                         </Import-Package>
                         <Private-Package>
-
 
                             org.graphstream.*,
                             javax.xml.stream.*,

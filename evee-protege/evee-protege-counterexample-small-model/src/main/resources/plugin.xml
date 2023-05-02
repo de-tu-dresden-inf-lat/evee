@@ -4,7 +4,7 @@
 
     <extension id="de.tu_dresden.inf.lat.evee.protege.counterexamole.EL.ELCounterexampleGenerationService"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
-        <name value="Counterexample (EL)"/>
+        <name value="Counterexample (Small Model)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.counterexamole.EL.ELCounterexampleGenerationService"/>
     </extension>
 

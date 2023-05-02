@@ -3,7 +3,7 @@
   <groupId>de.tu-dresden.inf.lat</groupId>
   <artifactId>counterExampleProvider-owlapi4</artifactId>
   <versioning>
-    <lastUpdated>20230425142924</lastUpdated>
+    <lastUpdated>20230502154746</lastUpdated>
     <snapshot>
       <localCopy>true</localCopy>
     </snapshot>
@@ -12,29 +12,29 @@
         <classifier>main-resources</classifier>
         <extension>jar</extension>
         <value>0.1-SNAPSHOT</value>
-        <updated>20230425142924</updated>
+        <updated>20230502154746</updated>
       </snapshotVersion>
       <snapshotVersion>
         <classifier>test-sources</classifier>
         <extension>jar</extension>
         <value>0.1-SNAPSHOT</value>
-        <updated>20230425142924</updated>
+        <updated>20230502154746</updated>
       </snapshotVersion>
       <snapshotVersion>
         <classifier>sources</classifier>
         <extension>jar</extension>
         <value>0.1-SNAPSHOT</value>
-        <updated>20230425142924</updated>
+        <updated>20230502154746</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>jar</extension>
         <value>0.1-SNAPSHOT</value>
-        <updated>20230425142924</updated>
+        <updated>20230502154746</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
         <value>0.1-SNAPSHOT</value>
-        <updated>20230425142924</updated>
+        <updated>20230502154746</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>

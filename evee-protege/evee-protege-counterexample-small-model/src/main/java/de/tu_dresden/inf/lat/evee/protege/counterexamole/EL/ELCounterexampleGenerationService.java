@@ -20,4 +20,9 @@ public class ELCounterexampleGenerationService extends AbstractCounterexampleGen
         this.counterexampleGenerator = new ELCounterexampleGenerator();
         this.logger.debug("de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELCounterExampleGenerator created successfully.");
     }
+
+    @Override
+    public String getSupportsExplanationMessage() {
+        return "Please enter some observation containing a single OWLSubClassOfAxiom expressed in EL";
+    }
 }

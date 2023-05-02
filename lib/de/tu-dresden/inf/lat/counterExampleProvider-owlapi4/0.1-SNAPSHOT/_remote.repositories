@@ -1,7 +1,7 @@
 #NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Tue Apr 25 17:29:44 MSK 2023
+#Tue May 02 18:48:19 MSK 2023
 counterExampleProvider-owlapi4-0.1-SNAPSHOT.jar>=
 counterExampleProvider-owlapi4-0.1-SNAPSHOT.pom>=
-counterExampleProvider-owlapi4-0.1-SNAPSHOT-test-sources.jar>=
-counterExampleProvider-owlapi4-0.1-SNAPSHOT-sources.jar>=
 counterExampleProvider-owlapi4-0.1-SNAPSHOT-main-resources.jar>=
+counterExampleProvider-owlapi4-0.1-SNAPSHOT-sources.jar>=
+counterExampleProvider-owlapi4-0.1-SNAPSHOT-test-sources.jar>=
