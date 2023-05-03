@@ -27,9 +27,10 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class GraphModelComponent extends JPanel implements ViewerListener {
+public class GraphModelComponent extends JPanel {
 
     private final DefaultListModel<OWLClass> classListModel;
     private final DefaultListModel<OWLAxiom> axiomListModel;
@@ -37,7 +38,7 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
     private final ModelManager modelManager;
     private final OWLDataFactory df;
     private final JPanel viewPanel;
-    protected boolean loop = true;
+
     private Viewer viewer;
     private Graph graph;
     private Map<String, List<OWLClass>> classMap;
@@ -49,7 +50,7 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
     private Thread listenerThread;
     private String previousNodeID ="";
     private Sprite selectSprite;
-    private long currentTime;
+
     private boolean changeAxiomList;
     private final Logger logger = Logger.getLogger(GraphModelComponent.class);
 
@@ -63,7 +64,7 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
         this.graph = this.modelManager.getGraph();
         this.createSelectSprite();
         this.df = OWLManager.getOWLDataFactory();
-        this.listenerRunnable = new ListenerRunnable(this);
+        this.listenerRunnable = new ListenerRunnable(this,this.viewer,this.graph);
         this.listenerThread = new Thread(this.listenerRunnable, "Listener Thread");
         this.listenerThread.setDaemon(true);
         this.listenerThread.start();
@@ -89,15 +90,22 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
         this.graph = this.modelManager.getGraph();
         this.createSelectSprite();
         this.viewPanel.remove(this.viewComponent);
-        this.viewComponent = (Component) this.viewer.addDefaultView(false);
+        this.view = this.viewer.addDefaultView(false);
+        this.viewComponent = (Component) view;
+        this.enableZoom();
         this.viewPanel.add(this.viewComponent);
-        this.listenerRunnable = new ListenerRunnable(this);
-        this.listenerThread = new Thread(this.listenerRunnable, "Listener Thread");
-        this.listenerThread.setDaemon(true);
-        this.listenerThread.start();
         this.updateUI();
         this.changeAxiomList = false;
         logger.debug("model is updated");
+    }
+
+    private void resetListenerThread() {
+        listenerRunnable.requestStop();
+        logger.debug("listener thread stop is requested");
+        this.listenerRunnable = new ListenerRunnable(this,viewer,graph);
+        this.listenerThread = new Thread(this.listenerRunnable, "Listener Thread");
+        this.listenerThread.setDaemon(true);
+        this.listenerThread.start();
     }
 
     JPanel getRightPanel() {
@@ -167,7 +175,6 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 Set<OWLAxiom> additionalAxioms = new HashSet<>();
                 Arrays.stream(axiomListModel.toArray()).map((ax) -> (OWLDisjointClassesAxiom) ax)
                         .forEach(ax -> ax.asPairwiseAxioms().forEach(pax -> {
@@ -180,18 +187,17 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
                                         }
                                 )
                         );
-
                 try {
                     if(changeAxiomList == true) {
                         modelManager.refreshModel(additionalAxioms);
+                        refresh();
+                        resetListenerThread();
+                    } else {
+                        refresh();
                     }
-
-
-                    refresh();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(new JPanel(), ex.getMessage(), "Error", 0);
                 }
-
             }
         });
         refreshButton.setAlignmentX(0.5F);
@@ -258,7 +264,6 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
         selectSprite.setAttribute("ui.style","stroke-mode:plain;");
         selectSprite.setAttribute("ui.style","size:30px;");
         selectSprite.setPosition(0,0,0);
-
     }
 
     private void createClassList() {
@@ -272,89 +277,26 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
         this.axiomList.setSelectionMode(2);
         this.axiomList.setCellRenderer(new OWLCellRenderer(this.owlEditorKit));
     }
+    public void selectNewNode(String nodeID) {
+        logger.debug("button is released");
+        if (classMap.containsKey(nodeID)) {
 
-    public void listen() throws InterruptedException {
-        ViewerPipe fromViewer = this.viewer.newViewerPipe();
-        fromViewer.addViewerListener(this);
-        fromViewer.addSink(this.graph);
-
-        while (this.loop) {
-            fromViewer.blockingPump();
-
-        }
-    }
-
-    public void viewClosed(String s) {
-        this.listenerRunnable.requestStop();
-        logger.debug("view is closed");
-    }
-
-    public void buttonPushed(String s) {
-        currentTime = System.currentTimeMillis();
-
-    }
-
-    public void buttonReleased(String s) {
-        if(System.currentTimeMillis()-currentTime <300) {
-            logger.debug("button is released");
-            if (classMap.containsKey(s)) {
-
-                List<OWLClass> classList = classMap.get(s);
-                logger.debug("Classes for the individual from the class map are taken:"+classList);
-                classListModel.removeAllElements();
-                logger.debug("previous classes from the right panel are removed");
-                for (OWLClass cl : classList) {
-                    classListModel.addElement(cl);
-                }
-                logger.debug("new classes are added");
-                if(previousNodeID.isEmpty()) {
-                    logger.debug("previous node is empty");
-                    selectSprite.setAttribute("ui.style","stroke-color:#000000;");
-                }
-                selectSprite.attachToNode(s);
-                selectSprite.setPosition(0,0,0);
-                previousNodeID = s;
-                logger.debug("node is selected");
+            List<OWLClass> classList = classMap.get(nodeID);
+            classListModel.removeAllElements();
+            for (OWLClass cl : classList) {
+                classListModel.addElement(cl);
             }
-        }
-    }
-
-    public void mouseOver(String s) {
-    }
-
-    public void mouseLeft(String s) {
-    }
-
-    private class ListenerRunnable implements Runnable {
-        private final GraphModelComponent clickListener;
-        private boolean stopRequested = false;
-
-        public ListenerRunnable(GraphModelComponent clickListener) {
-            this.clickListener = clickListener;
-        }
-        public synchronized void requestStop() {
-            this.stopRequested = true;
-        }
-        public synchronized boolean isStopRequested() {
-            return this.stopRequested;
-        }
-
-
-        @Override
-        public void run() {
-                try {
-                    while (!stopRequested) {
-                        clickListener.listen();
-                    }
-                    logger.debug("thread is stopped");
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+            if(previousNodeID.isEmpty()) {
+                selectSprite.setAttribute("ui.style","stroke-color:#000000;");
+            }
+            selectSprite.attachToNode(nodeID);
+            selectSprite.setPosition(0,0,0);
+            previousNodeID = nodeID;
+            logger.debug("node is selected");
         }
     }
 
     private void enableZoom() {
-
         viewComponent.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
@@ -372,10 +314,64 @@ public class GraphModelComponent extends JPanel implements ViewerListener {
                 cam.setViewCenter(x, y, 0);
                 cam.setViewPercent(zoom);
             }
-
-
         });
-
     }
+
+    private class ListenerRunnable implements Runnable, ViewerListener {
+        private final GraphModelComponent graphComponent;
+        private long currentTime;
+        private final Viewer viewer;
+        private final Graph graph;
+        private  final AtomicBoolean running = new AtomicBoolean(false);
+
+        public ListenerRunnable(GraphModelComponent graphComponent,
+                                Viewer viewer,
+                                Graph graph) {
+            this.graphComponent = graphComponent;
+            this.viewer = viewer;
+            this.graph = graph;
+        }
+        public void viewClosed(String s) {
+            logger.debug("view is closed");
+        }
+
+        public void buttonPushed(String s) {
+            currentTime = System.currentTimeMillis();
+        }
+
+        public void buttonReleased(String s) {
+            if(System.currentTimeMillis()-currentTime <300) {
+                graphComponent.selectNewNode(s);
+            }
+        }
+
+        public void mouseOver(String s) {
+        }
+
+        public void mouseLeft(String s) {
+        }
+        public void requestStop() {
+            running.set(false);
+        }
+
+        @Override
+        public void run() {
+            running.set(true);
+            ViewerPipe fromViewer = this.viewer.newViewerPipe();
+            fromViewer.addViewerListener(this);
+            fromViewer.addSink(this.graph);
+
+            while (running.get()) {
+                try {
+                    fromViewer.blockingPump();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            logger.debug("listener thread is stopped");
+        }
+    }
+
+
 }
 

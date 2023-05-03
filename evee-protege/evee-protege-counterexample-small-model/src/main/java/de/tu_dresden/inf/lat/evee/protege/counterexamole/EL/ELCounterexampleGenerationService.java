@@ -12,13 +12,12 @@ public class ELCounterexampleGenerationService extends AbstractCounterexampleGen
 //    private final OWLDataFactory df;
 
     public ELCounterexampleGenerationService() {
-        this.logger.debug("Creating de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELCounterExampleGenerator");
+
         this.observation = new HashSet<>();
         this.errorMessage = "";
         this.man = OWLManager.createOWLOntologyManager();
 //        this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
         this.counterexampleGenerator = new ELCounterexampleGenerator();
-        this.logger.debug("de.tu_dresden.inf.lat.evee.protege.modelgeneration.ELCounterExampleGenerator created successfully.");
     }
 
     @Override
