@@ -13,6 +13,10 @@ import java.net.URL;
 
 public class UIUtilities {
 
+    private static final Color control = UIManager.getColor("control");
+    private static final Color highlight = UIManager.getColor("controlLtHighlight");
+    private static final Color black = Color.BLACK;
+
     private static final Logger logger = LoggerFactory.getLogger(UIUtilities.class);
 
     public static JLabel createLabel(String labelText){
@@ -49,8 +53,8 @@ public class UIUtilities {
                                             String toolTip, ActionListener listener){
         assert (direction == BasicArrowButton.EAST || direction == BasicArrowButton.WEST
                 || direction == BasicArrowButton.NORTH || direction == BasicArrowButton.SOUTH);
-        JButton button = new BasicArrowButton(direction, UIManager.getColor("control"),
-                Color.BLACK, Color.BLACK, UIManager.getColor("controlLtHighlight"));
+        JButton button = new BasicArrowButton(direction, control,
+                black, black, highlight);
         button.setActionCommand(actionCommand);
         button.setToolTipText(toolTip);
         button.addActionListener(listener);
@@ -85,8 +89,8 @@ public class UIUtilities {
     private static class DoubleArrowButton extends BasicArrowButton {
 
         public DoubleArrowButton(int direction) {
-            super(direction, UIManager.getColor("control"), Color.BLACK,
-                    Color.BLACK, UIManager.getColor("controlLtHighlight"));
+            super(direction, control, black,
+                    black, highlight);
         }
 
         @Override

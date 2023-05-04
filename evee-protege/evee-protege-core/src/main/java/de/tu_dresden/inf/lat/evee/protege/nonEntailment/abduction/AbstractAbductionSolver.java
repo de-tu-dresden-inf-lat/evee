@@ -23,7 +23,8 @@ import static org.junit.Assert.assertNotNull;
 
 abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OWLAxiom>>,
         INonEntailmentExplanationService<OWLAxiom>, IOWLAbductionSolver,
-        IAbductionSolverOntologyChangeEventListener, IAbductionSolverResultButtonEventListener {
+        IAbductionSolverOntologyChangeEventListener,
+        IAbductionSolverResultButtonEventListener {
 
     protected Set<OWLAxiom> observation = null;
     protected Set<OWLAxiom> lastUsedObservation = null;
