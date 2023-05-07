@@ -49,9 +49,14 @@ public class ModelManager {
     private Viewer viewer;
     private GraphicGraph graph;
     private OWLSubClassOfAxiom observation;
+    private int maxLabelNumber;
+    private final double labelSpace = -0.1;
+    private boolean labelNumberIsChanged = false;
+    private Set<Sprite> classLabels;
     private final Logger logger = Logger.getLogger(ModelManager.class);
 
     public ModelManager(Set<OWLIndividualAxiom> model, OWLEditorKit owlEditorKit, IOWLCounterexampleGenerator counterExampleGenerator, OWLOntology ont,Set<OWLAxiom> observation) {
+        this.maxLabelNumber = 2;
         this.observation = (OWLSubClassOfAxiom) observation.iterator().next();
         this.ont = ont;
         this.man = OWLManager.createOWLOntologyManager();
@@ -67,7 +72,7 @@ public class ModelManager {
         this.conceptData = this.createConceptData();
     }
 
-    public void refreshModel(Set<OWLAxiom> additionalAxioms) throws Exception {
+    public void recomputeModel(Set<OWLAxiom> additionalAxioms) throws Exception {
         this.man.addAxioms(this.ont, additionalAxioms);
         try {
             this.res = this.rf.createReasoner(this.ont);
@@ -80,7 +85,7 @@ public class ModelManager {
             this.classMap = this.sortClassMap(this.createClassMap());
             this.roleData = this.createRoleData();
             this.conceptData = this.createConceptData();
-            this.graph = this.createGraph(this.classMap, this.roleData);
+            createGraph();
             this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
             this.viewer.enableAutoLayout();
             this.man.removeAxioms(this.ont, additionalAxioms);
@@ -89,6 +94,15 @@ public class ModelManager {
             this.man.removeAxioms(this.ont, additionalAxioms);
             throw e;
         }
+    }
+
+    public void refreshModel() {
+        if (labelNumberIsChanged) {
+            labelNumberIsChanged = false;
+            createGraph();
+        }
+        this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+        this.viewer.enableAutoLayout();
     }
 
     private boolean isConsistent() {
@@ -126,10 +140,10 @@ public class ModelManager {
         return component;
     }
 
-    public Component getGraphModel() {
+    public Component generateGraphModel() {
         System.setProperty("org.graphstream.ui", "swing");
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-        this.graph = this.createGraph(this.classMap, this.roleData);
+        createGraph();
         this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         this.viewer.enableAutoLayout();
         GraphModelComponent component = new GraphModelComponent( this, this.owlEditorKit);
@@ -234,7 +248,7 @@ public class ModelManager {
         return returnList;
     }
 
-    private GraphicGraph createNodes(GraphicGraph graph, Map<String, List<OWLClass>> classMap) {
+    private void createNodes() {
         logger.debug("root inds:"+this.markedIndividuals);
         classMap.keySet().stream().forEach(k -> {
             GraphicNode n = (GraphicNode) graph.addNode(k);
@@ -245,14 +259,37 @@ public class ModelManager {
             }
         });
         logger.debug("nodes are created: "+graph.nodes().collect(Collectors.toList()));
-        return graph;
     }
-
-    private GraphicGraph createGraph(Map<String, List<OWLClass>> classMap,
-                                     Object[][] roleData) {
-        GraphicGraph graph = new GraphicGraph("model");
-        createNodes(graph, classMap);
-
+    private void createSprites() {
+        SpriteManager sMan = new SpriteManager(graph);
+        classLabels = new HashSet<>();
+        classMap.entrySet().stream().forEach(e ->
+                {
+                    int classNummer = e.getValue().size();
+                    if (classNummer > maxLabelNumber) {
+                        classNummer = maxLabelNumber;
+                    }
+                    Iterator<OWLClass> owlclassIterator = e.getValue().iterator();
+                    for (int i = 0; i < classNummer; i++) {
+                        String currOWLClass = owlclassIterator.next().getIRI().getShortForm();
+                        Sprite sprite = sMan.addSprite(e.getKey() + currOWLClass);
+                        sprite.attachToNode(e.getKey());
+//                        sprite.setPosition(StyleConstants.Units.PERCENTS,0, -0.075 * i, 0);
+                        sprite.setPosition(0, labelSpace * i, 0);
+                        sprite.setAttribute("ui.label", currOWLClass);
+                        classLabels.add(sprite);
+                    }
+                    if (owlclassIterator.hasNext()) {
+                        Sprite sprite = sMan.addSprite(e.getKey() + "expand");
+                        sprite.attachToNode(e.getKey());
+                        sprite.setPosition(0, labelSpace * classNummer, 0);
+                        sprite.setAttribute("ui.label", "...");
+                        classLabels.add(sprite);
+                    }
+                }
+        );
+    }
+    private void createEdges() {
         Arrays.stream(roleData).forEach(e -> {
             String desc = (String) e[0];
             String succ = (String) e[2];
@@ -260,29 +297,8 @@ public class ModelManager {
             Edge edge = graph.addEdge(desc + succ, desc, succ, true);
             edge.setAttribute("ui.label", prop.getIRI().getShortForm());
         });
-        SpriteManager sMan = new SpriteManager(graph);
-        classMap.entrySet().stream().forEach(e ->
-                {
-                    int maxExpNummer = e.getValue().size();
-                    if (maxExpNummer > 2) {
-                        maxExpNummer = 2;
-                    }
-                    Iterator<OWLClass> owlclassIterator = e.getValue().iterator();
-                    for (int i = 0; i < maxExpNummer; i++) {
-                        String currOWLClass = owlclassIterator.next().getIRI().getShortForm();
-                        Sprite sprite = sMan.addSprite(e.getKey() + currOWLClass);
-                        sprite.attachToNode(e.getKey());
-                        sprite.setPosition(0, -0.075 * i, 0);
-                        sprite.setAttribute("ui.label", currOWLClass);
-                    }
-                    if (owlclassIterator.hasNext()) {
-                        Sprite sprite = sMan.addSprite(e.getKey() + "expand");
-                        sprite.attachToNode(e.getKey());
-                        sprite.setPosition(0, -0.075 * maxExpNummer, 0);
-                        sprite.setAttribute("ui.label", "...");
-                    }
-                }
-        );
+    }
+    private void createStyleSheet() {
         graph.setAttribute("ui.quality");
         graph.setAttribute("ui.antialias");
         graph.setAttribute("ui.stylesheet",
@@ -293,29 +309,35 @@ public class ModelManager {
                         "text-mode:normal;" +
                         "text-offset: 0, 25;" +
                         "fill-mode: none;}");
-        return graph;
     }
 
+    private void createGraph() {
+        graph = new GraphicGraph("model");
+        createNodes();
+        createEdges();
+        createSprites();
+        createStyleSheet();
+    }
+    public void setMaxLabelNumber(int maxLabelNumber) {
+        this.maxLabelNumber = maxLabelNumber;
+        this.labelNumberIsChanged = true;
+    }
     public Object[][] getConceptData() {
         return this.conceptData;
     }
-
     public Object[][] getRoleData() {
         return this.roleData;
     }
-
     protected OWLOntology getOnt() {
         return this.ont;
     }
-
     public GraphicGraph getGraph() {
         return this.graph;
     }
-
+    public Set<Sprite> getClassLabels() {return this.classLabels;}
     public Map<String, List<OWLClass>> getClassMap() {
         return this.classMap;
     }
-
     public Viewer getViewer() {
         return this.viewer;
     }

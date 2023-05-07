@@ -1,11 +1,9 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 
 
-import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
-import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLNonEntailmentExplainer;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
@@ -18,8 +16,9 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-import javax.swing.*;
 import java.awt.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -63,6 +62,11 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
             this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                     ExplanationEventType.COMPUTATION_COMPLETE));
         } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String sStackTrace = sw.toString();
+            logger.info(sStackTrace);
             this.errorMessage = e.getMessage();
             this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                     ExplanationEventType.ERROR));
@@ -71,7 +75,7 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
 
     public Component getResult() {
         ModelManager man = new ModelManager(this.model, this.owlEditorKit, this.counterexampleGenerator, this.workingCopy, this.observation);
-        return man.getGraphModel();
+        return man.generateGraphModel();
     }
 
     @Override

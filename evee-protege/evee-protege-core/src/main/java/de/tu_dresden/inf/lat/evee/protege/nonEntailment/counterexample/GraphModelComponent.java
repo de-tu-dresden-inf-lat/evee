@@ -1,7 +1,5 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 
-import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
-
 import org.apache.log4j.Logger;
 import org.graphstream.graph.Graph;
 import org.graphstream.ui.geom.Point2;
@@ -20,6 +18,8 @@ import org.semanticweb.owlapi.model.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,7 +38,9 @@ public class GraphModelComponent extends JPanel {
     private final ModelManager modelManager;
     private final OWLDataFactory df;
     private final JPanel viewPanel;
-
+    static final int LABELS_MIN = 0;
+    static final int LABELS_MAX = 10;
+    static final int LABELS_INIT = 2;
     private Viewer viewer;
     private Graph graph;
     private Map<String, List<OWLClass>> classMap;
@@ -50,7 +52,8 @@ public class GraphModelComponent extends JPanel {
     private Thread listenerThread;
     private String previousNodeID ="";
     private Sprite selectSprite;
-
+    private Set<Sprite> classLabels;
+    private Map<Sprite,Point2> labelCoordinates;
     private boolean changeAxiomList;
     private final Logger logger = Logger.getLogger(GraphModelComponent.class);
 
@@ -62,6 +65,10 @@ public class GraphModelComponent extends JPanel {
         this.axiomListModel = new DefaultListModel();
         this.viewer = this.modelManager.getViewer();
         this.graph = this.modelManager.getGraph();
+        this.classLabels = this.modelManager.getClassLabels();
+        this.labelCoordinates = new HashMap<>();
+        this.labelCoordinates = classLabels.stream()
+                .collect(Collectors.toMap(l ->l,l-> new Point2(l.getX(),l.getY())));
         this.createSelectSprite();
         this.df = OWLManager.getOWLDataFactory();
         this.listenerRunnable = new ListenerRunnable(this,this.viewer,this.graph);
@@ -73,21 +80,31 @@ public class GraphModelComponent extends JPanel {
         this.viewPanel.setLayout(new BoxLayout(this.viewPanel, 0));
         this.viewPanel.setMinimumSize(new Dimension(500, 500));
         this.view = this.viewer.addDefaultView(false);
+        Camera cam = view.getCamera();
+        cam.setViewPercent(1);
         this.viewComponent = (Component) view;
         this.enableZoom();
         this.viewPanel.add(this.viewComponent);
         this.add(this.viewPanel);
         this.add(this.getRightPanel());
         this.changeAxiomList = false;
-
-
+    }
+    private void refreshModel() {
+        Camera cam = view.getCamera();
+        cam.resetView();
+        labelCoordinates.entrySet().stream()
+                .forEach(e -> e.getKey().setPosition(e.getValue().x,e.getValue().y,0));
     }
 
-    private void refresh() {
+    private void resetModel() {
         this.previousNodeID ="";
         this.classMap = this.modelManager.getClassMap();
         this.viewer = this.modelManager.getViewer();
         this.graph = this.modelManager.getGraph();
+        this.classLabels = this.modelManager.getClassLabels();
+        this.labelCoordinates = new HashMap<>();
+        this.labelCoordinates = classLabels.stream()
+                .collect(Collectors.toMap(l ->l,l-> new Point2(l.getX(),l.getY())));
         this.createSelectSprite();
         this.viewPanel.remove(this.viewComponent);
         this.view = this.viewer.addDefaultView(false);
@@ -108,36 +125,53 @@ public class GraphModelComponent extends JPanel {
         this.listenerThread.start();
     }
 
-    JPanel getRightPanel() {
+    private JPanel getRightPanel() {
+        this.createClassList();
+        this.createAxiomList();
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setAlignmentX(0.5F);
-//        rightPanel.setAlignmentY(BOTTOM_ALIGNMENT);
         rightPanel.setBorder(new EmptyBorder(new Insets(15, 15, 15, 15)));
         rightPanel.setMaximumSize(new Dimension(200,  2000));
-//        rightPanel.setPreferredSize(new Dimension(200,  600));
         rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.createClassList();
+        rightPanel.add(getClassListPanel());
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 40)));
+        rightPanel.add(getLabelNumSliderPanel());
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 40)));
+        rightPanel.add(getAxiomListPanel());
+        return rightPanel;
+    }
+    private JPanel getAxiomListPanel() {
+        this.axiomList.setPreferredSize(new Dimension(180,300));
+        JPanel axiomListPanel = new JPanel();
+        axiomListPanel.setLayout(new BoxLayout(axiomListPanel, BoxLayout.Y_AXIS));
+        JPanel axiomListBorder = new JPanel();
+        axiomListBorder.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                "OWLDisjointClassesAxioms:"));
+        axiomListBorder.add(new JScrollPane(this.axiomList));
+        axiomListPanel.add(axiomListBorder);
+        axiomListPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        axiomListPanel.add(getButtonPanel());
+        axiomListPanel.add(Box.createRigidArea(new Dimension(0, 50)));
+        return axiomListPanel;
+    }
+    private JPanel getClassListPanel() {
         JPanel classListPanel = new JPanel();
-        classListPanel.setBorder(BorderFactory.createTitledBorder(
+        classListPanel.setLayout(new BoxLayout(classListPanel, BoxLayout.Y_AXIS));
+        JPanel classListBorder = new JPanel();
+        classListBorder.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEmptyBorder(0, 0, 0, 0),
                 "OWLClasses:"));
-        classListPanel.add(new JScrollPane(this.classList));
+        classListBorder.add(new JScrollPane(this.classList));
+        classListBorder.setAlignmentY(TOP_ALIGNMENT);
+        classListPanel.add(classListBorder);
+        classListPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        JButton addToAxiomListButton = this.getAddToAxiomListButton();
+        addToAxiomListButton.setAlignmentY(TOP_ALIGNMENT);
+        classListPanel.add(addToAxiomListButton);
 
-        rightPanel.add(classListPanel);
-        rightPanel.add(this.getAddToAxiomListButton());
-        rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        this.createAxiomList();
-        JPanel axiomListPanel = new JPanel();
-        axiomListPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEmptyBorder(0, 0, 0, 0),
-                "OWLDisjointClassesAxioms:"));
-        axiomListPanel.add(new JScrollPane(this.axiomList));
-
-        rightPanel.add(axiomListPanel);
-        rightPanel.add(this.getButtonPanel());
-
-        return rightPanel;
+        return classListPanel;
     }
 
     private JPanel getButtonPanel() {
@@ -154,7 +188,6 @@ public class GraphModelComponent extends JPanel {
         buttonPanel.add(this.getAddToOntologyButton());
         return buttonPanel;
     }
-
     private JButton getRemoveAxiomsButton() {
         JButton removeAxiomsButton = new JButton("Remove");
         removeAxiomsButton.addActionListener(new ActionListener() {
@@ -189,11 +222,16 @@ public class GraphModelComponent extends JPanel {
                         );
                 try {
                     if(changeAxiomList == true) {
-                        modelManager.refreshModel(additionalAxioms);
-                        refresh();
+                        logger.debug("recomputing model");
+                        modelManager.recomputeModel(additionalAxioms);
+                        resetModel();
                         resetListenerThread();
                     } else {
-                        refresh();
+                        logger.debug("refreshing model");
+//                        refreshModel();
+                        modelManager.refreshModel();
+                       resetModel();
+                        resetListenerThread();
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(new JPanel(), ex.getMessage(), "Error", 0);
@@ -255,6 +293,31 @@ public class GraphModelComponent extends JPanel {
         return addToOntology;
     }
 
+    private JPanel getLabelNumSliderPanel() {
+        JPanel labelNumSliderPanel = new JPanel();
+        labelNumSliderPanel.setLayout(new BoxLayout(labelNumSliderPanel, BoxLayout.Y_AXIS));
+        labelNumSliderPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEmptyBorder(0, 0, 0, 0),
+                "Displayed OWLClasses:"));
+        JSlider labelNumSlider = new JSlider(LABELS_MIN,LABELS_MAX,LABELS_INIT);
+        labelNumSlider.setMajorTickSpacing(2);
+        labelNumSlider.setMinorTickSpacing(1);
+        labelNumSlider.setPaintTicks(true);
+        labelNumSlider.setPaintLabels(true);
+        labelNumSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JSlider source = (JSlider)e.getSource();
+                if (!source.getValueIsAdjusting()) {
+                    logger.debug("number of labels is adjusted. New number is "+source.getValue());
+                    modelManager.setMaxLabelNumber(source.getValue());
+                }
+            }
+        });
+        labelNumSliderPanel.add(labelNumSlider);
+        return labelNumSliderPanel;
+    }
+
     private void createSelectSprite() {
         SpriteManager sman = new SpriteManager(graph);
         selectSprite = sman.addSprite("select");
@@ -313,8 +376,15 @@ public class GraphModelComponent extends JPanel {
                 double y = guClicked.y - (pxCenter.y - e.getY())/newRatioPx2Gu;
                 cam.setViewCenter(x, y, 0);
                 cam.setViewPercent(zoom);
+                classLabels.forEach(l -> adjustLabelPosition(l,zoom));
             }
         });
+    }
+
+    private void adjustLabelPosition(Sprite label, double zoom) {
+        double X = labelCoordinates.get(label).x*zoom;
+        double Y = labelCoordinates.get(label).y*zoom;
+        label.setPosition(X,Y,0);
     }
 
     private class ListenerRunnable implements Runnable, ViewerListener {
@@ -322,6 +392,7 @@ public class GraphModelComponent extends JPanel {
         private long currentTime;
         private final Viewer viewer;
         private final Graph graph;
+        private boolean isFirstClick;
         private  final AtomicBoolean running = new AtomicBoolean(false);
 
         public ListenerRunnable(GraphModelComponent graphComponent,
@@ -330,12 +401,17 @@ public class GraphModelComponent extends JPanel {
             this.graphComponent = graphComponent;
             this.viewer = viewer;
             this.graph = graph;
+            this.isFirstClick = true;
         }
         public void viewClosed(String s) {
             logger.debug("view is closed");
         }
 
         public void buttonPushed(String s) {
+            if(isFirstClick) {
+                viewer.disableAutoLayout();
+                this.isFirstClick = false;
+            }
             currentTime = System.currentTimeMillis();
         }
 
