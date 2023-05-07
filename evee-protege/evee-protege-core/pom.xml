@@ -132,8 +132,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>plugin.xml</include>
-                    <include>downArrow.png</include>
-                    <include>upArrow.png</include>
+                    <include>NonEntailmentDefaultTab.xml</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
@@ -157,8 +156,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
-                            org.protege.editor.owl.*;version="4.3",
-                            org.protege.editor.core.*;version="4.3",
+                            org.protege.editor.owl.*;version="5.0",
+                            org.protege.editor.core.*;version="5.0",
                             sun.misc.*;resolution:=optional,
                             org.checkerframework.checker.nullness.qual.*;resolution:=optional,
 <!--                            org.apache.batik.transcoder.*;resolution:=optional,-->

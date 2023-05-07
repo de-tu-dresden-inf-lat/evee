@@ -2,12 +2,18 @@
 <?eclipse version="3.4"?>
 <plugin>
 
+<!--    declaring new extension points-->
+
     <extension-point id="nonEntailment_explanation_service"
                      name="Non-Entailment Explanation Service"
                      schema="schema/de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service.xsd"/>
     <extension-point id="nonEntailment_preferences"
                      name="Non-Entailment Explanation Service Preferences"
                      schema="schema/de.tu_dresden.inf.lat.evee.nonEntailment_preferences.xsd"/>
+
+
+
+<!--    Non-Entailment related-->
 
     <extension id="NonEntailmentExplanationView"
                point="org.protege.editor.core.application.ViewComponent">
@@ -17,6 +23,37 @@
         <category value="@org.protege.miscellaneous"/>
         <editorKitId value="OWLEditorKit"/>
     </extension>
+
+    <extension id="NonEntailmentExplanationPreferences"
+               point="org.protege.editor.core.application.explanationpreferencespanel">
+        <label value="Non Entailment"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentPreferencesPanel"/>
+    </extension>
+
+    <extension id="NonEntailmentGeneralPreferences"
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_preferences">
+        <label value="General"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesUI"/>
+    </extension>
+
+<!--    <extension id="NonEntailmentViewComponent"-->
+<!--               point="xmlDocuments.NonEntailmentDefaultTab.xml">-->
+<!--        <label value="Example View Component"/>-->
+<!--        <class value="org.protege.editor.owl.examples.tab.ExampleViewComponent"/>-->
+<!--        <category value="@org.protege.ontologycategory"/>-->
+<!--    </extension>-->
+
+<!--    <extension id="NonEntailmentDefaultTab"-->
+<!--               point="org.protege.editor.core.application.WorkspaceTab">-->
+<!--        <label value="Non-Entailment"/>-->
+<!--        <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>-->
+<!--        <index value="Z"/>-->
+<!--        <editorKitId value="OWLEditorKit"/>-->
+<!--        <defaultViewConfigFileName value="NonEntailmentDefaultTab.xml"/>-->
+<!--    </extension>-->
+
+
+<!--    Proof related-->
 
     <extension id="eveeProofsTopMenu"
                point="org.protege.editor.core.application.EditorKitMenuAction">
@@ -32,18 +69,6 @@
         <toolTip value="Select known ontology signature"/>
         <path value="${bundleName}.eveeProofsTopMenu/SlotA-A"/>
         <editorKitId value="OWLEditorKit"/>
-    </extension>
-
-    <extension id="ProofBasedExplanationPreferences"
-               point="org.protege.editor.core.application.explanationpreferencespanel">
-        <label value="NonEntailment"/>
-        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentPreferencesPanel"/>
-    </extension>
-
-    <extension id="NonEntailmentGeneralPreferences"
-               point="de.tu_dresden.inf.lat.evee.nonEntailment_preferences">
-        <label value="General"/>
-        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesUI"/>
     </extension>
 
 </plugin>

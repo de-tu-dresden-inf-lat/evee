@@ -127,6 +127,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.resetMainComponent();
         this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
+        this.changeComputeButtonStatus();
         this.logger.debug("initialisation completed");
     }
 
@@ -252,6 +253,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             JComboBox comboBox = (JComboBox) e.getSource();
             String serviceName = (String) comboBox.getSelectedItem();
             this.nonEntailmentExplainerManager.setExplanationService(serviceName);
+            this.resetResultComponent();
             this.changeComputeButtonStatus();
         }
         else{
@@ -298,17 +300,21 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 SwingUtilities.invokeLater(() -> {
                     if (event.getSource().equals(
                             this.nonEntailmentExplainerManager.getCurrentExplainer())){
-                        resetExplanationServiceComponent();
-                        resetHorizontalSplitPane();
-                        resetHolderPanel();
-                        addHolderPanel();
-                        repaintComponents();
+                        resetResultComponent();
                     } else{
                         this.logger.debug("EventSource is NOT the current explainer, event ignored");
                     }
                 });
                 break;
         }
+    }
+
+    private void resetResultComponent(){
+        resetExplanationServiceComponent();
+        resetHorizontalSplitPane();
+        resetHolderPanel();
+        addHolderPanel();
+        repaintComponents();
     }
 
     private void createSignatureManagementComponent(){
@@ -339,14 +345,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         constraints.weightx = 0.3;
         constraints.weighty = 0.6;
         this.signatureManagementPanel.add(selectedVocabularyComponent, constraints);
-    }
-
-    private JButton createButton(String actionCommand, String name, String toolTip){
-        JButton newButton = new JButton(name);
-        newButton.setActionCommand(actionCommand);
-        newButton.setToolTipText(toolTip);
-        newButton.addActionListener(this);
-        return newButton;
     }
 
     private void createObservationManagementComponent(){
@@ -404,16 +402,16 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         firstRowToolbar.setOrientation(JToolBar.HORIZONTAL);
         firstRowToolbar.setFloatable(false);
         firstRowToolbar.setLayout(new BoxLayout(firstRowToolbar, BoxLayout.LINE_AXIS));
-        JButton addObservationButton = this.createButton(ADD_OBSERVATION_COMMAND,
-                ADD_OBSERVATION_NAME, ADD_OBSERVATION_TOOLTIP);
+        JButton addObservationButton = UIUtilities.createNamedButton(ADD_OBSERVATION_COMMAND,
+                ADD_OBSERVATION_NAME, ADD_OBSERVATION_TOOLTIP, this);
         firstRowToolbar.add(addObservationButton);
         firstRowToolbar.add(Box.createRigidArea(new Dimension(5, 0)));
-        JButton deleteObservationButton = this.createButton(DELETE_OBSERVATION_COMMAND,
-                DELETE_OBSERVATION_NAME, DELETE_OBSERVATION_TOOLTIP);
+        JButton deleteObservationButton = UIUtilities.createNamedButton(DELETE_OBSERVATION_COMMAND,
+                DELETE_OBSERVATION_NAME, DELETE_OBSERVATION_TOOLTIP, this);
         firstRowToolbar.add(deleteObservationButton);
         firstRowToolbar.add(Box.createRigidArea(new Dimension(5, 0)));
-        JButton resetObservationButton = this.createButton(RESET_OBSERVATION_COMMAND,
-                RESET_OBSERVATION_NAME, RESET_OBSERVATION_TOOLTIP);
+        JButton resetObservationButton = UIUtilities.createNamedButton(RESET_OBSERVATION_COMMAND,
+                RESET_OBSERVATION_NAME, RESET_OBSERVATION_TOOLTIP, this);
         firstRowToolbar.add(resetObservationButton);
         buttonHolderPanel.add(firstRowToolbar);
         buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -421,10 +419,12 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         secondRowToolBar.setOrientation(JToolBar.HORIZONTAL);
         secondRowToolBar.setFloatable(false);
         secondRowToolBar.setLayout(new BoxLayout(secondRowToolBar, BoxLayout.LINE_AXIS));
-        JButton loadObservationButton = this.createButton(LOAD_OBSERVATION_COMMAND, LOAD_OBSERVATION_BUTTON_NAME, LOAD_OBSERVATION_TOOLTIP);
+        JButton loadObservationButton = UIUtilities.createNamedButton(LOAD_OBSERVATION_COMMAND,
+                LOAD_OBSERVATION_BUTTON_NAME, LOAD_OBSERVATION_TOOLTIP, this);
         secondRowToolBar.add(loadObservationButton);
         secondRowToolBar.add(Box.createRigidArea(new Dimension(5, 0)));
-        JButton saveObservationButton = this.createButton(SAVE_OBSERVATION_COMMAND, SAVE_OBSERVATION_BUTTON_NAME, SAVE_OBSERVATION_TOOLTIP);
+        JButton saveObservationButton = UIUtilities.createNamedButton(SAVE_OBSERVATION_COMMAND,
+                SAVE_OBSERVATION_BUTTON_NAME, SAVE_OBSERVATION_TOOLTIP, this);
         secondRowToolBar.add(saveObservationButton);
         buttonHolderPanel.add(secondRowToolBar);
         buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
@@ -473,7 +473,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.serviceNamesComboBox.addActionListener(this);
         this.serviceSelectionComponent.add(this.serviceNamesComboBox);
         this.serviceSelectionComponent.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.computeButton = this.createButton(COMPUTE_COMMAND, COMPUTE_NAME, COMPUTE_TOOLTIP);
+        this.computeButton = UIUtilities.createNamedButton(COMPUTE_COMMAND,
+                COMPUTE_NAME, COMPUTE_TOOLTIP, this);
         this.computeButton.setEnabled(false);
         JPanel buttonHelperPanel = new JPanel();
         buttonHelperPanel.setLayout(new BoxLayout(buttonHelperPanel, BoxLayout.LINE_AXIS));

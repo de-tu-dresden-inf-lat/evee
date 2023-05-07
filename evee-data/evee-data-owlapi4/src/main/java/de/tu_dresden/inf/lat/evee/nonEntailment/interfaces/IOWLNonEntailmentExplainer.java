@@ -10,4 +10,7 @@ public interface IOWLNonEntailmentExplainer<T extends OWLAxiom> extends INonEnta
 
 //    default implementation of ignoresPartOfOntology -> uses getSupportedAxiomTypes and ClassExpressionType of owlapi
 
+//     pre-define sets for EL, ALC for easy use
+//    getSupportedAxiomTypes() and getSupportedClassExpressionTypes implemented by Explainer
+
 }
