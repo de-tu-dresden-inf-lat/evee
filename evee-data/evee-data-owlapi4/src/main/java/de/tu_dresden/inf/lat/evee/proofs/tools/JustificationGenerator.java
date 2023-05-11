@@ -111,81 +111,147 @@ public class JustificationGenerator<SENTENCE,ONTOLOGY> {
                 result.add(just);
         return result;
     }
-    public Set<Set<SENTENCE>> getJustifications2(SENTENCE sentence) throws ProofGenerationException {
-        IProof<SENTENCE> proof = proofGenerator.getProof(sentence);
 
-        if(proof.getInferences(sentence).isEmpty()){
+    public Map<SENTENCE, Set<SENTENCE>> reachableCache = new HashMap<>();
+    public Map<SENTENCE, Set<Set<SENTENCE>>> justificationCache = new HashMap<>();
+
+    public Set<Set<SENTENCE>> getJustifications2(SENTENCE sentence) {
+        long start = System.currentTimeMillis();
+        IProof<SENTENCE> proof = null;
+        try {
+            proof = proofGenerator.getProof(sentence);
+        } catch (ProofGenerationException e) {
+            System.out.println("WARNING: dangerous use of exception");
+            System.out.println("proof generation failed - assume not entailed");
             System.out.println("No proof, no justification");
             return Collections.emptySet();
         }
 
-        System.out.println(proof);
+        if (proof.getInferences(sentence).isEmpty()) {
+            System.out.println("No proof, no justification");
+            return Collections.emptySet();
+        }
+
+        // first check whether anything relevant changed for this sentence since last time
+        Set<SENTENCE> reachable = ProofTools.reachableAssertions(proof);
+        if(reachableCache.containsKey(sentence)) {
+            if(reachableCache.get(sentence).containsAll(reachable))
+                return justificationCache.get(sentence);
+        }
+        reachableCache.put(sentence, reachable);
+        //System.out.println(proof);
 
         Set<IInference<SENTENCE>> inferences = new HashSet<>(proof.getInferences());
         //ProofTools.fillReachableInferences(proof, sentence, inferences);
 
-        System.out.println("Starting with "+inferences.size());
+        System.out.println("Starting with " + inferences.size());
 
-        SetMultimap<SENTENCE,Set<SENTENCE>> sentence2justification = HashMultimap.create();
+        SetMultimap<SENTENCE, Set<SENTENCE>> sentence2justification = HashMultimap.create();
+        SetMultimap<SENTENCE, SENTENCE> sentence2reachable = HashMultimap.create();
 
         Set<IInference<SENTENCE>> toProcess = new HashSet<>(inferences);
 
         Set<SENTENCE> changed = new HashSet<>();
         Set<IInference<SENTENCE>> remove = new HashSet<>();
 
-        for(IInference<SENTENCE> inference: inferences){
+        for (IInference<SENTENCE> inference : inferences) {
             SENTENCE conclusion = inference.getConclusion();
-            if(inference.getPremises().isEmpty()){
+            if (inference.getPremises().isEmpty()) {
                 changed.add(conclusion);
                 remove.add(inference);
-                if(ProofTools.isAsserted(inference))
+                if (ProofTools.isAsserted(inference)) {
                     sentence2justification.put(conclusion, Collections.singleton(conclusion));
+                    sentence2reachable.put(conclusion, conclusion);
+                }
                 else
                     sentence2justification.put(conclusion, Collections.emptySet());
             }
         }
         inferences.remove(remove);
 
-        System.out.println("changed: "+changed);
-        System.out.println("inferences: "+inferences.size());
+        System.out.println("changed: " + changed);
+        System.out.println("inferences: " + inferences.size());
 
-        while(!changed.isEmpty()){
+        while (!changed.isEmpty()) {
             System.out.println("New round!");
-            System.out.println("changed: "+changed.size());
+            System.out.println("changed: " + changed.size());
             Set<SENTENCE> newChanged = new HashSet<>();
-            for(IInference<SENTENCE> inference: inferences){
+            for (IInference<SENTENCE> inference : inferences) {
 
-                if(inference.getPremises()
-                        .stream()
-                        .anyMatch(changed::contains) &&
-                    inference.getPremises()
+                if(affected(inference, changed, sentence2justification)) {
+                    /*if (inference.getPremises()
                             .stream()
-                            .allMatch(sentence2justification::containsKey)){
+                            .anyMatch(changed::contains) &&
+                            inference.getPremises()
+                                    .stream()
+                                    .allMatch(sentence2justification::containsKey)) {*/
 
                     //System.out.println("Dirty inference: ");
                     //System.out.println(inference);
+
+                    //Set<SENTENCE> newReachable = new HashSet<>();
+                    inference.getPremises()
+                            .stream()
+                            .map(sentence2reachable::get)
+                            .forEach(x -> sentence2reachable.putAll(inference.getConclusion(),x));
 
                     Collection<Set<Set<SENTENCE>>> justs = inference.getPremises()
                             .stream()
                             .map(sentence2justification::get)
                             .collect(Collectors.toSet());
                     Set<Set<SENTENCE>> newJust = GeneralTools.unions(justs);
+                    Set<Set<SENTENCE>> minimalNewJust = new HashSet<>();
+                    for(Set<SENTENCE> just: newJust) {
+                        if(!newJust.stream()
+                                .filter(x -> !x.equals(just))
+                                .anyMatch(x -> just.containsAll(x))
+                        )
+                            minimalNewJust.add(just);
+                    }
+                    newJust=minimalNewJust;
 
                     SENTENCE conclusion = inference.getConclusion();
 
-                    if(!sentence2justification.get(conclusion).containsAll(newJust)) {
+                    if (!sentence2justification.get(conclusion).containsAll(newJust)) {
                         sentence2justification.putAll(inference.getConclusion(),
                                 newJust);
                         newChanged.add(inference.getConclusion());
                     }
                 }
             }
-            changed=newChanged;
+            changed = newChanged;
         }
-        if(sentence2justification.containsKey(sentence))
-            return sentence2justification.get(sentence);
+
+        System.out.println("Justifying took "+(System.currentTimeMillis()-start));
+
+        for(SENTENCE conclusion: sentence2reachable.keys()){
+            reachableCache.put(conclusion, sentence2reachable.get(conclusion));
+            justificationCache.put(conclusion, sentence2justification.get(conclusion));
+        }
+
+        Set<Set<SENTENCE>> result;
+        if (sentence2justification.containsKey(sentence))
+            result = sentence2justification.get(sentence);
         else
-            return new HashSet<>();
+            result= new HashSet<>();
+
+//        justificationCache.put(sentence,result);
+
+        return result;
+    }
+
+    private boolean affected(
+            IInference<? extends SENTENCE> inference,
+            Set<SENTENCE> changed,
+            Multimap<SENTENCE,Set<SENTENCE>> sentence2Justification) {
+        boolean changeAffected=false;
+        for(SENTENCE premise: inference.getPremises()){
+            if(changed.contains(premise))
+                changeAffected=true;
+            if(!sentence2Justification.containsKey(premise))
+                return false;
+        }
+        return changeAffected;
     }
 
 }
