@@ -143,4 +143,9 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
         markedIndividuals.add(root);
         return markedIndividuals;
     }
+
+    @Override
+    public boolean successful() {
+        return true;
+    }
 }

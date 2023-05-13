@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExpl
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -17,6 +18,7 @@ public class LetheAbductionSolverThread extends Thread implements IExplanationGe
     private final IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<DLStatement>>> explanationGenerationListener;
     private final OWLAbducer abducer;
     private final Set<OWLAxiom> observation;
+    private IProgressTracker progressTracker = null;
     private DLStatement result = null;
     private String errorMessage = "";
 
@@ -27,6 +29,10 @@ public class LetheAbductionSolverThread extends Thread implements IExplanationGe
         this.explanationGenerationListener = explanationGenerationListener;
         this.abducer = abducer;
         this.observation = observation;
+    }
+
+    public void setProgressTracker(IProgressTracker progressTracker){
+        this.progressTracker = progressTracker;
     }
 
     public void run(){

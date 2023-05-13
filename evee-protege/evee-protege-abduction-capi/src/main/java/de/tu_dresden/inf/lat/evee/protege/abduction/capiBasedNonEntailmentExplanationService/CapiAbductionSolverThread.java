@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExpla
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.lat.capi.experiments.AbductionProblem;
@@ -28,6 +29,7 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
     private final OWLOntology activeOntology;
     private final OWLSubClassOfAxiom observation;
     private final List<Solution> solutions;
+    private IProgressTracker progressTracker = null;
     private int skolemBound;
     private String errorMessage;
     private String spassPath = null;
@@ -80,6 +82,11 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
         this.logger.debug("Parameter semantically ordered set to: " + semanticallyOrdered);
     }
 
+    public void setProgressTracker(IProgressTracker progressTracker){
+        this.progressTracker = progressTracker;
+        this.logger.debug("Progress tracker set");
+    }
+
     public void run(){
         this.logger.debug("Starting Thread");
         assertNotNull(this.spassPath);
@@ -111,6 +118,7 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
             IOException, TranslationException, EmptyOntologyException, OWLOntologyStorageException,
             NumberFormatException {
         this.logger.debug("Creating SPASS input files");
+        this.progressTracker.setMessage("Creating SPASS input files");
         OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
         try (PrintWriter printWriter  = new PrintWriter(PROBLEM_SPASS)) {
             OWLOntology ontologyCopy = ontologyManager.createOntology();
@@ -132,6 +140,7 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
             ontologyManager.saveOntology(ontologyCopy, outputStream);
             outputStream.close();
             this.logger.debug("SPASS input files created successfully");
+            this.progressTracker.setMessage("SPASS input files created successfully");
         } catch (OWLOntologyCreationException e) {
             this.logger.error("Error when copying ontology: " + e);
             throw e;
@@ -158,6 +167,7 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
 
     private void runSpass(String spassPath) throws IOException, InterruptedException {
         this.logger.debug("Running SPASS");
+        this.progressTracker.setMessage("Running SPASS");
         String timeLimit = "-TimeLimit=" + this.timeLimit;
         String boundStart = "-BoundStart=" + this.skolemBound;
         this.logger.debug("Parameters for SPASS: time limit={} - skolem bound={}", this.timeLimit, this.skolemBound);
@@ -171,6 +181,7 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
             Process process = new ProcessBuilder(spassCommand).start();
             int exitCode = process.waitFor();
             this.logger.debug("SPASS exited successfully");
+            this.progressTracker.setMessage("SPASS exited successfully");
         } catch (IOException e) {
             this.logger.error("Error when running SPASS command: " + e);
             throw e;
@@ -183,6 +194,7 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
 
     private void convertSpassOutputFile() throws IOException, OWLOntologyCreationException {
         this.logger.debug("Parsing SPASS output to capi-solutions");
+        this.progressTracker.setMessage("Parsing SPASS output");
         this.logger.debug("Parameters for parsing: remove redundancies={} - simplify conjunctions={} - " +
                 "semantically ordered={}",
                 this.removeRedundancies, this.simplifyConjunctions, this.semanticallyOrdered);
@@ -220,6 +232,7 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
             }
             this.solutions.addAll(generatedSolutions);
             this.logger.debug("Solutions successfully generated");
+            this.progressTracker.setMessage("Solutions successfully generated");
             this.logger.debug("Generated solutions:\n" + this.solutions);
         } catch (IOException e) {
             this.logger.error("Error when reading file: " + e);
@@ -231,6 +244,8 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
     }
 
     private void cleanUpFiles(){
+        this.logger.debug("Removing temporary files");
+        this.progressTracker.setMessage("Cleaning up resources");
         File problemFile = new File(PROBLEM_SPASS);
         if (problemFile.exists()) {
             this.deleteFile(problemFile);
@@ -251,6 +266,8 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
         if (nameMap.exists()){
             this.deleteFile(nameMap);
         }
+        this.progressTracker.setMessage("Clean up complete");
+        this.logger.debug("All temporary files removed");
     }
 
     private void deleteFile(File file){

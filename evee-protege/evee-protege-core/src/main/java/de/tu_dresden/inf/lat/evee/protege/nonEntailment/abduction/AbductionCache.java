@@ -3,49 +3,60 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AbductionCache<Result> {
 
-//    todo: improve -> map instead of two lists
-    private final List<Set<OWLAxiom>> observationList;
-    private final List<Collection<OWLEntity>> abducibleList;
-    private final List<Result> results;
+    private final HashMap<KeyTuple, Result> resultMap;
 
     public AbductionCache(){
-        this.observationList = new ArrayList<>();
-        this.abducibleList = new ArrayList<>();
-        this.results = new ArrayList<>();
+        this.resultMap = new HashMap<>();
     }
 
-    public boolean containsResultFor(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenAbducibles){
-        for (int idx = 0; idx < this.observationList.size(); idx ++){
-            if (this.observationList.get(idx).equals(givenObservation) &&
-                    this.abducibleList.get(idx).equals(givenAbducibles)){
+    public boolean containsResultFor(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenSignature){
+        KeyTuple newKey = new KeyTuple(givenObservation, givenSignature);
+        return this.resultMap.containsKey(newKey);
+    }
+
+    public Result getResult(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenSignature){
+        KeyTuple newKey = new KeyTuple(givenObservation, givenSignature);
+        return this.resultMap.get(newKey);
+    }
+
+    public void putResult(Set<OWLAxiom> observation, Collection<OWLEntity> signature, Result result){
+        KeyTuple newKey = new KeyTuple(observation, signature);
+        this.resultMap.put(newKey, result);
+    }
+
+
+    private static class KeyTuple {
+
+        private final Set<OWLAxiom> observation;
+        private final Collection<OWLEntity> signature;
+
+        public KeyTuple(Set<OWLAxiom> observation, Collection<OWLEntity> signature){
+            this.observation = observation;
+            this.signature = signature;
+        }
+
+        @Override
+        public boolean equals(Object obj){
+            if (this == obj){
                 return true;
             }
-        }
-        return false;
-    }
-
-    public Result getResult(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenAbducibles){
-        Result result = null;
-        for (int idx = 0; idx < this.observationList.size(); idx ++){
-            if (this.observationList.get(idx).equals(givenObservation) &&
-                    this.abducibleList.get(idx).equals(givenAbducibles)){
-                result = this.results.get(idx);
+            if (!(obj instanceof KeyTuple)){
+                return false;
             }
+            KeyTuple keyTuple = (KeyTuple) obj;
+            return keyTuple.observation.equals(this.observation) &&
+                    keyTuple.signature.equals(this.signature);
         }
-        return result;
-    }
 
-    public void putResult(Set<OWLAxiom> observation, Collection<OWLEntity> abducibles, Result result){
-        this.observationList.add(observation);
-        this.abducibleList.add(abducibles);
-        this.results.add(result);
+        @Override
+        public int hashCode(){
+            return Objects.hash(this.signature, this.observation);
+        }
+
     }
 
 }

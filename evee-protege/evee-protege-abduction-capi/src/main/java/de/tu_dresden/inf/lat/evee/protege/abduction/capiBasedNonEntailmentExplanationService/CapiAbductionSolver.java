@@ -2,7 +2,6 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExpla
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionLoadingUI;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
@@ -23,7 +22,12 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
 
-public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>> implements IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<List<Solution>>>> {
+public class CapiAbductionSolver
+        extends AbstractAbductionSolver<List<Solution>>
+        implements IExplanationGenerationListener<
+        ExplanationEvent<
+                IExplanationGenerator<
+                        List<Solution>>>> {
 
     private String errorMessage = "";
     private OWLSubClassOfAxiom singleObservation;
@@ -36,7 +40,6 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
     private boolean lastUsedSimplifyConjunctions;
     private boolean lastUsedSemanticallyOrdered;
     private final CapiPreferencesManager preferencesManager;
-    private final static String LOADING = "LOADING";
     private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to the SPASS executable and hit 'Compute' again</html>";
     private final Logger logger = LoggerFactory.getLogger(CapiAbductionSolver.class);
 
@@ -108,13 +111,12 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
         this.lastUsedSemanticallyOrdered = this.preferencesManager.loadSemanticallyOrdered();
         CapiAbductionSolverThread thread = new CapiAbductionSolverThread(this,
                 this.ontology, this.singleObservation);
+        thread.setProgressTracker(this.progressTracker);
         thread.setSpassPath(this.lastUsedSpassPath);
         thread.setTimeLimit(this.lastUsedTimeLimit);
         thread.setRemoveRedundancies(this.lastUsedRemoveRedundancies);
         thread.setSimplifyConjunctions(this.lastUsedSimplifyConjunctions);
         thread.setSemanticallyOrdered(this.lastUsedSemanticallyOrdered);
-        this.loadingUI = new AbductionLoadingUI(LOADING, this.owlEditorKit);
-        this.loadingUI.showLoadingScreen();
         thread.start();
     }
 
@@ -162,7 +164,6 @@ public class CapiAbductionSolver extends AbstractAbductionSolver<List<Solution>>
 
     @Override
     public void handleEvent(ExplanationEvent<IExplanationGenerator<List<Solution>>> event) {
-        this.disposeLoadingScreen();
         switch (event.getType()){
             case COMPUTATION_COMPLETE :
                 this.computationSuccessful(event.getSource().getResult());

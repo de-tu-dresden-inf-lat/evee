@@ -156,4 +156,8 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     }
 
 
+    @Override
+    public boolean successful() {
+        return true;
+    }
 }

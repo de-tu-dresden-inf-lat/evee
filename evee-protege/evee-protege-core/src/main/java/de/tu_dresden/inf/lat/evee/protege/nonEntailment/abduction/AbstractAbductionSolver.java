@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverOntologyChangeEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverResultButtonEventListener;
@@ -21,17 +22,18 @@ import java.util.stream.Stream;
 
 import static org.junit.Assert.assertNotNull;
 
-abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OWLAxiom>>,
+abstract public class AbstractAbductionSolver<Result>
+        implements Supplier<Set<OWLAxiom>>,
         INonEntailmentExplanationService<OWLAxiom>, IOWLAbductionSolver,
         IAbductionSolverOntologyChangeEventListener,
         IAbductionSolverResultButtonEventListener {
 
+    protected boolean canceled = false;
     protected Set<OWLAxiom> observation = null;
     protected Set<OWLAxiom> lastUsedObservation = null;
     protected Set<OWLEntity> abducibles = null;
     protected Set<OWLEntity> lastUsedAbducibles = null;
     protected OWLOntology ontology = null;
-    protected AbductionLoadingUI loadingUI;
     protected JPanel settingsHolderPanel;
     private JSpinner abductionNumberSpinner;
     private OWLEditorKit owlEditorKit;
@@ -40,6 +42,7 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     private boolean activeOntologyEditedExternally = false;
     private boolean activeOntologyEditedByAbductionSolver = false;
     private boolean activeOntologyChanged = false;
+    protected IProgressTracker progressTracker;
     protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     protected final Map<OWLOntology, AbductionCache<Result>> cachedResults;
     private AbductionCache<Result> savedCache = null;
@@ -99,6 +102,16 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
         this.logger.debug("Disposing AbductionSolver");
         this.resultManager.dispose();
         this.logger.debug("AbductionSolver disposed");
+    }
+
+    @Override
+    public void addProgressTracker(IProgressTracker tracker){
+        this.progressTracker = tracker;
+    }
+
+    @Override
+    public boolean successful(){
+        return ! this.canceled;
     }
 
     @Override
@@ -245,13 +258,6 @@ abstract public class AbstractAbductionSolver<Result> implements Supplier<Set<OW
     abstract protected void createNewExplanation();
 
     abstract protected void prepareResultComponentCreation();
-
-    //    todo: move loadingUI to Lethe- and Capi-Solver (not every abduction solver might need a loading screen)
-    public void disposeLoadingScreen(){
-        if (this.loadingUI != null) {
-            this.loadingUI.disposeLoadingScreen();
-        }
-    }
 
     protected boolean parametersChanged(){
         return (! this.abducibles.equals(this.lastUsedAbducibles)) ||

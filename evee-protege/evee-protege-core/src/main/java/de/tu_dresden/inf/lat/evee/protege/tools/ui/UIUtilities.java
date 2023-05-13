@@ -5,6 +5,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
@@ -19,6 +20,14 @@ public class UIUtilities {
 
     private static final Logger logger = LoggerFactory.getLogger(UIUtilities.class);
 
+    public static JLabel createProgressUILabel(String labelText){
+        JLabel label = new JLabel(labelText);
+        label.setHorizontalTextPosition(JLabel.CENTER);
+        label.setVerticalTextPosition(JLabel.CENTER);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        return label;
+    }
+
     public static JLabel createLabel(String labelText){
         JLabel label = new JLabel(labelText);
         label.setHorizontalTextPosition(JLabel.CENTER);
@@ -27,10 +36,14 @@ public class UIUtilities {
         return label;
     }
 
-    public static JButton createNamedButton(String actionCommand, String name, String toolTip, ActionListener listener){
+    public static JButton createNamedButton(String actionCommand, @Nonnull String name, String toolTip, @Nonnull ActionListener listener){
         JButton button = new JButton(name);
-        button.setActionCommand(actionCommand);
-        button.setToolTipText(toolTip);
+        if (actionCommand != null){
+            button.setActionCommand(actionCommand);
+        }
+        if (toolTip != null){
+            button.setToolTipText(toolTip);
+        }
         button.addActionListener(listener);
         return button;
     }

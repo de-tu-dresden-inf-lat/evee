@@ -2,6 +2,8 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IHasProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IIsCancellable;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLNonEntailmentExplainer;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import org.protege.editor.core.plugin.ProtegePluginInstance;

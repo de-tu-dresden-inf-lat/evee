@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeDynamicProofAdapter;
 import org.protege.editor.owl.OWLEditorKit;
@@ -76,16 +77,7 @@ public class EveeDynamicProofLoadingUI {
     public void showError(String message){
         this.disposeLoadingScreen();
         this.disposeCancelDialog();
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-            JDialog errorDialog = errorPane.createDialog(
-                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()), "Error");
-            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
-            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            errorDialog.setVisible(true);
-        });
+        UIUtilities.showError(message, this.editorKit);
     }
 
     public void updateMessage(String message){
@@ -148,7 +140,8 @@ public class EveeDynamicProofLoadingUI {
         }
         SwingUtilities.invokeLater(() -> {
             this.showCancelScreen = true;
-            this.cancelDialog = new JDialog(ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
+            this.cancelDialog = new JDialog(ProtegeManager.getInstance()
+                    .getFrame(this.editorKit.getWorkspace()));
 //            this.cancelDialog.setUndecorated(true);
             this.cancelDialog.setResizable(false);
             this.cancelDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

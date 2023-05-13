@@ -1,10 +1,17 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.NonEntailmentExplanationLoadingUIManager;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.NonEntailmentExplanationProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPlugin;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.protege.editor.core.ui.util.ComponentFactory;
@@ -47,7 +54,10 @@ import static org.junit.Assert.assertNotNull;
 
 public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         implements ActionListener,
-        IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> {
+        IExplanationLoadingUIListener,
+        IExplanationGenerationListener<
+                ExplanationEvent<
+                        INonEntailmentExplanationService<?>>> {
 
     private final NonEntailmentExplainerManager nonEntailmentExplainerManager;
     private final ViewComponentOntologyChangeListener changeListener;
@@ -70,6 +80,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //    private JPanel splitPaneHolderComponent;
     private JComboBox<String> serviceNamesComboBox;
     private JLabel computeMessageLabel;
+    protected NonEntailmentExplanationLoadingUIManager loadingUI;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
     private static final String COMPUTE_NAME = "Compute";
     private static final String COMPUTE_TOOLTIP = "Compute non-entailment explanation using Selected Signature and Observation";
@@ -88,12 +99,15 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private static final String SAVE_OBSERVATION_COMMAND = "SAVE_OBSERVATION";
     private static final String SAVE_OBSERVATION_BUTTON_NAME = "Save to file";
     private static final String SAVE_OBSERVATION_TOOLTIP = "Save an observation to a file";
+    protected static final String DEFAULT_UI_TITLE = "LOADING";
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentViewComponent.class);
 
     public NonEntailmentViewComponent(){
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
         this.changeListener = new ViewComponentOntologyChangeListener();
+        this.loadingUI = new NonEntailmentExplanationLoadingUIManager(DEFAULT_UI_TITLE);
+        this.loadingUI.registerLoadingUIListener(this);
         this.logger.debug("Object NonEntailmentViewComponent created");
     }
 
@@ -104,9 +118,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     @Override
     protected void initialiseOWLView() {
         this.logger.debug("initialisation started");
+        this.loadingUI.setup(this.getOWLEditorKit());
         this.signatureSelectionUI = new NonEntailmentVocabularySelectionUI(
                 this, this.getOWLEditorKit());
+        this.loadingUI.initialise();
         NonEntailmentExplanationPluginLoader loader = new NonEntailmentExplanationPluginLoader(this.getOWLEditorKit());
+        if (this.getOWLEditorKit() == null){
+            this.logger.debug("for paper: note that owleditorKit cannot be used during init?");
+        }
         for (NonEntailmentExplanationPlugin plugin : loader.getPlugins()){
             try{
                 INonEntailmentExplanationService<?> service = plugin.newInstance();
@@ -116,7 +135,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 this.nonEntailmentExplainerManager.registerNonEntailmentExplanationService(service, plugin.getName());
             }
             catch (Exception e){
-                this.logger.error("Error while loading non-entailment explanation plugin:\n" + e);
+                this.logger.error("Error while loading non-entailment explanation plugin:\n", e);
             }
         }
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -242,6 +261,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     @Override
     protected void disposeOWLView() {
         this.signatureSelectionUI.dispose(this.getOWLModelManager());
+        this.loadingUI.dispose();
         this.getOWLEditorKit().getOWLModelManager().removeListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().removeOntologyChangeListener(this.changeListener);
         this.nonEntailmentExplainerManager.dispose();
@@ -282,30 +302,39 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     @Override
     public void handleEvent(ExplanationEvent<INonEntailmentExplanationService<?>> event){
-        this.logger.debug("Handling explanationEvent: {}", event.getType());
-        switch (event.getType()){
-            case COMPUTATION_COMPLETE :
-                SwingUtilities.invokeLater(() ->{
-                    this.showResult(event.getSource().getResult());
-                });
-                break;
-            case ERROR :
-                SwingUtilities.invokeLater(() -> {
-                    this.resetMainComponent();
-                    this.repaintComponents();
-                    UIUtilities.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
-                });
-                break;
-            case RESULT_RESET:
-                SwingUtilities.invokeLater(() -> {
-                    if (event.getSource().equals(
-                            this.nonEntailmentExplainerManager.getCurrentExplainer())){
-                        resetResultComponent();
-                    } else{
-                        this.logger.debug("EventSource is NOT the current explainer, event ignored");
-                    }
-                });
-                break;
+        this.logger.debug("Handling explanationEvent: {} of source: {}", event.getType(), event.getSource());
+        if (event.getSource().equals(
+                this.nonEntailmentExplainerManager.getCurrentExplainer())){
+            switch (event.getType()){
+                case COMPUTATION_COMPLETE :
+                    SwingUtilities.invokeLater(() ->{
+                        this.disposeLoadingScreen();
+                        this.showResult(event.getSource().getResult());
+                    });
+                    break;
+                case ERROR :
+                    SwingUtilities.invokeLater(() -> {
+                        this.disposeLoadingScreen();
+                        this.resetMainComponent();
+                        this.repaintComponents();
+                        UIUtilities.showError(event.getSource().getErrorMessage(), this.getOWLEditorKit());
+                    });
+                    break;
+                case RESULT_RESET:
+                    SwingUtilities.invokeLater(() -> {
+                        this.disposeLoadingScreen();
+                        this.resetResultComponent();
+                    });
+                    break;
+            }
+        } else{
+            this.logger.debug("EventSource is NOT the current explainer, event ignored");
+        }
+    }
+
+    private void disposeLoadingScreen(){
+        if (this.loadingUI != null) {
+            this.loadingUI.resetLoadingUI();
         }
     }
 
@@ -494,10 +523,15 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     private void computeExplanation(){
         this.logger.debug("Computation of explanation requested");
+        this.loadingUI.resetLoadingUI();
+        this.loadingUI.activeLoadingUI();
         INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
         explainer.setOntology(this.getOWLModelManager().getActiveOntology());
         explainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());
         explainer.setObservation(new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
+        NonEntailmentExplanationProgressTracker progressTracker = new NonEntailmentExplanationProgressTracker();
+        progressTracker.registerLoadingUIListener(this.loadingUI);
+        explainer.addProgressTracker(progressTracker);
         explainer.computeExplanation();
     }
 
@@ -636,6 +670,18 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             }
 //        });
         this.repaintComponents();
+    }
+
+    @Override
+    public void handleUIEvent(ExplanationLoadingUIEvent event) {
+        if (event.getType().equals(
+                ExplanationLoadingUIEventType
+                        .EXPLANATION_GENERATION_CANCELLED)){
+            INonEntailmentExplanationService<?> service =
+                    this.nonEntailmentExplainerManager.getCurrentExplainer();
+            this.logger.debug("Cancelling non entailment explanation generation of service {}", service);
+            service.cancel();
+        }
     }
 
     private class ViewComponentOntologyChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {

@@ -2,7 +2,6 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExpl
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionLoadingUI;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
@@ -21,7 +20,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 
-public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> implements IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<DLStatement>>> {
+public class LetheAbductionSolver
+        extends AbstractAbductionSolver<DLStatement>
+        implements IExplanationGenerationListener<
+            ExplanationEvent<
+                    IExplanationGenerator<
+                            DLStatement>>> {
 
     private OWLEditorKit owlEditorKit;
     private int maxLevel;
@@ -68,7 +72,6 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
 
     @Override
     public void handleEvent(ExplanationEvent<IExplanationGenerator<DLStatement>> event){
-        this.disposeLoadingScreen();
         switch (event.getType()){
             case COMPUTATION_COMPLETE :
                 this.explanationComputationCompleted(event.getSource().getResult());
@@ -131,8 +134,7 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
         this.abducer.setBackgroundOntology(this.ontology);
         this.abducer.setAbducibles(this.abducibles);
         LetheAbductionSolverThread thread = new LetheAbductionSolverThread(this, this.abducer, this.observation);
-        this.loadingUI = new AbductionLoadingUI(LOADING, this.owlEditorKit);
-        this.loadingUI.showLoadingScreen();
+        thread.setProgressTracker(this.progressTracker);
         thread.start();
     }
 
