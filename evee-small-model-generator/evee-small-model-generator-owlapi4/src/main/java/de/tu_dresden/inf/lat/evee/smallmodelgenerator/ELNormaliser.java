@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.counterexamole.EL;
+package de.tu_dresden.inf.lat.evee.smallmodelgenerator;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;

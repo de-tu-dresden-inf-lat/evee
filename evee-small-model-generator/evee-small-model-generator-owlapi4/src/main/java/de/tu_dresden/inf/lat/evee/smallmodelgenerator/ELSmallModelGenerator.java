@@ -1,8 +1,9 @@
-package de.tu_dresden.inf.lat.evee.protege.counterexamole.EL;
+package de.tu_dresden.inf.lat.evee.smallmodelgenerator;
 
 
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
+import de.tu_dresden.inf.lat.evee.smallmodelgenerator.ELNormaliser;
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;

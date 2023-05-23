@@ -35,6 +35,11 @@
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-elimination-proofs-fame-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -51,6 +56,11 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-small-model-generator-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

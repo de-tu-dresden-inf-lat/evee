@@ -1,16 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
-        <artifactId>evee-protege</artifactId>
-        <version>${revision}</version>
+        <artifactId>evee-small-model-generator</artifactId>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>evee-protege-counterexample-small-model</artifactId>
+    <artifactId>evee-small-model-generator-owlapi4</artifactId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -57,19 +54,14 @@
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-small-model-generator-owlapi4</artifactId>
-            <version>0.2-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
+
 
 
         <!--        <dependency>-->
-<!--            <groupId>org.graphstream</groupId>-->
-<!--            <artifactId>gs-ui</artifactId>-->
-<!--            <version>1.3</version>-->
-<!--        </dependency>-->
+        <!--            <groupId>org.graphstream</groupId>-->
+        <!--            <artifactId>gs-ui</artifactId>-->
+        <!--            <version>1.3</version>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -96,15 +88,12 @@
                             org.protege.editor.core.*;version="4.3",
                             de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
                             scala.swing.*;resolution:=optional,
-                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.*,
-
                             *
                         </Import-Package>
                         <Private-Package>
-                            de.tu_dresden.inf.lat.evee.smallmodelgenerator.*,
-                            org.graphstream.*,
+
                             javax.xml.stream.*,
-                            org.miv.*
+
                         </Private-Package>
                     </instructions>
                 </configuration>
