@@ -73,13 +73,13 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private static final String DEL_ALL_BTN_TOOLTIP = "Delete all entities from the vocabulary";
     private static final String LOAD_SIGNATURE_COMMAND = "LOAD_SIGNATURE";
     private static final String LOAD_SIGNATURE_BUTTON_NAME = "Load permitted vocabulary";
-    private static final String LOAD_SIGNATURE_BUTTON_TOOLTIP = "Load a signature from a file";
+    private static final String LOAD_SIGNATURE_BUTTON_TOOLTIP = "Load the permitted vocabulary from a file";
     private static final String SAVE_SIGNATURE_COMMAND = "SAVE_SIGNATURE";
     private static final String SAVE_SIGNATURE_BUTTON_NAME = "Save permitted vocabulary";
-    private static final String SAVE_SIGNATURE_BUTTON_TOOLTIP = "Save a signature to a file";
+    private static final String SAVE_SIGNATURE_BUTTON_TOOLTIP = "Save the permitted vocabulary to a file";
     private static final String ADD_OBSERVATION_SIGNATURE_BTN_COMMAND = "ADD_OBSERVATION";
-    private static final String ADD_OBSERVATION_SIGNATURE_BTN_NAME = "Add observation signature";
-    private static final String ADD_OBSERVATION_SIGNATURE_BTN_TOOLTIP = "Adds signature of all observations to the vocabulary";
+    private static final String ADD_OBSERVATION_SIGNATURE_BTN_NAME = "Add missing entailment signature";
+    private static final String ADD_OBSERVATION_SIGNATURE_BTN_TOOLTIP = "Adds signature of missing entailment to the vocabulary";
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentVocabularySelectionUI.class);
 

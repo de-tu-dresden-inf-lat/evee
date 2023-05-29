@@ -91,7 +91,7 @@ public class CapiAbductionSolver
 
     @Override
     public String getSupportsExplanationMessage() {
-        return "Please enter a single 'SubClassOfAxiom' as observation.";
+        return "Please enter a single 'SubClassOfAxiom' as missing entailment.";
     }
 
     @Override
@@ -209,6 +209,7 @@ public class CapiAbductionSolver
                 @Override
                 public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {
                     SwingUtilities.invokeLater(() -> {
+//                        todo: what was htis used for!?
 //                        windowEvent.getWindow().dispose();
                         logger.debug("window disposed, why isn't this showing now!?");
                         JFileChooser fileChooser = new JFileChooser();

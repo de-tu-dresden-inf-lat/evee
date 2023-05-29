@@ -83,22 +83,22 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     protected NonEntailmentExplanationLoadingUIManager loadingUI;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
     private static final String COMPUTE_NAME = "Generate Explanation";
-    private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected signature and missing entailment";
+    private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected vocabulary and missing entailment";
     private static final String ADD_OBSERVATION_COMMAND = "ADD_OBSERVATION";
     private static final String ADD_OBSERVATION_NAME = "Add";
-    private static final String ADD_OBSERVATION_TOOLTIP = "Add axioms to observation";
+    private static final String ADD_OBSERVATION_TOOLTIP = "Add axioms to missing entailment";
     private static final String DELETE_OBSERVATION_COMMAND = "DELETE_OBSERVATION";
     private static final String DELETE_OBSERVATION_NAME = "Delete";
-    private static final String DELETE_OBSERVATION_TOOLTIP = "Delete selected axioms from observation";
+    private static final String DELETE_OBSERVATION_TOOLTIP = "Delete selected axioms from missing entailment";
     private static final String RESET_OBSERVATION_COMMAND = "RESET_OBSERVATION";
     private static final String RESET_OBSERVATION_NAME = "Reset";
-    private static final String RESET_OBSERVATION_TOOLTIP = "Delete all axioms from observation";
+    private static final String RESET_OBSERVATION_TOOLTIP = "Delete all axioms from missing entailment";
     private static final String LOAD_OBSERVATION_COMMAND = "LOAD_OBSERVATION";
     private static final String LOAD_OBSERVATION_BUTTON_NAME = "Load from file";
-    private static final String LOAD_OBSERVATION_TOOLTIP = "Load an observation from a file";
+    private static final String LOAD_OBSERVATION_TOOLTIP = "Load missing entailment from a file";
     private static final String SAVE_OBSERVATION_COMMAND = "SAVE_OBSERVATION";
     private static final String SAVE_OBSERVATION_BUTTON_NAME = "Save to file";
-    private static final String SAVE_OBSERVATION_TOOLTIP = "Save an observation to a file";
+    private static final String SAVE_OBSERVATION_TOOLTIP = "Save missing entailment to a file";
     protected static final String DEFAULT_UI_TITLE = "LOADING";
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentViewComponent.class);
@@ -171,7 +171,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //    }
 //
     private void resetSignatureAndObservationComponent(){
-        this.logger.debug("Resetting signature and observation component");
+        this.logger.debug("Resetting vocabulary and missing entailment component");
         this.signatureAndObservationComponent = new JPanel();
         this.signatureAndObservationComponent.setLayout(new BoxLayout(this.signatureAndObservationComponent, BoxLayout.PAGE_AXIS));
         int idx = 0;
@@ -179,7 +179,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             idx = this.signatureAndObservationTabbedPane.getSelectedIndex();
         }
         this.signatureAndObservationTabbedPane = new JTabbedPane();
-        this.signatureAndObservationTabbedPane.addTab("Signature", this.signatureManagementPanel);
+        this.signatureAndObservationTabbedPane.addTab("Vocabulary", this.signatureManagementPanel);
         this.signatureAndObservationTabbedPane.addTab("Missing Entailment", this.observationManagementPanel);
         this.signatureAndObservationTabbedPane.setSelectedIndex(idx);
         this.signatureAndObservationComponent.add(this.signatureAndObservationTabbedPane);
@@ -486,7 +486,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         observationPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(),
-                        "Selected observation:"),
+                        "Selected missing entailment:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         return observationPanel;
     }
@@ -546,7 +546,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 this.selectedObservationListModel.checkAndAddElement(axiomToAdd);
             }
             catch (OWLException e) {
-                this.logger.debug("Exception caught when trying to add observation: " + e);
+                this.logger.debug("Exception caught when trying to add missing entailment: " + e);
             }
             finally {
                 this.selectedObservationList.clearSelection();
@@ -585,7 +585,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private void loadObservation() {
-        this.logger.debug("Loading observation from file");
+        this.logger.debug("Loading missing entailment from file");
         JFileChooser fileChooser = this.createFileChooser();
         int result = fileChooser.showOpenDialog(this);
         Set<OWLLogicalAxiom> observationAxioms = new HashSet<>();
@@ -600,7 +600,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                                 axiom -> activeOntology.getSignature().containsAll(
                                         axiom.getSignature())).collect(Collectors.toSet());
             } catch (OWLOntologyCreationException e) {
-                this.logger.error("Error when loading observation from file: " + e);
+                this.logger.error("Error when loading missing entailment from file: " + e);
                 UIUtilities.showError(e.getMessage(), this.getOWLEditorKit());
             }
         }
@@ -611,7 +611,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private void saveObservation(){
-        this.logger.debug("Saving observation to file");
+        this.logger.debug("Saving missing entailment to file");
         JFileChooser fileChooser = this.createFileChooser();
         int result = fileChooser.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION){
@@ -626,7 +626,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 ontologyManager.addAxioms(observationOntology, new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
                 ontologyManager.saveOntology(observationOntology, new RDFXMLDocumentFormat(), new FileOutputStream(file));
             } catch (OWLOntologyCreationException | OWLOntologyStorageException | FileNotFoundException exception) {
-                this.logger.error("Error when saving observation ontology to file: " + exception);
+                this.logger.error("Error when saving missing entailment ontology to file: " + exception);
                 UIUtilities.showError(exception.getMessage(), this.getOWLEditorKit());
             }
         }
