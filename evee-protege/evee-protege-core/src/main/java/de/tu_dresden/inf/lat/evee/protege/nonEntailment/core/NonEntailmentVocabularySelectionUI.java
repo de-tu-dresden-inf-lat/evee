@@ -62,12 +62,12 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private JList<OWLEntity> forbiddenVocabularyList;
     private JPanel buttonHolderPanel;
     private static final String ADD_BTN_COMMAND = "ADD";
-    private static final String ADD_BTN_ICON = "/downArrow.png";
+//    private static final String ADD_BTN_ICON = "/downArrow.png";
     private static final String ADD_BTN_TOOLTIP = "Add selected OWLObjects to the vocabulary";
     private static final String ADD_ALL_BTN_COMMAND = "ADD_ALL";
     private static final String ADD_ALL_BTN_TOOLTIP = "Add all entities to the vocabulary";
     private static final String DEL_BTN_COMMAND = "DELETE";
-    private static final String DEL_BTN_ICON = "/upArrow.png";
+//    private static final String DEL_BTN_ICON = "/upArrow.png";
     private static final String DEL_BTN_TOOLTIP = "Delete selected OWLObjects from the vocabulary";
     private static final String DEL_ALL_BTN_COMMAND = "DELETE_ALL";
     private static final String DEL_ALL_BTN_TOOLTIP = "Delete all entities from the vocabulary";
@@ -182,11 +182,11 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.buttonHolderPanel.setLayout(new BoxLayout(this.buttonHolderPanel, BoxLayout.PAGE_AXIS));
         this.buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
         ArrayList<JButton> buttonList = new ArrayList<>();
-        URL addURL = getClass().getResource(ADD_BTN_ICON);
+//        URL addURL = getClass().getResource(ADD_BTN_ICON);
         JButton addButton = UIUtilities.createArrowButton(ADD_BTN_COMMAND,
                 BasicArrowButton.SOUTH, ADD_BTN_TOOLTIP, this);
         buttonList.add(addButton);
-        URL delURL = getClass().getResource(DEL_BTN_ICON);
+//        URL delURL = getClass().getResource(DEL_BTN_ICON);
         JButton deleteButton = UIUtilities.createArrowButton(DEL_BTN_COMMAND,
                 BasicArrowButton.NORTH, DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);

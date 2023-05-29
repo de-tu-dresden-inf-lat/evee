@@ -82,8 +82,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JLabel computeMessageLabel;
     protected NonEntailmentExplanationLoadingUIManager loadingUI;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
-    private static final String COMPUTE_NAME = "Compute";
-    private static final String COMPUTE_TOOLTIP = "Compute non-entailment explanation using Selected Signature and Observation";
+    private static final String COMPUTE_NAME = "Generate Explanation";
+    private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected signature and missing entailment";
     private static final String ADD_OBSERVATION_COMMAND = "ADD_OBSERVATION";
     private static final String ADD_OBSERVATION_NAME = "Add";
     private static final String ADD_OBSERVATION_TOOLTIP = "Add axioms to observation";
@@ -123,9 +123,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 this, this.getOWLEditorKit());
         this.loadingUI.initialise();
         NonEntailmentExplanationPluginLoader loader = new NonEntailmentExplanationPluginLoader(this.getOWLEditorKit());
-        if (this.getOWLEditorKit() == null){
-            this.logger.debug("for paper: note that owleditorKit cannot be used during init?");
-        }
         for (NonEntailmentExplanationPlugin plugin : loader.getPlugins()){
             try{
                 INonEntailmentExplanationService<?> service = plugin.newInstance();
@@ -183,7 +180,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         }
         this.signatureAndObservationTabbedPane = new JTabbedPane();
         this.signatureAndObservationTabbedPane.addTab("Signature", this.signatureManagementPanel);
-        this.signatureAndObservationTabbedPane.addTab("Observation", this.observationManagementPanel);
+        this.signatureAndObservationTabbedPane.addTab("Missing Entailment", this.observationManagementPanel);
         this.signatureAndObservationTabbedPane.setSelectedIndex(idx);
         this.signatureAndObservationComponent.add(this.signatureAndObservationTabbedPane);
     }
@@ -419,7 +416,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         observationEditorPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Enter observation:"),
+                        "Enter Missing Entailment:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         return observationEditorPanel;
     }

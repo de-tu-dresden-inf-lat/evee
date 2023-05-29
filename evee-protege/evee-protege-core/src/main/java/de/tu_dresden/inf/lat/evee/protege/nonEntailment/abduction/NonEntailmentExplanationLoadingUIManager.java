@@ -19,7 +19,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
     protected String uiTitle;
     private OWLEditorKit owlEditorKit;
     protected boolean paintProgressBarString;
-    protected static final String DEFAULT_MESSAGE = "Generating hypotheses";
+    protected static final String DEFAULT_MESSAGE = "Generating Explanations";
     protected static final String DEFAULT_CANCELLATION_MESSAGE = "Cancelling generation, please wait";
 
     private IExplanationLoadingUIListener viewComponentListener;
