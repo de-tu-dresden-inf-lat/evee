@@ -23,6 +23,7 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 public class Proof<SENTENCE> implements IProof<SENTENCE> {
 
 	private final SetMultimap<SENTENCE, IInference<SENTENCE>> conclusions2inferences;
+	private final SetMultimap<SENTENCE, IInference<SENTENCE>> premises2inferences;
 	private final List<IInference<SENTENCE>> inferences;
 
 	private final SENTENCE finalConclusion;
@@ -34,9 +35,13 @@ public class Proof<SENTENCE> implements IProof<SENTENCE> {
 		this.inferences = new LinkedList<>(inferences);
 
 		conclusions2inferences = HashMultimap.create();
+		premises2inferences = HashMultimap.create();
 
 		for (IInference<SENTENCE> inference : inferences) {
 			conclusions2inferences.put(inference.getConclusion(), inference);
+			for (SENTENCE premise: inference.getPremises()) {
+				premises2inferences.put(premise, inference);
+			}
 		}
 	}
 
@@ -44,6 +49,7 @@ public class Proof<SENTENCE> implements IProof<SENTENCE> {
 		this.finalConclusion = finalConclusion;
 		inferences = new LinkedList<>();
 		conclusions2inferences = HashMultimap.create();
+		premises2inferences = HashMultimap.create();
 	}
 
 	@Override
@@ -62,9 +68,15 @@ public class Proof<SENTENCE> implements IProof<SENTENCE> {
 	}
 
 	@Override
+	public Set<IInference<SENTENCE>> getInferencesWithPremise(SENTENCE premise) { return premises2inferences.get(premise); }
+
+	@Override
 	public void addInference(IInference<SENTENCE> inference) {
 		inferences.add(inference);
 		conclusions2inferences.put(inference.getConclusion(), inference);
+		for (SENTENCE premise : inference.getPremises()) {
+			premises2inferences.put(premise, inference);
+		}
 	}
 
 	@Override
@@ -76,6 +88,9 @@ public class Proof<SENTENCE> implements IProof<SENTENCE> {
 	public boolean hasInferenceFor(SENTENCE conclusion) {
 		return conclusions2inferences.containsKey(conclusion);
 	}
+
+	@Override
+	public boolean hasInferenceWithPremise(SENTENCE premise) { return premises2inferences.containsKey(premise); }
 
 	@JsonIgnore
 	@Override

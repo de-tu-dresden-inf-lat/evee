@@ -37,11 +37,15 @@ public interface IProof<SENTENCE> {
 
 	Collection<IInference<SENTENCE>> getInferences(SENTENCE conclusion);
 
+	Collection<IInference<SENTENCE>> getInferencesWithPremise(SENTENCE premise);
+
 	void addInference(IInference<SENTENCE> inference);
 
 	void addInferences(Collection<IInference<SENTENCE>> inference);
 
 	boolean hasInferenceFor(SENTENCE conclusion);
+
+	boolean hasInferenceWithPremise(SENTENCE premise);
 
 	/**
 	 * The Number of Rule application is equal to the number of inferences involved

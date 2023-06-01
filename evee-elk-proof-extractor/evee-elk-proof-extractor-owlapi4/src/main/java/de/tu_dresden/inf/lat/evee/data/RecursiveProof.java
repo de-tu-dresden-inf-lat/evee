@@ -19,6 +19,7 @@ public class RecursiveProof<SENTENCE> implements IProof<SENTENCE> {
 	private final List<RecursiveInference<SENTENCE>> inferences;
 
 	private final MultiMap<SENTENCE, IInference<SENTENCE>> conclusions2inferences;
+	private final MultiMap<SENTENCE, IInference<SENTENCE>> premises2inferences;
 
 	private final SENTENCE finalConclusion;
 
@@ -29,9 +30,13 @@ public class RecursiveProof<SENTENCE> implements IProof<SENTENCE> {
 		this.inferences = new LinkedList<>(inferences);
 
 		conclusions2inferences = new MultiMap<>();
+		premises2inferences = new MultiMap<>();
 
 		for (IInference<SENTENCE> inference : inferences) {
 			conclusions2inferences.add(inference.getConclusion(), inference);
+			for (SENTENCE premise : inference.getPremises()) {
+				premises2inferences.add(premise, inference);
+			}
 		}
 	}
 
@@ -39,6 +44,7 @@ public class RecursiveProof<SENTENCE> implements IProof<SENTENCE> {
 		this.finalConclusion = finalConclusion;
 		inferences = new LinkedList<>();
 		conclusions2inferences = new MultiMap<>();
+		premises2inferences = new MultiMap<>();
 	}
 
 	@Override
@@ -52,9 +58,17 @@ public class RecursiveProof<SENTENCE> implements IProof<SENTENCE> {
 	}
 
 	@Override
+	public Collection<IInference<SENTENCE>> getInferencesWithPremise(SENTENCE premise) {
+		return premises2inferences.get(premise);
+	}
+
+	@Override
 	public boolean hasInferenceFor(SENTENCE conclusion) {
 		return conclusions2inferences.hasKey(conclusion);
 	}
+
+	@Override
+	public boolean hasInferenceWithPremise(SENTENCE premise) { return premises2inferences.hasKey(premise); }
 
 //	public RecursiveProof() {
 //		inferences = new LinkedList<>();
@@ -70,6 +84,9 @@ public class RecursiveProof<SENTENCE> implements IProof<SENTENCE> {
 		assert inference instanceof RecursiveInference;
 		inferences.add((RecursiveInference<SENTENCE>) inference);
 		conclusions2inferences.add(inference.getConclusion(), inference);
+		for (SENTENCE premise : inference.getPremises()) {
+			premises2inferences.add(premise, inference);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
