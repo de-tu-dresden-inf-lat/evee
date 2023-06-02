@@ -48,7 +48,7 @@ public class LetheAbductionSolver
 
     @Override
     public String getSupportsExplanationMessage() {
-        return "Please enter some permitted vocabulary and missing entailment";
+        return "Please enter some permitted vocabulary and missing entailment.";
     }
 
     @Override

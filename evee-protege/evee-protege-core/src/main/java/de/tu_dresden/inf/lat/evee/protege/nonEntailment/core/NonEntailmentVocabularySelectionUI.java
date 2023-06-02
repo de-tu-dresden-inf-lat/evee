@@ -78,8 +78,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private static final String SAVE_SIGNATURE_BUTTON_NAME = "Save permitted vocabulary";
     private static final String SAVE_SIGNATURE_BUTTON_TOOLTIP = "Save the permitted vocabulary to a file";
     private static final String ADD_OBSERVATION_SIGNATURE_BTN_COMMAND = "ADD_OBSERVATION";
-    private static final String ADD_OBSERVATION_SIGNATURE_BTN_NAME = "Add missing entailment signature";
-    private static final String ADD_OBSERVATION_SIGNATURE_BTN_TOOLTIP = "Adds signature of missing entailment to the vocabulary";
+    private static final String ADD_OBSERVATION_SIGNATURE_BTN_NAME = "Add missing entailment vocabulary";
+    private static final String ADD_OBSERVATION_SIGNATURE_BTN_TOOLTIP = "Adds vocabulary of missing entailment to the selected vocabulary tab";
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentVocabularySelectionUI.class);
 
@@ -146,7 +146,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         tabbedPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Ontology signature:"),
+                        "Ontology vocabulary:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         this.ontologySignatureTabbedPane = tabbedPane;
     }

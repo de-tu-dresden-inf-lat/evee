@@ -467,6 +467,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2){
                     JList list = (JList) e.getSource();
+//                    todo: start here for bugfix on issue #73
                     Object selectedValue = list.getSelectedValue();
                     if (selectedValue instanceof OWLObject){
                         observationTextEditor.setText(reverseParseOWLObject((OWLObject) selectedValue));
