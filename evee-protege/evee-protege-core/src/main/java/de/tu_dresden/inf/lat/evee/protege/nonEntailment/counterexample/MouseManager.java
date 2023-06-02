@@ -161,6 +161,7 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     private void createSelectionSprite() {
         SpriteManager sman = new SpriteManager(graph);
         selectionSprite = sman.addSprite("select");
+        selectionSprite.setAttribute("ui.class","selection");
         selectionSprite.setAttribute("ui.style","fill-color:rgba(0,0,0,0);");
         selectionSprite.setAttribute("ui.style","stroke-color:rgba(0,0,0,0);");
         selectionSprite.setAttribute("ui.style","fill-mode:plain;");

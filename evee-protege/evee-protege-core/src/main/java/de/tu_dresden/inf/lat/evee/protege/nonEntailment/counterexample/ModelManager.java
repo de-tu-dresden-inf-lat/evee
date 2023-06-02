@@ -24,6 +24,10 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,12 +55,13 @@ public class ModelManager {
     private OWLSubClassOfAxiom observation;
     private int maxLabelNumber;
     private final double labelSpace = -0.1;
-    private boolean labelNumberIsChanged = false;
     private Set<Sprite> classLabels;
+    private String styleSheet;
     private final Logger logger = Logger.getLogger(ModelManager.class);
 
     public ModelManager(Set<OWLIndividualAxiom> model, OWLEditorKit owlEditorKit, IOWLCounterexampleGenerator counterExampleGenerator, OWLOntology ont,Set<OWLAxiom> observation) {
         this.maxLabelNumber = 2;
+        this.styleSheet = GraphStyleSheets.PLAIN;
         this.observation = (OWLSubClassOfAxiom) observation.iterator().next();
         this.ont = ont;
         this.man = OWLManager.createOWLOntologyManager();
@@ -97,10 +102,9 @@ public class ModelManager {
     }
 
     public void refreshModel() {
-        if (labelNumberIsChanged) {
-            labelNumberIsChanged = false;
-            createGraph();
-        }
+
+        createGraph();
+
         this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         this.viewer.enableAutoLayout();
     }
@@ -254,7 +258,8 @@ public class ModelManager {
             GraphicNode n = (GraphicNode) graph.addNode(k);
             for(IRI iri:this.markedIndividuals) {
                 if(iri.getShortForm().equalsIgnoreCase(n.getId())) {
-                    n.setAttribute("ui.style", "fill-color: #000000;");
+//                    n.setAttribute("ui.style", "fill-color: #000000;");
+                    n.setAttribute("ui.class", "root");
                 }
             }
         });
@@ -301,14 +306,15 @@ public class ModelManager {
     private void createStyleSheet() {
         graph.setAttribute("ui.quality");
         graph.setAttribute("ui.antialias");
-        graph.setAttribute("ui.stylesheet",
-                " edge {text-alignment: along;text-offset: -25, -25;text-background-mode: plain; text-background-color: white;text-size:13;}" +
-                        "node {text-offset: -25, -25;text-background-mode: plain; text-background-color: white;text-size:15;fill-color: #FFFFFF; size: 20px; stroke-mode: plain; stroke-color: #000000; }" +
-                        "sprite {text-size:13;" +
-                        "text-background-mode: plain;" +
-                        "text-mode:normal;" +
-                        "text-offset: 0, 25;" +
-                        "fill-mode: none;}");
+        graph.setAttribute("ui.stylesheet",styleSheet);
+//        graph.setAttribute("ui.stylesheet",
+//                " edge {text-alignment: along;text-offset: -25, -25;text-background-mode: plain; text-background-color: white;text-size:13;}" +
+//                        "node {text-offset: -25, -25;text-background-mode: plain; text-background-color: white;text-size:15;fill-color: #FFFFFF; size: 20px; stroke-mode: plain; stroke-color: #000000; }" +
+//                        "sprite {text-size:13;" +
+//                        "text-background-mode: plain;" +
+//                        "text-mode:normal;" +
+//                        "text-offset: 0, 25;" +
+//                        "fill-mode: none;}");
     }
 
     private void createGraph() {
@@ -318,9 +324,11 @@ public class ModelManager {
         createSprites();
         createStyleSheet();
     }
+    public void setStyleSheet(String styleSheet) {
+        this.styleSheet = styleSheet;
+    }
     public void setMaxLabelNumber(int maxLabelNumber) {
         this.maxLabelNumber = maxLabelNumber;
-        this.labelNumberIsChanged = true;
     }
     public Object[][] getConceptData() {
         return this.conceptData;

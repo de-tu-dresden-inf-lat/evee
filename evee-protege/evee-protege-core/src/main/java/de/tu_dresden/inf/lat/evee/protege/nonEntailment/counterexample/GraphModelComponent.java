@@ -28,7 +28,7 @@ public class GraphModelComponent extends JPanel {
     private final String NUM_SLIDER = "Number of displayed classes:";
     private final String RECOMPUTE_BUTTON = "Recompute example";
     private final String REFRESH_BUTTON = "Refresh example";
-    private final String ADD_DISJ_BUTTON = "Add disjointnesses";
+    private final String ADD_DISJ_BUTTON = "Add disjointness";
     private final String REMOVE_DISJ_BUTTON = "Remove disjointnesses";
     private final String ADD_TO_ONT_BUTTON = "Add all to ontology";
     private final int LABELS_MIN = 0;
@@ -99,7 +99,8 @@ public class GraphModelComponent extends JPanel {
         rightPanel.setAlignmentX(0.5F);
         rightPanel.setBorder(new EmptyBorder(new Insets(15, 15, 15, 15)));
         rightPanel.setMaximumSize(new Dimension(200,  2000));
-        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
+//        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
+        rightPanel.add(getStyleCombobox());
         rightPanel.add(getLabelNumSliderPanel());
         rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
         rightPanel.add(getRefreshButton());
@@ -284,6 +285,19 @@ public class GraphModelComponent extends JPanel {
         });
         labelNumSliderPanel.add(labelNumSlider);
         return labelNumSliderPanel;
+    }
+    private JComboBox getStyleCombobox() {
+        JComboBox styleCombobox = new JComboBox<>(GraphStyleSheets.getStyleSheets());
+        styleCombobox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JComboBox cb = (JComboBox)e.getSource();
+                String selectedStyle = (String)cb.getSelectedItem();
+                String styleSheet = GraphStyleSheets.styleMap.get(selectedStyle);
+                modelManager.setStyleSheet(styleSheet);
+            }
+        });
+        return styleCombobox;
     }
 
     private void createClassList() {
