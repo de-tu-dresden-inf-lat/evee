@@ -17,14 +17,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertNotNull;
 
 abstract public class AbstractAbductionSolver<Result>
-        implements Supplier<Set<OWLAxiom>>,
-        INonEntailmentExplanationService<OWLAxiom>, IOWLAbductionSolver,
+        implements INonEntailmentExplanationService<OWLAxiom>,
+        IOWLAbductionSolver,
         IAbductionSolverOntologyChangeEventListener,
         IAbductionSolverResultButtonEventListener {
 
@@ -39,6 +38,7 @@ abstract public class AbstractAbductionSolver<Result>
     private OWLEditorKit owlEditorKit;
     private final AbductionSolverResultManager resultManager;
     private boolean computationSuccessful;
+    private String errorMessage;
     private boolean activeOntologyEditedExternally = false;
     private boolean activeOntologyEditedByAbductionSolver = false;
     private boolean activeOntologyChanged = false;
@@ -53,6 +53,7 @@ abstract public class AbstractAbductionSolver<Result>
 
     public AbstractAbductionSolver(){
         this.logger.debug("Creating AbstractAbductionSolver");
+        this.errorMessage = "";
         this.cachedResults = new HashMap<>();
         this.resultManager = new AbductionSolverResultManager(this, this);
         this.createSettingsComponent();
@@ -87,6 +88,42 @@ abstract public class AbstractAbductionSolver<Result>
 
     public boolean computationSuccessful(){
         return this.computationSuccessful;
+    }
+
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    /**
+     * uses current activeOntology, observation and abducibles to save result
+     * @param result newly computed result of abduction process that should be saved to cache
+     */
+    protected void saveResultToCache(Result result){
+        if (this.ontology == null ||
+                this.observation == null ||
+                this.abducibles == null){
+            return;
+        }
+        this.cachedResults.get(this.ontology).
+                putResult(this.observation, this.abducibles, result);
+    }
+
+    /**
+     * uses current activeOntology, observation and abductibles to load result
+     * @return cached result of abduction process or null if no cached result was found
+     */
+    protected Result loadResultFromCache(){
+        if (! this.cachedResults.get(this.ontology).containsResultFor(
+                this.observation, this.abducibles)){
+            return null;
+        } else {
+            return this.cachedResults.get(this.ontology).getResult(
+                    this.observation, this.abducibles);
+        }
     }
 
     @Override
@@ -152,11 +189,6 @@ abstract public class AbstractAbductionSolver<Result>
             this.logger.debug("No cache for ontology, creating new cache");
             this.cachedResults.put(ontology, new AbductionCache<>());
         }
-    }
-
-    @Override
-    public Stream<Set<OWLAxiom>> generateExplanations() {
-        return Stream.generate(this);
     }
 
     @Override

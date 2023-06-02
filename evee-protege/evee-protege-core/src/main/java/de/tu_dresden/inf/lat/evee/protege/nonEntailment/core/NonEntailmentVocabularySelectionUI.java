@@ -244,9 +244,9 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.resetVocabularyListModels();
         this.vocabularyTabbedPane = new JTabbedPane();
         this.vocabularyTabbedPane.setPreferredSize(new Dimension(400, 400));
-        this.vocabularyTabbedPane.addTab("Permitted vocabulary",
+        this.vocabularyTabbedPane.addTab("Permitted Vocabulary",
                 ComponentFactory.createScrollPane(this.permittedVocabularyList));
-        this.vocabularyTabbedPane.addTab("Forbidden vocabulary",
+        this.vocabularyTabbedPane.addTab("Forbidden Vocabulary",
                 ComponentFactory.createScrollPane(this.forbiddenVocabularyList));
         this.vocabularyTabbedPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(

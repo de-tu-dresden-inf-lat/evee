@@ -18,18 +18,20 @@ import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertNotNull;
 
 public class CapiAbductionSolver
         extends AbstractAbductionSolver<List<Solution>>
-        implements IExplanationGenerationListener<
+        implements Supplier<Set<OWLAxiom>>,
+        IExplanationGenerationListener<
         ExplanationEvent<
                 IExplanationGenerator<
                         List<Solution>>>> {
 
-    private String errorMessage = "";
     private OWLSubClassOfAxiom singleObservation;
     private List<Solution> solutions;
     private OWLEditorKit owlEditorKit;
@@ -61,6 +63,11 @@ public class CapiAbductionSolver
     }
 
     @Override
+    public Stream<Set<OWLAxiom>> generateExplanations() {
+        return Stream.generate(this);
+    }
+
+    @Override
     public boolean supportsExplanation() {
 //        todo: currently signature is completely ignored -> consider signature once functionality is enabled by capi
         if (this.observation.size() != 1){
@@ -68,11 +75,6 @@ public class CapiAbductionSolver
         } else {
             return (new ArrayList<>(this.observation)).get(0) instanceof OWLSubClassOfAxiom;
         }
-    }
-
-    @Override
-    public String getErrorMessage() {
-        return this.errorMessage;
     }
 
     @Override
@@ -176,7 +178,7 @@ public class CapiAbductionSolver
 
     private void computationSuccessful(List<Solution> solutions){
         this.setComputationSuccessful(true);
-        this.cachedResults.get(this.ontology).putResult(this.observation, this.abducibles, solutions);
+        this.saveResultToCache(solutions);
         this.setActiveOntologyEditedExternally(false);
         this.prepareResultComponentCreation();
         this.createResultComponent();
@@ -185,14 +187,14 @@ public class CapiAbductionSolver
     private void computationFailed(String errorMessage){
         this.setComputationSuccessful(false);
         this.setActiveOntologyEditedExternally(false);
-        this.errorMessage = errorMessage;
+        this.setErrorMessage(errorMessage);
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this, ExplanationEventType.ERROR));
     }
 
     @Override
     protected void prepareResultComponentCreation(){
-        this.solutions = this.cachedResults.get(this.ontology).getResult(this.observation, this.abducibles);
+        this.solutions = this.loadResultFromCache();
         this.currentSolutionIndex = 0;
     }
 
@@ -241,4 +243,8 @@ public class CapiAbductionSolver
                 (!(this.lastUsedSemanticallyOrdered == this.preferencesManager.loadSemanticallyOrdered()));
     }
 
+    @Override
+    public void cancel() {
+        super.cancel();
+    }
 }

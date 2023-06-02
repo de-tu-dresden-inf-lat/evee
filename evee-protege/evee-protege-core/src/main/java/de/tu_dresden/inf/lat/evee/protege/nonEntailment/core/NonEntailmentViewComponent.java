@@ -514,7 +514,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.serviceSelectionComponent.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Non-Entailment Explanation Service:"),
+                        "Missing Entailment Explanation Service:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
     }
 

@@ -5,9 +5,7 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
-import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.man.cs.lethe.abduction.OWLAbducer;
@@ -17,23 +15,23 @@ import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
 
 import java.util.*;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertNotNull;
 
 public class LetheAbductionSolver
         extends AbstractAbductionSolver<DLStatement>
-        implements IExplanationGenerationListener<
+        implements Supplier<Set<OWLAxiom>>,
+        IExplanationGenerationListener<
             ExplanationEvent<
                     IExplanationGenerator<
                             DLStatement>>> {
 
-    private OWLEditorKit owlEditorKit;
     private int maxLevel;
     private int currentResultAdapterIndex;
-    private String errorMessage = "";
     private final OWLAbducer abducer;
     private final List<DLStatementAdapter> hypothesesAdapterList;
-    private final static String LOADING = "LOADING";
 
     private final Logger logger = LoggerFactory.getLogger(LetheAbductionSolver.class);
 
@@ -49,20 +47,13 @@ public class LetheAbductionSolver
     }
 
     @Override
-    public void setup(OWLEditorKit owlEditorKit) {
-        this.owlEditorKit = owlEditorKit;
-        super.setup(owlEditorKit);
-    }
-
-    @Override
     public String getSupportsExplanationMessage() {
         return "Please enter some permitted vocabulary and missing entailment";
     }
 
     @Override
-    public void setOntology(OWLOntology ontology) {
-        super.setOntology(ontology);
-
+    public Stream<Set<OWLAxiom>> generateExplanations() {
+        return Stream.generate(this);
     }
 
     @Override
@@ -80,11 +71,6 @@ public class LetheAbductionSolver
                 this.explanationComputationFailed(event.getSource().getErrorMessage());
                 break;
         }
-    }
-
-    @Override
-    public String getErrorMessage() {
-        return this.errorMessage;
     }
 
     @Override
@@ -144,7 +130,7 @@ public class LetheAbductionSolver
         }
         else{
             this.setComputationSuccessful(true);
-            this.cachedResults.get(this.ontology).putResult(this.observation, this.abducibles, hypotheses);
+            this.saveResultToCache(hypotheses);
             this.setActiveOntologyEditedExternally(false);
             this.prepareResultComponentCreation();
             this.createResultComponent();
@@ -154,15 +140,14 @@ public class LetheAbductionSolver
     private void explanationComputationFailed(String errorMessage){
         this.setComputationSuccessful(false);
         this.setActiveOntologyEditedExternally(false);
-        this.errorMessage = errorMessage;
+        this.setErrorMessage(errorMessage);
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                 ExplanationEventType.ERROR));
     }
 
     @Override
     protected void prepareResultComponentCreation(){
-        DLStatement hypotheses = this.cachedResults.get(this.ontology).getResult(
-                this.observation, this.abducibles);
+        DLStatement hypotheses = this.loadResultFromCache();
         assertNotNull(hypotheses);
         this.maxLevel = 0;
         this.currentResultAdapterIndex = 0;
@@ -174,4 +159,8 @@ public class LetheAbductionSolver
     }
 
 
+    @Override
+    public void cancel() {
+//        super.cancel();
+    }
 }

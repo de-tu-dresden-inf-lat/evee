@@ -17,7 +17,7 @@
 
     <extension id="NonEntailmentExplanationView"
                point="org.protege.editor.core.application.ViewComponent">
-        <label value="Non-Entailment Explanation"/>
+        <label value="Missing Entailment Explanation"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentViewComponent"/>
         <headerColor value="@org.protege.classcolor"/>
         <category value="@org.protege.miscellaneous"/>
@@ -26,7 +26,7 @@
 
     <extension id="NonEntailmentExplanationPreferences"
                point="org.protege.editor.core.application.explanationpreferencespanel">
-        <label value="Non Entailment"/>
+        <label value="Missing Entailment"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentPreferencesPanel"/>
     </extension>
 

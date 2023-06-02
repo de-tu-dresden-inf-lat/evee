@@ -10,8 +10,9 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 
 import java.awt.*;
 
-public interface INonEntailmentExplanationService<T extends OWLAxiom> extends ProtegePluginInstance,
-        IExplanationGenerator<Component>, IOWLNonEntailmentExplainer<T> {
+public interface INonEntailmentExplanationService<T extends OWLAxiom> extends
+        ProtegePluginInstance, IExplanationGenerator<Component>,
+        IOWLNonEntailmentExplainer<T> {
 
     void setup(OWLEditorKit editorKit);
 
