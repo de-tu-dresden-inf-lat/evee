@@ -47,6 +47,7 @@ public class LetheAbductionSolverThread extends Thread implements IExplanationGe
         }
         catch (Throwable e){
             this.logger.error("Error during abduction generation:\n" + e);
+            e.printStackTrace();
             this.errorMessage = e.getMessage();
             this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
                     this, ExplanationEventType.ERROR));
