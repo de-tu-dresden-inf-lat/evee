@@ -54,14 +54,14 @@ public class ModelManager {
     private GraphicGraph graph;
     private OWLSubClassOfAxiom observation;
     private int maxLabelNumber;
-    private final double labelSpace = -0.1;
+    private final double labelSpace = -0.085;
     private Set<Sprite> classLabels;
     private String styleSheet;
     private final Logger logger = Logger.getLogger(ModelManager.class);
 
     public ModelManager(Set<OWLIndividualAxiom> model, OWLEditorKit owlEditorKit, IOWLCounterexampleGenerator counterExampleGenerator, OWLOntology ont,Set<OWLAxiom> observation) {
         this.maxLabelNumber = 2;
-        this.styleSheet = GraphStyleSheets.PLAIN;
+        this.styleSheet = GraphStyleSheets.PROTEGE;
         this.observation = (OWLSubClassOfAxiom) observation.iterator().next();
         this.ont = ont;
         this.man = OWLManager.createOWLOntologyManager();
@@ -81,6 +81,7 @@ public class ModelManager {
         this.man.addAxioms(this.ont, additionalAxioms);
         try {
             this.res = this.rf.createReasoner(this.ont);
+            this.res.precomputeInferences();
             if(!isConsistent()) {
                 throw new ModelGenerationException("Ontology is inconsistent!");
             }
@@ -216,19 +217,33 @@ public class ModelManager {
             List<List<OWLClass>> sortedAndSortedOut = compareClassExpressions(sorted);
             sorted = sortedAndSortedOut.get(0);
             sortedOut = sortedAndSortedOut.get(1);
-            finalList.addAll(sortedOut);
-
+//            logger.debug("sorting:iteration "+i+", sorted: "+ sorted+", sorted out: "+sortedOut);
             if (sorted.isEmpty()) {
+//                Collections.reverse(sortHasSubclass(sortedOut));
+                finalList.addAll(sortedOut);
                 break;
             }
             if (sortedOut.isEmpty()) {
+//                Collections.reverse(sortHasSubclass(sorted));
                 finalList.addAll(sorted);
                 break;
             }
+            finalList.addAll(sortedOut);
             i = i + 1;
         }
         Collections.reverse(finalList);
         return finalList;
+    }
+    private List<OWLClass> sortHasSubclass(List<OWLClass> classList) {
+        List<OWLClass> sortedClassList = new ArrayList<>();
+        for(OWLClass cl:classList) {
+            if(res.getSubClasses(cl,false).isEmpty()) {
+                sortedClassList.add(cl);
+            }
+        }
+        classList.removeAll(sortedClassList);
+        sortedClassList.addAll(classList);
+        return sortedClassList;
     }
 
     private List<List<OWLClass>> compareClassExpressions(List<OWLClass> classList) {
@@ -237,11 +252,13 @@ public class ModelManager {
         List<List<OWLClass>> returnList = new ArrayList<>();
 
         classList.stream().forEach(expr1 -> classList.stream().filter(expr2 -> !expr1.equals(expr2))
-                .filter(expr2 -> res.isEntailed(df.getOWLSubClassOfAxiom(expr1, expr2)))
+                .filter(expr2 -> res.isEntailed(df.getOWLSubClassOfAxiom(expr1, expr2))
+                        && !res.isEntailed(df.getOWLSubClassOfAxiom(expr2, expr1 )))
                 .forEach(expr2 -> {
                     subsumed.add(expr1);
                     subsumers.add(expr2);
                 }));
+
         List<OWLClass> moreExact = subsumed.stream().collect(Collectors.toList());
         classList.removeAll(subsumers);
         classList.removeAll(subsumed);
@@ -295,11 +312,20 @@ public class ModelManager {
         );
     }
     private void createEdges() {
+        SpriteManager sMan = new SpriteManager(graph);
         Arrays.stream(roleData).forEach(e -> {
             String desc = (String) e[0];
             String succ = (String) e[2];
             OWLObjectProperty prop = (OWLObjectProperty) e[1];
-            Edge edge = graph.addEdge(desc + succ, desc, succ, true);
+            Edge edge = graph.addEdge(desc + succ+ prop.getIRI().getShortForm(), desc, succ, true);
+
+//            Sprite label = sMan.addSprite(edge.getId() + "label");
+//            graph.addSprite(label.getId());
+//            label.setAttribute("ui.class", "edge");
+//
+//            label.setAttribute("ui.label",prop.getIRI().getShortForm() );
+//            label.attachToEdge(edge.getId());
+//            label.setPosition(0.5, 0, 0);
             edge.setAttribute("ui.label", prop.getIRI().getShortForm());
         });
     }

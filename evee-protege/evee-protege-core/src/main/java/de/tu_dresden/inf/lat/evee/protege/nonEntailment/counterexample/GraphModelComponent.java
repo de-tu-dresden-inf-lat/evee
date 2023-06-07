@@ -36,7 +36,7 @@ public class GraphModelComponent extends JPanel {
     private final int LABELS_INIT = 2;
     private final int BIG_SPACE = 30;
     private final int SMALL_SPACE = 20;
-    private final DefaultListModel<OWLClass> classListModel;
+    private DefaultListModel<OWLClass> classListModel;
     private final DefaultListModel<OWLAxiom> axiomListModel;
     private final OWLEditorKit owlEditorKit;
     private final ModelManager modelManager;
@@ -79,6 +79,7 @@ public class GraphModelComponent extends JPanel {
         this.viewer = this.modelManager.getViewer();
         this.classLabels = this.modelManager.getClassLabels();
         this.viewPanel.remove(this.viewComponent);
+        this.classListModel.removeAllElements();
         MouseManager mouseManager =new MouseManager(classLabels,classMap,classListModel,viewer);
         this.view = this.viewer.addDefaultView(false);
         this.view.setMouseManager(mouseManager);
@@ -111,7 +112,7 @@ public class GraphModelComponent extends JPanel {
         return rightPanel;
     }
     private JPanel getAxiomListPanel() {
-        this.axiomList.setPreferredSize(new Dimension(180,300));
+//        this.axiomList.setPreferredSize(new Dimension(180,300));
         JPanel axiomListPanel = new JPanel();
         axiomListPanel.setLayout(new BoxLayout(axiomListPanel, BoxLayout.Y_AXIS));
         JPanel axiomListBorder = new JPanel();

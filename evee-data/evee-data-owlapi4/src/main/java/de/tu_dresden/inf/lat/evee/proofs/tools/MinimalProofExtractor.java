@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
@@ -40,7 +42,13 @@ public class MinimalProofExtractor<S> {
 			currentBestInferences.put(ax, inf);
 		}
 
-		currentBestInferences = dijkstra(proof, proof.getFinalConclusion(), currentBestProofValues,
+		// TODO: implement this directly in the Proof class?
+		SetMultimap<S, IInference<S>> premiseMap = HashMultimap.create();
+		for (IInference<S> inference : proof.getInferences())
+			for (S premise: inference.getPremises())
+				premiseMap.put(premise, inference);
+
+		currentBestInferences = dijkstra(premiseMap, proof.getFinalConclusion(), currentBestProofValues,
 				currentBestInferences);
 
 		List<IInference<S>> treeProof = new ArrayList<>();
@@ -49,7 +57,7 @@ public class MinimalProofExtractor<S> {
 		return new Proof<S>(proof.getFinalConclusion(), treeProof);
 	}
 
-	private Map<S, IInference<S>> dijkstra(IProof<S> proof, S conclusion, Map<S, Double> currentBestProofValues,
+	private Map<S, IInference<S>> dijkstra(SetMultimap<S, IInference<S>> premiseMap, S conclusion, Map<S, Double> currentBestProofValues,
 			Map<S, IInference<S>> currentBestInferences) {
 		Map<S, Double> finalBestProofValues = new HashMap<>();
 
@@ -64,7 +72,7 @@ public class MinimalProofExtractor<S> {
 			finalBestProofValues.put(current, currentBestProofValues.get(current));
 			currentBestProofValues.remove(current);
 			// find inferences that involved 'current'
-			Stream<IInference<S>> nextInferences = getNextInferences(proof, current, currentBestProofValues,
+			Stream<IInference<S>> nextInferences = getNextInferences(premiseMap, current, currentBestProofValues,
 					finalBestProofValues);
 
 			nextInferences.forEach(inf -> {
@@ -93,11 +101,11 @@ public class MinimalProofExtractor<S> {
 				.get().getKey();
 	}
 
-	private Stream<IInference<S>> getNextInferences(IProof<S> proof, S current, Map<S, Double> currentBestProofValues,
+	private Stream<IInference<S>> getNextInferences(SetMultimap<S, IInference<S>> premiseMap, S current, Map<S, Double> currentBestProofValues,
 			Map<S, Double> finalBestProofValues) {
 		// find all inferences that involve 'current' as a premise, the conclusion has
 		// not yet been processed, and all premises have already been processed
-		return proof.getInferences().stream().filter(inf -> inf.getPremises().contains(current))
+		return premiseMap.get(current).stream()
 				.filter(inf -> !finalBestProofValues.containsKey(inf.getConclusion()))
 				.filter(inf -> inf.getPremises().stream().allMatch(ax -> finalBestProofValues.containsKey(ax)));
 	}
