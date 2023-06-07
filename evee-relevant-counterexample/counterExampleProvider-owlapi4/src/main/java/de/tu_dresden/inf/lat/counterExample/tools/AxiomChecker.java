@@ -3,8 +3,6 @@ package de.tu_dresden.inf.lat.counterExample.tools;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -43,7 +41,7 @@ public class AxiomChecker {
 	public static boolean isInEL(OWLAxiom axiom) {
 		Collection<OWLClassExpression> expressions = parseAxiom(axiom);
 
-		return expressions.isEmpty() ? false : isInEL(expressions);
+		return !expressions.isEmpty() && isInEL(expressions);
 	}
 
 	/**
@@ -105,7 +103,7 @@ public class AxiomChecker {
 	public static boolean isInALC(OWLAxiom axiom) {
 		Collection<OWLClassExpression> expressions = parseAxiom(axiom);
 
-		return expressions.isEmpty() ? false : isInALC(expressions);
+		return !expressions.isEmpty() && isInALC(expressions);
 	}
 
 	/**

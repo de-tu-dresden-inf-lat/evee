@@ -8,17 +8,12 @@ import org.semanticweb.owlapi.model.*;
  *
  */
 public class OntologyFilter {
-    public static OWLOntology filterEL(OWLOntology ontology) throws OWLOntologyCreationException {
-        OWLOntologyManager owlManager = OWLManager.createOWLOntologyManager();
-        OWLOntology resOnt =  owlManager.createOntology();
-
+    public static OWLOntology filterEL(OWLOntology ontology) {
         for(OWLAxiom a: ontology.getAxioms()) {
             if (a.isOfType(AxiomType.SUBCLASS_OF) || a.isOfType(AxiomType.EQUIVALENT_CLASSES))
                 if (!AxiomChecker.isInEL(a))
-                    continue;
-            owlManager.addAxiom(resOnt, a);
+                    ontology.getOWLOntologyManager().removeAxiom(ontology, a);
         }
-
-        return resOnt;
+        return ontology;
     }
 }

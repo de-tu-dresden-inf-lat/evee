@@ -54,11 +54,7 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
 
     @Override
     public void setOntology(OWLOntology ontology) {
-        try {
-            this.ontology = OntologyFilter.filterEL(ontology);
-        } catch (OWLOntologyCreationException e) {
-            throw new RuntimeException(e);
-        }
+        this.ontology = OntologyFilter.filterEL(ontology);
     }
 
     @Override
