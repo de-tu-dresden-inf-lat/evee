@@ -15,19 +15,19 @@ public enum ModelType {
 	 * @return
 	 */
 	public static ModelType getTypeValue(String str) {
-		if (str.toLowerCase().equals("alpha"))
+		if (str.equalsIgnoreCase("alpha"))
 			return ModelType.Alpha;
 
-		if (str.toLowerCase().equals("beta"))
+		if (str.equalsIgnoreCase("beta"))
 			return ModelType.Beta;
 
-		if (str.toLowerCase().equals("diff"))
+		if (str.equalsIgnoreCase("diff"))
 			return ModelType.Diff;
 
-		if (str.toLowerCase().equals("flatdiff"))
+		if (str.equalsIgnoreCase("flatdiff"))
 			return ModelType.FlatDiff;
 
-		if (str.toLowerCase().equals("fullcanonical"))
+		if (str.equalsIgnoreCase("fullcanonical"))
 			return ModelType.FullCanonical;
 
 		throw new IllegalArgumentException("No ModelType value for \"" + str + "\"");

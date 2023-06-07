@@ -22,10 +22,10 @@ public class CommonElements {
 	private final Set<Element> elements;
 
 	public CommonElements(Set<Element> modelElements, Mapper mapper, ModelType modelType) {
-		elements = getRechableFromBoth(modelElements, mapper, modelType);
+		elements = getReachableFromBoth(modelElements, mapper, modelType);
 	}
 
-	private Set<Element> getRechableFromBoth(Set<Element> coarseModel, Mapper mapper, ModelType modelType) {
+	private Set<Element> getReachableFromBoth(Set<Element> coarseModel, Mapper mapper, ModelType modelType) {
 
 		Element lhsRep = getElementFrom(mapper.getLHSRepresentativeElement(), coarseModel);
 

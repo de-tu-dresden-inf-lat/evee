@@ -14,10 +14,10 @@ public enum ModelFormat {
 	 * @return
 	 */
 	public static ModelFormat getTypeValue(String str) {
-		if (str.toLowerCase().equals("sets"))
+		if (str.equalsIgnoreCase("sets"))
 			return ModelFormat.Sets;
 
-		if (str.toLowerCase().equals("individuals"))
+		if (str.equalsIgnoreCase("individuals"))
 			return ModelFormat.Individuals;
 
 		throw new IllegalArgumentException("No ModelFormat value for \"" + str + "\"");
