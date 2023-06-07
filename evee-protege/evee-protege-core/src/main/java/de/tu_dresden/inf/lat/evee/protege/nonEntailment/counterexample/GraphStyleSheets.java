@@ -10,7 +10,7 @@ public class GraphStyleSheets {
     private static final String PROTEGE_BLUE = "#60B6C9;";
     private static final String PROTEGE_BLUE_1 = "#2c9a8e;";
     private static final String PROTEGE_BLUE_2 = "#01463f;";
-    private static final String PROTEGE_YELLOW = "#C4A525;";
+    private static final String PROTEGE_YELLOW = "#7D6918;";
     private static final String PROTEGE_VIOLET = "#47485d;";
     private static final String PROTEGE_SOFT_VIOLET = "#dbdbdf;";
     private static final String SOFT_BLUE = "#475c6c;";
@@ -55,6 +55,7 @@ public class GraphStyleSheets {
         styleMap.put("retro", RETRO);
     }
     public static String[] getStyleSheets() {
+
         return styleMap.keySet().toArray(new String[0]);
     }
     public static final String getStyleSheet(String edgeColor,
@@ -84,25 +85,39 @@ public class GraphStyleSheets {
                 "stroke-color:"+nodeStrokeColor +
                 "}" +
                 "sprite {" +
+                "sprite-orientation:projection;"+
                 "text-size:13;" +
+//                "text-alignment:along;"+
                 "text-background-mode: plain;" +
                 "text-mode:normal;" +
                 "text-color:"+nodeLabelColor+
                 "text-offset: 0, 25;" +
                 "fill-mode: none;" +
                 "}" +
+
                 "node.root {" +
                 "fill-color:"+rootNodeColor +
-                "}" +
-                "sprite.selection {" +
-                "fill-color:rgba(0,0,0,0);" +
-                "stroke-color:rgba(0,0,0,0);" +
-                "fill-mode:plain;" +
-                "stroke-mode:plain;" +
-                "size:30px;" +
-                "}";
+                "}"
+//                +
+//        "sprite.edge {" +
+//                "sprite-orientation:projection;"+
+//                "text-size:13;" +
+//                "text-background-mode: plain;" +
+//                "text-mode:normal;" +
+//                "text-color:"+edgeLabelColor+
+//                "text-offset: 0, 25;" +
+//                "fill-mode: none;" +
+//                "}"
+                ;
+//        +
+//                "sprite.selection {" +
+//                "fill-color:rgba(0,0,0,0);" +
+//                "stroke-color:rgba(0,0,0,0);" +
+//                "fill-mode:plain;" +
+//                "stroke-mode:plain;" +
+//                "size:30px;" +
+//                "}";
     }
-
 
 
 
