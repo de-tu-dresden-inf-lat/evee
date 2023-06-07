@@ -59,9 +59,9 @@
         </dependency>
 
         <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>counterExampleProvider-owlapi4</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${revision}</version>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>com.github.jsonld-java</groupId>-->

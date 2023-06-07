@@ -16,13 +16,13 @@
     <dependency>
       <groupId>de.tu-dresden.inf.lat.evee</groupId>
       <artifactId>evee-data-owlapi4</artifactId>
-      <version>0.2-SNAPSHOT</version>
+      <version>${revision}</version>
     </dependency>
 
     <dependency>
-      <groupId>de.tu-dresden.inf.lat</groupId>
+      <groupId>de.tu-dresden.inf.lat.evee</groupId>
       <artifactId>model-datastructures-owlapi4</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>${revision}</version>
     </dependency>
 
     <dependency>
