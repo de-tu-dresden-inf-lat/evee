@@ -77,6 +77,8 @@
                 <module>evee-elimination-proofs/evee-elimination-proofs-lethe-owlapi4</module>
                 <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
                 <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
+                <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
+                <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-libs/evee-libs-owlapi4</module>
             </modules>
         </profile>
@@ -98,6 +100,7 @@
                 <module>evee-elimination-proofs</module>
                 <module>evee-lethe-proof-extractor</module>
                 <module>evee-elk-proof-extractor</module>
+                <module>evee-relevant-counterexample</module>
                 <module>evee-libs/evee-libs-owlapi5</module>
             </modules>
         </profile>
@@ -114,6 +117,8 @@
                 <module>evee-elimination-proofs/evee-elimination-proofs-lethe-owlapi4</module>
                 <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
                 <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
+                <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
+                <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-protege</module>
             </modules>
         </profile>
@@ -137,6 +142,7 @@
                 <module>evee-elimination-proofs</module>
                 <module>evee-lethe-proof-extractor</module>
                 <module>evee-elk-proof-extractor</module>
+                <module>evee-relevant-counterexample</module>
                 <module>evee-protege</module>
                 <module>evee-libs</module>
             </modules>
