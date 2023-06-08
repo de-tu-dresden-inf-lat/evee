@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <artifactId>evee-small-model-generator</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>evee-small-model-generator-owlapi4</artifactId>
