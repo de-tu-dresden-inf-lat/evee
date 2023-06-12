@@ -40,7 +40,6 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     private final Logger logger = Logger.getLogger(AbstractCounterexampleGenerationService.class);
 
 
-
 //    protected JTabbedPane getTabbedPane() {
 //
 //        ModelManager man = new ModelManager(this.model, this.owlEditorKit, this, this.workingCopy);
@@ -139,7 +138,7 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     }
 
     @Override
-    public Stream generateExplanations() {
+    public Stream<Set<OWLIndividualAxiom>> generateExplanations() {
         return counterexampleGenerator.generateExplanations();
     }
 

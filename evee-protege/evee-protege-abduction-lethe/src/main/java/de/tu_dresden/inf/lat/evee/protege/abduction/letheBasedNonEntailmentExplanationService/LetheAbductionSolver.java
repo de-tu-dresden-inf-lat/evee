@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExplanationService;
 
+import abduction.HypothesisSimplifier;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
@@ -149,11 +150,14 @@ public class LetheAbductionSolver
     protected void prepareResultComponentCreation(){
         DLStatement hypotheses = this.loadResultFromCache();
         assertNotNull(hypotheses);
+
+        //HypothesisSimplifier simplifier = new HypothesisSimplifier(ontology);
+
         this.maxLevel = 0;
         this.currentResultAdapterIndex = 0;
         this.hypothesesAdapterList.clear();
         ((DisjunctiveDLStatement) hypotheses).statements().foreach(statement -> {
-            this.hypothesesAdapterList.add(new DLStatementAdapter((ConjunctiveDLStatement) statement));
+            this.hypothesesAdapterList.add(new DLStatementAdapter((ConjunctiveDLStatement) statement, abducer));
             return null;
         });
     }

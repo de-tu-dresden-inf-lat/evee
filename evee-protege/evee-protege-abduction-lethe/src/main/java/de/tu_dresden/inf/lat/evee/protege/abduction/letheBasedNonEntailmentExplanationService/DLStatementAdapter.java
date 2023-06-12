@@ -1,9 +1,11 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExplanationService;
 
+import abduction.HypothesisSimplifier;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
+import uk.ac.man.cs.lethe.abduction.OWLAbducer;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.ConjunctiveDLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.GreatestFixpoint;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.LeastFixpoint;
@@ -23,10 +25,13 @@ public class DLStatementAdapter {
     private int currentMaxLevel;
     private boolean singleResultReturned;
 
+    private OWLAbducer hypothesisSimplifier;
+
     private final Logger logger = LoggerFactory.getLogger(DLStatementAdapter.class);
 
-    public DLStatementAdapter(ConjunctiveDLStatement statement){
+    public DLStatementAdapter(ConjunctiveDLStatement statement, OWLAbducer abducer){
         this.statement = statement;
+        this.hypothesisSimplifier = abducer;
         this.fixpointAdapterMap = new LinkedHashMap<>();
         this.prepareFixpointMap();
         this.fixpointCurrentLevelMap = new LinkedHashMap<>();
@@ -56,6 +61,10 @@ public class DLStatementAdapter {
                 DLStatement simplifiedStatement = CheapSimplifier$.MODULE$.simplify(this.statement);
 //                this.logger.debug("Simplified statement:\n" + simplifiedStatement.toString());
                 Set<OWLLogicalAxiom> axiomSet = JavaConverters.setAsJavaSet(new OWLExporter().toOwl(null, simplifiedStatement));
+                axiomSet = JavaConverters.setAsJavaSet(
+                        hypothesisSimplifier.simplify(
+                                JavaConverters.asScalaSet(axiomSet)
+                                        .toSet()));
                 result.addAll(axiomSet);
                 return result;
             }
