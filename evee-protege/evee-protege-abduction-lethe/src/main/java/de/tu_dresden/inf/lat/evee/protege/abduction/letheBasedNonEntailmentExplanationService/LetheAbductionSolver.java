@@ -141,7 +141,10 @@ public class LetheAbductionSolver
             this.explanationComputationFailed("No result found, please adjust the vocabulary");
         }
         else{
-            if (this.abducer.success()){
+            if (this.abducer.isCanceled()){
+                this.logger.debug("Computation was cancelled, cannot show result");
+                this.computationSuccessful = false;
+            } else {
                 this.logger.debug("Computation was not cancelled, preparing to show result");
                 this.saveResultToCache(hypotheses);
                 this.computationSuccessful = true;
@@ -153,9 +156,6 @@ public class LetheAbductionSolver
                     this.hypothesesAdapterList.add(new DLStatementAdapter(statement, this.abducer));
                     return null;
                 });
-            } else {
-                this.logger.debug("Computation was cancelled, cannot show result");
-                this.computationSuccessful = false;
             }
         }
     }
@@ -177,7 +177,7 @@ public class LetheAbductionSolver
 
     @Override
     public boolean successful() {
-        return this.abducer.success();
+        return this.abducer.isCanceled();
     }
 
     @Override
