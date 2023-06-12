@@ -157,6 +157,9 @@ public class ModelManager {
 
     private Map<String, Set<OWLClass>> createClassMap() {
         Map<String, Set<OWLClass>> classMap = new HashMap<>();
+        model.stream().forEach(a ->
+                a.getIndividualsInSignature().forEach(i ->
+                        classMap.put(i.asOWLNamedIndividual().getIRI().getShortForm(),Sets.newHashSet())));
         model.stream()
                 .filter(ax -> ax.isOfType(AxiomType.CLASS_ASSERTION))
                 .map(ax -> (OWLClassAssertionAxiom) ax)
@@ -329,6 +332,25 @@ public class ModelManager {
             edge.setAttribute("ui.label", prop.getIRI().getShortForm());
         });
     }
+    private void handleLoop(OWLNamedIndividual a, OWLObjectProperty r, OWLNamedIndividual b) {
+        if(!a.equals(b)) {
+            List<OWLObjectProperty> direct = new ArrayList<>();
+            List<OWLObjectProperty> inverse = new ArrayList<>();
+            model.stream()
+                    .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
+                    .map( ax -> (OWLObjectPropertyAssertionAxiom) ax)
+                    .filter(ax -> ax.getProperty().equals(r))
+                    .forEach(ax -> {
+                        if (ax.getObject().equals(a)) {
+                            direct.add(ax.getProperty().asOWLObjectProperty());
+                        } else {
+                            inverse.add(ax.getProperty().asOWLObjectProperty());
+                        }
+                    });
+
+        }
+    }
+
     private void createStyleSheet() {
         graph.setAttribute("ui.quality");
         graph.setAttribute("ui.antialias");
