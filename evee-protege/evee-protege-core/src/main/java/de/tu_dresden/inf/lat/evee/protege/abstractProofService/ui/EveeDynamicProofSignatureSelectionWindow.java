@@ -338,8 +338,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
 //                        this.useSignatureCheckBox.isSelected());
             }
             catch (IllegalArgumentException e){
-                this.logger.error("Error while saving signature to Protege Preferences.");
-                this.logger.error(e.toString());
+                this.logger.error("Error while saving signature to Protege Preferences.", e);
                 String errorString = "<center>" + e + "</center>";
                 UIUtilities.showError(SIGNATURE_SAVING_ERROR_MSG + errorString, this.getOWLEditorKit());
             }

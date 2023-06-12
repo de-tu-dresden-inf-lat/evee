@@ -56,6 +56,7 @@ public class NonEntailmentPreferencesPanel extends PreferencesPanel {
             } catch (Throwable e){
                 this.logger.error("The following error occurred when trying to dispose the non-entailment preferences plugin" +
                         "'{}: {}", key, e);
+                this.logger.error("", e);
             }
         }
         this.pluginMap.clear();
@@ -69,6 +70,7 @@ public class NonEntailmentPreferencesPanel extends PreferencesPanel {
             } catch (Throwable e){
                 this.logger.error("The following error occurred when trying to apply the changes of the non-entailment preferences plugin" +
                         "'{}': {}", key, e);
+                this.logger.error("", e);
             }
         }
     }

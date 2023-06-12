@@ -601,7 +601,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                                 axiom -> activeOntology.getSignature().containsAll(
                                         axiom.getSignature())).collect(Collectors.toSet());
             } catch (OWLOntologyCreationException e) {
-                this.logger.error("Error when loading missing entailment from file: " + e);
+                this.logger.error("Error when loading missing entailment from file: ", e);
                 UIUtilities.showError(e.getMessage(), this.getOWLEditorKit());
             }
         }
@@ -627,7 +627,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 ontologyManager.addAxioms(observationOntology, new HashSet<>(this.selectedObservationListModel.getOwlObjects()));
                 ontologyManager.saveOntology(observationOntology, new RDFXMLDocumentFormat(), new FileOutputStream(file));
             } catch (OWLOntologyCreationException | OWLOntologyStorageException | FileNotFoundException exception) {
-                this.logger.error("Error when saving missing entailment ontology to file: " + exception);
+                this.logger.error("Error when saving missing entailment ontology to file: ", exception);
                 UIUtilities.showError(exception.getMessage(), this.getOWLEditorKit());
             }
         }

@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExplanationService;
 
-import abduction.HypothesisSimplifier;
+import uk.ac.man.cs.lethe.abduction.HypothesisSimplifier;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

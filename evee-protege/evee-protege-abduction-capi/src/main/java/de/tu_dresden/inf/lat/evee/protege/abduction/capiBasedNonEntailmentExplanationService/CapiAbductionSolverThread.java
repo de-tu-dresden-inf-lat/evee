@@ -142,25 +142,25 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
             this.logger.debug("SPASS input files created successfully");
             this.progressTracker.setMessage("SPASS input files created successfully");
         } catch (OWLOntologyCreationException e) {
-            this.logger.error("Error when copying ontology: " + e);
+            this.logger.error("Error when copying ontology: ", e);
             throw e;
         } catch (FileNotFoundException e) {
-            this.logger.error("Error when creating file \"problem.spass\":" + e);
+            this.logger.error("Error when creating file \"problem.spass\":", e);
             throw e;
         } catch (OWL2SpassConverter.TranslationException e) {
-            this.logger.error("Error when translating ontology to SPASS: " + e);
+            this.logger.error("Error when translating ontology to SPASS: ", e);
             throw e;
         } catch (OWL2SpassConverter.EmptyOntologyException e) {
-            this.logger.error("Error when extracting module from ontology: " + e);
+            this.logger.error("Error when extracting module from ontology: ", e);
             throw  e;
         } catch (OWLOntologyStorageException e) {
-            this.logger.error("Error when creating temporary ontology file: " + e);
+            this.logger.error("Error when creating temporary ontology file: ", e);
             throw e;
         } catch (IOException e) {
-            this.logger.error("Error when reading from skolem.bound file: " + e);
+            this.logger.error("Error when reading from skolem.bound file: ", e);
             throw e;
         } catch (NumberFormatException e){
-            this.logger.error("Error when converting value from skolem.bound file: " + e);
+            this.logger.error("Error when converting value from skolem.bound file: ", e);
             throw e;
         }
     }
@@ -183,11 +183,11 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
             this.logger.debug("SPASS exited successfully");
             this.progressTracker.setMessage("SPASS exited successfully");
         } catch (IOException e) {
-            this.logger.error("Error when running SPASS command: " + e);
+            this.logger.error("Error when running SPASS command: ", e);
             throw e;
         } catch (InterruptedException e){
 //            todo: is this thrown when timelimit is reached -> if so, needs to be handled differently
-            this.logger.error("Error - SPASS interrupted prematurely: " + e);
+            this.logger.error("Error - SPASS interrupted prematurely: ", e);
             throw e;
         }
     }
@@ -235,10 +235,10 @@ public class CapiAbductionSolverThread extends Thread implements IExplanationGen
             this.progressTracker.setMessage("Solutions successfully generated");
             this.logger.debug("Generated solutions:\n" + this.solutions);
         } catch (IOException e) {
-            this.logger.error("Error when reading file: " + e);
+            this.logger.error("Error when reading file: ", e);
             throw e;
         } catch (OWLOntologyCreationException e){
-            this.logger.error("Error when reading temporary ontology file: " +e);
+            this.logger.error("Error when reading temporary ontology file: ", e);
             throw e;
         }
     }

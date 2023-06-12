@@ -55,7 +55,7 @@ public class StatsMain {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
-			logger.error(e.getMessage());
+			logger.error("", e);
 			formatter.printHelp("utility-name", options);
 
 			System.exit(1);

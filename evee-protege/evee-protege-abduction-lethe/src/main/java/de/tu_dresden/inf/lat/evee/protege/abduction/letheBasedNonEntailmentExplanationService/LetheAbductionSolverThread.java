@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import uk.ac.man.cs.lethe.abduction.OWLAbducer;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.DLStatement;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Set;
 
 public class LetheAbductionSolverThread extends Thread implements IExplanationGenerator<DLStatement> {
@@ -46,8 +48,7 @@ public class LetheAbductionSolverThread extends Thread implements IExplanationGe
                     this, ExplanationEventType.COMPUTATION_COMPLETE));
         }
         catch (Throwable e){
-            this.logger.error("Error during abduction generation:\n" + e);
-            e.printStackTrace();
+            this.logger.error("Error during abduction generation:", e);
             this.errorMessage = e.getMessage();
             this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
                     this, ExplanationEventType.ERROR));
