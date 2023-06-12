@@ -90,7 +90,7 @@
             <properties>
 <!--
                 overwritten in owlapi5-modules to be always false,
-                thus effectively turning of compilation of owlapi4-modules only
+                thus effectively turning off compilation of owlapi4-modules only
 -->
                 <skipCompilation>true</skipCompilation>
             </properties>
