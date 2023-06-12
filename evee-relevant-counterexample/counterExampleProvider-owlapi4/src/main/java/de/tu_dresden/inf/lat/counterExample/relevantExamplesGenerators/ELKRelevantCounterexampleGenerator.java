@@ -32,6 +32,12 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     private OWLOntology ontology;
     private Set<IRI> markedIndividuals;
 
+    private boolean modelTypeReverted = false;
+
+    public boolean isModelTypeReverted() {
+        return modelTypeReverted;
+    }
+
     private final OWLDataFactory factory = OWLManager.getOWLDataFactory();
     private static final String ELEMENT_PREFIX = "http://www.example.org/generated-model/";
     private OWLIndividual owlIndividual(String name) {
@@ -71,8 +77,11 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             ElkReasoner reasoner = reasonerFactory.createReasoner(this.ontology);
 
             //in case the super class is unsatisfiable, the model type reverts to alpha
-            if(!reasoner.isSatisfiable(subClsOf.getSuperClass()))
+            if(!reasoner.isSatisfiable(subClsOf.getSuperClass())){
+                modelTypeReverted = type != ModelType.Alpha;
                 type = ModelType.Alpha;
+            }else
+                modelTypeReverted = false;
 
             ELKModelGenerator elkModelGenerator = new ELKModelGenerator(ontology, subClsOf);
             RelevantCounterExample generator = getRelevantGenerator(type, elkModelGenerator);

@@ -14,8 +14,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class PluginRelatedTests {
     private static OWLOntologyManager manager;
@@ -89,6 +88,9 @@ public class PluginRelatedTests {
         assertEquals(modelAlpha, modelBeta);
         assertEquals(modelBeta, modelDiff);
         assertEquals(modelDiff, modelFlatDiff);
+
+        assertFalse(cegAlpha.isModelTypeReverted());
+        assertTrue(cegBeta.isModelTypeReverted());
     }
 
     @Test
@@ -114,5 +116,7 @@ public class PluginRelatedTests {
         assertEquals(2, cegDiff.getMarkedIndividuals().stream().filter(Objects::nonNull).count());
         assertEquals(2, cegFlatDiff.getMarkedIndividuals().stream().filter(Objects::nonNull).count());
 
+        assertFalse(cegDiff.isModelTypeReverted());
+        assertEquals(cegDiff.isModelTypeReverted(), cegFlatDiff.isModelTypeReverted());
     }
 }
