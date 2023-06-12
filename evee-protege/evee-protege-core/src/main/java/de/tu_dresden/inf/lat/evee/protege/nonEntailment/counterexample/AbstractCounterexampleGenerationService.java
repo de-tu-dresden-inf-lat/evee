@@ -20,13 +20,14 @@ import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.semanticweb.owlapi.model.parameters.OntologyCopy.DEEP;
 
 abstract public class AbstractCounterexampleGenerationService implements INonEntailmentExplanationService<OWLIndividualAxiom> {
-
+    protected String supportsExplanationMessage;
     protected OWLEditorKit owlEditorKit;
     protected String errorMessage;
     protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
@@ -35,10 +36,14 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     protected OWLOntology workingCopy;
     protected Set<OWLIndividualAxiom> model;
     protected IOWLCounterexampleGenerator counterexampleGenerator;
-
-    protected OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+    protected OWLOntologyManager man;
     private final Logger logger = Logger.getLogger(AbstractCounterexampleGenerationService.class);
-
+    public AbstractCounterexampleGenerationService() {
+        this.observation = new HashSet<>();
+        this.errorMessage = "";
+        this.supportsExplanationMessage = "Please enter some observation containing a single OWLSubClassOfAxiom";
+        this.man = OWLManager.createOWLOntologyManager();
+    }
 
 //    protected JTabbedPane getTabbedPane() {
 //
@@ -79,7 +84,7 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
 
     @Override
     public String getSupportsExplanationMessage() {
-        return "Please enter some observation containing a single OWLSubClassOfAxiom";
+        return supportsExplanationMessage;
     }
 
     public boolean supportsExplanation() {
@@ -153,8 +158,12 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
 
     public void dispose() throws Exception {
     }
-
-
+    protected void setCounterexampleGenerator(IOWLCounterexampleGenerator counterexampleGenerator) {
+        this.counterexampleGenerator = counterexampleGenerator;
+    }
+    protected void setSupportsExplanationMessage(String supportsExplanationMessage) {
+        this.supportsExplanationMessage = supportsExplanationMessage;
+    }
     @Override
     public boolean successful() {
         return true;
