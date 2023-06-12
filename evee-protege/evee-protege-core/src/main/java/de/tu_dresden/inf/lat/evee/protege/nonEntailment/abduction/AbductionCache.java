@@ -13,29 +13,29 @@ public class AbductionCache<Result> {
         this.resultMap = new HashMap<>();
     }
 
-    public boolean containsResultFor(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenSignature){
-        KeyTuple newKey = new KeyTuple(givenObservation, givenSignature);
+    public boolean containsResultFor(Set<OWLAxiom> givenMissingEntailment, Collection<OWLEntity> givenSignature){
+        KeyTuple newKey = new KeyTuple(givenMissingEntailment, givenSignature);
         return this.resultMap.containsKey(newKey);
     }
 
-    public Result getResult(Set<OWLAxiom> givenObservation, Collection<OWLEntity> givenSignature){
-        KeyTuple newKey = new KeyTuple(givenObservation, givenSignature);
+    public Result getResult(Set<OWLAxiom> givenMissingEntailment, Collection<OWLEntity> givenSignature){
+        KeyTuple newKey = new KeyTuple(givenMissingEntailment, givenSignature);
         return this.resultMap.get(newKey);
     }
 
-    public void putResult(Set<OWLAxiom> observation, Collection<OWLEntity> signature, Result result){
-        KeyTuple newKey = new KeyTuple(observation, signature);
+    public void putResult(Set<OWLAxiom> missingEntailment, Collection<OWLEntity> signature, Result result){
+        KeyTuple newKey = new KeyTuple(missingEntailment, signature);
         this.resultMap.put(newKey, result);
     }
 
 
     private static class KeyTuple {
 
-        private final Set<OWLAxiom> observation;
+        private final Set<OWLAxiom> missingEntailment;
         private final Collection<OWLEntity> signature;
 
-        public KeyTuple(Set<OWLAxiom> observation, Collection<OWLEntity> signature){
-            this.observation = observation;
+        public KeyTuple(Set<OWLAxiom> missingEntailment, Collection<OWLEntity> signature){
+            this.missingEntailment = missingEntailment;
             this.signature = signature;
         }
 
@@ -48,13 +48,13 @@ public class AbductionCache<Result> {
                 return false;
             }
             KeyTuple keyTuple = (KeyTuple) obj;
-            return keyTuple.observation.equals(this.observation) &&
+            return keyTuple.missingEntailment.equals(this.missingEntailment) &&
                     keyTuple.signature.equals(this.signature);
         }
 
         @Override
         public int hashCode(){
-            return Objects.hash(this.signature, this.observation);
+            return Objects.hash(this.signature, this.missingEntailment);
         }
 
     }

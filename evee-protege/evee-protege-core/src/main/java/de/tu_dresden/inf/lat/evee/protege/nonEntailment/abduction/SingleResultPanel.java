@@ -35,22 +35,22 @@ public class SingleResultPanel extends JPanel {
     protected static final String ADD_TO_ONTO_TOOLTIP = "Adds the axioms of this result to the ontology";
     protected static final String ADD_TO_ONTO_AND_PROVE_COMMAND = "ADD_AND_PROVE";
     protected static final String ADD_TO_ONTO_AND_PROVE_NAME = "Add to Ontology and prove";
-    protected static final String ADD_TO_ONTO_AND_PROVE_TOOLTIP = "Add the axioms of this result to the ontology and show a prove for the observation";
+    protected static final String ADD_TO_ONTO_AND_PROVE_TOOLTIP = "Add the axioms of this result to the ontology and show a prove for the missing entailment";
     protected static final String DELETE_FROM_ONTO_COMMAND = "DELETE_FROM_ONTO";
     protected static final String DELETE_FROM_ONTO_NAME = "Delete from Ontology";
     protected static final String DELETE_FROM_ONTO_TOOLTIP = "Delete the axioms of this result from the ontology";
 
     public SingleResultPanel(OWLEditorKit owlEditorKit, OWLOntology ontology,
-                             Set<OWLAxiom> observation, Set<OWLAxiom> result,
+                             Set<OWLAxiom> missingEntailment, Set<OWLAxiom> result,
                              int hypothesisIndex) {
         super(new BorderLayout());
         this.owlEditorKit = owlEditorKit;
         this.openedDialogPanels = new ArrayList<>();
-        this.createUI(ontology, observation,
+        this.createUI(ontology, missingEntailment,
                 result, hypothesisIndex);
     }
 
-    private void createUI(OWLOntology ontology, Set<OWLAxiom> observation,
+    private void createUI(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
                           Set<OWLAxiom> result, int hypothesisIndex){
         this.setBorder(new CompoundBorder(
                 new EmptyBorder(5, 5, 5, 5),
@@ -65,12 +65,12 @@ public class SingleResultPanel extends JPanel {
         this.addButton = UIUtilities.createNamedButton(
                 ADD_TO_ONTO_COMMAND, ADD_TO_ONTO_NAME, ADD_TO_ONTO_TOOLTIP,
                 new EditOntologyButtonListener(
-                ontology, observation,
+                ontology, missingEntailment,
                         result, hypothesisIndex));
         buttonPanel.add(this.addButton);
         buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         EditOntologyButtonListener addAndProveListener = new EditOntologyButtonListener(
-                ontology, observation,
+                ontology, missingEntailment,
                 result, hypothesisIndex);
         this.addAndProveButton = UIUtilities.createNamedButton(
                 ADD_TO_ONTO_AND_PROVE_COMMAND, ADD_TO_ONTO_AND_PROVE_NAME,
@@ -80,7 +80,7 @@ public class SingleResultPanel extends JPanel {
         this.deleteButton = UIUtilities.createNamedButton(
                 DELETE_FROM_ONTO_COMMAND, DELETE_FROM_ONTO_NAME,
                 DELETE_FROM_ONTO_TOOLTIP, new EditOntologyButtonListener(
-                        ontology, observation,
+                        ontology, missingEntailment,
                         result, hypothesisIndex));
         this.deleteButton.setEnabled(false);
         buttonPanel.add(this.deleteButton);
@@ -115,16 +115,16 @@ public class SingleResultPanel extends JPanel {
     private class EditOntologyButtonListener implements ActionListener {
 
         private final OWLOntology ontology;
-        private final Set<OWLAxiom> observation;
+        private final Set<OWLAxiom> missingEntailment;
         private final Set<OWLAxiom> hypothesis;
         private final int hypothesisIndex;
         private ExplanationDialogPanel explanationDialogPanel;
         private final Logger logger = LoggerFactory.getLogger(EditOntologyButtonListener.class);
 
-        private EditOntologyButtonListener(OWLOntology ontology, Set<OWLAxiom> observation,
+        private EditOntologyButtonListener(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
                                            Set<OWLAxiom> hypothesis, int index){
             this.ontology = ontology;
-            this.observation = observation;
+            this.missingEntailment = missingEntailment;
             this.hypothesis = hypothesis;
             this.hypothesisIndex = index;
         }
@@ -172,16 +172,10 @@ public class SingleResultPanel extends JPanel {
         }
 
         private void addAndProve(){
-            this.logger.debug("Adding axioms of hypothesis {} to ontology and showing proof for observation",
+            this.logger.debug("Adding axioms of hypothesis {} to ontology and showing proof for missing entailment",
                     this.hypothesisIndex+1);
             this.add();
             this.showProveDialog();
-//            OWLAxiom observation = new ArrayList<>(lastUsedObservation).get(0);
-//            ExplanationManager explanationManager = owlEditorKit.getOWLModelManager().getExplanationManager();
-//            if (explanationManager.hasExplanation(observation)) {
-//                JFrame frame = ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace());
-//                explanationManager.handleExplain(frame, observation);
-//            }
         }
 
         private void add(){
@@ -193,25 +187,25 @@ public class SingleResultPanel extends JPanel {
         }
 
         private void showProveDialog(){
-            JComboBox<OWLAxiom> observationComboBox = new JComboBox<>(
-                    new Vector<>(this.observation));
-            observationComboBox.setSelectedIndex(0);
+            JComboBox<OWLAxiom> missingEntailmentComboBox = new JComboBox<>(
+                    new Vector<>(this.missingEntailment));
+            missingEntailmentComboBox.setSelectedIndex(0);
             this.explanationDialogPanel = new ExplanationDialogPanel(
                     owlEditorKit.getOWLModelManager().getExplanationManager(),
-                    (OWLAxiom) observationComboBox.getSelectedItem());
-            observationComboBox.addActionListener(this.explanationDialogPanel);
+                    (OWLAxiom) missingEntailmentComboBox.getSelectedItem());
+            missingEntailmentComboBox.addActionListener(this.explanationDialogPanel);
             openedDialogPanels.add(explanationDialogPanel);
             JPanel explanationHolderPanel = new JPanel();
             this.explanationDialogPanel.refreshPanel();
             explanationHolderPanel.setLayout(new BoxLayout(
                     explanationHolderPanel, BoxLayout.PAGE_AXIS));
-            JPanel observationComboBoxPanel = new JPanel();
-            observationComboBoxPanel.setLayout(new BoxLayout(observationComboBoxPanel, BoxLayout.LINE_AXIS));
-            JLabel observationLabel = UIUtilities.createLabel("Observation:");
-            observationComboBoxPanel.add(observationLabel);
-            observationComboBoxPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-            observationComboBoxPanel.add(observationComboBox);
-            explanationHolderPanel.add(observationComboBoxPanel);
+            JPanel missingEntailmentComboBoxPanel = new JPanel();
+            missingEntailmentComboBoxPanel.setLayout(new BoxLayout(missingEntailmentComboBoxPanel, BoxLayout.LINE_AXIS));
+            JLabel missingEntailmentLabel = UIUtilities.createLabel("Missing Entailment:");
+            missingEntailmentComboBoxPanel.add(missingEntailmentLabel);
+            missingEntailmentComboBoxPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+            missingEntailmentComboBoxPanel.add(missingEntailmentComboBox);
+            explanationHolderPanel.add(missingEntailmentComboBoxPanel);
             explanationHolderPanel.add(this.explanationDialogPanel);
             JOptionPane optionPane = new JOptionPane(explanationHolderPanel,
                     JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION);
@@ -274,22 +268,22 @@ public class SingleResultPanel extends JPanel {
     private class ExplanationDialogPanel extends JPanel implements ActionListener{
 
         private final ExplanationManager explanationManager;
-        private OWLAxiom observation;
+        private OWLAxiom missingEntailment;
         private ExplanationDialog internalExplanationDialog = null;
 
         private final Logger logger = LoggerFactory.getLogger(ExplanationDialogPanel.class);
 
-        private ExplanationDialogPanel(ExplanationManager manager, OWLAxiom observation){
+        private ExplanationDialogPanel(ExplanationManager manager, OWLAxiom missingEntailment){
             this.explanationManager = manager;
-            this.observation = observation;
+            this.missingEntailment = missingEntailment;
             this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             this.logger.debug("ExplanationDialogPanel created");
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            this.observation = (OWLAxiom) ((JComboBox) e.getSource()).getSelectedItem();
-            this.logger.debug("Selected observation: {}", this.observation);
+            this.missingEntailment = (OWLAxiom) ((JComboBox) e.getSource()).getSelectedItem();
+            this.logger.debug("Selected missing entailment: {}", this.missingEntailment);
             this.refreshPanel();
         }
 
@@ -299,7 +293,7 @@ public class SingleResultPanel extends JPanel {
                 this.internalExplanationDialog.dispose();
             }
             this.internalExplanationDialog = new ExplanationDialog(
-                    this.explanationManager, this.observation);
+                    this.explanationManager, this.missingEntailment);
             this.removeAll();
             this.add(this.internalExplanationDialog);
             this.revalidate();

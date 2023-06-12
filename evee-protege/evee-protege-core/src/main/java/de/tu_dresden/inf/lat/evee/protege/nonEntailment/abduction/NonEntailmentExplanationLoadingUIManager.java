@@ -165,6 +165,11 @@ public class NonEntailmentExplanationLoadingUIManager implements
     @Override
     public void handleUIEvent(ExplanationLoadingUIEvent event) {
         SwingUtilities.invokeLater(() -> {
+            if (event == null){
+                logger.debug("event is null");
+            } else if (event.getType() == null){
+                this.logger.debug("eventyType is null");
+            }
             switch (event.getType()){
                 case UPDATE_LOADING_MESSAGE:
                     this.updateLoadingMessage(event.getMessage());
@@ -180,27 +185,6 @@ public class NonEntailmentExplanationLoadingUIManager implements
                     this.disposeLoadingScreen();
                     this.disposeCancellationScreen();
                     break;
-//                case SHOW_ERROR:
-//                    this.disposeLoadingScreen();
-//                    this.disposeCancellationScreen();
-//                    this.showError(event.getErrorMessage());
-//                    break;
-//                case SHOW_LOADING_SCREEN:
-//                    this.initLoadingScreen();
-//                    this.resetLoadingScreen();
-//                    this.showLoadingScreen();
-//                    break;
-//                case DISPOSE_LOADING_SCREEN:
-//                    this.disposeLoadingScreen();
-//                    break;
-//                case SHOW_CANCEL_SCREEN:
-//                    this.initCancellationScreen();
-//                    this.resetCancellationScreen();
-//                    this.showCancellationScreen();
-//                    break;
-//                case DISPOSE_CANCEL_SCREEN:
-//                    this.disposeCancellationScreen();
-//                    break;
             }
         });
     }
@@ -270,20 +254,15 @@ public class NonEntailmentExplanationLoadingUIManager implements
      * Note: Displays CANCELLATION SCREEN, which cannot be closed by the user.
      */
     protected void cancelGeneration(){
-//        remove all loading screens
-//        show cancel screen
-//        somehow inform progressGenerator that generation should be cancelled
         SwingUtilities.invokeLater(() -> {
             this.logger.debug("Loading dialog closed by user interaction");
+            this.viewComponentListener.handleUIEvent(
+                    ExplanationLoadingUIEvent.createCancellationEvent());
             this.disposeLoadingScreen();
             this.initCancellationScreen();
             this.resetCancellationScreen();
             this.showCancellationScreen();
         });
-        this.viewComponentListener.handleUIEvent(
-                new ExplanationLoadingUIEvent(
-                        ExplanationLoadingUIEventType
-                                .EXPLANATION_GENERATION_CANCELLED));
     }
 
     protected void showError(String message){

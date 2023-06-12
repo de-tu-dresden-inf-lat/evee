@@ -158,6 +158,7 @@
                         <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
                             org.protege.editor.owl.*;version="5.0",
+                            org.protege.editor.owl.ui;version="5.0",
                             org.protege.editor.core.*;version="5.0",
                             sun.misc.*;resolution:=optional,
                             org.checkerframework.checker.nullness.qual.*;resolution:=optional,

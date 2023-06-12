@@ -66,10 +66,6 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
         this.logger.debug("Disposed");
     }
 
-    public void resetHypothesisIndex(){
-        this.hypothesisIndex = 0;
-    }
-
     public JPanel getResultComponent(){
         return this.resultHolderPanel;
     }
@@ -77,6 +73,7 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
 
     public void resetResultComponent(){
         this.logger.debug("Resetting result component");
+        this.hypothesisIndex = 0;
         for (SingleResultPanel panel : this.singleResultPanels){
             panel.dispose();
         }
@@ -96,12 +93,12 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
         this.resultHolderPanel.revalidate();
     }
 
-    protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> observation,
+    protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
                                          List<Set<OWLAxiom>> hypotheses){
         hypotheses.stream().sorted(resultComparator).forEach(result -> {
             SingleResultPanel singleResultPanel = new SingleResultPanel(
                     this.owlEditorKit,ontology,
-                    observation, result, hypothesisIndex);
+                    missingEntailment, result, hypothesisIndex);
             singleResultPanel.registerListener(this);
             this.singleResultPanels.add(singleResultPanel);
             this.resultScrollingPanel.add(singleResultPanel);
@@ -115,7 +112,11 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
      * Compare two results based on the string representation. Shorter results should come first.
      */
     private final Comparator<Set<OWLAxiom>> resultComparator = (result1, result2) -> {
-        if(result1.size()!=result2.size())
+        if (result1 == null){
+            return -1;
+        } else if(result2 == null){
+            return 1;
+        } else if(result1.size()!=result2.size())
             return result1.size()-result2.size();
         else {
             String r1 = result1.stream().map(Object::toString).reduce("", (a,b) -> a+b);

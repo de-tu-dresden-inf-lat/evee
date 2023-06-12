@@ -85,10 +85,20 @@ public class UIUtilities {
         return button;
     }
 
+    public static void showWarning(String message, OWLEditorKit owlEditorKit){
+        logger.debug("Displaying warning message: {}", message);
+        showMessage(message, JOptionPane.WARNING_MESSAGE, owlEditorKit);
+    }
+
     public static void showError(String message, OWLEditorKit owlEditorKit){
         logger.debug("Displaying error message: {}", message);
+        showMessage(message, JOptionPane.ERROR_MESSAGE, owlEditorKit);
+
+    }
+
+    private static void showMessage(String message, int messageType, OWLEditorKit owlEditorKit){
         SwingUtilities.invokeLater(() -> {
-            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
+            JOptionPane errorPane = new JOptionPane(message, messageType);
             JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
                     owlEditorKit.getWorkspace()), "Error");
             errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);

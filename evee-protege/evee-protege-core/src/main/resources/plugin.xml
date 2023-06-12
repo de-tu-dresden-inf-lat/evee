@@ -23,6 +23,14 @@
         <category value="@org.protege.miscellaneous"/>
         <editorKitId value="OWLEditorKit"/>
     </extension>
+    <extension id="NonEntailmentDefaultTab"
+               point="org.protege.editor.core.application.WorkspaceTab">
+        <label value="Missing Entailment Explanation"/>
+        <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
+        <index value="X"/>
+        <editorKitId value="OWLEditorKit"/>
+        <defaultViewConfigFileName value="NonEntailmentDefaultTab.xml"/>
+    </extension>
 
     <extension id="NonEntailmentExplanationPreferences"
                point="org.protege.editor.core.application.explanationpreferencespanel">
@@ -43,14 +51,7 @@
 <!--        <category value="@org.protege.ontologycategory"/>-->
 <!--    </extension>-->
 
-<!--    <extension id="NonEntailmentDefaultTab"-->
-<!--               point="org.protege.editor.core.application.WorkspaceTab">-->
-<!--        <label value="Non-Entailment"/>-->
-<!--        <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>-->
-<!--        <index value="Z"/>-->
-<!--        <editorKitId value="OWLEditorKit"/>-->
-<!--        <defaultViewConfigFileName value="NonEntailmentDefaultTab.xml"/>-->
-<!--    </extension>-->
+
 
 
 <!--    Proof related-->
