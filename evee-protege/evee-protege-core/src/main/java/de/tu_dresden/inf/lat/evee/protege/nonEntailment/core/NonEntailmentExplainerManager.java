@@ -57,7 +57,7 @@ public class NonEntailmentExplainerManager {
                 this.serviceMap.get(serviceName).dispose();
             } catch (Exception ex) {
                 this.logger.error("Error when disposing Non-Entailment Explanation service named \"{}\"", serviceName);
-                this.logger.error(ex.getMessage());
+                this.logger.error(ex.getMessage(), ex);
             }
         }
     }

@@ -10,6 +10,8 @@ public enum ExplanationEventType {
 
     NOT_SUPPORTED,
 
-    RESULT_RESET
+    RESULT_RESET,
+
+    WARNING
 
 }

@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
-import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverOntologyChangeEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverResultButtonEventListener;
@@ -25,26 +25,28 @@ abstract public class AbstractAbductionSolver<Result>
         implements INonEntailmentExplanationService<OWLAxiom>,
         IOWLAbductionSolver,
         IAbductionSolverOntologyChangeEventListener,
-        IAbductionSolverResultButtonEventListener {
+        IAbductionSolverResultButtonEventListener,
+        IExplanationGenerationListener<
+                ExplanationEvent<
+                        IExplanationGenerator<
+                                Stream<Set<OWLAxiom>>>>> {
 
-    protected boolean canceled = false;
-    protected Set<OWLAxiom> observation = null;
-    protected Set<OWLAxiom> lastUsedObservation = null;
-    protected Set<OWLEntity> abducibles = null;
-    protected Set<OWLEntity> lastUsedAbducibles = null;
+    protected Set<OWLAxiom> missingEntailment = null;
+    protected Set<OWLAxiom> lastUsedMissingEntailment = null;
+    protected Set<OWLEntity> vocabulary = null;
+    protected Set<OWLEntity> lastUsedVocabulary = null;
     protected OWLOntology ontology = null;
+    private Iterator<Set<OWLAxiom>> resultStreamIterator = null;
     protected JPanel settingsHolderPanel;
     private JSpinner abductionNumberSpinner;
     private OWLEditorKit owlEditorKit;
     private final AbductionSolverResultManager resultManager;
-    private boolean computationSuccessful;
-    private String errorMessage;
+    private boolean cancelled;
     private boolean activeOntologyEditedExternally = false;
     private boolean activeOntologyEditedByAbductionSolver = false;
     private boolean activeOntologyChanged = false;
-    protected IProgressTracker progressTracker;
-    protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
-    protected final Map<OWLOntology, AbductionCache<Result>> cachedResults;
+    private IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
+    private final Map<OWLOntology, AbductionCache<Result>> cachedResults;
     private AbductionCache<Result> savedCache = null;
     protected static final String SETTINGS_LABEL = "Maximal number of hypotheses:";
     protected static final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
@@ -53,7 +55,7 @@ abstract public class AbstractAbductionSolver<Result>
 
     public AbstractAbductionSolver(){
         this.logger.debug("Creating AbstractAbductionSolver");
-        this.errorMessage = "";
+        this.cancelled = false;
         this.cachedResults = new HashMap<>();
         this.resultManager = new AbductionSolverResultManager(this, this);
         this.createSettingsComponent();
@@ -82,47 +84,39 @@ abstract public class AbstractAbductionSolver<Result>
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
     }
 
-    public void setComputationSuccessful(boolean successful){
-        this.computationSuccessful = successful;
-    }
-
-    public boolean computationSuccessful(){
-        return this.computationSuccessful;
-    }
-
-    public String getErrorMessage() {
-        return this.errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    /**
+     * @return true iff the cache contains a result for the currently active ontology, missing entailment and vocabulary
+     */
+    protected boolean checkResultInCache(){
+        return this.cachedResults.get(this.ontology)
+                .containsResultFor(this.missingEntailment, this.vocabulary);
     }
 
     /**
-     * uses current activeOntology, observation and abducibles to save result
+     * uses current activeOntology, missing entailment and vocabulary to save result
      * @param result newly computed result of abduction process that should be saved to cache
      */
     protected void saveResultToCache(Result result){
         if (this.ontology == null ||
-                this.observation == null ||
-                this.abducibles == null){
+                this.missingEntailment == null ||
+                this.vocabulary == null){
             return;
         }
         this.cachedResults.get(this.ontology).
-                putResult(this.observation, this.abducibles, result);
+                putResult(this.missingEntailment, this.vocabulary, result);
     }
 
     /**
-     * uses current activeOntology, observation and abductibles to load result
+     * uses current activeOntology, missing entailment and vocabulary to load result
      * @return cached result of abduction process or null if no cached result was found
      */
     protected Result loadResultFromCache(){
         if (! this.cachedResults.get(this.ontology).containsResultFor(
-                this.observation, this.abducibles)){
+                this.missingEntailment, this.vocabulary)){
             return null;
         } else {
             return this.cachedResults.get(this.ontology).getResult(
-                    this.observation, this.abducibles);
+                    this.missingEntailment, this.vocabulary);
         }
     }
 
@@ -142,51 +136,23 @@ abstract public class AbstractAbductionSolver<Result>
     }
 
     @Override
-    public void addProgressTracker(IProgressTracker tracker){
-        this.progressTracker = tracker;
+    public void setObservation(Set<OWLAxiom> missingEntailment) {
+        this.logger.debug("Setting missing entailment");
+        this.missingEntailment = missingEntailment;
     }
 
     @Override
-    public boolean successful(){
-        return ! this.canceled;
-    }
-
-    @Override
-    public void setObservation(Set<OWLAxiom> observation) {
-        this.logger.debug("Setting observation");
-        if (this.observation == null){
-            this.observation = observation;
-        }
-        else if (! this.observation.equals(observation)){
-            this.observation = observation;
-        }
-    }
-
-    @Override
-    public void setSignature(Collection<OWLEntity> abducibles) {
+    public void setSignature(Collection<OWLEntity> vocabulary) {
         this.logger.debug("Setting signature");
-        HashSet<OWLEntity> abduciblesAsSet = new HashSet<>(abducibles);
-        if (this.abducibles == null){
-            this.abducibles = abduciblesAsSet;
-        }
-        else if (! this.abducibles.equals(abduciblesAsSet)){
-            this.abducibles = abduciblesAsSet;
-        }
+        this.vocabulary = new HashSet<>(vocabulary);
     }
 
     @Override
     public void setOntology(OWLOntology ontology) {
         this.logger.debug("Setting ontology");
-        if (this.ontology == null){
-            this.logger.debug("No ontology has been set yet, setting ontology");
-            this.ontology = ontology;
-        }
-        else if (! this.ontology.equals(ontology)){
-            this.logger.debug("Different ontology detected, setting ontology");
-            this.ontology = ontology;
-        }
+        this.ontology = ontology;
         if (this.cachedResults.get(ontology) == null){
-            this.logger.debug("No cache for ontology, creating new cache");
+            this.logger.debug("No cache for ontology detected, creating new cache");
             this.cachedResults.put(ontology, new AbductionCache<>());
         }
     }
@@ -216,89 +182,84 @@ abstract public class AbstractAbductionSolver<Result>
     public void computeExplanation() {
         this.logger.debug("Computing explanation");
         assertNotNull(this.ontology);
-        assertNotNull(this.observation);
-        assertNotNull(this.abducibles);
-        if (this.parametersChanged()){
-            this.logger.debug("Abduction parameters changed, creating new stream");
-            this.lastUsedObservation = this.observation;
-            this.lastUsedAbducibles = this.abducibles;
-            if ( ! (this.activeOntologyEdited() || this.activeOntologyChanged) &&
-                    this.cachedResults.get(this.ontology).containsResultFor(
-                            this.observation, this.abducibles)){
-                this.logger.debug("Cached result found, no computation of hypotheses necessary");
-                this.computationSuccessful = true;
-                this.redisplayCachedExplanation();
-            }
-            else{
-                this.logger.debug("No cached result found, computing new hypotheses");
-                this.resetSavedCache();
-                this.resultManager.resetResultComponent();
-                this.createNewExplanation();
-            }
-            this.activeOntologyChanged = false;
-            this.resultManager.resetHypothesisIndex();
-        }
-        else{
-            this.logger.debug("Abduction parameters unchanged");
-            if (this.activeOntologyChanged){
-                this.logger.debug("Active ontology changed since last request for computation");
-                this.activeOntologyChanged = false;
-                if (this.cachedResults.get(this.ontology).containsResultFor(
-                        this.observation, this.abducibles)){
-                    this.logger.debug("Cached result found, no computation of hypotheses necessary");
-                    this.computationSuccessful = true;
-                    this.redisplayCachedExplanation();
-                } else{
-                    this.logger.debug("No cached result found, computing new hypotheses");
-                    this.resetSavedCache();
-                    this.resultManager.resetResultComponent();
-                    this.createNewExplanation();
-                }
-                this.resultManager.resetHypothesisIndex();
+        assertNotNull(this.missingEntailment);
+        assertNotNull(this.vocabulary);
+        SwingUtilities.invokeLater(() -> {
+            if (this.parametersChanged() ||
+                    this.checkActiveOntologyChanged() ||
+                    this.checkActiveOntologyEdited()){
+                this.logger.debug("Parameters or ontology changed/edited, requesting new stream");
+                this.cancelled = false;
+                this.computeNewExplanation();
             } else{
-                this.logger.debug("Active ontology not changed since last request for computation");
-                if (this.activeOntologyEdited()){
-                    this.logger.debug("Changes made to ontology since last computation, re-computation of hypotheses necessary");
-                    this.lastUsedObservation = this.observation;
-                    this.lastUsedAbducibles = this.abducibles;
-                    this.resetSavedCache();
-                    this.resultManager.resetResultComponent();
-                    this.createNewExplanation();
-                    this.resultManager.resetHypothesisIndex();
-                } else{
-                    this.logger.debug("No changes made to ontology since last computation");
-                    if (this.computationSuccessful){
-                        this.logger.debug("Last computation was successful, continuing old stream");
-                        this.createResultComponent();
-                    } else {
-                        this.logger.debug("Last computation failed, re-displaying error message");
-                        this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
-                                ExplanationEventType.ERROR));
-                    }
+                this.logger.debug("Parameters unchanged");
+                if (this.cancelled){
+                    this.logger.debug("Previous computation was cancelled, requesting new stream");
+                    this.computeNewExplanation();
                 }
+                else if (this.resultStreamIterator != null){
+                    this.logger.debug("Previous computation was successful, continuing to display result");
+                    this.createResultComponent();
+                    this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                            ExplanationEventType.COMPUTATION_COMPLETE));
+                } else{
+                    this.logger.debug("Previous computation failed, re-displaying error-message");
+                    this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                    ExplanationEventType.ERROR));
+                }
+            }
+        });
+
+    }
+
+    private void computeNewExplanation(){
+        this.lastUsedMissingEntailment = this.missingEntailment;
+        this.lastUsedVocabulary = this.vocabulary;
+        this.setActiveOntologyChanged(false);
+        this.resetSavedCache();
+        this.resetResultComponent();
+        this.resultStreamIterator = null;
+        AbductionSolverThread thread = new AbductionSolverThread(
+                this, this);
+        thread.start();
+    }
+
+    @Override
+    public void handleEvent(ExplanationEvent<
+            IExplanationGenerator<
+                    Stream<Set<OWLAxiom>>>> event){
+        if (event.getType().equals(ExplanationEventType.COMPUTATION_COMPLETE)){
+            Stream<Set<OWLAxiom>> resultStream = event.getSource().getResult();
+            if (resultStream != null){
+                this.resultStreamIterator = resultStream.iterator();
+                this.createResultComponent();
+                this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                        ExplanationEventType.COMPUTATION_COMPLETE));
             }
         }
     }
 
-    protected void redisplayCachedExplanation() {
-        this.resultManager.resetResultComponent();
-        this.resetSavedCache();
-        this.prepareResultComponentCreation();
-        this.createResultComponent();
+    protected void sendViewComponentEvent(ExplanationEventType type){
+        this.viewComponentListener.handleEvent(new ExplanationEvent<>(
+                this, type));
     }
 
-    abstract protected void createNewExplanation();
-
-    abstract protected void prepareResultComponentCreation();
+    protected void resetResultComponent(){
+        this.resultManager.resetResultComponent();
+    }
 
     protected boolean parametersChanged(){
-        return (! this.abducibles.equals(this.lastUsedAbducibles)) ||
-                (! this.observation.equals(this.lastUsedObservation));
+        return (! this.vocabulary.equals(this.lastUsedVocabulary)) ||
+                (! this.missingEntailment.equals(this.lastUsedMissingEntailment));
     }
 
-    protected boolean activeOntologyEdited(){
-        this.logger.debug("externally: {} - internally: {}", this.activeOntologyEditedExternally, this.activeOntologyEditedByAbductionSolver);
+    protected boolean checkActiveOntologyEdited(){
+//        this.logger.debug("externally: {} - internally: {}", this.activeOntologyEditedExternally, this.activeOntologyEditedByAbductionSolver);
         return this.activeOntologyEditedExternally || this.activeOntologyEditedByAbductionSolver;
+    }
+
+    protected boolean checkActiveOntologyChanged(){
+        return this.activeOntologyChanged;
     }
 
     protected void setActiveOntologyEditedExternally(boolean edited){
@@ -307,6 +268,10 @@ abstract public class AbstractAbductionSolver<Result>
 
     protected void setActiveOntologyEditedInternally(boolean edited){
         this.activeOntologyEditedByAbductionSolver = edited;
+    }
+
+    protected void setActiveOntologyChanged(boolean changed){
+        this.activeOntologyChanged = changed;
     }
 
     private void saveCache(){
@@ -358,7 +323,7 @@ abstract public class AbstractAbductionSolver<Result>
     }
 
     private void activeOntologyChanged(){
-        this.activeOntologyChanged = true;
+        this.setActiveOntologyChanged(true);
         this.setActiveOntologyEditedExternally(false);
         this.setActiveOntologyEditedInternally(false);
         this.resetAbductionParameters();
@@ -386,51 +351,35 @@ abstract public class AbstractAbductionSolver<Result>
         }
     }
 
-//    protected void resetResultComponent(){
-//        this.logger.debug("Resetting result component");
-//        this.resultHolderPanel = new JPanel(new BorderLayout());
-//        this.resultScrollingPanel = new JPanel();
-//        this.resultScrollingPanel.setLayout(new BoxLayout(this.resultScrollingPanel, BoxLayout.PAGE_AXIS));
-//        JScrollPane resultScrollPane = new JScrollPane();
-//        resultScrollPane.setViewportView(this.resultScrollingPanel);
-//        this.resultHolderPanel.add(resultScrollPane);
-//        this.resultHolderPanel.setBorder(BorderFactory.createCompoundBorder(
-//                BorderFactory.createTitledBorder(
-//                        BorderFactory.createEmptyBorder(5, 5, 5, 5),
-//                        "Hypotheses:"),
-//                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-//        this.resultHolderPanel.repaint();
-//        this.resultHolderPanel.revalidate();
-//    }
-
     protected void resetSavedCache(){
         this.logger.debug("Resetting edit ontology status");
         this.savedCache = null;
     }
 
     protected void resetAbductionParameters(){
-        this.lastUsedObservation = null;
-        this.lastUsedAbducibles = null;
+        this.lastUsedMissingEntailment = null;
+        this.lastUsedVocabulary = null;
     }
 
     protected void createResultComponent(){
-        SwingUtilities.invokeLater(() -> {
-            int resultNumber = (int) this.abductionNumberSpinner.getValue();
-            this.logger.debug("Trying to show {} results of abduction generation process", resultNumber);
-            List<Set<OWLAxiom>> hypotheses = new ArrayList<>();
-            Stream<Set<OWLAxiom>> resultStream = this.generateExplanations();
-            resultStream.limit(resultNumber).forEach(result -> {
-                if (result != null){
-                    hypotheses.add(result);}
-            });
-            this.logger.debug("Actually showing {} results of abduction generation process", hypotheses.size());
-            this.resultManager.createResultComponent(ontology,
-                    this.lastUsedObservation, hypotheses);
-
-//            event-handling needs to happen within invokeLater-Block
-            this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
-                    ExplanationEventType.COMPUTATION_COMPLETE));
-        });
+        int resultNumber = (int) this.abductionNumberSpinner.getValue();
+        this.logger.debug("Trying to show {} results of abduction generation process", resultNumber);
+        List<Set<OWLAxiom>> hypotheses = new ArrayList<>();
+        int idx = 0;
+        while (idx < resultNumber && this.resultStreamIterator.hasNext()){
+            Set<OWLAxiom> nextSolution = this.resultStreamIterator.next();
+            if (nextSolution != null){
+                hypotheses.add(nextSolution);
+            }
+            idx += 1;
+        }
+        this.logger.debug("Actually showing {} results of abduction generation process", hypotheses.size());
+        this.resultManager.createResultComponent(ontology,
+                this.lastUsedMissingEntailment, hypotheses);
     }
 
+    @Override
+    public void cancel() {
+        this.cancelled = true;
+    }
 }

@@ -127,7 +127,7 @@ public class ToOWLTools {
 		try {
 			in = new FileInputStream(signatureFile);
 		} catch (FileNotFoundException e) {
-			logger.error("Could not load " + signatureFile.getAbsolutePath());
+			logger.error("Could not load " + signatureFile.getAbsolutePath(), e);
 			e.printStackTrace();
 		}
 
@@ -149,7 +149,7 @@ public class ToOWLTools {
 			}
 		} catch (IOException e) {
 			logger.error("Error while reading form " + signatureFile.getAbsolutePath() + "\nLast line was -> \"" + line
-					+ "\"");
+					+ "\"", e);
 			e.printStackTrace();
 		} finally {
 			try {

@@ -22,29 +22,24 @@ import java.util.stream.Collectors;
 
 public class MouseManager extends DefaultMouseManager implements MouseWheelListener {
     private long curTime;
-    private Set<Sprite> classLabels;
+
     private DefaultListModel<OWLClass> classListModel;
     private Map<String, List<OWLClass>> classMap;
     private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(InteractiveElement.NODE);
     private final Logger logger = Logger.getLogger(MouseManager.class);
     private String previousNodeID ="";
     private Sprite selectionSprite;
-    private Map<Sprite,Point2> labelCoordinates;
+
     private Camera camera;
     private MouseEvent last;
     private Viewer viewer;
     private boolean isFirstClick;
-    public MouseManager(Set<Sprite> classLabels,
-                        Map<String, List<OWLClass>> classMap,
+    public MouseManager(Map<String, List<OWLClass>> classMap,
                         DefaultListModel<OWLClass> classListModel,
                         Viewer viewer) {
         this.viewer = viewer;
-        this.classLabels = classLabels;
         this.classMap = classMap;
         this.classListModel = classListModel;
-        this.labelCoordinates = new HashMap<>();
-        this.labelCoordinates = classLabels.stream()
-                .collect(Collectors.toMap(l ->l, l-> new Point2(l.getX(),l.getY())));
         this.isFirstClick = true;
     }
     @Override
@@ -93,17 +88,11 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     public void mouseDragged(MouseEvent event) {
         if (curElement != null) {
             elementMoving(curElement, event);
-//            double zoom = camera.getViewPercent();
-////            logger.debug("current zoom is "+zoom);
-//            classLabels.forEach(l -> adjustLabelPosition(l,zoom));
         } else {
             if(last!=null) {
 
                 Point3 viewCenterGu = camera.getViewCenter();
-                logger.debug("center Gu: "+viewCenterGu);
                 Point3 viewCenterPx=camera.transformGuToPx(viewCenterGu.x,viewCenterGu.y,0);
-                logger.debug("center Px: "+viewCenterPx);
-                logger.debug("current mouse position:"+event.getX()+", "+event.getY());
                 int xdelta=event.getX()-last.getX();//determine direction
                 int ydelta=event.getY()-last.getY();//determine direction
                 logger.debug("dx:"+xdelta);
@@ -132,7 +121,7 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
         double y = guClicked.y - (pxCenter.y - e.getY())/newRatioPx2Gu;
         cam.setViewCenter(x, y, 0);
         cam.setViewPercent(zoom);
-        classLabels.forEach(l -> adjustLabelPosition(l,zoom));
+
     }
     public void selectNewNode(String nodeID) {
         logger.debug("button is released");
@@ -152,11 +141,7 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
             logger.debug("node is selected");
         }
     }
-    private void adjustLabelPosition(Sprite label, double zoom) {
-        double X = labelCoordinates.get(label).x*zoom;
-        double Y = labelCoordinates.get(label).y*zoom;
-        label.setPosition(X,Y,0);
-    }
+
 
     private void createSelectionSprite() {
         SpriteManager sman = new SpriteManager(graph);

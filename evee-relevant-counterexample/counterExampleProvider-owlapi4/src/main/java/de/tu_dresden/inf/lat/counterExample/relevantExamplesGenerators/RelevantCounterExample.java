@@ -28,7 +28,6 @@ import de.tu_dresden.inf.lat.model.tools.ToOWLTools;
  *
  */
 public abstract class RelevantCounterExample {
-	// TODO save extracted counter examples
 	private static final Logger logger = Logger.getLogger(RelevantCounterExample.class);
 
 	protected final ElkModel model;

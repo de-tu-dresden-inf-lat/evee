@@ -15,8 +15,6 @@ import org.protege.editor.owl.ui.renderer.OWLCellRendererSimple;
 import org.protege.editor.owl.ui.renderer.ProtegeTreeNodeRenderer;
 import org.protege.editor.owl.ui.tree.OWLModelManagerTree;
 import org.protege.editor.owl.ui.tree.OWLObjectTree;
-import org.protege.editor.owl.ui.tree.OWLObjectTreeNode;
-import org.protege.editor.owl.ui.tree.OWLObjectTreeRootNode;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.util.OWLEntityCollector;
@@ -25,19 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicArrowButton;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,9 +66,9 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private static final String SAVE_SIGNATURE_COMMAND = "SAVE_SIGNATURE";
     private static final String SAVE_SIGNATURE_BUTTON_NAME = "Save permitted vocabulary";
     private static final String SAVE_SIGNATURE_BUTTON_TOOLTIP = "Save the permitted vocabulary to a file";
-    private static final String ADD_OBSERVATION_SIGNATURE_BTN_COMMAND = "ADD_OBSERVATION";
-    private static final String ADD_OBSERVATION_SIGNATURE_BTN_NAME = "Add missing entailment vocabulary";
-    private static final String ADD_OBSERVATION_SIGNATURE_BTN_TOOLTIP = "Adds vocabulary of missing entailment to the selected vocabulary tab";
+    private static final String ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND = "ADD_MISSING_ENTAILMENT";
+    private static final String ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME = "Add missing entailment vocabulary";
+    private static final String ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP = "Adds vocabulary of missing entailment to the selected vocabulary tab";
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentVocabularySelectionUI.class);
 
@@ -204,9 +193,9 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.buttonHolderPanel.add(secondToolBar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
-        JButton addObservationSignatureButton = UIUtilities.createNamedButton(ADD_OBSERVATION_SIGNATURE_BTN_COMMAND,
-                ADD_OBSERVATION_SIGNATURE_BTN_NAME, ADD_OBSERVATION_SIGNATURE_BTN_TOOLTIP, this);
-        buttonList.add(addObservationSignatureButton);
+        JButton addMissingEntailmentSignatureButton = UIUtilities.createNamedButton(ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
+                ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME, ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
+        buttonList.add(addMissingEntailmentSignatureButton);
         JToolBar thirdToolBar = this.createButtonToolBar(buttonList);
         this.buttonHolderPanel.add(thirdToolBar);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -341,8 +330,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             case SAVE_SIGNATURE_COMMAND:
                 this.saveSignatureAction();
                 break;
-            case ADD_OBSERVATION_SIGNATURE_BTN_COMMAND:
-                this.addObservationSignatureAction();
+            case ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND:
+                this.addMissingEntailmentSignatureAction();
                 break;
         }
     }
@@ -407,15 +396,15 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         });
     }
 
-    private void addObservationSignatureAction(){
+    private void addMissingEntailmentSignatureAction(){
         SwingUtilities.invokeLater(() -> {
-            ArrayList<OWLObject> observations = this.nonEntailmentViewComponent.getObservations();
-            HashSet<OWLEntity> observationEntities = new HashSet<>();
-            observations.forEach(observation -> observationEntities.addAll(observation.getSignature()));
-            this.removeTopAndBottomEntities(observationEntities);
+            ArrayList<OWLObject> missingEntailmentList = this.nonEntailmentViewComponent.getMissingEntailments();
+            HashSet<OWLEntity> missingEntailmentSet = new HashSet<>();
+            missingEntailmentList.forEach(missingEntailment -> missingEntailmentSet.addAll(missingEntailment.getSignature()));
+            this.removeTopAndBottomEntities(missingEntailmentSet);
 //            deleting entities from one list = adding entities to other list
             int tabIndex = this.vocabularyTabbedPane.getSelectedIndex();
-            this.moveEntities2VocabularyList(observationEntities,
+            this.moveEntities2VocabularyList(missingEntailmentSet,
                     this.tabIndex2Name(tabIndex));
             this.nonEntailmentViewComponent.changeComputeButtonStatus();
         });

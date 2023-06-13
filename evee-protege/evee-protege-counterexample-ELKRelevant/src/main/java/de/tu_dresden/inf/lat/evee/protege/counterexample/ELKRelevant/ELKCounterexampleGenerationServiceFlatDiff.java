@@ -14,14 +14,8 @@ public class ELKCounterexampleGenerationServiceFlatDiff extends AbstractCountere
 //    private final OWLDataFactory df;
 
     public ELKCounterexampleGenerationServiceFlatDiff() {
-
-        this.observation = new HashSet<>();
-        this.errorMessage = "";
-        this.man = OWLManager.createOWLOntologyManager();
-        this.counterexampleGenerator = new ELKRelevantCounterexampleGenerator(ModelType.FlatDiff);
-//        this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
-//        this.counterexampleGenerator = new ELCounterexampleGenerator();
-
+        super();
+        setCounterexampleGenerator(new ELKRelevantCounterexampleGenerator(ModelType.FlatDiff));
     }
 
 }

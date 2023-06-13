@@ -14,14 +14,8 @@ public class ELKCounterexampleGenerationServiceBeta extends AbstractCounterexamp
 //    private final OWLDataFactory df;
 
     public ELKCounterexampleGenerationServiceBeta() {
-
-        this.observation = new HashSet<>();
-        this.errorMessage = "";
-        this.man = OWLManager.createOWLOntologyManager();
-        this.counterexampleGenerator = new ELKRelevantCounterexampleGenerator(ModelType.Beta);
-//        this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
-//        this.counterexampleGenerator = new ELCounterexampleGenerator();
-
+        super();
+        setCounterexampleGenerator(new ELKRelevantCounterexampleGenerator(ModelType.Beta));
     }
 
 }
