@@ -48,7 +48,7 @@ public class GraphModelComponent extends JPanel {
     private JList axiomList;
     private Component viewComponent;
     private View view;
-    private Set<Sprite> classLabels;
+//    private Set<Sprite> classLabels;
     private final Logger logger = Logger.getLogger(GraphModelComponent.class);
 
     public GraphModelComponent(ModelManager modelManager, OWLEditorKit owlEditorKit) {
@@ -58,14 +58,14 @@ public class GraphModelComponent extends JPanel {
         this.classListModel = new DefaultListModel();
         this.axiomListModel = new DefaultListModel();
         this.viewer = this.modelManager.getViewer();
-        this.classLabels = this.modelManager.getClassLabels();
+//        this.classLabels = this.modelManager.getClassLabels();
         this.df = OWLManager.getOWLDataFactory();
         this.setLayout(new BoxLayout(this, 0));
         this.viewPanel = new JPanel();
         this.viewPanel.setLayout(new BoxLayout(this.viewPanel, 0));
         this.viewPanel.setMinimumSize(new Dimension(500, 500));
         this.view = this.viewer.addDefaultView(false);
-        MouseManager mouseManager =new MouseManager(classLabels,classMap,classListModel,viewer);
+        MouseManager mouseManager =new MouseManager(classMap,classListModel,viewer);
         this.view.setMouseManager(mouseManager);
         this.viewComponent = (Component) view;
         this.viewComponent.addMouseWheelListener(mouseManager);
@@ -77,10 +77,10 @@ public class GraphModelComponent extends JPanel {
     private void resetModel() {
         this.classMap = this.modelManager.getClassMap();
         this.viewer = this.modelManager.getViewer();
-        this.classLabels = this.modelManager.getClassLabels();
+//        this.classLabels = this.modelManager.getClassLabels();
         this.viewPanel.remove(this.viewComponent);
         this.classListModel.removeAllElements();
-        MouseManager mouseManager =new MouseManager(classLabels,classMap,classListModel,viewer);
+        MouseManager mouseManager =new MouseManager(classMap,classListModel,viewer);
         this.view = this.viewer.addDefaultView(false);
         this.view.setMouseManager(mouseManager);
         this.viewComponent = (Component) view;

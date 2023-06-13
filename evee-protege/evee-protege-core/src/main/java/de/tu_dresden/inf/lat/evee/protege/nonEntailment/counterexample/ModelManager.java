@@ -14,20 +14,12 @@ import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.swing_viewer.SwingViewer;
 import org.graphstream.ui.view.Viewer;
 import org.protege.editor.owl.OWLEditorKit;
-import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.net.URL;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,8 +39,8 @@ public class ModelManager {
     private OWLReasoner res;
     private Set<OWLIndividualAxiom> model;
     private Map<String, List<OWLClass>> classMap;
-    private Object[][] roleData;
     private Object[][] conceptData;
+    private int baseLabelDistance= -25;
     private Set<IRI> markedIndividuals;
     private Viewer viewer;
     private GraphicGraph graph;
@@ -56,6 +48,8 @@ public class ModelManager {
     private int maxLabelNumber;
     private final double labelSpace = -0.085;
     private Set<Sprite> classLabels;
+    private Set<OWLObjectPropertyAssertionAxiom> edges;
+    private Set<OWLObjectPropertyAssertionAxiom> createdEdges;
     private String styleSheet;
     private final Logger logger = Logger.getLogger(ModelManager.class);
 
@@ -73,7 +67,6 @@ public class ModelManager {
         this.res = this.rf.createReasoner(ont);
         this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
         this.classMap = this.sortClassMap(this.createClassMap());
-        this.roleData = this.createRoleData();
         this.conceptData = this.createConceptData();
     }
 
@@ -89,7 +82,6 @@ public class ModelManager {
             this.model = this.counterExampleGenerator.generateModel();
             this.markedIndividuals = counterExampleGenerator.getMarkedIndividuals();
             this.classMap = this.sortClassMap(this.createClassMap());
-            this.roleData = this.createRoleData();
             this.conceptData = this.createConceptData();
             createGraph();
             this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
@@ -119,30 +111,6 @@ public class ModelManager {
         boolean isConsistent = reasoner.isConsistent();
         this.man.removeAxiom(this.ont,newAx);
         return isConsistent;
-    }
-
-    public Component getTableModel() {
-        JPanel component = new JPanel();
-        component.setLayout(new BoxLayout(component, BoxLayout.PAGE_AXIS));
-        String[] columnC = {"Indivdual", "Concept Names"};
-        String[] columnR = {"Subject Individual", "Object Property", "Object Individual"};
-        DefaultTableModel resultModelC = new DefaultTableModel();
-        DefaultTableModel resultModelR = new DefaultTableModel();
-        resultModelC.setDataVector(conceptData, columnC);
-        resultModelR.setDataVector(roleData, columnR);
-        component.setBorder(new EmptyBorder(new Insets(20, 20, 20, 20)));
-        component.add(Box.createRigidArea(new Dimension(20, 20)));
-        OWLCellRenderer renderer = new OWLCellRenderer(owlEditorKit);
-        renderer.setWrap(false);
-        JTable resultsC = new JTable(resultModelC);
-        JTable resultsR = new JTable(resultModelR);
-        resultsC.setDefaultRenderer(Object.class, renderer);
-        resultsR.setDefaultRenderer(Object.class, renderer);
-        component.add(new JScrollPane(resultsC));
-        component.add(Box.createRigidArea(new Dimension(20, 20)));
-        component.add(new JScrollPane(resultsR));
-
-        return component;
     }
 
     public Component generateGraphModel() {
@@ -184,18 +152,18 @@ public class ModelManager {
         return listMap;
     }
 
-    private Object[][] createRoleData() {
-        List<List<Object>> roleList = new ArrayList<>();
-        model.stream()
-                .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
-                .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
-                .forEach(a ->
-                        roleList.add(Arrays.asList(a.getSubject().asOWLNamedIndividual().getIRI().getShortForm(), a.getProperty(), a.getObject().asOWLNamedIndividual().getIRI().getShortForm())));
-        logger.info("role list is created: "+roleList);
-        return roleList.stream()
-                .map(l -> l.stream().toArray(Object[]::new))
-                .toArray(Object[][]::new);
-    }
+//    private Object[][] createRoleData() {
+//        List<List<Object>> roleList = new ArrayList<>();
+//        model.stream()
+//                .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
+//                .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
+//                .forEach(a ->
+//                        roleList.add(Arrays.asList(a.getSubject().asOWLNamedIndividual().getIRI().getShortForm(), a.getProperty(), a.getObject().asOWLNamedIndividual().getIRI().getShortForm())));
+//        logger.info("role list is created: "+roleList);
+//        return roleList.stream()
+//                .map(l -> l.stream().toArray(Object[]::new))
+//                .toArray(Object[][]::new);
+//    }
 
     private Object[][] createConceptData() {
         List<List<Object>> conceptList = new ArrayList<>();
@@ -285,7 +253,7 @@ public class ModelManager {
         });
         logger.debug("nodes are created: "+graph.nodes().collect(Collectors.toList()));
     }
-    private void createSprites() {
+    private void createNodeLabels() {
         SpriteManager sMan = new SpriteManager(graph);
         classLabels = new HashSet<>();
         classMap.entrySet().stream().forEach(e ->
@@ -296,58 +264,113 @@ public class ModelManager {
                     }
                     Iterator<OWLClass> owlclassIterator = e.getValue().iterator();
                     for (int i = 0; i < classNummer; i++) {
+                        int labelDistance = -(i+1) * baseLabelDistance;
                         String currOWLClass = owlclassIterator.next().getIRI().getShortForm();
                         Sprite sprite = sMan.addSprite(e.getKey() + currOWLClass);
                         sprite.attachToNode(e.getKey());
 //                        sprite.setPosition(StyleConstants.Units.PERCENTS,0, -0.075 * i, 0);
-                        sprite.setPosition(0, labelSpace * i, 0);
+                        sprite.setPosition(0, 0, 0);
                         sprite.setAttribute("ui.label", currOWLClass);
+                        sprite.setAttribute("ui.style","text-offset: -25, "+labelDistance+";");
                         classLabels.add(sprite);
                     }
                     if (owlclassIterator.hasNext()) {
+                        int labelDistance = -(classNummer+1) * baseLabelDistance;
                         Sprite sprite = sMan.addSprite(e.getKey() + "expand");
                         sprite.attachToNode(e.getKey());
-                        sprite.setPosition(0, labelSpace * classNummer, 0);
+                        sprite.setPosition(0, 0, 0);
                         sprite.setAttribute("ui.label", "...");
+                        sprite.setAttribute("ui.style","text-offset: -25, "+labelDistance+";");
                         classLabels.add(sprite);
                     }
                 }
         );
     }
     private void createEdges() {
-        SpriteManager sMan = new SpriteManager(graph);
-        Arrays.stream(roleData).forEach(e -> {
-            String desc = (String) e[0];
-            String succ = (String) e[2];
-            OWLObjectProperty prop = (OWLObjectProperty) e[1];
-            Edge edge = graph.addEdge(desc + succ+ prop.getIRI().getShortForm(), desc, succ, true);
+        edges = model.stream()
+                .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
+                .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
+                .collect(Collectors.toSet());
+        createdEdges = new HashSet<>();
 
-//            Sprite label = sMan.addSprite(edge.getId() + "label");
-//            graph.addSprite(label.getId());
-//            label.setAttribute("ui.class", "edge");
-//
-//            label.setAttribute("ui.label",prop.getIRI().getShortForm() );
-//            label.attachToEdge(edge.getId());
-//            label.setPosition(0.5, 0, 0);
-            edge.setAttribute("ui.label", prop.getIRI().getShortForm());
-        });
+        for (OWLObjectPropertyAssertionAxiom edge1:edges) {
+            logger.debug("processing axiom "+edge1.toString());
+            if (!createdEdges.contains(edge1)) {
+                for (OWLObjectPropertyAssertionAxiom edge2:edges) {
+                    if(edge1.getIndividualsInSignature().equals(edge2.getIndividualsInSignature())
+                            && !edge1.getProperty().equals(edge2.getProperty())) {
+                        handleLoop(edge1.getSubject().asOWLNamedIndividual(),edge1.getObject().asOWLNamedIndividual());
+                        break;
+                    }
+                }
+            }
+            if(!createdEdges.contains(edge1)) {
+                createEdge(edge1.getSubject().asOWLNamedIndividual(),
+                        edge1.getProperty().asOWLObjectProperty(),
+                        edge1.getObject().asOWLNamedIndividual(),
+                        0,
+                        1);
+            }
+        }
     }
-    private void handleLoop(OWLNamedIndividual a, OWLObjectProperty r, OWLNamedIndividual b) {
-        if(!a.equals(b)) {
-            List<OWLObjectProperty> direct = new ArrayList<>();
-            List<OWLObjectProperty> inverse = new ArrayList<>();
-            model.stream()
-                    .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
-                    .map( ax -> (OWLObjectPropertyAssertionAxiom) ax)
-                    .filter(ax -> ax.getProperty().equals(r))
-                    .forEach(ax -> {
-                        if (ax.getObject().equals(a)) {
-                            direct.add(ax.getProperty().asOWLObjectProperty());
-                        } else {
-                            inverse.add(ax.getProperty().asOWLObjectProperty());
-                        }
-                    });
+    private void createEdge(OWLNamedIndividual a,
+                            OWLObjectProperty r,
+                            OWLNamedIndividual b,
+                            int edgeNum,
+                            int directNum) {
 
+        String desc = a.getIRI().getShortForm().toString();
+        String succ = b.getIRI().getShortForm().toString();
+        String property = r.getIRI().getShortForm().toString();
+//        logger.debug("edge "+desc+property+succ);
+        String fillColor= "rgba(0,0,0,0);";
+        String textColor= GraphStyleSheets.PROTEGE_BLUE_1;
+        if(edgeNum == 0) {
+            fillColor= GraphStyleSheets.PROTEGE_BLUE_1;
+        } else if (edgeNum == directNum) {
+            fillColor= GraphStyleSheets.PROTEGE_BLUE;
+            textColor= GraphStyleSheets.PROTEGE_BLUE;
+        } else if (edgeNum > directNum) {
+            textColor= GraphStyleSheets.PROTEGE_BLUE;
+        }
+        String alignment = "along;";
+        if (a.equals(b)) {
+            alignment = "center;";
+        }
+        int labelDistance = (edgeNum+1) * baseLabelDistance;
+        Edge edge = graph.addEdge(desc + succ+ property, desc, succ, true);
+        edge.setAttribute("ui.label", property);
+        edge.setAttribute("ui.style","text-color: "+textColor+
+                "text-offset: -25, "+labelDistance+";"+
+                "fill-color: "+fillColor+
+                "text-alignment: "+alignment);
+    }
+    private void handleLoop(OWLNamedIndividual a, OWLNamedIndividual b) {
+        logger.debug("handling loop for "+a+b);
+        Set<OWLNamedIndividual> inds = Sets.newHashSet(a,b);
+        List<OWLObjectProperty> direct = new ArrayList<>();
+        List<OWLObjectProperty> inverse = new ArrayList<>();
+
+        logger.debug(edges);
+        for (OWLObjectPropertyAssertionAxiom edge:edges) {
+            if(edge.getIndividualsInSignature().equals(inds)) {
+                createdEdges.add(edge);
+                if (edge.getSubject().equals(a)) {
+                    direct.add(edge.getProperty().asOWLObjectProperty());
+                } else {
+                    inverse.add(edge.getProperty().asOWLObjectProperty());
+                }
+            }
+        }
+        logger.debug("direct:"+direct);
+        logger.debug("inverse:"+inverse);
+        for (int i = 0; i<direct.size();i++) {
+            createEdge(a,direct.get(i),b,i,direct.size());
+        }
+        if (!a.equals(b)) {
+            for (int i = 0; i<inverse.size();i++) {
+                createEdge(b,inverse.get(i),a,i+direct.size(),direct.size());
+            }
         }
     }
 
@@ -367,10 +390,11 @@ public class ModelManager {
 
     private void createGraph() {
         graph = new GraphicGraph("model");
+        createStyleSheet();
         createNodes();
         createEdges();
-        createSprites();
-        createStyleSheet();
+        createNodeLabels();
+        logger.debug(graph.getAttribute("ui.stylesheet"));
     }
     public void setStyleSheet(String styleSheet) {
         this.styleSheet = styleSheet;
@@ -380,9 +404,6 @@ public class ModelManager {
     }
     public Object[][] getConceptData() {
         return this.conceptData;
-    }
-    public Object[][] getRoleData() {
-        return this.roleData;
     }
     protected OWLOntology getOnt() {
         return this.ont;

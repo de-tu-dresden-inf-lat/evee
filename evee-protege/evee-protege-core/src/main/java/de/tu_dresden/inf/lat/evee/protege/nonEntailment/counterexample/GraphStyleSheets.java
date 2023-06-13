@@ -7,8 +7,8 @@ public class GraphStyleSheets {
 
     private static final String BLACK = "black;";
     private static final String WHITE = "white;";
-    private static final String PROTEGE_BLUE = "#60B6C9;";
-    private static final String PROTEGE_BLUE_1 = "#2c9a8e;";
+    public static final String PROTEGE_BLUE = "#60B6C9;";
+    public static final String PROTEGE_BLUE_1 = "#004956;";
     private static final String PROTEGE_BLUE_2 = "#01463f;";
     private static final String PROTEGE_YELLOW = "#7D6918;";
     private static final String PROTEGE_VIOLET = "#47485d;";
@@ -66,11 +66,11 @@ public class GraphStyleSheets {
                                              String rootNodeColor) {
 
         return " edge {" +
-                "fill-color:" +edgeColor+
+//                "fill-color:" +edgeColor+
                 "text-alignment: along;" +
-                "text-offset: -25, -25;" +
+//                "text-offset: -25, -25;" +
                 "text-background-mode: plain;" +
-                "text-color:"+edgeLabelColor+
+//                "text-color:"+edgeLabelColor+
                 "text-background-color:white;" +
                 "text-size:13;" +
                 "}" +
