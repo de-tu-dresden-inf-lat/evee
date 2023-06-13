@@ -500,6 +500,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.serviceSelectionComponent = new JPanel();
         this.serviceSelectionComponent.setLayout(new BoxLayout(this.serviceSelectionComponent, BoxLayout.PAGE_AXIS));
         Vector<String> serviceNames = this.nonEntailmentExplainerManager.getExplanationServiceNames();
+        Collections.sort(serviceNames);
         this.serviceNamesComboBox = new JComboBox<>(serviceNames);
         this.serviceNamesComboBox.addActionListener(this);
         this.serviceSelectionComponent.add(this.serviceNamesComboBox);
