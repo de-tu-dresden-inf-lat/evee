@@ -48,7 +48,6 @@ public class GraphModelComponent extends JPanel {
     private JList axiomList;
     private Component viewComponent;
     private View view;
-//    private Set<Sprite> classLabels;
     private final Logger logger = Logger.getLogger(GraphModelComponent.class);
 
     public GraphModelComponent(ModelManager modelManager, OWLEditorKit owlEditorKit) {
@@ -58,7 +57,6 @@ public class GraphModelComponent extends JPanel {
         this.classListModel = new DefaultListModel();
         this.axiomListModel = new DefaultListModel();
         this.viewer = this.modelManager.getViewer();
-//        this.classLabels = this.modelManager.getClassLabels();
         this.df = OWLManager.getOWLDataFactory();
         this.setLayout(new BoxLayout(this, 0));
         this.viewPanel = new JPanel();
@@ -77,7 +75,6 @@ public class GraphModelComponent extends JPanel {
     private void resetModel() {
         this.classMap = this.modelManager.getClassMap();
         this.viewer = this.modelManager.getViewer();
-//        this.classLabels = this.modelManager.getClassLabels();
         this.viewPanel.remove(this.viewComponent);
         this.classListModel.removeAllElements();
         MouseManager mouseManager =new MouseManager(classMap,classListModel,viewer);
@@ -100,8 +97,8 @@ public class GraphModelComponent extends JPanel {
         rightPanel.setAlignmentX(0.5F);
         rightPanel.setBorder(new EmptyBorder(new Insets(15, 15, 15, 15)));
         rightPanel.setMaximumSize(new Dimension(200,  2000));
-//        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
-        rightPanel.add(getStyleCombobox());
+        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
+//        rightPanel.add(getStyleCombobox());
         rightPanel.add(getLabelNumSliderPanel());
         rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
         rightPanel.add(getRefreshButton());
@@ -151,7 +148,7 @@ public class GraphModelComponent extends JPanel {
         buttonPanel.add(this.getRecomputeButton());
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonPanel.add(this.getRemoveAxiomsButton());
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
         buttonPanel.add(this.getAddToOntologyButton());
         return buttonPanel;
     }
