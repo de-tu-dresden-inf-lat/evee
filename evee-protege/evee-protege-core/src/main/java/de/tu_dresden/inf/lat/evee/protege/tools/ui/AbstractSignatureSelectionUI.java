@@ -68,7 +68,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
 
     protected void createOntologySignatureTabbedPanel(OWLEditorKit owlEditorKit){
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setPreferredSize(new Dimension(400, 400));
+        tabbedPane.setPreferredSize(new Dimension(400, 200));
 //        todo: highlighting keywords for classes + properties necessary? see method "initialiseView" in Protege's "AbstractOWLEntityHierarchyViewComponent"
 //        classes
         this.classesTree = new OWLModelManagerTree<>(
@@ -196,7 +196,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
         this.selectedSignatureJList.setCellRenderer(new OWLCellRendererSimple(owlEditorKit));
         JScrollPane scrollPane = new JScrollPane(this.selectedSignatureJList);
         scrollPane.getViewport().setBackground(Color.WHITE);
-        scrollPane.setPreferredSize(new Dimension(400, 400));
+        scrollPane.setPreferredSize(new Dimension(400, 200));
         this.selectedSignaturePanel.add(scrollPane);
     }
 

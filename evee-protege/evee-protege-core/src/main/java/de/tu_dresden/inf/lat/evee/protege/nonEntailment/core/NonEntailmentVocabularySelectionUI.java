@@ -104,7 +104,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 
     private void createOntologySignatureTabbedPane(){
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setPreferredSize(new Dimension(400, 400));
+        tabbedPane.setPreferredSize(new Dimension(200, 200));
 //        todo: highlighting keywords for classes + properties? see method "initialiseView" in Protege's "AbstractOWLEntityHierarchyViewComponent"
 //        classes
         this.classesTree = new OWLModelManagerTree<>(
@@ -232,7 +232,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.forbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         this.resetVocabularyListModels();
         this.vocabularyTabbedPane = new JTabbedPane();
-        this.vocabularyTabbedPane.setPreferredSize(new Dimension(400, 400));
+        this.vocabularyTabbedPane.setPreferredSize(new Dimension(200, 200));
         this.vocabularyTabbedPane.addTab("Permitted Vocabulary",
                 ComponentFactory.createScrollPane(this.permittedVocabularyList));
         this.vocabularyTabbedPane.addTab("Forbidden Vocabulary",

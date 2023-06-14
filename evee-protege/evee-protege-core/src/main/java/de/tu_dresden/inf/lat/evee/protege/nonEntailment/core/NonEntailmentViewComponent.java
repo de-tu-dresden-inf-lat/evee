@@ -391,7 +391,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         constraints.gridx = 0;
 //        specific for editor panel:
         constraints.gridy= 0;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.4;
         constraints.weighty = 0.4;
         this.missingEntailmentManagementPanel.add(missingEntailmentTextPanel, constraints);
         JPanel buttonPanel = this.createMissingEntailmentButtonPanel();
@@ -415,7 +415,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 new OWLLogicalAxiomChecker(this.getOWLModelManager());
         this.missingEntailmentTextEditor = new ExpressionEditor<>(this.getOWLEditorKit(), logicalAxiomChecker);
         JScrollPane editorScrollPane = ComponentFactory.createScrollPane(this.missingEntailmentTextEditor);
-        editorScrollPane.setPreferredSize(new Dimension(400, 400));
+        editorScrollPane.setPreferredSize(new Dimension(200, 200));
         missingEntailmentEditorPanel.add(editorScrollPane);
         missingEntailmentEditorPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
@@ -486,7 +486,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.selectedMissingEntailmentList.setCellRenderer(renderer);
         JScrollPane scrollPane = new JScrollPane(this.selectedMissingEntailmentList);
         scrollPane.getViewport().setBackground(Color.WHITE);
-        scrollPane.setPreferredSize(new Dimension(400, 400));
+        scrollPane.setPreferredSize(new Dimension(200, 200));
         missingEntailmentPanel.add(scrollPane);
         missingEntailmentPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(

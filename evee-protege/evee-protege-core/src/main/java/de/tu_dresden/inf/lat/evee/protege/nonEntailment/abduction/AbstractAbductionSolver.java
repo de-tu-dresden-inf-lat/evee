@@ -73,7 +73,7 @@ abstract public class AbstractAbductionSolver<Result>
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 1, null, 1);
         this.abductionNumberSpinner = new JSpinner(spinnerModel);
         this.abductionNumberSpinner.setToolTipText(SETTINGS_SPINNER_TOOLTIP);
-        this.abductionNumberSpinner.setMaximumSize(new Dimension(500, this.abductionNumberSpinner.getPreferredSize().height));
+        this.abductionNumberSpinner.setMaximumSize(new Dimension(100, this.abductionNumberSpinner.getPreferredSize().height));
         spinnerHelperPanel.add(this.abductionNumberSpinner);
         spinnerHelperPanel.add(Box.createGlue());
         this.settingsHolderPanel.add(spinnerHelperPanel);
