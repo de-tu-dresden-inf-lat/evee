@@ -360,14 +360,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         constraints.gridx = 0;
 //        specific for given signature tabbed pane:
         constraints.gridy= 0;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.4;
         constraints.weighty = 0.4;
         this.signatureManagementPanel.add(ontologySignatureTabbedComponent, constraints);
         JComponent signatureSelectionToolPanel = this.signatureSelectionUI.getSignatureSelectionButtonPanel();
 //        specific for signature selected buttons:
         constraints.gridy = 1;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.3;
         this.signatureManagementPanel.add(signatureSelectionToolPanel, constraints);
         JComponent selectedVocabularyComponent = this.signatureSelectionUI.getSelectedVocabularyPanel();
 //        specific for selected signature pane:
@@ -398,7 +398,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //        specific for button panel:
         constraints.gridy = 1;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.3;
         this.missingEntailmentManagementPanel.add(buttonPanel, constraints);
         JPanel selectedMissingEntailmentPanel = this.createSelectedMissingEntailmentPanel();
 //        specific for selected missing entailment:
