@@ -18,6 +18,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
 
     protected String uiTitle;
     private OWLEditorKit owlEditorKit;
+    private boolean computationRunning;
     protected boolean paintProgressBarString;
     protected static final String DEFAULT_MESSAGE = "Generating Explanations";
     protected static final String DEFAULT_CANCELLATION_MESSAGE = "Cancelling generation, please wait";
@@ -42,6 +43,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
         this.logger.debug("Creating NonEntailmentExplanationLoadingUIManager");
         this.uiTitle = uiTitle;
         this.paintProgressBarString = paintProgressBarString;
+        this.computationRunning = false;
         this.logger.debug("NonEntailmentExplanationLoadingUIManager created successfully");
     }
 
@@ -271,6 +273,10 @@ public class NonEntailmentExplanationLoadingUIManager implements
 
     protected void showLoadingScreen(){
         this.logger.debug("Trying to show loading screen");
+        if (! this.computationRunning){
+            this.logger.debug("No computation is currently running, loading screen is not shown");
+            return;
+        }
         if (this.loadingScreenDisposed){
             this.logger.debug("Current loading screen already disposed, " +
                     "cannot show loading screen");
@@ -295,6 +301,10 @@ public class NonEntailmentExplanationLoadingUIManager implements
 
     protected void showCancellationScreen(){
         this.logger.debug("Trying to show cancellation screen");
+        if (! this.computationRunning){
+            this.logger.debug("No computation is currently running, cancellation screen is not shown");
+            return;
+        }
         if (this.cancellationScreenDisposed){
             this.logger.debug("Cancellation screen already disposed, " +
                     "cannot show cancellation screen");
@@ -319,11 +329,15 @@ public class NonEntailmentExplanationLoadingUIManager implements
 
 
     public void activeLoadingUI(){
-        SwingUtilities.invokeLater(this::showLoadingScreen);
+        SwingUtilities.invokeLater(() -> {
+            this.computationRunning = true;
+            this.showLoadingScreen();
+        });
     }
 
     public void resetLoadingUI(){
         SwingUtilities.invokeLater(() -> {
+            this.computationRunning = false;
             this.disposeLoadingScreen();
             this.initLoadingScreen();
             this.resetLoadingScreen();

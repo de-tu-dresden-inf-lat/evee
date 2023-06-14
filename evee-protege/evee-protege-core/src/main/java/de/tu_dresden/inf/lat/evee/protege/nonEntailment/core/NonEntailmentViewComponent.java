@@ -64,7 +64,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private final Insets STANDARD_INSETS = new Insets(5, 5, 5, 5);
     private ExpressionEditor<OWLAxiom> missingEntailmentTextEditor;
     private OWLObjectListModel<OWLAxiom> selectedMissingEntailmentListModel;
-    private JList<OWLAxiom> selectedmissingEntailmentList;
+    private JList<OWLAxiom> selectedMissingEntailmentList;
     private JButton computeButton;
     private JPanel resultHolderComponent;
     private JPanel holderPanel;
@@ -465,8 +465,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         JPanel missingEntailmentPanel = new JPanel();
         missingEntailmentPanel.setLayout(new BoxLayout(missingEntailmentPanel, BoxLayout.PAGE_AXIS));
         this.selectedMissingEntailmentListModel = new OWLObjectListModel<>();
-        this.selectedmissingEntailmentList = new JList<>(this.selectedMissingEntailmentListModel);
-        this.selectedmissingEntailmentList.addMouseListener(new MouseAdapter() {
+        this.selectedMissingEntailmentList = new JList<>(this.selectedMissingEntailmentListModel);
+        this.selectedMissingEntailmentList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2){
@@ -483,8 +483,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         renderer.setHighlightKeywords(true);
         renderer.setHighlightUnsatisfiableClasses(false);
         renderer.setHighlightUnsatisfiableProperties(false);
-        this.selectedmissingEntailmentList.setCellRenderer(renderer);
-        JScrollPane scrollPane = new JScrollPane(this.selectedmissingEntailmentList);
+        this.selectedMissingEntailmentList.setCellRenderer(renderer);
+        JScrollPane scrollPane = new JScrollPane(this.selectedMissingEntailmentList);
         scrollPane.getViewport().setBackground(Color.WHITE);
         scrollPane.setPreferredSize(new Dimension(400, 400));
         missingEntailmentPanel.add(scrollPane);
@@ -555,7 +555,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 this.logger.debug("Exception caught when trying to add missing entailment: " + e);
             }
             finally {
-                this.selectedmissingEntailmentList.clearSelection();
+                this.selectedMissingEntailmentList.clearSelection();
                 this.missingEntailmentTextEditor.setText("");
                 this.changeComputeButtonStatus();
             }
@@ -564,9 +564,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     private void deleteMissingEntailment(){
 //        SwingUtilities.invokeLater(() -> {
-            List<OWLAxiom> toDelete = this.selectedmissingEntailmentList.getSelectedValuesList();
+            List<OWLAxiom> toDelete = this.selectedMissingEntailmentList.getSelectedValuesList();
             this.selectedMissingEntailmentListModel.removeElements(toDelete);
-            this.selectedmissingEntailmentList.clearSelection();
+            this.selectedMissingEntailmentList.clearSelection();
             this.missingEntailmentTextEditor.setText("");
             this.changeComputeButtonStatus();
 //        });
@@ -575,7 +575,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private void resetMissingEntailment(){
 //        SwingUtilities.invokeLater(() -> {
             this.selectedMissingEntailmentListModel.removeAll();
-            this.selectedmissingEntailmentList.clearSelection();
+            this.selectedMissingEntailmentList.clearSelection();
             this.missingEntailmentTextEditor.setText("");
             this.changeComputeButtonStatus();
 //        });
@@ -612,7 +612,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         }
         this.selectedMissingEntailmentListModel.removeAll();
         this.selectedMissingEntailmentListModel.addElements(missingEntailmentAxioms);
-        this.selectedmissingEntailmentList.clearSelection();
+        this.selectedMissingEntailmentList.clearSelection();
         this.changeComputeButtonStatus();
     }
 
@@ -636,7 +636,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 UIUtilities.showError(exception.getMessage(), this.getOWLEditorKit());
             }
         }
-        this.selectedmissingEntailmentList.clearSelection();
+        this.selectedMissingEntailmentList.clearSelection();
     }
 
     private String reverseParseOWLObject(OWLObject owlObject){

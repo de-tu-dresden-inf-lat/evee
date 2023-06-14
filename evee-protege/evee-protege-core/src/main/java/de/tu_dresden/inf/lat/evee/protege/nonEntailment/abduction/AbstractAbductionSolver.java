@@ -362,6 +362,12 @@ abstract public class AbstractAbductionSolver<Result>
     }
 
     protected void createResultComponent(){
+        this.resultManager.createResultComponent(ontology,
+                this.lastUsedMissingEntailment,
+                this.createHypothesesListFromStream());
+    }
+
+    protected List<Set<OWLAxiom>> createHypothesesListFromStream(){
         int resultNumber = (int) this.abductionNumberSpinner.getValue();
         this.logger.debug("Trying to show {} results of abduction generation process", resultNumber);
         List<Set<OWLAxiom>> hypotheses = new ArrayList<>();
@@ -374,8 +380,7 @@ abstract public class AbstractAbductionSolver<Result>
             idx += 1;
         }
         this.logger.debug("Actually showing {} results of abduction generation process", hypotheses.size());
-        this.resultManager.createResultComponent(ontology,
-                this.lastUsedMissingEntailment, hypotheses);
+        return hypotheses;
     }
 
     @Override

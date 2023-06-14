@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
@@ -14,6 +15,8 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.OntologyCopy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+//import ch.qos.logback.classic.Logger;
+//import ch.qos.logback.core.Appender;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,6 +50,8 @@ public class CapiAbductionSolver
     private Process spassProcess;
     private boolean cancelled;
     private File spassOutputFile;
+    private PostProcessing postProcessing = null;
+    private boolean firstExecution;
     private static final String PROBLEM_SPASS = "problem.spass";
     private static final String SPASS_MODEL = "problem.spass.model";
     private static final String SPASS_CLAUSES = "problem.spass.clauses";
@@ -55,6 +60,10 @@ public class CapiAbductionSolver
     private static final String NAME_MAP = "eveeTemporaryOntologyFile.nameMap";
     private final CapiPreferencesManager preferencesManager;
     private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to the SPASS executable and hit 'Compute' again</html>";
+
+//    private Appender<ILoggingEvent> stdoutAppender = null;
+//    private Appender<ILoggingEvent> filesAppender = null;
+//    private final Logger logger = (Logger) LoggerFactory.getLogger(CapiAbductionSolver.class);
     private final Logger logger = LoggerFactory.getLogger(CapiAbductionSolver.class);
 
     private enum FileNames{
@@ -75,6 +84,7 @@ public class CapiAbductionSolver
         this.currentSolutionIndex = 0;
         this.preferencesManager = new CapiPreferencesManager();
         this.spassProcess = null;
+        this.firstExecution = true;
         this.logger.debug("CapiAbductionSolver created successfully");
     }
 
@@ -91,6 +101,13 @@ public class CapiAbductionSolver
 
     @Override
     public Stream<Set<OWLAxiom>> generateExplanations() {
+        if (this.firstExecution){
+            this.firstExecution = false;
+        } else {
+            if (this.capiParametersChanged()){
+                super.resetCache();
+            }
+        }
         this.spassPath = this.preferencesManager.loadSpassPath();
         this.cancelled = false;
         if (this.spassPath.equals("")){
@@ -272,6 +289,7 @@ public class CapiAbductionSolver
         if (! this.checkSpassOutputFileExistence()){
             this.computationFailed("Error when trying to read from SPASS output file: file not existing.");
         } else{
+//            this.disableLogging();
             this.progressTracker.setMessage("Parsing SPASS output");
             this.logger.debug("Parameters for parsing: remove redundancies={} - simplify conjunctions={} - " +
                             "semantically ordered={}",
@@ -288,24 +306,55 @@ public class CapiAbductionSolver
                             new File(this.concatFileName(FileNames.ONTOLOGY)));
                     OWLConverter converter = new OWLConverter(ontology.getOWLOntologyManager().getOWLDataFactory(),
                             new File(this.concatFileName(FileNames.NAMES)));
-                    PostProcessing postProcessing = new PostProcessing(ontology, converter);
-                    generatedSolutions = generatedSolutions.stream()
-                            .map(sol -> {
-                                if(this.simplifyConjunctions) {
-                                    this.logger.debug("Simplifying solution {}", sol);
-                                    return postProcessing.simplifyAxioms(sol);
-                                }
-                                else { return sol;}
-                            }).map(sol -> {
-                                if(this.removeRedundancies) {
-                                    this.logger.debug("Removing redundancy in {}", sol);
-                                    return postProcessing.removeRedundantAxioms(sol);
-                                }
-                                else { return sol;}
-                            }).collect(Collectors.toSet());
+                    this.postProcessing = new PostProcessing(ontology, converter);
+                    if (this.cancelled){
+                        this.logger.debug("Postprocessing terminated");
+                        return;
+                    }
+                    if (this.simplifyConjunctions){
+                        this.logger.debug("Postprocessing: simplifying solutions");
+                        generatedSolutions = generatedSolutions.stream()
+                                .map(solution -> {
+                                    this.logger.debug("Simplifying solution " + solution);
+                                    return this.postProcessing.simplifyAxioms(solution);
+                                }).collect(Collectors.toSet());
+                    }
+                    if (this.cancelled){
+                        this.logger.debug("Postprocessing terminated after simplification");
+                        return;
+                    }
+                    if (this.removeRedundancies){
+                        this.logger.debug("Postprocessing: removing redundancies");
+                        generatedSolutions = generatedSolutions.stream()
+                                .map(solution -> {
+                                    this.logger.debug("Removing redundancy in " + solution);
+                                    return this.postProcessing.removeRedundantAxioms(solution);
+                                }).collect(Collectors.toSet());
+                    }
+                    if (this.cancelled){
+                        this.logger.debug("Postprocessing terminated after removing redundancies");
+                        return;
+                    }
+//                    generatedSolutions = generatedSolutions.stream()
+//                            .map(sol -> {
+//                                if(this.simplifyConjunctions) {
+//                                    this.logger.debug("Simplifying solution {}", sol);
+//                                    return postProcessing.simplifyAxioms(sol);
+//                                }
+//                                else { return sol;}
+//                            }).map(sol -> {
+//                                if(this.removeRedundancies) {
+//                                    this.logger.debug("Removing redundancy in {}", sol);
+//                                    return postProcessing.removeRedundantAxioms(sol);
+//                                }
+//                                else { return sol;}
+//                            }).collect(Collectors.toSet());
                     if(this.semanticallyOrdered) {
-                        this.logger.debug("Semantically ordering solutions");
-                        generatedSolutions = postProcessing.sortBySemanticMinimality(generatedSolutions);
+                        this.logger.debug("Postprocessing: ordering solutions");
+                        generatedSolutions = this.postProcessing.sortBySemanticMinimality(generatedSolutions);
+                    }
+                    if (this.cancelled){
+                        this.logger.debug("Postprocessing terminated after semantically ordering solutions");
                     }
                 }
                 this.solutions = new ArrayList<>(generatedSolutions);
@@ -318,9 +367,28 @@ public class CapiAbductionSolver
             } catch (OWLOntologyCreationException e){
                 this.logger.error("Error when reading temporary ontology file: ", e);
                 throw e;
+            } finally{
+//                this.enableLogging();
             }
         }
     }
+
+//    todo: currently not compiling on local machine due to version mismatches, but might be solution disabling logging for postprocessing
+//    private void disableLogging(){
+//        this.logger.debug("Logging disabled");
+//        Logger rootLogger = ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME));
+//        this.stdoutAppender = rootLogger.getAppender("stdout");
+//        this.filesAppender = rootLogger.getAppender("files");
+//        ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).detachAppender("stdout");
+//        ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).detachAppender("files");
+//    }
+//
+//    private void enableLogging(){
+//        Logger rootLogger = ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME));
+//        rootLogger.addAppender(this.stdoutAppender);
+//        rootLogger.addAppender(this.filesAppender);
+//        this.logger.debug("Logging enabled");
+//    }
 
     private boolean checkSpassOutputFileExistence(){
         File modelFile = new File(this.concatFileName(FileNames.MODEL));
@@ -484,6 +552,9 @@ public class CapiAbductionSolver
         if (this.spassProcess != null){
             this.logger.debug("Destroying SPASS process");
             this.spassProcess.destroyForcibly();
+        }
+        if (this.postProcessing != null){
+            this.postProcessing.cancel();
         }
         this.cancelled = true;
         super.cancel();

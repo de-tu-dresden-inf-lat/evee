@@ -95,7 +95,7 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
 
     protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
                                          List<Set<OWLAxiom>> hypotheses){
-        hypotheses.stream().sorted(resultComparator).forEach(result -> {
+        hypotheses.forEach(result -> {
             SingleResultPanel singleResultPanel = new SingleResultPanel(
                     this.owlEditorKit,ontology,
                     missingEntailment, result, hypothesisIndex);
@@ -107,27 +107,6 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
         this.resultHolderPanel.repaint();
         this.resultHolderPanel.revalidate();
     }
-
-    /**
-     * Compare two results based on the string representation. Shorter results should come first.
-     */
-    private final Comparator<Set<OWLAxiom>> resultComparator = (result1, result2) -> {
-        if (result1 == null){
-            return -1;
-        } else if(result2 == null){
-            return 1;
-        } else if(result1.size()!=result2.size())
-            return result1.size()-result2.size();
-        else {
-            String r1 = result1.stream().map(Object::toString).reduce("", (a,b) -> a+b);
-            String r2 = result2.stream().map(Object::toString).reduce("", (a,b) -> a+b);
-            if(r1.length()!=r2.length())
-                return r1.length()-r2.length();
-            else
-                return r1.compareTo(r2);
-        }
-    };
-
 
     private void changeAddButtonStatus(boolean newStatus){
         for (SingleResultPanel panel : this.singleResultPanels){
