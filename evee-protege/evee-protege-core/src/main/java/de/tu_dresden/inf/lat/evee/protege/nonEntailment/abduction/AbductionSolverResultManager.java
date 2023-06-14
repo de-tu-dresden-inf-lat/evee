@@ -79,7 +79,7 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
         }
         this.singleResultPanels.clear();
         this.resultHolderPanel = new JPanel(new BorderLayout());
-        this.resultHolderPanel.setMaximumSize(new Dimension(500, 1000));
+        this.resultHolderPanel.setMaximumSize(new Dimension(800, 1000));
         this.resultScrollingPanel = new JPanel();
         this.resultScrollingPanel.setLayout(new BoxLayout(this.resultScrollingPanel, BoxLayout.PAGE_AXIS));
         JScrollPane resultScrollPane = new JScrollPane();
