@@ -39,15 +39,13 @@ public class ModelManager {
     private OWLReasoner res;
     private Set<OWLIndividualAxiom> model;
     private Map<String, List<OWLClass>> classMap;
-    private Object[][] conceptData;
-    private int baseLabelDistance= -25;
+    private int baseLabelDistance= -20;
     private Set<IRI> markedIndividuals;
     private Viewer viewer;
     private GraphicGraph graph;
     private OWLSubClassOfAxiom observation;
     private int maxLabelNumber;
-    private final double labelSpace = -0.085;
-    private Set<Sprite> classLabels;
+//    private Set<Sprite> classLabels;
     private Set<OWLObjectPropertyAssertionAxiom> edges;
     private Set<OWLObjectPropertyAssertionAxiom> createdEdges;
     private String styleSheet;
@@ -67,7 +65,6 @@ public class ModelManager {
         this.res = this.rf.createReasoner(ont);
         this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
         this.classMap = this.sortClassMap(this.createClassMap());
-        this.conceptData = this.createConceptData();
     }
 
     public void recomputeModel(Set<OWLAxiom> additionalAxioms) throws Exception {
@@ -82,7 +79,6 @@ public class ModelManager {
             this.model = this.counterExampleGenerator.generateModel();
             this.markedIndividuals = counterExampleGenerator.getMarkedIndividuals();
             this.classMap = this.sortClassMap(this.createClassMap());
-            this.conceptData = this.createConceptData();
             createGraph();
             this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
             this.viewer.enableAutoLayout();
@@ -152,19 +148,6 @@ public class ModelManager {
         return listMap;
     }
 
-//    private Object[][] createRoleData() {
-//        List<List<Object>> roleList = new ArrayList<>();
-//        model.stream()
-//                .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
-//                .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
-//                .forEach(a ->
-//                        roleList.add(Arrays.asList(a.getSubject().asOWLNamedIndividual().getIRI().getShortForm(), a.getProperty(), a.getObject().asOWLNamedIndividual().getIRI().getShortForm())));
-//        logger.info("role list is created: "+roleList);
-//        return roleList.stream()
-//                .map(l -> l.stream().toArray(Object[]::new))
-//                .toArray(Object[][]::new);
-//    }
-
     private Object[][] createConceptData() {
         List<List<Object>> conceptList = new ArrayList<>();
         classMap.entrySet().stream().forEach(e -> e.getValue()
@@ -188,14 +171,11 @@ public class ModelManager {
             List<List<OWLClass>> sortedAndSortedOut = compareClassExpressions(sorted);
             sorted = sortedAndSortedOut.get(0);
             sortedOut = sortedAndSortedOut.get(1);
-//            logger.debug("sorting:iteration "+i+", sorted: "+ sorted+", sorted out: "+sortedOut);
             if (sorted.isEmpty()) {
-//                Collections.reverse(sortHasSubclass(sortedOut));
                 finalList.addAll(sortedOut);
                 break;
             }
             if (sortedOut.isEmpty()) {
-//                Collections.reverse(sortHasSubclass(sorted));
                 finalList.addAll(sorted);
                 break;
             }
@@ -246,7 +226,6 @@ public class ModelManager {
             GraphicNode n = (GraphicNode) graph.addNode(k);
             for(IRI iri:this.markedIndividuals) {
                 if(iri.getShortForm().equalsIgnoreCase(n.getId())) {
-//                    n.setAttribute("ui.style", "fill-color: #000000;");
                     n.setAttribute("ui.class", "root");
                 }
             }
@@ -255,7 +234,6 @@ public class ModelManager {
     }
     private void createNodeLabels() {
         SpriteManager sMan = new SpriteManager(graph);
-        classLabels = new HashSet<>();
         classMap.entrySet().stream().forEach(e ->
                 {
                     int classNummer = e.getValue().size();
@@ -268,11 +246,9 @@ public class ModelManager {
                         String currOWLClass = owlclassIterator.next().getIRI().getShortForm();
                         Sprite sprite = sMan.addSprite(e.getKey() + currOWLClass);
                         sprite.attachToNode(e.getKey());
-//                        sprite.setPosition(StyleConstants.Units.PERCENTS,0, -0.075 * i, 0);
                         sprite.setPosition(0, 0, 0);
                         sprite.setAttribute("ui.label", currOWLClass);
-                        sprite.setAttribute("ui.style","text-offset: -25, "+labelDistance+";");
-                        classLabels.add(sprite);
+                        sprite.setAttribute("ui.style","text-offset: 0, "+labelDistance+";");
                     }
                     if (owlclassIterator.hasNext()) {
                         int labelDistance = -(classNummer+1) * baseLabelDistance;
@@ -280,8 +256,7 @@ public class ModelManager {
                         sprite.attachToNode(e.getKey());
                         sprite.setPosition(0, 0, 0);
                         sprite.setAttribute("ui.label", "...");
-                        sprite.setAttribute("ui.style","text-offset: -25, "+labelDistance+";");
-                        classLabels.add(sprite);
+                        sprite.setAttribute("ui.style","text-offset: 0, "+labelDistance+";");
                     }
                 }
         );
@@ -322,7 +297,6 @@ public class ModelManager {
         String desc = a.getIRI().getShortForm().toString();
         String succ = b.getIRI().getShortForm().toString();
         String property = r.getIRI().getShortForm().toString();
-//        logger.debug("edge "+desc+property+succ);
         String fillColor= "rgba(0,0,0,0);";
         String textColor= GraphStyleSheets.PROTEGE_BLUE_1;
         if(edgeNum == 0) {
@@ -341,7 +315,7 @@ public class ModelManager {
         Edge edge = graph.addEdge(desc + succ+ property, desc, succ, true);
         edge.setAttribute("ui.label", property);
         edge.setAttribute("ui.style","text-color: "+textColor+
-                "text-offset: -25, "+labelDistance+";"+
+                "text-offset: 0, "+labelDistance+";"+
                 "fill-color: "+fillColor+
                 "text-alignment: "+alignment);
     }
@@ -378,14 +352,6 @@ public class ModelManager {
         graph.setAttribute("ui.quality");
         graph.setAttribute("ui.antialias");
         graph.setAttribute("ui.stylesheet",styleSheet);
-//        graph.setAttribute("ui.stylesheet",
-//                " edge {text-alignment: along;text-offset: -25, -25;text-background-mode: plain; text-background-color: white;text-size:13;}" +
-//                        "node {text-offset: -25, -25;text-background-mode: plain; text-background-color: white;text-size:15;fill-color: #FFFFFF; size: 20px; stroke-mode: plain; stroke-color: #000000; }" +
-//                        "sprite {text-size:13;" +
-//                        "text-background-mode: plain;" +
-//                        "text-mode:normal;" +
-//                        "text-offset: 0, 25;" +
-//                        "fill-mode: none;}");
     }
 
     private void createGraph() {
@@ -402,16 +368,12 @@ public class ModelManager {
     public void setMaxLabelNumber(int maxLabelNumber) {
         this.maxLabelNumber = maxLabelNumber;
     }
-    public Object[][] getConceptData() {
-        return this.conceptData;
-    }
     protected OWLOntology getOnt() {
         return this.ont;
     }
     public GraphicGraph getGraph() {
         return this.graph;
     }
-    public Set<Sprite> getClassLabels() {return this.classLabels;}
     public Map<String, List<OWLClass>> getClassMap() {
         return this.classMap;
     }

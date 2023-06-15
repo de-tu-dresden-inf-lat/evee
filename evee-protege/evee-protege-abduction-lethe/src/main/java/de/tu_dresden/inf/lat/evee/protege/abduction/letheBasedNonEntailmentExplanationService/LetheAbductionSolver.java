@@ -184,4 +184,32 @@ public class LetheAbductionSolver
     public String getErrorMessage() {
         return this.errorMessage;
     }
+
+    @Override
+    public List<Set<OWLAxiom>> createHypothesesListFromStream(){
+        List<Set<OWLAxiom>> hypotheses = super.createHypothesesListFromStream();
+        hypotheses.sort(resultComparator);
+        return hypotheses;
+    }
+
+    /**
+     * Compare two results based on the string representation. Shorter results should come first.
+     */
+    private final Comparator<Set<OWLAxiom>> resultComparator = (result1, result2) -> {
+        if (result1 == null){
+            return -1;
+        } else if(result2 == null){
+            return 1;
+        } else if(result1.size()!=result2.size())
+            return result1.size()-result2.size();
+        else {
+            String r1 = result1.stream().map(Object::toString).reduce("", (a,b) -> a+b);
+            String r2 = result2.stream().map(Object::toString).reduce("", (a,b) -> a+b);
+            if(r1.length()!=r2.length())
+                return r1.length()-r2.length();
+            else
+                return r1.compareTo(r2);
+        }
+    };
+
 }

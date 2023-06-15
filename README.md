@@ -1,5 +1,5 @@
 # EVEE - <u>ev</u>incing <u>e</u>xpressive DL <u>e</u>ntailments
-This is the github-repository of *Evee*, a tool collection for explaining very expressive DL entailments.
+This is the github-repository of *Evee*, a tool collection for explaining very expressive DL entailments and for computing explanations to missing DL entailments.
 For general information on Evee, please refer to the section "About Evee".
 If you just want to try Evee with the Ontology Editor [Protégé](https://protege.stanford.edu/ "https://protege.stanford.edu/"), please refer to the section "Using the Evee plugins".
 Information on how to install Evee and use it as a library in your own projects can be found in the section "Installing and using Evee".
@@ -19,9 +19,18 @@ Additionally, it provides methods to optimize proofs that are generated via othe
 ## Using the Evee plugins
 1. Install [Protégé](https://protege.stanford.edu/ "https://protege.stanford.edu/"). Evee was developed for and tested with Protégé version 5.5.0.
 2. Install both the [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin and the [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi.
-3. Copy the .jar files from the directory "release" of this repository to the directory "plugins" of your local Protégé installation.
+4. Copy the .jar files from the directory "release" of this repository to the directory "plugins" of your local Protégé installation.
 
 Note that the Evee plugins require the OWL Reasoner [HermiT](http://www.hermit-reasoner.com/index.html "http://www.hermit-reasoner.com/index.html"), which is already included as a plugin in Protégé version 5.5.0.
+
+The Connection-Minimal Abduction solver utilizing [CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/") requires the installation of [SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover").
+For Linux and macOS, please refer to [CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/") for further information on how to install SPASS.
+For Windows, please refer to [SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover/download "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover/download").
+On Windows, the Connection-Minimal Abduction solver was developed and tested with SPASS 3.5
+
+When using the Connection-Minimal Abduction solver for the first time, you will be asked to enter the path to the SPASS executable.
+For Linux and macOS, this refers to the file named *SPASS*.
+For Windows, this refers to the file *SPASS.exe*.
 
 ## Installing and using Evee
 
@@ -73,10 +82,12 @@ Any Scala code of this repository was written for Scala version 2.12.6.
 
 The Protégé plugins were developed for and tested with Protégé version 5.5.0.
 
-Evee internally relies on the libraries FamePlus and Lethe (consisting of lethe-core, lethe-owlapi4 and lethe-owlapi5).
+On Windows, the Connection-Minimal Abduction solver was developed and tested with SPASS 3.5 for Windows.
+
+Evee internally relies on the libraries FamePlus, Lethe (consisting of lethe-core, lethe-owlapi4, lethe-owlapi5, lethe-abduction, lethe-abduction-owlapi4 and lethe-abduction-owlapi5) and CAPI.
 All these libraries have been pre-installed to a maven-repository in the directory [lib](lib).
 If you only want to use the Evee plugins for Protégé, no further steps are required.
-However, if you want to use Evee anywhere else (e.g. as part of your own project), Lethe and Fame are required for some functionalities of Evee.
+However, if you want to use Evee anywhere else (e.g. as part of your own project), Lethe, Fame and CAPI are required for some functionalities of Evee.
 In this case, please declare the directory [lib](lib) as a repository in your pom like this:
 
 ```xml
@@ -91,7 +102,12 @@ In this declaration, `path/to/lib` should be replaced by the path to the directo
 
 ## Disclaimer
 
-FamePlus, a library that Evee relies on internally, was *NOT* created by the developers of Evee.
+FamePlus, CAPI and SPASS, all libraries and programs that Evee relies on internally, were *NOT* created by the developers of Evee.
+
 For further information on Fame, please see [http://www.cs.man.ac.uk/~schmidt/sf-fame/](http://www.cs.man.ac.uk/~schmidt/sf-fame/ "http://www.cs.man.ac.uk/~schmidt/sf-fame/").
+
+For further information on CAPI, please see [https://lat.inf.tu-dresden.de/~koopmann/CAPI/](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/").
+
+For further information on SPASS, please see [https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover").
 
 Lethe has been developed by Patrick Koopmann; see [https://lat.inf.tu-dresden.de/~koopmann/LETHE/](https://lat.inf.tu-dresden.de/~koopmann/LETHE/ "https://lat.inf.tu-dresden.de/~koopmann/LETHE/").

@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
@@ -14,10 +15,14 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.OntologyCopy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+//import ch.qos.logback.classic.Logger;
+//import ch.qos.logback.core.Appender;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
@@ -45,6 +50,8 @@ public class CapiAbductionSolver
     private Process spassProcess;
     private boolean cancelled;
     private File spassOutputFile;
+    private PostProcessing postProcessing = null;
+    private boolean firstExecution;
     private static final String PROBLEM_SPASS = "problem.spass";
     private static final String SPASS_MODEL = "problem.spass.model";
     private static final String SPASS_CLAUSES = "problem.spass.clauses";
@@ -53,7 +60,20 @@ public class CapiAbductionSolver
     private static final String NAME_MAP = "eveeTemporaryOntologyFile.nameMap";
     private final CapiPreferencesManager preferencesManager;
     private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to the SPASS executable and hit 'Compute' again</html>";
+
+//    private Appender<ILoggingEvent> stdoutAppender = null;
+//    private Appender<ILoggingEvent> filesAppender = null;
+//    private final Logger logger = (Logger) LoggerFactory.getLogger(CapiAbductionSolver.class);
     private final Logger logger = LoggerFactory.getLogger(CapiAbductionSolver.class);
+
+    private enum FileNames{
+        PROBLEM,
+        MODEL,
+        CLAUSES,
+        SKOLEM,
+        ONTOLOGY,
+        NAMES
+    }
 
     public CapiAbductionSolver(){
         super();
@@ -64,6 +84,7 @@ public class CapiAbductionSolver
         this.currentSolutionIndex = 0;
         this.preferencesManager = new CapiPreferencesManager();
         this.spassProcess = null;
+        this.firstExecution = true;
         this.logger.debug("CapiAbductionSolver created successfully");
     }
 
@@ -80,6 +101,13 @@ public class CapiAbductionSolver
 
     @Override
     public Stream<Set<OWLAxiom>> generateExplanations() {
+        if (this.firstExecution){
+            this.firstExecution = false;
+        } else {
+            if (this.capiParametersChanged()){
+                super.resetCache();
+            }
+        }
         this.spassPath = this.preferencesManager.loadSpassPath();
         this.cancelled = false;
         if (this.spassPath.equals("")){
@@ -164,7 +192,8 @@ public class CapiAbductionSolver
         this.logger.debug("Creating SPASS input files");
         this.progressTracker.setMessage("Creating SPASS input files");
         OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
-        try (PrintWriter printWriter  = new PrintWriter(PROBLEM_SPASS)) {
+        try (PrintWriter printWriter  = new PrintWriter(
+                this.concatFileName(FileNames.PROBLEM))) {
             OWLOntology ontologyCopy = ontologyManager.createOntology();
             ontologyCopy = ontologyCopy.getOWLOntologyManager().copyOntology(
                     this.ontology, OntologyCopy.DEEP);
@@ -173,14 +202,18 @@ public class CapiAbductionSolver
             OWL2SpassConverter converter = new OWL2SpassConverter(true);
             converter.convertAbductionProblem(abductionProblem, printWriter,
                     ontologyCopy.getOntologyID().getOntologyIRI().or(
-                            IRI.create(TEMPORARY_ONTOLOGY)).toString(),
-                    SKOLEM_BOUND);
-            converter.saveNameMap(new File(NAME_MAP));
-            BufferedReader reader = new BufferedReader(new FileReader(SKOLEM_BOUND));
+                            IRI.create(this.concatFileName(FileNames.ONTOLOGY))).toString(),
+                    this.concatFileName(FileNames.SKOLEM));
+            converter.saveNameMap(new File(this.concatFileName(FileNames.NAMES)));
+            BufferedReader reader = new BufferedReader(new FileReader(
+                    this.concatFileName(FileNames.SKOLEM)
+            ));
             String boundString = reader.readLine();
             reader.close();
             this.skolemBound = 2 + Integer.parseInt(boundString);
-            FileOutputStream outputStream = new FileOutputStream(TEMPORARY_ONTOLOGY);
+            FileOutputStream outputStream = new FileOutputStream(
+                    this.concatFileName(FileNames.ONTOLOGY)
+            );
             ontologyManager.saveOntology(ontologyCopy, outputStream);
             outputStream.close();
             this.logger.debug("SPASS input files created successfully");
@@ -215,12 +248,23 @@ public class CapiAbductionSolver
         String timeLimit = "-TimeLimit=" + this.timeLimit;
         String boundStart = "-BoundStart=" + this.skolemBound;
         this.logger.debug("Parameters for SPASS: time limit={} - skolem bound={}", this.timeLimit, this.skolemBound);
-        String[] spassCommand = new String[]{
-                spassPath,
-                "-SOS", "-Sorts=0", "-Auto=0", "-RFSub", "-RBSub", "-ISRe", "-ISFc", "-FPModel",
-                "-CNFStrSkolem=0", "-CNFOptSkolem=0", timeLimit, "-PGiven=0", "-PProblem=0",
-                "-BoundMode=2", boundStart, "-BoundLoops=1", "-WDRatio=1",
-                PROBLEM_SPASS};
+
+        String[] spassCommand;
+        if (System.getProperty("os.name").startsWith("Windows")){
+            spassCommand = new String[]{
+                    spassPath,
+                    "-SOS", "-Sorts=0", "-Auto=0", "-RFSub", "-RBSub", "-ISRe", "-ISFc", "-FPModel",
+                    "-CNFStrSkolem=0", "-CNFOptSkolem=0", timeLimit, "-PGiven=0", "-PProblem=0",
+                    "-BoundMode=2", boundStart, "-BoundLoops=1", "-WDRatio=1",
+                    this.concatFileName(FileNames.PROBLEM)};
+        } else{
+            spassCommand = new String[]{
+                    spassPath,
+                    "-SOS", "-Sorts=0", "-Auto=0", "-RFSub", "-RBSub", "-ISRe", "-ISFc", "-FPModel",
+                    "-BoundVars=1", "-CNFStrSkolem=0", "-CNFOptSkolem=0", timeLimit, "-PGiven=0",
+                    "-PProblem=0", "-BoundMode=2", boundStart, "-BoundLoops=1", "-WDRatio=1",
+                    this.concatFileName(FileNames.PROBLEM)};
+        }
         try {
             this.spassProcess = new ProcessBuilder(spassCommand).start();
             int exitCode = spassProcess.waitFor();
@@ -245,6 +289,7 @@ public class CapiAbductionSolver
         if (! this.checkSpassOutputFileExistence()){
             this.computationFailed("Error when trying to read from SPASS output file: file not existing.");
         } else{
+//            this.disableLogging();
             this.progressTracker.setMessage("Parsing SPASS output");
             this.logger.debug("Parameters for parsing: remove redundancies={} - simplify conjunctions={} - " +
                             "semantically ordered={}",
@@ -258,27 +303,58 @@ public class CapiAbductionSolver
                 Collection<Solution> generatedSolutions = solutionGenerator.generateSolutions(negativeClauses);
                 if (this.removeRedundancies || this.simplifyConjunctions || this.semanticallyOrdered){
                     OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(
-                            new File(TEMPORARY_ONTOLOGY));
+                            new File(this.concatFileName(FileNames.ONTOLOGY)));
                     OWLConverter converter = new OWLConverter(ontology.getOWLOntologyManager().getOWLDataFactory(),
-                            new File(NAME_MAP));
-                    PostProcessing postProcessing = new PostProcessing(ontology, converter);
-                    generatedSolutions = generatedSolutions.stream()
-                            .map(sol -> {
-                                if(this.simplifyConjunctions) {
-                                    this.logger.debug("Simplifying solution {}", sol);
-                                    return postProcessing.simplifyAxioms(sol);
-                                }
-                                else { return sol;}
-                            }).map(sol -> {
-                                if(this.removeRedundancies) {
-                                    this.logger.debug("Removing redundancy in {}", sol);
-                                    return postProcessing.removeRedundantAxioms(sol);
-                                }
-                                else { return sol;}
-                            }).collect(Collectors.toSet());
+                            new File(this.concatFileName(FileNames.NAMES)));
+                    this.postProcessing = new PostProcessing(ontology, converter);
+                    if (this.cancelled){
+                        this.logger.debug("Postprocessing terminated");
+                        return;
+                    }
+                    if (this.simplifyConjunctions){
+                        this.logger.debug("Postprocessing: simplifying solutions");
+                        generatedSolutions = generatedSolutions.stream()
+                                .map(solution -> {
+                                    this.logger.debug("Simplifying solution " + solution);
+                                    return this.postProcessing.simplifyAxioms(solution);
+                                }).collect(Collectors.toSet());
+                    }
+                    if (this.cancelled){
+                        this.logger.debug("Postprocessing terminated after simplification");
+                        return;
+                    }
+                    if (this.removeRedundancies){
+                        this.logger.debug("Postprocessing: removing redundancies");
+                        generatedSolutions = generatedSolutions.stream()
+                                .map(solution -> {
+                                    this.logger.debug("Removing redundancy in " + solution);
+                                    return this.postProcessing.removeRedundantAxioms(solution);
+                                }).collect(Collectors.toSet());
+                    }
+                    if (this.cancelled){
+                        this.logger.debug("Postprocessing terminated after removing redundancies");
+                        return;
+                    }
+//                    generatedSolutions = generatedSolutions.stream()
+//                            .map(sol -> {
+//                                if(this.simplifyConjunctions) {
+//                                    this.logger.debug("Simplifying solution {}", sol);
+//                                    return postProcessing.simplifyAxioms(sol);
+//                                }
+//                                else { return sol;}
+//                            }).map(sol -> {
+//                                if(this.removeRedundancies) {
+//                                    this.logger.debug("Removing redundancy in {}", sol);
+//                                    return postProcessing.removeRedundantAxioms(sol);
+//                                }
+//                                else { return sol;}
+//                            }).collect(Collectors.toSet());
                     if(this.semanticallyOrdered) {
-                        this.logger.debug("Semantically ordering solutions");
-                        generatedSolutions = postProcessing.sortBySemanticMinimality(generatedSolutions);
+                        this.logger.debug("Postprocessing: ordering solutions");
+                        generatedSolutions = this.postProcessing.sortBySemanticMinimality(generatedSolutions);
+                    }
+                    if (this.cancelled){
+                        this.logger.debug("Postprocessing terminated after semantically ordering solutions");
                     }
                 }
                 this.solutions = new ArrayList<>(generatedSolutions);
@@ -291,13 +367,32 @@ public class CapiAbductionSolver
             } catch (OWLOntologyCreationException e){
                 this.logger.error("Error when reading temporary ontology file: ", e);
                 throw e;
+            } finally{
+//                this.enableLogging();
             }
         }
     }
 
+//    todo: currently not compiling on local machine due to version mismatches, but might be solution disabling logging for postprocessing
+//    private void disableLogging(){
+//        this.logger.debug("Logging disabled");
+//        Logger rootLogger = ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME));
+//        this.stdoutAppender = rootLogger.getAppender("stdout");
+//        this.filesAppender = rootLogger.getAppender("files");
+//        ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).detachAppender("stdout");
+//        ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).detachAppender("files");
+//    }
+//
+//    private void enableLogging(){
+//        Logger rootLogger = ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME));
+//        rootLogger.addAppender(this.stdoutAppender);
+//        rootLogger.addAppender(this.filesAppender);
+//        this.logger.debug("Logging enabled");
+//    }
+
     private boolean checkSpassOutputFileExistence(){
-        File modelFile = new File(SPASS_MODEL);
-        File clausesFile = new File(SPASS_CLAUSES);
+        File modelFile = new File(this.concatFileName(FileNames.MODEL));
+        File clausesFile = new File(this.concatFileName(FileNames.CLAUSES));
         if (modelFile.exists()){
             this.spassOutputFile = modelFile;
             return true;
@@ -312,27 +407,27 @@ public class CapiAbductionSolver
     private void cleanUpFiles(){
         this.logger.debug("Removing temporary files");
         this.progressTracker.setMessage("Cleaning up resources");
-        File problemFile = new File(PROBLEM_SPASS);
+        File problemFile = new File(this.concatFileName(FileNames.PROBLEM));
         if (problemFile.exists()) {
             this.deleteFile(problemFile);
         }
-        File clausesFile = new File(SPASS_CLAUSES);
+        File clausesFile = new File(this.concatFileName(FileNames.CLAUSES));
         if (clausesFile.exists()) {
             this.deleteFile(clausesFile);
         }
-        File modelFile = new File(SPASS_MODEL);
+        File modelFile = new File(this.concatFileName(FileNames.MODEL));
         if (modelFile.exists()){
             this.deleteFile(modelFile);
         }
-        File skolemBound = new File(SKOLEM_BOUND);
+        File skolemBound = new File(this.concatFileName(FileNames.SKOLEM));
         if (skolemBound.exists()){
             this.deleteFile(skolemBound);
         }
-        File temporaryOntology = new File(TEMPORARY_ONTOLOGY);
+        File temporaryOntology = new File(this.concatFileName(FileNames.ONTOLOGY));
         if (temporaryOntology.exists()){
             this.deleteFile(temporaryOntology);
         }
-        File nameMap = new File(NAME_MAP);
+        File nameMap = new File(this.concatFileName(FileNames.NAMES));
         if (nameMap.exists()){
             this.deleteFile(nameMap);
         }
@@ -458,6 +553,9 @@ public class CapiAbductionSolver
             this.logger.debug("Destroying SPASS process");
             this.spassProcess.destroyForcibly();
         }
+        if (this.postProcessing != null){
+            this.postProcessing.cancel();
+        }
         this.cancelled = true;
         super.cancel();
     }
@@ -471,4 +569,23 @@ public class CapiAbductionSolver
     public String getErrorMessage() {
         return this.errorMessage;
     }
+
+    private String concatFileName(FileNames name){
+        Path prefix = Paths.get(System.getProperty("java.io.tmpdir"));
+        switch (name){
+            case PROBLEM:
+                return prefix.resolve(PROBLEM_SPASS).toString();
+            case MODEL:
+                return prefix.resolve(SPASS_MODEL).toString();
+            case CLAUSES:
+                return prefix.resolve(SPASS_CLAUSES).toString();
+            case SKOLEM:
+                return prefix.resolve(SKOLEM_BOUND).toString();
+            case ONTOLOGY:
+                return prefix.resolve(TEMPORARY_ONTOLOGY).toString();
+            default:
+                return prefix.resolve(NAME_MAP).toString();
+        }
+    }
+
 }
