@@ -75,7 +75,7 @@ public class GraphStyleSheets {
                 "text-size:13;" +
                 "}" +
                 "node {" +
-                "text-offset: -25, -25;" +
+                "text-offset: 0, -25;" +
                 "text-background-mode: plain;" +
                 "text-background-color: white;" +
                 "text-size:15;" +
