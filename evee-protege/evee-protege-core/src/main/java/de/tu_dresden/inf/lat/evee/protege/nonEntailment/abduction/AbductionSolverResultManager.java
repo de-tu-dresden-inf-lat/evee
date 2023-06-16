@@ -152,7 +152,7 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
                 ignoreOntologyChangeEvent = false;
             } else{
                 this.logger.debug("Change not made by AbductionSolver");
-                resetResultComponent();
+//                resetResultComponent();
                 abductionSolverOntologyChangeEventListener.handleEvent(
                         new AbductionSolverOntologyChangeEvent(
                                 OntologyChangeEventType.ONTOLOGY_EDITED));
