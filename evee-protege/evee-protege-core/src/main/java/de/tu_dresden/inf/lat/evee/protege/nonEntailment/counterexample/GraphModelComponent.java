@@ -96,15 +96,15 @@ public class GraphModelComponent extends JPanel {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setAlignmentX(0.5F);
         rightPanel.setBorder(new EmptyBorder(new Insets(15, 15, 15, 15)));
-        rightPanel.setMaximumSize(new Dimension(200,  2000));
-        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
+        rightPanel.setMaximumSize(new Dimension(150,  2000));
+//        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
 //        rightPanel.add(getStyleCombobox());
         rightPanel.add(getLabelNumSliderPanel());
-        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         rightPanel.add(getRefreshButton());
-        rightPanel.add(Box.createRigidArea(new Dimension(0, BIG_SPACE)));
+        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
         rightPanel.add(getClassListPanel());
-        rightPanel.add(Box.createRigidArea(new Dimension(0, BIG_SPACE)));
+        rightPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
         rightPanel.add(getAxiomListPanel());
         return rightPanel;
     }

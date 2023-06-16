@@ -58,7 +58,7 @@ public class DLStatementAdapter {
                 this.singleResultReturned = true;
                 DLStatement simplifiedStatement = CheapSimplifier$.MODULE$.simplify(this.statement);
 //                this.logger.debug("Simplified statement:\n" + simplifiedStatement.toString());
-                Set<OWLLogicalAxiom> axiomSet = JavaConverters.setAsJavaSet(new OWLExporter().toOwl(null, simplifiedStatement));
+                Set<OWLLogicalAxiom> axiomSet = JavaConverters.setAsJavaSet(hypothesisSimplifier.simplify(new OWLExporter().toOwl(null, simplifiedStatement)));
 //                this.logger.debug("Simplified statement converted to owl:");
 //                axiomSet.forEach(axiom -> this.logger.debug(axiom.toString()));
 //                axiomSet = JavaConverters.setAsJavaSet(

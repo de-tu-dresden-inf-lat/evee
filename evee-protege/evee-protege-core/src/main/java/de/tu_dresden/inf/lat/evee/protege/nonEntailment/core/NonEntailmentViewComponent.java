@@ -404,7 +404,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //        specific for selected missing entailment:
         constraints.gridy = 2;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.6;
+        constraints.weighty = 0.4;
         this.missingEntailmentManagementPanel.add(selectedMissingEntailmentPanel, constraints);
     }
 
