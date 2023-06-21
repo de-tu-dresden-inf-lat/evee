@@ -11,7 +11,6 @@ import de.tu_dresden.inf.lat.prettyPrinting.formatting.{SimpleOWLFormatter, Simp
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException
 import de.tu_dresden.inf.lat.evee.proofs.interfaces._
-import org.semanticweb.HermiT
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model._
 import org.semanticweb.owlapi.model.parameters.Imports
@@ -88,13 +87,16 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
 
   override def supportsProof(axiom: OWLAxiom): Boolean = {
     knownSupport.getOrElseUpdate(axiom, {
-      val reasoner = new HermiT.Reasoner.ReasonerFactory().createReasoner(ontology)
-
-      reasoner.isEntailed(axiom)
+      val reasoner = new org.semanticweb.HermiT.ReasonerFactory().createReasoner(ontology)
+      val result = reasoner.isEntailed(axiom)
+      reasoner.dispose()
+      return result
     })
   }
 
   override def setOntology(owlOntology: OWLOntology): Unit = {
+    if(ontology!=null && manager.contains(ontology))
+      manager.removeOntology(ontology)
     ontology = filter.filteredCopy(owlOntology, manager)
 
     println("Ontology changed!")
@@ -340,6 +342,8 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
       heuristicProver.setOntology(ont)
 
       val restProof = heuristicProver.getProof(targetAxiom)
+
+      manager.removeOntology(ont)
 
       val proof = new ExtendableProof[OWLAxiom](targetAxiom)
       restProof.getInferences.forEach(inf =>
