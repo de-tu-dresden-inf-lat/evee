@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>de.tu-dresden.inf.lat</groupId>
+  <artifactId>capi-java-component</artifactId>
+  <version>0.2-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
+    <lastUpdated>20230621153155</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.2-SNAPSHOT</value>
+        <updated>20230621153155</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.2-SNAPSHOT</value>
+        <updated>20230621153155</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

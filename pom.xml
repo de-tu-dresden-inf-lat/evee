@@ -9,16 +9,19 @@
     <version>${revision}</version>
 
 
-
     <packaging>pom</packaging>
+<!--<modules>
+        <module>evee-small-model-generator</module>
+    </modules> -->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <skipCompilation>false</skipCompilation>
-        <revision>0.1.1-SNAPSHOT</revision>
+        <revision>0.2-SNAPSHOT</revision>
         <LatScalaDlTools.Version>0.4.1-SNAPSHOT</LatScalaDlTools.Version>
+        <LETHE.Version>0.8-SNAPSHOT</LETHE.Version>
     </properties>
 
     <build>
@@ -74,7 +77,10 @@
                 <module>evee-elimination-proofs/evee-elimination-proofs-lethe-owlapi4</module>
                 <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
                 <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
+                <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
+                <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-libs/evee-libs-owlapi4</module>
+                <module>evee-small-model-generator</module>
             </modules>
         </profile>
         <profile>
@@ -85,7 +91,7 @@
             <properties>
 <!--
                 overwritten in owlapi5-modules to be always false,
-                thus effectively turning of compilation of owlapi4-modules only
+                thus effectively turning off compilation of owlapi4-modules only
 -->
                 <skipCompilation>true</skipCompilation>
             </properties>
@@ -95,7 +101,10 @@
                 <module>evee-elimination-proofs</module>
                 <module>evee-lethe-proof-extractor</module>
                 <module>evee-elk-proof-extractor</module>
+                <module>evee-relevant-counterexample</module>
                 <module>evee-libs/evee-libs-owlapi5</module>
+                <!--TODO-->
+                <!--<module>evee-small-model-generator-owlapi5</module>-->
             </modules>
         </profile>
         <profile>
@@ -111,6 +120,18 @@
                 <module>evee-elimination-proofs/evee-elimination-proofs-lethe-owlapi4</module>
                 <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
                 <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
+                <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
+                <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
+                <module>evee-small-model-generator/evee-small-model-generator-owlapi4</module>
+                <module>evee-protege</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>pluginDev</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
                 <module>evee-protege</module>
             </modules>
         </profile>
@@ -125,6 +146,8 @@
                 <module>evee-elimination-proofs</module>
                 <module>evee-lethe-proof-extractor</module>
                 <module>evee-elk-proof-extractor</module>
+                <module>evee-relevant-counterexample</module>
+                <module>evee-small-model-generator</module>
                 <module>evee-protege</module>
                 <module>evee-libs</module>
             </modules>

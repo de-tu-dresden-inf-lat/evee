@@ -53,6 +53,11 @@
             <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-small-model-generator-owlapi4</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

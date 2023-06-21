@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.evee.eliminationProofs.tools
 
 import com.typesafe.scalalogging.Logger
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker
 
 import scala.collection.immutable.Range
 

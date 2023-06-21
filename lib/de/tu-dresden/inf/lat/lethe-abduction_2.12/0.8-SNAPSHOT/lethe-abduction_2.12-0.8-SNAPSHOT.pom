@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.tu-dresden.inf.lat</groupId>
+        <artifactId>lethe_2.12</artifactId>
+        <version>0.8-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>lethe-abduction_2.12</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lethe-core_2.12</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>${project.basedir}/src/main/scala</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/scala</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>create-source-jar</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <excludeResources>true</excludeResources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-test-jar</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <configuration>
+                            <excludeResources>true</excludeResources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <id>test-resources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classesDirectory>${project.basedir}/src/test/resources</classesDirectory>
+                            <classifier>test-resources</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

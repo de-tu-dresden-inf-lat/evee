@@ -6,7 +6,7 @@ package de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.inferences;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLTools;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 
 /**
  * Check whether a concept name is entailed to be equivalent to bottom, without

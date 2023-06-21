@@ -70,11 +70,13 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
+                            org.protege.editor.owl.*;version="4.3",
                             sun.misc.*;resolution:=optional,
                             de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             de.tu_dresden.inf.lat.dltools.*,
                             scala.swing.*;resolution:=optional,
+                            org.checkerframework.checker.nullness.qual.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>

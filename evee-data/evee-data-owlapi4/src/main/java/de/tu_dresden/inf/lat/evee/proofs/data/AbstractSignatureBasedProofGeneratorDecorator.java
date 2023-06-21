@@ -2,10 +2,9 @@ package de.tu_dresden.inf.lat.evee.proofs.data;
 
 import java.util.Collection;
 
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.ISignatureBasedProofGenerator;
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.ISimpleProofGenerator;
 
 public abstract class AbstractSignatureBasedProofGeneratorDecorator<SYMBOL, SENTENCE, ONTOLOGY>
 		implements ISignatureBasedProofGenerator<SYMBOL, SENTENCE, ONTOLOGY> {

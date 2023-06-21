@@ -6,7 +6,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ParsingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ParsingException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofParser;
 import org.semanticweb.owlapi.model.OWLAxiom;

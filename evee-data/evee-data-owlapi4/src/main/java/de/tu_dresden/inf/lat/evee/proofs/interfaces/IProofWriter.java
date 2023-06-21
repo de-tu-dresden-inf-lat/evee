@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.proofs.interfaces;
 import java.io.IOException;
 import java.util.Collection;
 
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.FormattingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.FormattingException;
 
 /**
  * Interface for writing proofs into files and strings.

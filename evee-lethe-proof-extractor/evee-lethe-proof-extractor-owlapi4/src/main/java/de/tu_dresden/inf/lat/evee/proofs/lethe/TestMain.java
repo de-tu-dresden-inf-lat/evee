@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.proofs.lethe;
 
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.FormattingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.FormattingException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 
 import java.io.IOException;

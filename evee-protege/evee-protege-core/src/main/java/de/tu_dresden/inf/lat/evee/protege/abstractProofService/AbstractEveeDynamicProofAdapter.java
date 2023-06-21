@@ -1,12 +1,16 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService;
 
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.*;
 
+import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.CachingProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.OWLSignatureBasedMinimalTreeProofGenerator;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.EveeProofAdapterKnownSignaturePreferenceManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import org.liveontologies.puli.DynamicProof;
 import org.liveontologies.puli.Inference;
 import org.protege.editor.owl.OWLEditorKit;
@@ -17,31 +21,62 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>> {
+import static org.junit.Assert.assertNotNull;
 
-    protected IProof<OWLAxiom> iProof;
-    protected IProofGenerator<OWLAxiom, OWLOntology> iProofGen;
-    protected OWLAxiom entailment;
-    protected OWLOntology ontology;
-    protected OWLReasoner reasoner;
-    protected boolean generationComplete = false;
-    protected boolean generationSuccess = false;
-    protected boolean ontologyChanged = true;
-    protected final String LOADING = "Please wait while the proof is generated";
-    protected String errorMsg = "";
-    protected final Logger logger = LoggerFactory.getLogger(AbstractEveeDynamicProofAdapter.class);
-    protected HashSet<ChangeListener> inferenceChangeListener = new HashSet<>();
-    protected String uiTitle;
-    protected final AbstractEveeProofPreferencesManager proofPreferencesManager;
-    protected EveeDynamicProofLoadingUI uiWindow;
+public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>>, IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<IProof<OWLAxiom>>>> {
 
-    public AbstractEveeDynamicProofAdapter(IProofGenerator<OWLAxiom, OWLOntology> iProofGen, String uiTitle, AbstractEveeProofPreferencesManager proofPreferencesManager){
-        this.iProofGen = iProofGen;
-        this.uiTitle = uiTitle;
+    private IProof<OWLAxiom> iProof;
+    private IProofGenerator<OWLAxiom, OWLOntology> cachingProofGen = null;
+    private ISignatureBasedProofGenerator<OWLEntity, OWLAxiom, OWLOntology> signatureProofGen = null;
+    private IProofGenerator<OWLAxiom, OWLOntology> innerProofGen = null;
+    private OWLOntology ontology;
+    private OWLReasoner reasoner;
+    private String errorMsg = "";
+    private boolean generationComplete = false;
+    private boolean generationSuccess = false;
+    private boolean ontologyChanged = true;
+    private boolean proofGeneratorChanged = true;
+    private long signatureTimeStamp;
+    private final String LOADING = "Please wait while the proof is generated";
+    private final Logger logger = LoggerFactory.getLogger(AbstractEveeDynamicProofAdapter.class);
+    private final Set<ChangeListener> inferenceChangeListener = new HashSet<>();
+    private final AbstractEveeProofPreferencesManager proofPreferencesManager;
+    private final EveeProofAdapterKnownSignaturePreferenceManager signaturePreferencesManager;
+    private final EveeDynamicProofLoadingUI uiWindow;
+
+    public AbstractEveeDynamicProofAdapter(AbstractEveeProofPreferencesManager proofPreferencesManager, EveeDynamicProofLoadingUI uiWindow){
         this.proofPreferencesManager = proofPreferencesManager;
+        this.signaturePreferencesManager = new EveeProofAdapterKnownSignaturePreferenceManager();
+        this.uiWindow = uiWindow;
+        this.uiWindow.setProofAdapter(this);
+        this.signatureTimeStamp = 0;
     }
 
-    abstract protected void setProofGeneratorParameters();
+    protected void setInnerProofGenerator(IProofGenerator<OWLAxiom, OWLOntology> proofGen){
+        this.innerProofGen = proofGen;
+//        this.setCachingProofGenerator();
+        this.proofGeneratorChanged = true;
+    }
+
+    protected void resetCachingProofGenerator(){
+        this.logger.debug("Resetting CachingProofGenerator");
+        boolean useSignature = false;
+        if (this.ontology != null) {
+            if (this.ontology.getOntologyID().getOntologyIRI().isPresent()){
+                useSignature = this.signaturePreferencesManager.useSignature(
+                        this.ontology.getOntologyID().getOntologyIRI().get().toString());
+            }
+        }
+        if (useSignature){
+            this.cachingProofGen = new CachingProofGenerator<>(this.signatureProofGen);
+            this.logger.debug("New CachingProofGenerator created with empty cache, using SignatureProofGenerator.");
+        }
+        else {
+            this.cachingProofGen = new CachingProofGenerator<>(this.innerProofGen);
+            this.logger.debug("New CachingProofGenerator created with empty cache, NOT using SignatureProofGenerator.");
+        }
+        this.proofGeneratorChanged = true;
+    }
 
     public void setOntology(OWLOntology ontology){
         this.ontology = ontology;
@@ -52,11 +87,13 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         this.reasoner = reasoner;
     }
 
+    protected String getProofServiceName(){
+        return this.proofPreferencesManager.getProofServiceName();
+    }
+
     @Override
     public void addListener(ChangeListener changeListener) {
-        if (changeListener instanceof DynamicProof.ChangeListener){
-            this.inferenceChangeListener.add(changeListener);
-        }
+        this.inferenceChangeListener.add(changeListener);
     }
 
     @Override
@@ -86,11 +123,29 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         }
     }
 
+    @Override
+    public void handleEvent(ExplanationEvent<IExplanationGenerator<IProof<OWLAxiom>>> event){
+        switch (event.getType()){
+            case COMPUTATION_COMPLETE :
+                this.proofGenerationSuccessful(event.getSource().getResult());
+                break;
+            case COMPUTATION_CANCELLED :
+                this.proofGenerationCancelled(event.getSource().getResult());
+                break;
+            case NOT_SUPPORTED :
+                this.proofNotSupported();
+                break;
+            case ERROR :
+                this.proofGenerationError(event.getSource().getErrorMessage());
+                break;
+        }
+    }
+
     protected boolean isActive(){
         return this.proofPreferencesManager.loadIsActive();
     }
 
-    protected void proofGenerationSuccess(IProof<OWLAxiom> newProof) {
+    protected void proofGenerationSuccessful(IProof<OWLAxiom> newProof) {
         this.iProof = newProof;
         this.uiWindow.proofGenerationFinished();
         this.uiWindow.disposeLoadingScreen();
@@ -138,7 +193,7 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
     }
 
     public void cancelProofGeneration(){
-        this.iProofGen.cancel();
+        this.cachingProofGen.cancel();
     }
 
 
@@ -171,38 +226,84 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         return protegeInferences;
     }
 
-    protected void createUI(OWLEditorKit editorKit){
-        this.uiWindow = new EveeDynamicProofLoadingUI(this, this.uiTitle, editorKit);
-        this.uiWindow.updateMessage(this.LOADING);
-    }
-
     public void start(OWLAxiom entailment, OWLEditorKit editorKit){
+        this.logger.debug("DynamicProofAdapter started.");
+        this.setProofGeneratorParameters(false);
         this.generationComplete = false;
         this.generationSuccess = false;
         for (ChangeListener listener : this.inferenceChangeListener){
             listener.inferencesChanged();
         }
-        if(this.ontologyChanged){
-            this.iProofGen.setOntology(this.ontology);
-            this.ontologyChanged=false;
-        }
-        this.entailment = entailment;
-        this.createUI(editorKit);
+        this.checkOntology();
         IProgressTracker progressTracker = new EveeProofPluginProgressTracker(this.uiWindow);
-        this.iProofGen.addProgressTracker(progressTracker);
-        this.setProofGeneratorParameters();
-        EveeProofGenerationThread proofGenThread = new EveeProofGenerationThread(this.entailment, this.ontology, this.reasoner, this.iProofGen, this);
+        this.cachingProofGen.addProgressTracker(progressTracker);
+        this.uiWindow.initialize(editorKit);
+        this.uiWindow.updateMessage(this.LOADING);
+        EveeProofGenerationThread proofGenThread = new EveeProofGenerationThread(entailment,
+                this.cachingProofGen, this);
         proofGenThread.start();
         this.uiWindow.showWindow();
     }
 
-//    currently not in use as iProofGen.supportsProof is too expensive for Protege
-    public boolean hasProof(OWLAxiom entailment){
-        if(this.ontologyChanged) {
-            this.iProofGen.setOntology(this.ontology);
-            this.ontologyChanged = false;
+    protected void setProofGeneratorParameters(boolean parametersChanged){
+        this.logger.debug("Checking signature.");
+        if (! this.ontology.getOntologyID().getOntologyIRI().isPresent()){
+            this.logger.warn("Anonymous ontology detected. Signature related parameters could not be set.");
+            return;
         }
-        return this.iProofGen.supportsProof(entailment);
+        String ontologyName = this.ontology.getOntologyID().getOntologyIRI().get().toString();
+        boolean useSignature = this.signaturePreferencesManager.useSignature(ontologyName);
+        boolean useSignatureChanged = this.signaturePreferencesManager.useSignatureChanged(this.signatureTimeStamp, ontologyName);
+        boolean signatureChanged = this.signaturePreferencesManager.signatureChanged(this.signatureTimeStamp, ontologyName);
+        if (useSignature){
+            this.logger.debug("Signature used");
+            if (signatureChanged || useSignatureChanged){
+                this.logger.debug("Change to signature detected, resetting signatureProofGen with current signature");
+                this.signatureProofGen = new OWLSignatureBasedMinimalTreeProofGenerator(this.innerProofGen);
+                Set<OWLEntity> signature = this.signaturePreferencesManager.getKnownSignatureForProofGeneration(
+                        this.ontology, ontologyName);
+                this.signatureProofGen.setSignature(signature);
+                this.logger.debug("Signature of known OWLEntities set to:");
+                signature.forEach(owlEntity -> this.logger.debug(owlEntity.toString()));
+                this.signatureTimeStamp = this.signaturePreferencesManager.getTimeStamp();
+            } else{
+                this.logger.debug("No change to signature detected, no resetting of signatureProofGen necessary");
+            }
+        }
+        if (parametersChanged || useSignatureChanged || (useSignature && signatureChanged)){
+            this.logger.debug("Change in parameters or signature detected, resetting cache");
+            this.resetCachingProofGenerator();
+        } else{
+            this.logger.debug("No change in parameters or signature detected, no changes made to cache");
+        }
     }
+
+//    private void setSignature(String ontologyName){
+//        Set<OWLEntity> signature = this.signaturePreferencesManager.getKnownSignatureForProofGeneration(
+//                this.ontology, ontologyName);
+//        this.signatureProofGen.setSignature(signature);
+//        this.logger.debug("Signature of known OWLEntities set to:");
+//        signature.forEach(owlEntity -> this.logger.debug(owlEntity.toString()));
+//        this.signatureTimeStamp = this.signaturePreferencesManager.getTimeStamp();
+//    }
+
+    private void checkOntology(){
+        this.logger.debug("Checking if ontology of cachingProofGenerator needs to be updated.");
+        if(this.ontologyChanged || this.proofGeneratorChanged){
+            this.logger.debug("Update necessary, handing over ontology.");
+            this.cachingProofGen.setOntology(this.ontology);
+            this.ontologyChanged=false;
+            this.proofGeneratorChanged = false;
+        }
+    }
+
+//    currently not in use as iProofGen.supportsProof is too expensive for Protege
+//    public boolean hasProof(OWLAxiom entailment){
+//        if(this.ontologyChanged) {
+//            this.cachingProofGen.setOntology(this.ontology);
+//            this.ontologyChanged = false;
+//        }
+//        return this.cachingProofGen.supportsProof(entailment);
+//    }
 
 }

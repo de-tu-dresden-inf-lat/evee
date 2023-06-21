@@ -1,5 +1,5 @@
 import de.tu_dresden.inf.lat.evee.proofs.lethe.LetheProofGenerator;
-import de.tu_dresden.inf.lat.evee.proofs.tools.BasicProgressBar;
+import de.tu_dresden.inf.lat.evee.general.tools.BasicProgressBar;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,14 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassProvider;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.model.PrefixManager;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ReasonerNotSupportedException;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;

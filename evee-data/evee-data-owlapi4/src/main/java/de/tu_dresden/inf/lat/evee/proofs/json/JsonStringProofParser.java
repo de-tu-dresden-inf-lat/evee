@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.proofs.json;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ParsingException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ParsingException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofParser;

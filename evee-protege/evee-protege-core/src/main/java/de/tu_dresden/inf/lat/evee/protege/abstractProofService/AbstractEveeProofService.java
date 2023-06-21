@@ -8,12 +8,15 @@ import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import java.util.List;
 
-public abstract class AbstractEveeProofService extends ProofService implements OWLModelManagerListener {
+
+public abstract class AbstractEveeProofService extends ProofService
+        implements OWLModelManagerListener, OWLOntologyChangeListener {
 
     protected OWLOntology ontology;
     protected OWLReasoner reasoner;
@@ -33,7 +36,7 @@ public abstract class AbstractEveeProofService extends ProofService implements O
 
     @Override
     public DynamicProof<Inference<? extends OWLAxiom>> getProof(OWLAxiom owlAxiom){
-        logger.debug("getProof called");
+        logger.debug("ProofService <{}>, method getProof called.", this.proofAdapter.getProofServiceName());
         this.proofAdapter.start(owlAxiom, getEditorKit());
         return this.proofAdapter;
     }
@@ -45,14 +48,17 @@ public abstract class AbstractEveeProofService extends ProofService implements O
 
     @Override
     public void dispose() {
-        getEditorKit().getOWLModelManager().removeListener(this);
+        this.getEditorKit().getOWLModelManager().removeListener(this);
+        this.getEditorKit().getOWLModelManager().removeOntologyChangeListener(this);
     }
 
     @Override
     public void initialise() {
-        getEditorKit().getOWLModelManager().addListener(this);
+        this.getEditorKit().getOWLModelManager().addListener(this);
+        this.getEditorKit().getOWLModelManager().addOntologyChangeListener(this);
         this.changeOntology();
         this.changeReasoner();
+        this.logger.debug("ProofService initialized");
     }
 
     @Override
@@ -72,6 +78,11 @@ public abstract class AbstractEveeProofService extends ProofService implements O
 
     private void changeReasoner(){
         this.reasoner = getEditorKit().getOWLModelManager().getReasoner();
+    }
+
+    @Override
+    public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> var1){
+        this.proofAdapter.resetCachingProofGenerator();
     }
 
 }

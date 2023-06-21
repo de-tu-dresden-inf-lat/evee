@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceAlpha"
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
+        <name value="Relevant Counterexample (ELK) Alpha"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceAlpha"/>
+    </extension>
+
+    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceBeta"
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
+        <name value="Relevant Counterexample (ELK) Beta"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceBeta"/>
+    </extension>
+
+    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceDiff"
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
+        <name value="Relevant Counterexample (ELK) Diff"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceDiff"/>
+    </extension>
+
+    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceFlatDiff"
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
+        <name value="Relevant Counterexample (ELK) FlatDiff"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceFlatDiff"/>
+    </extension>
+
+
+</plugin>

@@ -11,7 +11,7 @@ import de.tu_dresden.inf.lat.evee.proofGenerators.specializedGenerators.ESPGMini
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLTools;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 
 public class DiscoveredElkBugsTests {
 

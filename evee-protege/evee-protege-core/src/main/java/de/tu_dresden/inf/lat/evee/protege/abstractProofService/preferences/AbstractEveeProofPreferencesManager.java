@@ -46,6 +46,10 @@ public abstract class AbstractEveeProofPreferencesManager {
         return this.proofServiceNameSet;
     }
 
+    public String getProofServiceName(){
+        return this.proofServiceName;
+    }
+
     protected Preferences getProtegePreferences(){
         return PreferencesManager.getInstance().getPreferencesForSet(this.getSetId(), this.getPreferenceId());
     }
@@ -78,6 +82,7 @@ public abstract class AbstractEveeProofPreferencesManager {
         Preferences preferences = this.getProtegePreferences();
         assert this.proofServiceNameSet.contains(key);
         preferences.putBoolean(key, value);
+        this.logger.debug("Preference isActive saved: " + value + " for: " + key);
     }
 
 }

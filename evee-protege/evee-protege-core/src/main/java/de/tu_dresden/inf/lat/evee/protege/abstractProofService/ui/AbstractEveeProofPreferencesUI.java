@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
+import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeProofService;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
 import org.protege.editor.core.ui.preferences.PreferencesLayoutPanel;
 import org.protege.editor.owl.ui.preferences.OWLPreferencesPanel;
@@ -13,15 +14,20 @@ import java.util.TreeMap;
 
 public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel {
 
-    protected final AbstractEveeProofPreferencesManager proofPreferencesManager;
+    private AbstractEveeProofPreferencesManager abstractProofPreferencesManager;
     private final SortedMap<String, JCheckBox> activeServicesCheckBoxes;
     private final String ACTIVE_SERVICES = "Active Proof Services:";
-    protected JPanel holderPanel;
-    protected final Logger logger = LoggerFactory.getLogger(AbstractEveeProofPreferencesUI.class);
+    private final String MISC_OPTIONS = "Miscellaneous Options:";
+    private boolean hasMiscellaneousGroup = false;
+    protected PreferencesLayoutPanel holderPanel;
+    private final Logger logger = LoggerFactory.getLogger(AbstractEveeProofPreferencesUI.class);
 
-    public AbstractEveeProofPreferencesUI(AbstractEveeProofPreferencesManager proofPreferencesManager){
-        this.proofPreferencesManager = proofPreferencesManager;
+    public AbstractEveeProofPreferencesUI(){
         this.activeServicesCheckBoxes = new TreeMap<>();
+    }
+
+    public void setAbstractProofPreferencesManager(AbstractEveeProofPreferencesManager proofPreferencesManager){
+        this.abstractProofPreferencesManager = proofPreferencesManager;
     }
 
     @Override
@@ -33,12 +39,6 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
     public void initialise() {
         this.createUiElements();
         this.createAndFillHolderPanel();
-        SwingUtilities.invokeLater(() -> {
-            this.setLayout(new BorderLayout());
-            PreferencesLayoutPanel prefPanel = new PreferencesLayoutPanel();
-            prefPanel.add(this.holderPanel);
-            this.add(prefPanel, BorderLayout.NORTH);
-        });
     }
 
     @Override
@@ -46,11 +46,11 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
 
     protected void createUiElements(){
         SwingUtilities.invokeLater(() -> {
-            for (String identifier : this.proofPreferencesManager.getProofServiceNameSet()){
+            for (String identifier : this.abstractProofPreferencesManager.getProofServiceNameSet()){
                 JCheckBox checkBox = new JCheckBox(
-                        this.proofPreferencesManager.getIsActiveUILabel(identifier),
-                        this.proofPreferencesManager.loadIsActive(identifier));
-                checkBox.setToolTipText(this.proofPreferencesManager.getIsActiveToolTip(identifier));
+                        this.abstractProofPreferencesManager.getIsActiveUILabel(identifier),
+                        this.abstractProofPreferencesManager.loadIsActive(identifier));
+                checkBox.setToolTipText(this.abstractProofPreferencesManager.getIsActiveToolTip(identifier));
                 this.activeServicesCheckBoxes.put(identifier, checkBox);
             }
         });
@@ -58,14 +58,12 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
 
     protected void createAndFillHolderPanel(){
         SwingUtilities.invokeLater(() -> {
-//            todo: alternatively use GridBagLayout
-            this.holderPanel = new JPanel();
-            this.holderPanel.setLayout(new BoxLayout(this.holderPanel, BoxLayout.Y_AXIS));
-            PreferencesLayoutPanel activeProofServicePanel = new PreferencesLayoutPanel();
-            activeProofServicePanel.addGroup(ACTIVE_SERVICES);
-            this.holderPanel.add(activeProofServicePanel);
+            this.holderPanel = new PreferencesLayoutPanel();
+            this.setLayout(new BorderLayout());
+            this.add(this.holderPanel, BorderLayout.NORTH);
+            this.holderPanel.addGroup(ACTIVE_SERVICES);
             for (String key : this.activeServicesCheckBoxes.keySet()){
-                activeProofServicePanel.addGroupComponent(this.activeServicesCheckBoxes.get(key));
+                this.holderPanel.addGroupComponent(this.activeServicesCheckBoxes.get(key));
             }
         });
     }
@@ -73,11 +71,17 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
     private void saveActiveProofServices(){
         SwingUtilities.invokeLater(() -> {
             for (String identifier : this.activeServicesCheckBoxes.keySet()){
-                JCheckBox checkBox = this.activeServicesCheckBoxes.get(identifier);
-                this.proofPreferencesManager.saveIsActive(
-                        identifier, checkBox.isSelected());
+                this.abstractProofPreferencesManager.saveIsActive(
+                        identifier, this.activeServicesCheckBoxes.get(identifier).isSelected());
             }
         });
+    }
+
+    protected void addMiscellaneousGroup(){
+        if (! this.hasMiscellaneousGroup){
+            SwingUtilities.invokeLater(() -> this.holderPanel.addGroup(this.MISC_OPTIONS));
+            this.hasMiscellaneousGroup = true;
+        }
     }
 
 }

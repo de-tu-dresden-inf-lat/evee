@@ -21,7 +21,7 @@ import org.semanticweb.owlapi.model.parameters.Navigation;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInferenceEvaluator;
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLTools;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 
 /**
  * Count the number of maximal length expression paths among the premises.

@@ -2,10 +2,10 @@ package scala.de.tu_dresden.inf.lat.evee.eliminationProofs
 
 import de.tu_dresden.inf.lat.evee.eliminationProofs.{LetheBasedALCHProofGenerator, LetheBasedALCHProofGeneratorSkippingSteps, LetheBasedSymbolMinimalProofGenerator}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.{LetheBasedForgetter, OWLApiBasedJustifier}
+import de.tu_dresden.inf.lat.evee.general.tools.BasicProgressBar
 import de.tu_dresden.inf.lat.evee.proofs.data.AbstractSimpleOWLProofGenerator
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IInference, ISimpleProofGenerator}
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofParser
-import de.tu_dresden.inf.lat.evee.proofs.tools.BasicProgressBar
 import org.junit.Test
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.{OWLAxiom, OWLClass, OWLEntity, OWLEquivalentClassesAxiom, OWLOntology, OWLSubClassOfAxiom}

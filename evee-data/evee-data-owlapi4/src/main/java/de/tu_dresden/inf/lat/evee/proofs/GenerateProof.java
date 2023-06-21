@@ -20,6 +20,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
 import de.tu_dresden.inf.lat.prettyPrinting.parsing.OWLParser;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;

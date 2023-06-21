@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.proofs.lethe;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import uk.ac.man.cs.lethe.internal.tools.ProgressBar;
 
 public class LetheProgressBarAdapter implements ProgressBar {

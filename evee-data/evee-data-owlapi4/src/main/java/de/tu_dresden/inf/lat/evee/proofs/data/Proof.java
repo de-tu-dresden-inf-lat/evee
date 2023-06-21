@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.proofs.data;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,8 +13,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.FormattingException;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ParsingException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 

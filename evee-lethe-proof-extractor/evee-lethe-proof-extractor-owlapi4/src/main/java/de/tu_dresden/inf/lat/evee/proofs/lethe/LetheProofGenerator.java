@@ -11,10 +11,10 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationExceptio
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 
-import de.tu_dresden.inf.lat.evee.proofs.tools.OWLTools;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
 
 import uk.ac.man.cs.lethe.internal.dl.datatypes.*;
-import uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxSingleRoleForgetter;
-import uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxSingleRoleForgetter$;
 import uk.ac.man.cs.lethe.internal.dl.forgetting.direct.AbstractDerivation;
 import uk.ac.man.cs.lethe.internal.dl.forgetting.direct.ConceptClause;
 import uk.ac.man.cs.lethe.internal.dl.forgetting.direct.ConceptLiteral;

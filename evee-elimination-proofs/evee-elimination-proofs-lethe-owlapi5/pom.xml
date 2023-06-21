@@ -26,7 +26,7 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lethe-owlapi5_2.12</artifactId>
-            <version>0.8-SNAPSHOT</version>
+            <version>${LETHE.Version}</version>
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
@@ -39,6 +39,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <goals>

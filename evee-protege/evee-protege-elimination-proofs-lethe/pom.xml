@@ -30,6 +30,21 @@
 
     <dependencies>
         <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>
+            <version>${LatScalaDlTools.Version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-api</artifactId>
+            <version>4.5.20</version>
+        </dependency>
+        <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
@@ -70,6 +85,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
+                            org.protege.editor.owl.*;version="4.3",
+                            org.protege.editor.core.*;version="4.3",
                             sun.misc.*;resolution:=optional,
                             org.apache.batik.transcoder.*;resolution:=optional,
                             org.apache.tools.ant.*;resolution:=optional,
@@ -77,9 +94,7 @@
                             de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             scala.swing.*;resolution:=optional,
-                            org.protege.editor.core.prefs.*;version="4.3",
-                            org.protege.editor.core.ui.preferences.*;version="4.3",
-                            org.protege.editor.owl.ui.preferences.*;version="4.3",
+                            org.checkerframework.checker.nullness.qual.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>
@@ -91,6 +106,7 @@
                             uk.ac.man.cs.lethe.internal.application.benchmarks.*,
                             uk.ac.man.cs.lethe.internal.forgetting.*,
                             uk.ac.man.cs.lethe.internal.tools.*;-split-package:=merge-last,
+                            uk.ac.man.cs.lethe.interpolation.*,
                             guru.nidi.graphviz.attribute.*,
                             guru.nidi.graphviz.engine.*,
                             guru.nidi.graphviz.model.*,

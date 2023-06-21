@@ -1,0 +1,665 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns=""
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:pizza="http://www.co-ode.org/ontologies/pizza/pizza.owl#"
+     xmlns:terms="http://purl.org/dc/terms/">
+    <owl:Ontology rdf:about="http://www.co-ode.org/ontologies/pizza">
+        <owl:versionIRI rdf:resource="http://www.co-ode.org/ontologies/pizza/2.0.0"/>
+        <dc:description xml:lang="en">An ontology about pizzas and their toppings.
+
+This is an example ontology that contains all constructs required for the various versions of the Pizza Tutorial run by Manchester University (see http://owl.cs.manchester.ac.uk/publications/talks-and-tutorials/protg-owl-tutorial).</dc:description>
+        <dc:title xml:lang="en">pizza</dc:title>
+        <terms:contributor>Alan Rector</terms:contributor>
+        <terms:contributor>Chris Wroe</terms:contributor>
+        <terms:contributor>Matthew Horridge</terms:contributor>
+        <terms:contributor>Nick Drummond</terms:contributor>
+        <terms:contributor>Robert Stevens</terms:contributor>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Creative Commons Attribution 3.0 (CC BY 3.0)</terms:license>
+        <terms:provenance xml:lang="en">v2.0 Added new annotations to the ontology using standard/well-know annotation properties
+
+v1.5. Removed protege.owl import and references. Made ontology URI date-independent
+
+v1.4. Added Food class (used in domain/range of hasIngredient), Added several hasCountryOfOrigin restrictions on pizzas, Made hasTopping invers functional</terms:provenance>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pizza</rdfs:label>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/description -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/description"/>
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/title -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/title"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/contributor -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/contributor"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/license -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/license"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/provenance -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/provenance"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#definition -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#definition"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#prefLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#hasBase -->
+
+    <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasBase">
+        <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient"/>
+        <owl:inverseOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#isBaseOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza"/>
+        <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#hasCountryOfOrigin -->
+
+    <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasCountryOfOrigin"/>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient -->
+
+    <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient">
+        <owl:inverseOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Food"/>
+        <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Food"/>
+        <rdfs:comment xml:lang="en">NB Transitive - the ingredients of ingredients are ingredients of the whole</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#hasSpiciness -->
+
+    <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasSpiciness">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:comment xml:lang="en">A property created to be used with the ValuePartition - Spiciness.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping -->
+
+    <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping">
+        <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasIngredient"/>
+        <owl:inverseOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#isToppingOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza"/>
+        <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping"/>
+        <rdfs:comment xml:lang="en">Note that hasTopping is inverse functional because isToppingOf is functional</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#isBaseOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#isBaseOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:comment xml:lang="en">The inverse property tree to hasIngredient - all subproperties and attributes of the properties should reflect those under hasIngredient.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#isToppingOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#isToppingOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#isIngredientOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:comment xml:lang="en">Any given instance of topping should only be added to a single pizza (no cheap half-measures on our pizzas)</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza#VegetarianTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza#VegetarianTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping"/>
+        <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#FishTopping"/>
+        <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MeatTopping"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#American -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#American">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedPizza"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MozzarellaTopping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PeperoniSausageTopping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MozzarellaTopping"/>
+                            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PeperoniSausageTopping"/>
+                            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">American</rdfs:label>
+        <rdfs:label xml:lang="pt">Americana</rdfs:label>
+        <skos:altLabel xml:lang="en">American</skos:altLabel>
+        <skos:altLabel xml:lang="en">American Pizza</skos:altLabel>
+        <skos:prefLabel xml:lang="en">American</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#AnchoviesTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#AnchoviesTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#FishTopping"/>
+        <rdfs:label xml:lang="en">AnchoviesTopping</rdfs:label>
+        <rdfs:label xml:lang="pt">CoberturaDeAnchovies</rdfs:label>
+        <skos:prefLabel xml:lang="en">Anchovies</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#CheeseTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#CheeseTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza#VegetarianTopping"/>
+        <rdfs:label xml:lang="en">CheeseTopping</rdfs:label>
+        <rdfs:label xml:lang="pt">CoberturaDeQueijo</rdfs:label>
+        <skos:prefLabel xml:lang="en">Cheese</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#Country -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Country">
+        <rdfs:comment xml:lang="en">A class that is equivalent to the set of individuals that are described in the enumeration - ie Countries can only be either America, England, France, Germany or Italy and nothing else. Note that these individuals have been asserted to be allDifferent from each other.</rdfs:comment>
+        <rdfs:label xml:lang="en">Country</rdfs:label>
+        <rdfs:label xml:lang="pt">Pais</rdfs:label>
+        <skos:prefLabel xml:lang="en">Country</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#DeepPanBase">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase"/>
+        <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#ThinAndCrispyBase"/>
+        <rdfs:label xml:lang="pt">BaseEspessa</rdfs:label>
+        <rdfs:label xml:lang="en">DeepPanBase</rdfs:label>
+        <skos:prefLabel xml:lang="en">Deep Pan Base</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#DomainConcept -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#DomainConcept">
+        <rdfs:label xml:lang="en">DomainThing</rdfs:label>
+        <skos:prefLabel xml:lang="en">Domain Thing</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#FishTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#FishTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDePeixe</rdfs:label>
+        <rdfs:label xml:lang="en">SeafoodTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Seafood</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#Food -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Food">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#DomainConcept"/>
+        <rdfs:label xml:lang="en">Food</rdfs:label>
+        <skos:prefLabel xml:lang="en">Food</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#GarlicTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#GarlicTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetableTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeAlho</rdfs:label>
+        <rdfs:label xml:lang="en">GarlicTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Garlic</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#HamTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#HamTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MeatTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDePresunto</rdfs:label>
+        <rdfs:label xml:lang="en">HamTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Ham</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#IceCream -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#IceCream">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Food"/>
+        <rdfs:comment xml:lang="en">A class to demonstrate mistakes made with setting a property domain. The property hasTopping has a domain of Pizza. This means that the reasoner can infer that all individuals using the hasTopping property must be of type Pizza. Because of the restriction on this class, all members of IceCream must use the hasTopping property, and therefore must also be members of Pizza. However, Pizza and IceCream are disjoint, so this causes an inconsistency. If they were not disjoint, IceCream would be inferred to be a subclass of Pizza.</rdfs:comment>
+        <rdfs:label xml:lang="en">IceCream</rdfs:label>
+        <rdfs:label xml:lang="pt">Sorvete</rdfs:label>
+        <skos:prefLabel xml:lang="en">Ice Cream</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#Margherita -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Margherita">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedPizza"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MozzarellaTopping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Margherita</rdfs:label>
+        <rdfs:label xml:lang="pt">Margherita</rdfs:label>
+        <skos:altLabel xml:lang="en">Margherita</skos:altLabel>
+        <skos:altLabel xml:lang="en">Margherita Pizza</skos:altLabel>
+        <skos:prefLabel xml:lang="en">Margherita</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#MeatTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MeatTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeCarne</rdfs:label>
+        <rdfs:label xml:lang="en">MeatTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Meat</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#MeatyPizza -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MeatyPizza">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                        <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MeatTopping"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:label xml:lang="en">MeatyPizza</rdfs:label>
+        <rdfs:label xml:lang="pt">PizzaDeCarne</rdfs:label>
+        <skos:definition xml:lang="en">Any pizza that has at least one meat topping</skos:definition>
+        <skos:prefLabel xml:lang="en">Meaty Pizza</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#MixedSeafoodTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MixedSeafoodTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#FishTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeFrutosDoMarMistos</rdfs:label>
+        <rdfs:label xml:lang="en">MixedSeafoodTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Mixed Seafood</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#MozzarellaTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MozzarellaTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#CheeseTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeMozzarella</rdfs:label>
+        <rdfs:label xml:lang="en">MozzarellaTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Mozzarella</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#Mushroom -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Mushroom">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedPizza"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MozzarellaTopping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MushroomTopping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MozzarellaTopping"/>
+                            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MushroomTopping"/>
+                            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="pt">Cogumelo</rdfs:label>
+        <rdfs:label xml:lang="en">Mushroom</rdfs:label>
+        <skos:altLabel xml:lang="en">Mushroom</skos:altLabel>
+        <skos:altLabel xml:lang="en">Mushroom Pizza</skos:altLabel>
+        <skos:prefLabel xml:lang="en">Mushroom</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#MushroomTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MushroomTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetableTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeCogumelo</rdfs:label>
+        <rdfs:label xml:lang="en">MushroomTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Mushroom</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedPizza -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedPizza">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza"/>
+        <rdfs:comment xml:lang="en">A pizza that can be found on a pizza menu</rdfs:comment>
+        <rdfs:label xml:lang="pt">PizzaComUmNome</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#PeperoniSausageTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PeperoniSausageTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MeatTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeCalabreza</rdfs:label>
+        <rdfs:label xml:lang="en">PeperoniSausageTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Peperoni Sausage</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Food"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasBase"/>
+                <owl:someValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Pizza</rdfs:label>
+        <rdfs:seeAlso rdf:resource="https://en.wikipedia.org/wiki/Pizza"/>
+        <skos:prefLabel xml:lang="en">Pizza</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Food"/>
+        <rdfs:label xml:lang="pt">BaseDaPizza</rdfs:label>
+        <rdfs:label xml:lang="en">PizzaBase</rdfs:label>
+        <skos:prefLabel xml:lang="en">Pizza Base</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Food"/>
+        <rdfs:label xml:lang="pt">CoberturaDaPizza</rdfs:label>
+        <rdfs:label xml:lang="en">PizzaTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Pizza Topping</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#PrawnsTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PrawnsTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#FishTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeCamarao</rdfs:label>
+        <rdfs:label xml:lang="en">PrawnsTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Prawns</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#SpinachTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#SpinachTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetableTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeEspinafre</rdfs:label>
+        <rdfs:label xml:lang="en">SpinachTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Spinach</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#ThinAndCrispyBase -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#ThinAndCrispyBase">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase"/>
+        <rdfs:label xml:lang="pt">BaseFinaEQuebradica</rdfs:label>
+        <rdfs:label xml:lang="en">ThinAndCrispyBase</rdfs:label>
+        <skos:prefLabel xml:lang="en">Thin And Crispy Base</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#TomatoTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetableTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeTomate</rdfs:label>
+        <rdfs:label xml:lang="en">TomatoTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Tomato</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetableTopping -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetableTopping">
+        <rdfs:subClassOf rdf:resource="http://www.co-ode.org/ontologies/pizza#VegetarianTopping"/>
+        <rdfs:label xml:lang="pt">CoberturaDeVegetais</rdfs:label>
+        <rdfs:label xml:lang="en">VegetableTopping</rdfs:label>
+        <skos:prefLabel xml:lang="en">Vegetable Topping</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza -->
+
+    <owl:Class rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#VegetarianPizza">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping"/>
+                        <owl:allValuesFrom rdf:resource="http://www.co-ode.org/ontologies/pizza#VegetarianTopping"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment xml:lang="en">Any pizza that only has vegetarian toppings or no toppings is a VegetarianPizzaEquiv1. Should be inferred to be equivalent to VegetarianPizzaEquiv2.  Not equivalent to VegetarianPizza because PizzaTopping is not covering</rdfs:comment>
+        <rdfs:label xml:lang="pt">PizzaVegetarianaEquivalente1</rdfs:label>
+        <rdfs:label xml:lang="en">VegetarianPizza</rdfs:label>
+        <skos:prefLabel xml:lang="en">Vegetarian Pizza1</skos:prefLabel>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#AnchoviesTopping"/>
+            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#MixedSeafoodTopping"/>
+            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PrawnsTopping"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#IceCream"/>
+            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza"/>
+            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase"/>
+            <rdf:Description rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

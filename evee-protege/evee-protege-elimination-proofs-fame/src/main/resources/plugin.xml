@@ -2,27 +2,27 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-    <extension id="evee.proof.preferencesUI.fame" point="org.liveontologies.protege.explanation.proof.preferences">
+    <extension id="eveeProofPreferencesEliminationFame" point="org.liveontologies.protege.explanation.proof.preferences">
         <label value="Elimination Proof (FAME)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedEliminationPreferencesUI"/>
     </extension>
 
-    <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofEliminationFame" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof (FAME)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedHeuristicProofService" />
     </extension>
 
-    <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofEliminationFameSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for size (FAME)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedSizeMinimalProofService" />
     </extension>
 
-    <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofEliminationFameNameOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for eliminated names (FAME)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedSymbolMinimalProofService" />
     </extension>
 
-    <extension id="evee.proof" point="org.liveontologies.protege.explanation.proof.service">
+    <extension id="eveeProofEliminationFameWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
         <name value="Elimination Proof, optimized for weighted size (FAME)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.fameBasedProofService.EveeFameBasedWeightedSizeMinimalProofService" />
     </extension>

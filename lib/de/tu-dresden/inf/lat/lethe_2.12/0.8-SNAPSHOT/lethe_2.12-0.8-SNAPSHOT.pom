@@ -12,7 +12,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <skipTests>true</skipTests>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -44,7 +43,7 @@
             <artifactId>scala-parser-combinators_2.12</artifactId>
             <version>1.1.2</version>
         </dependency>
-<!--        test-dependencies-->
+        <!--        test-dependencies-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -112,6 +111,7 @@
                     <javacOptions>-source 1.8 -target 1.8</javacOptions>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -120,6 +120,52 @@
                     <skipTests>${skipTests}</skipTests>
                 </configuration>
             </plugin>
+        -->
+        <!-- disable surefire -->
+        <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.2</version>
+            <executions>
+                <execution>
+                    <id>test-resources</id>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>jar</goal>
+                    </goals>
+                    <configuration>
+                        <classesDirectory>${project.basedir}/src/test/resources</classesDirectory>
+                        <classifier>test-resources</classifier>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin><plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+            <skipTests>true</skipTests>
+        </configuration>
+    </plugin>
+        <!-- enable scalatest -->
+
+        <plugin>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest-maven-plugin</artifactId>
+            <version>1.0</version>
+            <configuration>
+                <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                <junitxml>.</junitxml>
+                <filereports>WDF TestSuite.txt</filereports>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>test</id>
+                    <goals>
+                        <goal>test</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
         </plugins>
     </build>
 
@@ -127,7 +173,10 @@
         <module>LETHE-core</module>
         <module>LETHE-owlapi4</module>
         <module>LETHE-owlapi5</module>
-        <module>LETHE-unused</module>
+        <module>LETHE-abduction</module>
+        <module>LETHE-abduction-owlapi4</module>
+        <module>LETHE-abduction-owlapi5</module>
+        <!--<module>LETHE-unused</module>-->
     </modules>
 
 </project>

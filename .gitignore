@@ -2,10 +2,10 @@ target/
 *.iml
 .idea/
 socrates-proof.json
+.flattened-pom.xml
 log.txt
 temp/
 .settings
 .classpath
 .project
-.flattened-pom.xml
 *.DS_Store
