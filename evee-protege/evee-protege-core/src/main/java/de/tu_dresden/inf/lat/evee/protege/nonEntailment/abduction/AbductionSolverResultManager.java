@@ -150,11 +150,16 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
                 this.logger.debug("Change made by AbductionSolver, event ignored");
                 ignoreOntologyChangeEvent = false;
             } else{
-                this.logger.debug("Change not made by AbductionSolver");
-                resetResultComponent();
-                abductionSolverOntologyChangeEventListener.handleEvent(
-                        new AbductionSolverOntologyChangeEvent(
-                                OntologyChangeEventType.ONTOLOGY_EDITED));
+                for (OWLOntologyChange change: list){
+                    if (change.getOntology().equals(owlEditorKit.getOWLModelManager().getActiveOntology())){
+                        this.logger.debug("Change (to active ontology) not made by AbductionSolver");
+                        resetResultComponent();
+                        abductionSolverOntologyChangeEventListener.handleEvent(
+                                new AbductionSolverOntologyChangeEvent(
+                                        OntologyChangeEventType.ONTOLOGY_EDITED));
+                        break;
+                    }
+                }
             }
         }
 

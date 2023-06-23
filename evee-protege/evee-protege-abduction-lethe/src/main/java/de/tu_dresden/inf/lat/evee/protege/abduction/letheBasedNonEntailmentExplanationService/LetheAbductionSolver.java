@@ -63,8 +63,8 @@ public class LetheAbductionSolver
         if (this.checkResultInCache()){
             this.logger.debug("Cached result found, re-displaying cached result");
             result = this.loadResultFromCache();
-            this.explanationComputationCompleted(result);
-            return Stream.generate(this);
+            return this.explanationComputationCompleted(result);
+//            return Stream.generate(this);
         } else{
             this.logger.debug("No cached result found, trying to compute new explanation");
             try{
@@ -74,8 +74,8 @@ public class LetheAbductionSolver
                 result = this.abducer.abduce(this.missingEntailment);
                 this.computationRunning = false;
                 this.logger.debug("Computation completed");
-                this.explanationComputationCompleted(result);
-                return Stream.generate(this);
+                return this.explanationComputationCompleted(result);
+//                return Stream.generate(this);
             }
             catch (Throwable e) {
                 this.errorMessage = "Error during abduction generation: " + e;
@@ -136,27 +136,30 @@ public class LetheAbductionSolver
                      // (in case it is not exceptional to not have an explanation)
     }
 
-    protected void explanationComputationCompleted(DLStatement hypotheses){
+    protected Stream<Set<OWLAxiom>> explanationComputationCompleted(DLStatement hypotheses){
         if (((DisjunctiveDLStatement) hypotheses).statements().size() == 0){
             this.explanationComputationFailed("No result found, please adjust the vocabulary");
+            this.computationSuccessful = false;
+            return null;
         }
-        else{
-            if (this.abducer.isCanceled()){
-                this.logger.debug("Computation was cancelled, cannot show result");
-                this.computationSuccessful = false;
-            } else {
-                this.logger.debug("Computation was not cancelled, preparing to show result");
-                this.saveResultToCache(hypotheses);
-                this.computationSuccessful = true;
-                this.setActiveOntologyEditedExternally(false);
-                this.maxLevel = 0;
-                this.currentResultAdapterIndex = 0;
-                this.hypothesesAdapterList.clear();
-                ((DisjunctiveDLStatement) hypotheses).statements().foreach(statement -> {
-                    this.hypothesesAdapterList.add(new DLStatementAdapter(statement, this.abducer));
-                    return null;
-                });
-            }
+        else if (this.abducer.isCanceled()) {
+            this.logger.debug("Computation was cancelled, cannot show result");
+            this.computationSuccessful = false;
+            return null;
+        }
+        else {
+            this.logger.debug("Computation was not cancelled and returned some non-empty hypotheses, preparing to show result");
+            this.saveResultToCache(hypotheses);
+            this.computationSuccessful = true;
+            this.setActiveOntologyEditedExternally(false);
+            this.maxLevel = 0;
+            this.currentResultAdapterIndex = 0;
+            this.hypothesesAdapterList.clear();
+            ((DisjunctiveDLStatement) hypotheses).statements().foreach(statement -> {
+                this.hypothesesAdapterList.add(new DLStatementAdapter(statement, this.abducer));
+                return null;
+            });
+            return Stream.generate(this);
         }
     }
 

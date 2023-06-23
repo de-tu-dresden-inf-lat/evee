@@ -297,7 +297,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     @Override
     public void handleEvent(ExplanationEvent<INonEntailmentExplanationService<?>> event){
-        this.logger.debug("Handling explanationEvent: {} of source: {}", event.getType(), event.getSource());
+        this.logger.debug("Handling explanationEvent: {} of source: {}", event.getType(), event.getSource().getClass());
         if (event.getSource().equals(
                 this.nonEntailmentExplainerManager.getCurrentExplainer())){
             switch (event.getType()){
@@ -695,14 +695,20 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                     changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
                 logger.debug("Change or reload of active ontology detected");
                 selectedMissingEntailmentListModel.removeAll();
+                change();
             }
-            change();
         }
 
         @Override
         public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> list) {
             logger.debug("Change to ontology detected");
-            change();
+            for (OWLOntologyChange change: list){
+                if (change.getOntology().equals(getOWLEditorKit().getOWLModelManager().getActiveOntology())){
+                    logger.debug("Change made to active ontology");
+                    change();
+                    break;
+                }
+            }
         }
 
         private void change(){

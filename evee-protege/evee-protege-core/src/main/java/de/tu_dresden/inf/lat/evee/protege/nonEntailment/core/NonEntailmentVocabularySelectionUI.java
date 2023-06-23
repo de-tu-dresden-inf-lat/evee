@@ -502,6 +502,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         @Override
         public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> ontologyChanges) throws OWLException {
             SwingUtilities.invokeLater(() -> {
+                boolean changeForActiveOntology = false;
+                for (OWLOntologyChange change: ontologyChanges){
+                    if (change.getOntology().equals(owlEditorKit.getOWLModelManager().getActiveOntology())){
+                        changeForActiveOntology = true;
+                        break;
+                    }
+                }
+                if (! changeForActiveOntology){
+                    return;
+                }
 //                ontology signature component:
                 ontologyIndividualsListModel.removeAll();
                 ontologyIndividualsListModel.addElements(
