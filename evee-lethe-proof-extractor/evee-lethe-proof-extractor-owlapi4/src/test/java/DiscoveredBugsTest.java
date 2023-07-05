@@ -23,6 +23,41 @@ import static org.junit.Assert.assertEquals;
 
 public class DiscoveredBugsTest {
 
+	// related to Issue @61
+	@Test
+	public void testPizzaThing() throws OWLOntologyCreationException, ProofGenerationException {
+		System.out.println("Hello!");
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		OWLDataFactory factory = manager.getOWLDataFactory();
+		OWLOntology ontology = manager
+				.loadOntology(IRI.create("http://protege.stanford.edu/ontologies/pizza/pizza.owl"));
+
+		LetheProofGenerator proofGenerator = new LetheProofGenerator();
+
+		proofGenerator.setOntology(ontology);
+
+		OWLAxiom goal = factory.getOWLSubClassOfAxiom(
+				factory.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza")),
+				factory.getOWLThing());
+
+		IProof<OWLAxiom> proof = proofGenerator.proveSubsumption(
+				factory.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza")),
+				factory.getOWLThing());
+
+		System.out.println(proof);
+
+		IProofGenerator<OWLAxiom, OWLOntology> proofGenerator2 = new MinimalTreeProofGenerator(proofGenerator);
+
+		IProof<OWLAxiom> proof2 = proofGenerator2.getProof(goal);
+
+		System.out.println("Minimized proof:");
+		System.out.println("=================================");
+
+		System.out.println(proof2);
+
+		checkCorrect(ontology,proof2, goal);
+	}
+
 	// Issue @23
 	@Test
 	public void testCheesyAmerican() throws OWLOntologyCreationException, ProofGenerationException {
