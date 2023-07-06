@@ -263,7 +263,7 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
 
 
     if (!eliminated.isEmpty)
-      progressTrackers.setMessage("trying " + eliminated.map(formatter.format(_)).mkString(", "))
+      progressTrackers.setMessage("trying forgetting order " + eliminated.map(formatter.format(_)).mkString(", "))
 
 
     //println("\n\n Entering with bound: "+bound)

@@ -156,7 +156,7 @@ class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
 
 
       if(!done.isEmpty)
-        progressTrackers.setMessage("trying "+done.map(SimpleOWLFormatter.format(_)).mkString(", "))
+        progressTrackers.setMessage("trying forgetting order "+done.map(SimpleOWLFormatter.format(_)).mkString(", "))
 
 
       nextOptions.foreach(nextOption => {
