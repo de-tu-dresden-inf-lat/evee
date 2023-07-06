@@ -200,10 +200,11 @@ class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
             forgetter.forget(premises, name)
           )
         }
+        if (!justifier.entailed(nextAxioms, toProve))
+          throw new ProofGenerationFailedException("entailments lost during forgetting operation");
+
         if(!varyJustifications) {
           nextAxioms = justifier.justify(nextAxioms, toProve)
-          if(nextAxioms.isEmpty)
-            throw new ProofGenerationFailedException("entailments lost during forgetting operation");
 
           Some(nextAxioms, name)
         } else {
