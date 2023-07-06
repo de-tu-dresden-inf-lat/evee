@@ -7,6 +7,26 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.{LetheBasedHeuristicProofGen
 
 class DiscoveredLetheBugsTests {
 
+  // Issue #50
+  @Test
+  def testSymbolMinimizedProofs() = {
+    val manager = OWLManager.createOWLOntologyManager()
+    val factory = manager.getOWLDataFactory()
+    val ontology = manager
+      .loadOntology(IRI.create("http://protege.stanford.edu/ontologies/pizza/pizza.owl"));
+
+    val axiom = factory.getOWLSubClassOfAxiom(
+      factory.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/pizza/pizza.owl#American")),
+      factory.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/pizza/pizza.owl#CheeseyPizza"))
+    )
+
+    val proofGenerator = new LetheBasedSymbolMinimalProofGenerator()
+
+    proofGenerator.setOntology(ontology)
+    val proof = proofGenerator.getProof(axiom)
+    println(proof)
+  }
+
   // Issue #61
   @Test
   def testPizzaThing() = {
