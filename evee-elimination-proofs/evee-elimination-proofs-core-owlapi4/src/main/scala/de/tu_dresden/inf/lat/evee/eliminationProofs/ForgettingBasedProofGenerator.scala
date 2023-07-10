@@ -266,6 +266,9 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
       .flatMap(_.getSignature.asScala)
     adjacentSignature --= hiddenSignature
     */
+
+    logger.trace(s"axioms in ontology: ${ontology.getLogicalAxioms(Imports.INCLUDED).size()}")
+
     while(!doneForgettingAndJustifying && !canceled) {
       forgetAndJustify()
       updateProgressTrackers()
