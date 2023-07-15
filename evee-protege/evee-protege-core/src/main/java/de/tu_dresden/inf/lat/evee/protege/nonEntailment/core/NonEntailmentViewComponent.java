@@ -23,10 +23,12 @@ import org.protege.editor.owl.model.parser.ProtegeOWLEntityChecker;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
+import org.protege.editor.owl.ui.renderer.OWLModelManagerEntityRenderer;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserImpl;
+import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ParserException;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
@@ -428,35 +430,31 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JPanel createMissingEntailmentButtonPanel(){
         JPanel buttonHolderPanel = new JPanel();
         buttonHolderPanel.setLayout(new BoxLayout(buttonHolderPanel, BoxLayout.PAGE_AXIS));
-        JToolBar firstRowToolbar = new JToolBar();
-        firstRowToolbar.setOrientation(JToolBar.HORIZONTAL);
-        firstRowToolbar.setFloatable(false);
-        firstRowToolbar.setLayout(new BoxLayout(firstRowToolbar, BoxLayout.LINE_AXIS));
+        JPanel firstButtonRowPanel = new JPanel();
+        firstButtonRowPanel.setLayout(new BoxLayout(firstButtonRowPanel, BoxLayout.LINE_AXIS));
         JButton addMissingEntailmentButton = UIUtilities.createNamedButton(ADD_MISSING_ENTAILMENT_COMMAND,
                 ADD_MISSING_ENTAILMLENT_NAME, ADD_MISSING_ENTAILMENT_TOOLTIP, this);
-        firstRowToolbar.add(addMissingEntailmentButton);
-        firstRowToolbar.add(Box.createRigidArea(new Dimension(5, 0)));
+        firstButtonRowPanel.add(addMissingEntailmentButton);
+        firstButtonRowPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         JButton deleteMissingEntailmentButton = UIUtilities.createNamedButton(DELETE_MISSING_ENTAILMENT_COMMAND,
                 DELETE_MISSING_ENTAILMENT_NAME, DELETE_MISSING_ENTAILMENT_TOOLTIP, this);
-        firstRowToolbar.add(deleteMissingEntailmentButton);
-        firstRowToolbar.add(Box.createRigidArea(new Dimension(5, 0)));
+        firstButtonRowPanel.add(deleteMissingEntailmentButton);
+        firstButtonRowPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         JButton resetMissingEntailmentButton = UIUtilities.createNamedButton(RESET_MISSING_ENTAILMENT_COMMAND,
                 RESET_MISSING_ENTAILMENT_NAME, RESET_MISSING_ENTAILMENT_TOOLTIP, this);
-        firstRowToolbar.add(resetMissingEntailmentButton);
-        buttonHolderPanel.add(firstRowToolbar);
+        firstButtonRowPanel.add(resetMissingEntailmentButton);
+        buttonHolderPanel.add(firstButtonRowPanel);
         buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        JToolBar secondRowToolBar = new JToolBar();
-        secondRowToolBar.setOrientation(JToolBar.HORIZONTAL);
-        secondRowToolBar.setFloatable(false);
-        secondRowToolBar.setLayout(new BoxLayout(secondRowToolBar, BoxLayout.LINE_AXIS));
+        JPanel secondButtonRowPanel = new JPanel();
+        secondButtonRowPanel.setLayout(new BoxLayout(secondButtonRowPanel, BoxLayout.LINE_AXIS));
         JButton loadMissingEntailmentButton = UIUtilities.createNamedButton(LOAD_MISSING_ENTAILMENT_COMMAND,
                 LOAD_MISSING_ENTAILMENT_BUTTON_NAME, LOAD_MISSING_ENTAILMENT_TOOLTIP, this);
-        secondRowToolBar.add(loadMissingEntailmentButton);
-        secondRowToolBar.add(Box.createRigidArea(new Dimension(5, 0)));
+        secondButtonRowPanel.add(loadMissingEntailmentButton);
+        secondButtonRowPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         JButton saveMissingEntailmentButton = UIUtilities.createNamedButton(SAVE_MISSING_ENTAILMENT_COMMAND,
                 SAVE_MISSING_ENTAILMENT_BUTTON_NAME, SAVE_MISSING_ENTAILMENT_TOOLTIP, this);
-        secondRowToolBar.add(saveMissingEntailmentButton);
-        buttonHolderPanel.add(secondRowToolBar);
+        secondButtonRowPanel.add(saveMissingEntailmentButton);
+        buttonHolderPanel.add(secondButtonRowPanel);
         buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
         return buttonHolderPanel;
     }
@@ -508,8 +506,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.computeButton = UIUtilities.createNamedButton(COMPUTE_COMMAND,
                 COMPUTE_NAME, COMPUTE_TOOLTIP, this);
         this.computeButton.setEnabled(false);
+//        JToolBar computeButtonToolBar = new JToolBar();
+//        computeButtonToolBar.setOrientation(JToolBar.HORIZONTAL);
+//        computeButtonToolBar.setFloatable(false);
+//        computeButtonToolBar.setLayout(new BoxLayout(computeButtonToolBar, BoxLayout.LINE_AXIS));
+//        computeButtonToolBar.add(this.computeButton);
         JPanel buttonHelperPanel = new JPanel();
         buttonHelperPanel.setLayout(new BoxLayout(buttonHelperPanel, BoxLayout.LINE_AXIS));
+//        buttonHelperPanel.add(computeButtonToolBar);
         buttonHelperPanel.add(this.computeButton);
         buttonHelperPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         this.computeMessageLabel = UIUtilities.createLabel("");
@@ -640,12 +644,15 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private String reverseParseOWLObject(OWLObject owlObject){
+        ManchesterOWLSyntaxOWLObjectRendererImpl owlObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+        String displayString = owlObjectRenderer.render(owlObject);
         if (owlObject instanceof OWLClassAssertionAxiom){
-            OWLClassAssertionAxiom assertion = ((OWLClassAssertionAxiom) owlObject);
-            return assertion.getIndividual() + " Type: " + assertion.getClassExpression();
+            return new StringBuilder(displayString).insert(displayString.indexOf("Type") + 4, ":").toString();
         }
-        else{
-            return owlObject.toString();
+        else if (owlObject instanceof OWLSubClassOfAxiom){
+            return new StringBuilder(displayString).insert(displayString.indexOf("SubClassOf") + 10, ":").toString();
+        } else {
+            return displayString;
         }
     }
 

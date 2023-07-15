@@ -97,13 +97,16 @@ abstract public class AbstractAbductionSolver<Result>
      * @param result newly computed result of abduction process that should be saved to cache
      */
     protected void saveResultToCache(Result result){
+        this.logger.debug("Trying to solve result to cache");
         if (this.ontology == null ||
                 this.missingEntailment == null ||
                 this.vocabulary == null){
+            this.logger.debug("Cannot save result to cache");
             return;
         }
         this.cachedResults.get(this.ontology).
                 putResult(this.missingEntailment, this.vocabulary, result);
+        this.logger.debug("Result saved to cache");
     }
 
     /**
@@ -111,10 +114,13 @@ abstract public class AbstractAbductionSolver<Result>
      * @return cached result of abduction process or null if no cached result was found
      */
     protected Result loadResultFromCache(){
+        this.logger.debug("Trying to load result from cache");
         if (! this.cachedResults.get(this.ontology).containsResultFor(
                 this.missingEntailment, this.vocabulary)){
+            this.logger.debug("No cached result found");
             return null;
         } else {
+            this.logger.debug("Cached result loaded");
             return this.cachedResults.get(this.ontology).getResult(
                     this.missingEntailment, this.vocabulary);
         }
@@ -137,19 +143,23 @@ abstract public class AbstractAbductionSolver<Result>
 
     @Override
     public void setObservation(Set<OWLAxiom> missingEntailment) {
-        this.logger.debug("Setting missing entailment");
+        StringBuilder misEntString = new StringBuilder();
+        missingEntailment.forEach(misEnt -> misEntString.append(misEnt).append("\n"));
+        this.logger.debug("Setting missing entailment:\n{}", misEntString);
         this.missingEntailment = missingEntailment;
     }
 
     @Override
     public void setSignature(Collection<OWLEntity> vocabulary) {
-        this.logger.debug("Setting signature");
+        StringBuilder vocString = new StringBuilder();
+        vocabulary.forEach(voc -> vocString.append(voc).append("\n"));
+        this.logger.debug("Setting signature:\n{}", vocString);
         this.vocabulary = new HashSet<>(vocabulary);
     }
 
     @Override
     public void setOntology(OWLOntology ontology) {
-        this.logger.debug("Setting ontology");
+        this.logger.debug("Setting ontology:\n{}", ontology.getOntologyID());
         this.ontology = ontology;
         if (this.cachedResults.get(ontology) == null){
             this.logger.debug("No cache for ontology detected, creating new cache");
@@ -231,15 +241,21 @@ abstract public class AbstractAbductionSolver<Result>
         if (event.getType().equals(ExplanationEventType.COMPUTATION_COMPLETE)){
             Stream<Set<OWLAxiom>> resultStream = event.getSource().getResult();
             if (resultStream != null){
+                this.logger.debug("Stream of explanations is NOT null, computation was successful");
                 this.resultStreamIterator = resultStream.iterator();
                 this.createResultComponent();
                 this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
                         ExplanationEventType.COMPUTATION_COMPLETE));
+            } else{
+                this.logger.debug("Stream of explanations is null, computation was not successful");
+                this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
+                        ExplanationEventType.ERROR));
             }
         }
     }
 
     protected void sendViewComponentEvent(ExplanationEventType type){
+        this.logger.debug("Sending event of type {} to view component", type);
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this, type));
     }

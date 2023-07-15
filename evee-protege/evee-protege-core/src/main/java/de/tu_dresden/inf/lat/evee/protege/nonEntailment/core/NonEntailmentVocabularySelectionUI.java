@@ -27,6 +27,7 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -179,8 +180,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         JButton deleteButton = UIUtilities.createArrowButton(DEL_BTN_COMMAND,
                 BasicArrowButton.NORTH, DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);
-        JToolBar firstToolbar = this.createButtonToolBar(buttonList);
-        this.buttonHolderPanel.add(firstToolbar);
+        JPanel firstButtonRowPanel = this.createButtonPanel(buttonList);
+        this.buttonHolderPanel.add(firstButtonRowPanel);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
         JButton addAllButton = UIUtilities.createDoubleArrowButton(ADD_ALL_BTN_COMMAND,
@@ -189,15 +190,15 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         JButton deleteAllButton = UIUtilities.createDoubleArrowButton(DEL_ALL_BTN_COMMAND,
                 BasicArrowButton.NORTH, DEL_ALL_BTN_TOOLTIP, this);
         buttonList.add(deleteAllButton);
-        JToolBar secondToolBar = this.createButtonToolBar(buttonList);
-        this.buttonHolderPanel.add(secondToolBar);
+        JPanel secondButtonRowPanel = this.createButtonPanel(buttonList);
+        this.buttonHolderPanel.add(secondButtonRowPanel);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
         JButton addMissingEntailmentSignatureButton = UIUtilities.createNamedButton(ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
                 ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME, ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
         buttonList.add(addMissingEntailmentSignatureButton);
-        JToolBar thirdToolBar = this.createButtonToolBar(buttonList);
-        this.buttonHolderPanel.add(thirdToolBar);
+        JPanel thirdButtonRowPanel = this.createButtonPanel(buttonList);
+        this.buttonHolderPanel.add(thirdButtonRowPanel);
         this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         buttonList.clear();
         JButton loadSignatureButton = UIUtilities.createNamedButton(LOAD_SIGNATURE_COMMAND,
@@ -206,21 +207,19 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         JButton saveSignatureButton = UIUtilities.createNamedButton(SAVE_SIGNATURE_COMMAND,
                 SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
         buttonList.add(saveSignatureButton);
-        JToolBar fourthToolBar = this.createButtonToolBar(buttonList);
-        this.buttonHolderPanel.add(fourthToolBar);
+        JPanel fourthButtonRowPanel = this.createButtonPanel(buttonList);
+        this.buttonHolderPanel.add(fourthButtonRowPanel);
     }
 
-    private JToolBar createButtonToolBar(List<JButton> buttons){
-        JToolBar toolbar = new JToolBar();
-        toolbar.setOrientation(JToolBar.HORIZONTAL);
-        toolbar.setFloatable(false);
-        toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.LINE_AXIS));
-        toolbar.add(buttons.get(0));
+    private JPanel createButtonPanel(List<JButton> buttons){
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+        buttonPanel.add(buttons.get(0));
         for (int idx = 1; idx < buttons.size(); idx++){
-            toolbar.add(Box.createRigidArea(new Dimension(10, 0)));
-            toolbar.add(buttons.get(idx));
+            buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPanel.add(buttons.get(idx));
         }
-        return toolbar;
+        return buttonPanel;
     }
 
     private void createSelectedVocabularyListPane(){

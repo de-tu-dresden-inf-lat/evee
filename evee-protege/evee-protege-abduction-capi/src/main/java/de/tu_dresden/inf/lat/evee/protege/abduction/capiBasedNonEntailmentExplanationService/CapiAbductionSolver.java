@@ -488,9 +488,13 @@ public class CapiAbductionSolver
     private void computationCompleted(){
         this.computationSuccessful = ! this.cancelled;
         if (this.computationSuccessful){
+            this.logger.debug("Computation was not cancelled, display of result possible");
             this.saveResultToCache(this.solutions);
             this.setActiveOntologyEditedExternally(false);
             this.currentSolutionIndex = 0;
+        } else{
+            this.logger.debug("Computation was cancelled, cannot show result");
+            this.computationFailed("Last computation was cancelled");
         }
     }
 
@@ -498,7 +502,6 @@ public class CapiAbductionSolver
         this.computationSuccessful = false;
         this.setActiveOntologyEditedExternally(false);
         this.errorMessage = errorMessage;
-        this.sendViewComponentEvent(ExplanationEventType.ERROR);
     }
 
 

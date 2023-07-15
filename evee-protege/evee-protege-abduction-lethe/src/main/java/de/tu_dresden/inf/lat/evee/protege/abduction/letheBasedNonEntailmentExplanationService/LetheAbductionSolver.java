@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.man.cs.lethe.abduction.OWLAbducer;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.DLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
+import uk.ac.man.cs.lethe.internal.tools.CanceledException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -26,6 +27,7 @@ public class LetheAbductionSolver
     private int currentResultAdapterIndex;
     private boolean computationSuccessful;
     private boolean computationRunning;
+    private boolean canceled;
     private IProgressTracker progressTracker;
     private final OWLAbducer abducer;
     private final List<DLStatementAdapter> hypothesesAdapterList;
@@ -42,6 +44,7 @@ public class LetheAbductionSolver
         this.currentResultAdapterIndex = 0;
         this.computationSuccessful = false;
         this.computationRunning = false;
+        this.canceled = false;
         this.errorMessage = "";
         this.logger.debug("LetheAbductionSolver created successfully");
     }
@@ -60,6 +63,7 @@ public class LetheAbductionSolver
     public Stream<Set<OWLAxiom>> generateExplanations() {
         this.logger.debug("Generating Explanations");
         DLStatement result;
+        this.canceled = false;
         if (this.checkResultInCache()){
             this.logger.debug("Cached result found, re-displaying cached result");
             result = this.loadResultFromCache();
@@ -78,12 +82,11 @@ public class LetheAbductionSolver
 //                return Stream.generate(this);
             }
             catch (Throwable e) {
-                this.errorMessage = "Error during abduction generation: " + e;
+                this.explanationComputationFailed("Error during abduction generation: " + e);
                 StringWriter stringWriter = new StringWriter();
                 e.printStackTrace(new PrintWriter(stringWriter));
                 String loggingString = stringWriter.toString();
                 this.logger.error(loggingString);
-                this.sendViewComponentEvent(ExplanationEventType.ERROR);
                 return null;
             }
         }
@@ -138,13 +141,13 @@ public class LetheAbductionSolver
 
     protected Stream<Set<OWLAxiom>> explanationComputationCompleted(DLStatement hypotheses){
         if (((DisjunctiveDLStatement) hypotheses).statements().size() == 0){
+            this.logger.debug("No result found for input parameters");
             this.explanationComputationFailed("No result found, please adjust the vocabulary");
-            this.computationSuccessful = false;
             return null;
         }
-        else if (this.abducer.isCanceled()) {
+        else if (this.canceled) {
             this.logger.debug("Computation was cancelled, cannot show result");
-            this.computationSuccessful = false;
+            this.explanationComputationFailed("Last computation was cancelled");
             return null;
         }
         else {
@@ -164,15 +167,16 @@ public class LetheAbductionSolver
     }
 
     private void explanationComputationFailed(String errorMessage){
+        this.computationSuccessful = false;
         this.setActiveOntologyEditedExternally(false);
         this.errorMessage = errorMessage;
-        this.sendViewComponentEvent(ExplanationEventType.ERROR);
     }
 
     @Override
     public void cancel() {
         if (this.computationRunning){
             this.logger.debug("Cancelling computation");
+            this.canceled = true;
             this.abducer.cancel();
         }
         super.cancel();

@@ -40,14 +40,18 @@ public class SingleResultPanel extends JPanel {
     protected static final String DELETE_FROM_ONTO_NAME = "Delete from Ontology";
     protected static final String DELETE_FROM_ONTO_TOOLTIP = "Delete the axioms of this result from the ontology";
 
+    private final Logger logger = LoggerFactory.getLogger(SingleResultPanel.class);
+
     public SingleResultPanel(OWLEditorKit owlEditorKit, OWLOntology ontology,
                              Set<OWLAxiom> missingEntailment, Set<OWLAxiom> result,
                              int hypothesisIndex) {
         super(new BorderLayout());
+        this.logger.debug("Creating single result panel");
         this.owlEditorKit = owlEditorKit;
         this.openedDialogPanels = new ArrayList<>();
         this.createUI(ontology, missingEntailment,
                 result, hypothesisIndex);
+        this.logger.debug("Single result panel created");
     }
 
     private void createUI(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
@@ -89,6 +93,8 @@ public class SingleResultPanel extends JPanel {
         String label = "Hypothesis " + (hypothesisIndex+1);
         HypothesisFrame frame = new HypothesisFrame(this.owlEditorKit, label);
         HypothesisFrameList frameList = new HypothesisFrameList(this.owlEditorKit, frame);
+        IgnoreSelectionModel selectionModel = new IgnoreSelectionModel();
+        frameList.setSelectionModel(selectionModel);
         JPanel frameListHolderPanel = new JPanel(new BorderLayout());
         frameListHolderPanel.add(frameList, BorderLayout.CENTER);
         frame.setRootObject(result);
@@ -306,6 +312,35 @@ public class SingleResultPanel extends JPanel {
                 this.internalExplanationDialog.dispose();
             }
             this.logger.debug("Internal explanation dialog disposed");
+        }
+    }
+
+    private static class IgnoreSelectionModel extends DefaultListSelectionModel {
+
+        private final Logger logger = LoggerFactory.getLogger(IgnoreSelectionModel.class);
+
+        private IgnoreSelectionModel(){
+            logger.debug("SelectionModel created");
+        }
+
+        @Override
+        public void setAnchorSelectionIndex(int anchorIndex) {
+            logger.debug("setAnchorSelectionIndex called with index: {}", anchorIndex);
+        }
+
+        @Override
+        public void setLeadAnchorNotificationEnabled(boolean flag) {
+            logger.debug("setLeadAnchorNotificationEnabled called with boolean: {}", flag);
+        }
+
+        @Override
+        public void setLeadSelectionIndex(int leadIndex) {
+            logger.debug("setLeadSelectionIndex called with index: {}", leadIndex);
+        }
+
+        @Override
+        public void setSelectionInterval(int index0, int index1) {
+            logger.debug("setSelectionInterval called with index0, index1: {}, {}", index0, index1);
         }
     }
 
