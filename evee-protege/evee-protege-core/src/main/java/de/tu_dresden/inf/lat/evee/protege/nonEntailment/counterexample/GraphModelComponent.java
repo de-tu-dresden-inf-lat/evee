@@ -116,7 +116,10 @@ public class GraphModelComponent extends JPanel {
         axiomListBorder.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
                 DISJ_LIST));
-        axiomListBorder.add(new JScrollPane(this.axiomList));
+        JScrollPane scrollable = new JScrollPane(this.axiomList);
+        scrollable.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollable.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        axiomListBorder.add(scrollable);
         axiomListPanel.add(axiomListBorder);
         axiomListPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
         axiomListPanel.add(getButtonPanel());
@@ -130,7 +133,10 @@ public class GraphModelComponent extends JPanel {
         classListBorder.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEmptyBorder(0, 0, 0, 0),
                 CLASS_LIST));
-        classListBorder.add(new JScrollPane(this.classList));
+        JScrollPane scrollable = new JScrollPane(this.classList);
+        scrollable.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollable.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        classListBorder.add(scrollable);
         classListBorder.setAlignmentY(TOP_ALIGNMENT);
         classListPanel.add(classListBorder);
         classListPanel.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
