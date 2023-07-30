@@ -1,12 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 
 import org.apache.log4j.Logger;
-import org.graphstream.graph.Graph;
-import org.graphstream.ui.geom.Point2;
-import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
-import org.graphstream.ui.view.camera.Camera;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -52,7 +48,7 @@ public class GraphModelComponent extends JPanel {
 
     public GraphModelComponent(ModelManager modelManager, OWLEditorKit owlEditorKit) {
         this.modelManager = modelManager;
-        this.classMap = this.modelManager.getClassMap();
+        this.classMap = this.modelManager.getIndividualClassMap();
         this.owlEditorKit = owlEditorKit;
         this.classListModel = new DefaultListModel();
         this.axiomListModel = new DefaultListModel();
@@ -73,7 +69,7 @@ public class GraphModelComponent extends JPanel {
     }
 
     private void resetModel() {
-        this.classMap = this.modelManager.getClassMap();
+        this.classMap = this.modelManager.getIndividualClassMap();
         this.viewer = this.modelManager.getViewer();
         this.viewPanel.remove(this.viewComponent);
         this.classListModel.removeAllElements();

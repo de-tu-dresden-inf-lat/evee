@@ -7,7 +7,6 @@ import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationExcepti
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import org.apache.log4j.Logger;
 import org.graphstream.graph.Edge;
-import org.graphstream.ui.graphicGraph.GraphicEdge;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
 import org.graphstream.ui.graphicGraph.GraphicNode;
 import org.graphstream.ui.spriteManager.Sprite;
@@ -33,25 +32,27 @@ import java.util.stream.Collectors;
 
 public class ModelManager {
     private final ReasonerFactory rf;
+    private OWLReasoner res;
+    private OWLDataFactory df;
     private final OWLOntologyManager man;
     private final OWLEditorKit owlEditorKit;
-    private final OWLDataFactory df;
+
     private final IOWLCounterexampleGenerator counterExampleGenerator;
     private final OWLOntology ont;
-    private OWLReasoner res;
+
     private Set<OWLIndividualAxiom> model;
-    private Map<String, List<OWLClass>> classMap;
-    private Map<String[],List<OWLObjectProperty>> roleMap;
+    private Map<String, List<OWLClass>> individualClassMap;
+    private Map<String[],List<OWLObjectProperty>> objectPropertyMap;
     private int baseLabelDistance= -20;
     private Set<IRI> markedIndividuals;
     private Viewer viewer;
     private GraphicGraph graph;
     private OWLSubClassOfAxiom observation;
     private int maxLabelNumber;
-//    private Set<Sprite> classLabels;
     private Set<OWLObjectPropertyAssertionAxiom> edges;
     private Set<OWLObjectPropertyAssertionAxiom> createdEdges;
     private String styleSheet;
+    private OWLObjectSorter objectSorter;
     private final Logger logger = Logger.getLogger(ModelManager.class);
 
     public ModelManager(Set<OWLIndividualAxiom> model, OWLEditorKit owlEditorKit, IOWLCounterexampleGenerator counterExampleGenerator, OWLOntology ont,Set<OWLAxiom> observation) {
@@ -67,8 +68,9 @@ public class ModelManager {
         this.rf = new ReasonerFactory();
         this.res = this.rf.createReasoner(ont);
         this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
-        this.classMap = this.sortMap(this.createClassMap());
-        this.roleMap = this.sortMap(this.createRoleMap());
+        this.objectSorter = new OWLObjectSorter(res,df);
+        this.individualClassMap = this.sortOWLObjectMap(this.createIndividualClassMap());
+        this.objectPropertyMap = this.sortOWLObjectMap(this.createObjectPropertyMap());
 
     }
 
@@ -81,10 +83,11 @@ public class ModelManager {
                 throw new ModelGenerationException("Ontology is inconsistent!");
             }
             logger.info("Ontology with the additional axioms is consistent");
+            this.objectSorter = new OWLObjectSorter(res,df);
             this.model = this.counterExampleGenerator.generateModel();
             this.markedIndividuals = counterExampleGenerator.getMarkedIndividuals();
-            this.classMap = this.sortMap(this.createClassMap());
-            this.roleMap = this.sortMap(this.createRoleMap());
+            this.individualClassMap = this.sortOWLObjectMap(this.createIndividualClassMap());
+            this.objectPropertyMap = this.sortOWLObjectMap(this.createObjectPropertyMap());
             createGraph();
             this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
             this.viewer.enableAutoLayout();
@@ -97,9 +100,7 @@ public class ModelManager {
     }
 
     public void refreshModel() {
-
         createGraph();
-
         this.viewer = new SwingViewer(this.graph, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         this.viewer.enableAutoLayout();
     }
@@ -124,12 +125,12 @@ public class ModelManager {
         GraphModelComponent component = new GraphModelComponent( this, this.owlEditorKit);
         return component;
     }
-    private Map<String[],Set<OWLObjectProperty>> createRoleMap() {
-        Map<String[],Set<OWLObjectProperty>> roleMap = new HashMap<>();
+    private Map<String[],Set<OWLObjectProperty>> createObjectPropertyMap() {
+        Map<String[],Set<OWLObjectProperty>> objectPropertyMap = new HashMap<>();
         model.stream()
                 .filter(ax -> ax.isOfType(AxiomType.OBJECT_PROPERTY_ASSERTION))
                 .map(ax -> (OWLObjectPropertyAssertionAxiom) ax)
-                .forEach(ax -> roleMap.merge(
+                .forEach(ax -> objectPropertyMap.merge(
                         new String[]{ax.getSubject().asOWLNamedIndividual().getIRI().getShortForm(),
                                 ax.getObject().asOWLNamedIndividual().getIRI().getShortForm()},
                         Sets.newHashSet(ax.getProperty().asOWLObjectProperty()),
@@ -137,11 +138,10 @@ public class ModelManager {
                             a.addAll(b);
                             return a;
                         }));
-
-        return roleMap;
+        return objectPropertyMap;
 
     }
-    private Map<String, Set<OWLClass>> createClassMap() {
+    private Map<String, Set<OWLClass>> createIndividualClassMap() {
         Map<String, Set<OWLClass>> classMap = new HashMap<>();
         model.stream().forEach(a ->
                 a.getIndividualsInSignature().forEach(i ->
@@ -159,79 +159,18 @@ public class ModelManager {
         return classMap;
     }
 
-    private <N,M extends OWLNamedObject> Map<N, List<M>> sortMap(Map<N, Set<M>> map) {
+    private <N,M extends OWLNamedObject> Map<N, List<M>> sortOWLObjectMap(Map<N, Set<M>> map) {
         Map<N, List<M>> listMap = new HashMap<>();
         map.entrySet().stream()
                 .forEach(e -> listMap.put(e.getKey(),
-                        sortList(e.getValue().stream()
+                        objectSorter.sortOWLObjectList(e.getValue().stream()
                                 .collect(Collectors.toList()))));
 //        logger.info("class map is sorted: "+listMap.keySet());
         return listMap;
     }
 
-    private <T extends OWLNamedObject> List<T> sortList(List<T> objectList) {
-        List<T> finalList = new ArrayList<>();
-        List<T> sorted = new ArrayList<>();
-        List<T> sortedOut = objectList;
-        int i = 0;
-
-        while (!sortedOut.isEmpty() && i < 10) {
-            if (sorted.isEmpty()) {
-                sorted = sortedOut;
-            }
-            List<List<T>> sortedAndSortedOut = compareOWLObjects(sorted);
-            sorted = sortedAndSortedOut.get(0);
-            sortedOut = sortedAndSortedOut.get(1);
-            if (sorted.isEmpty()) {
-                finalList.addAll(sortedOut);
-                break;
-            }
-            if (sortedOut.isEmpty()) {
-                finalList.addAll(sorted);
-                break;
-            }
-            finalList.addAll(sortedOut);
-            i = i + 1;
-        }
-        Collections.reverse(finalList);
-        return finalList;
-    }
-
-    private<M extends OWLNamedObject> OWLAxiom getInclusion(M a, M b) {
-        if (!a.getObjectPropertiesInSignature().isEmpty()) {
-            return df.getOWLSubObjectPropertyOfAxiom((OWLObjectProperty) a, (OWLObjectProperty) b);
-        } else {
-            return df.getOWLSubClassOfAxiom((OWLClass) a, (OWLClass) b);
-        }
-    }
-
-    private <T extends OWLNamedObject> List<List<T>> compareOWLObjects(List<T> objectList) {
-        Set<T> subsumed = new HashSet<>();
-        Set<T> subsumers = new HashSet<>();
-        List<List<T>> returnList = new ArrayList<>();
-
-        objectList.stream().forEach(expr1 -> objectList.stream().filter(expr2 -> !expr1.equals(expr2))
-                .filter(expr2 -> res.isEntailed(getInclusion(expr1, expr2))
-                        && !res.isEntailed(getInclusion(expr2, expr1 )))
-                .forEach(expr2 -> {
-                    subsumed.add(expr1);
-                    subsumers.add(expr2);
-                }));
-
-        List<T> moreExact = subsumed.stream().collect(Collectors.toList());
-        objectList.removeAll(subsumers);
-        objectList.removeAll(subsumed);
-        moreExact.addAll(objectList);
-        returnList.add(moreExact);
-        subsumers.removeAll(subsumed);
-        returnList.add(subsumers.stream().collect(Collectors.toList()));
-            logger.debug(returnList.get(0));
-        logger.debug(returnList.get(1));
-        return returnList;
-    }
-
     private void createEdges() {
-        roleMap.entrySet().stream()
+        objectPropertyMap.entrySet().stream()
                 .forEach(e -> {
                     String subj = e.getKey()[0];
                     String obj = e.getKey()[1];
@@ -279,7 +218,7 @@ public class ModelManager {
 
     private void createNodes() {
         logger.debug("root inds:"+this.markedIndividuals);
-        classMap.keySet().stream().forEach(k -> {
+        individualClassMap.keySet().stream().forEach(k -> {
             GraphicNode n = (GraphicNode) graph.addNode(k);
             for(IRI iri:this.markedIndividuals) {
                 if(iri.getShortForm().equalsIgnoreCase(n.getId())) {
@@ -289,31 +228,38 @@ public class ModelManager {
         });
     }
 
-    private void createSpriteLabel(String nodeID,OWLClass cls,int labelDistance,SpriteManager sMan) {
-        String currOWLClass = "...";
+    private void createSpriteLabel(String nodeID,
+                                   OWLClass cls,
+                                   int labelDistance,
+                                   SpriteManager sMan) {
+        String label = "...";
+        String identifier = "unroll";
         if (!Objects.equals(cls,null)) {
 
             for(OWLAnnotation a : EntitySearcher.getAnnotations(cls, ont, df.getRDFSLabel())) {
                 OWLAnnotationValue val = a.getValue();
                 if(val instanceof OWLLiteral) {
                     if(((OWLLiteral) val).hasLang("en")) {
-                        currOWLClass = ((OWLLiteral) val).getLiteral();
+                        label = ((OWLLiteral) val).getLiteral();
+                        identifier = ((OWLLiteral) val).getLiteral();
                     }
                 }
             }
-            if (currOWLClass.equals("...")) {
-                currOWLClass = cls.getIRI().getShortForm();
+            if (label.equals("...")) {
+                label = cls.getIRI().getShortForm();
+                identifier = cls.getIRI().getShortForm();
             }
         }
-        Sprite sprite = sMan.addSprite(nodeID + currOWLClass);
+
+        Sprite sprite = sMan.addSprite(nodeID + identifier);
         sprite.attachToNode(nodeID);
         sprite.setPosition(0, 0, 0);
-        sprite.setAttribute("ui.label", currOWLClass);
+        sprite.setAttribute("ui.label", label);
         sprite.setAttribute("ui.style","text-offset: 0, "+labelDistance+";");
     }
     private void createNodeLabels() {
         SpriteManager sMan = new SpriteManager(graph);
-        classMap.entrySet().stream().forEach(e ->
+        individualClassMap.entrySet().stream().forEach(e ->
                 {
                     int classNummer = e.getValue().size();
                     if (classNummer > maxLabelNumber) {
@@ -360,8 +306,8 @@ public class ModelManager {
     public GraphicGraph getGraph() {
         return this.graph;
     }
-    public Map<String, List<OWLClass>> getClassMap() {
-        return this.classMap;
+    public Map<String, List<OWLClass>> getIndividualClassMap() {
+        return this.individualClassMap;
     }
     public Viewer getViewer() {
         return this.viewer;
