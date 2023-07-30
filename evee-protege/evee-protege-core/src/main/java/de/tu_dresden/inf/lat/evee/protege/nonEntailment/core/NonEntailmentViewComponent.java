@@ -1,8 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.NonEntailmentExplanationLoadingUIManager;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.NonEntailmentExplanationProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPlugin;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
@@ -23,12 +21,10 @@ import org.protege.editor.owl.model.parser.ProtegeOWLEntityChecker;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.renderer.OWLCellRenderer;
-import org.protege.editor.owl.ui.renderer.OWLModelManagerEntityRenderer;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserImpl;
-import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ParserException;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
@@ -257,11 +253,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     @Override
     protected void disposeOWLView() {
+        this.logger.debug("Disposing Missing Entailment View Component");
         this.signatureSelectionUI.dispose(this.getOWLModelManager());
         this.loadingUI.dispose();
         this.getOWLEditorKit().getOWLModelManager().removeListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().removeOntologyChangeListener(this.changeListener);
         this.nonEntailmentExplainerManager.dispose();
+        this.selectedMissingEntailmentListModel.dispose();
+        this.logger.debug("Missing Entailment View Component disposed");
     }
 
     @Override
@@ -435,11 +434,11 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         JButton addMissingEntailmentButton = UIUtilities.createNamedButton(ADD_MISSING_ENTAILMENT_COMMAND,
                 ADD_MISSING_ENTAILMLENT_NAME, ADD_MISSING_ENTAILMENT_TOOLTIP, this);
         firstButtonRowPanel.add(addMissingEntailmentButton);
-        firstButtonRowPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        firstButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         JButton deleteMissingEntailmentButton = UIUtilities.createNamedButton(DELETE_MISSING_ENTAILMENT_COMMAND,
                 DELETE_MISSING_ENTAILMENT_NAME, DELETE_MISSING_ENTAILMENT_TOOLTIP, this);
         firstButtonRowPanel.add(deleteMissingEntailmentButton);
-        firstButtonRowPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        firstButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         JButton resetMissingEntailmentButton = UIUtilities.createNamedButton(RESET_MISSING_ENTAILMENT_COMMAND,
                 RESET_MISSING_ENTAILMENT_NAME, RESET_MISSING_ENTAILMENT_TOOLTIP, this);
         firstButtonRowPanel.add(resetMissingEntailmentButton);
@@ -450,7 +449,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         JButton loadMissingEntailmentButton = UIUtilities.createNamedButton(LOAD_MISSING_ENTAILMENT_COMMAND,
                 LOAD_MISSING_ENTAILMENT_BUTTON_NAME, LOAD_MISSING_ENTAILMENT_TOOLTIP, this);
         secondButtonRowPanel.add(loadMissingEntailmentButton);
-        secondButtonRowPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        secondButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         JButton saveMissingEntailmentButton = UIUtilities.createNamedButton(SAVE_MISSING_ENTAILMENT_COMMAND,
                 SAVE_MISSING_ENTAILMENT_BUTTON_NAME, SAVE_MISSING_ENTAILMENT_TOOLTIP, this);
         secondButtonRowPanel.add(saveMissingEntailmentButton);
@@ -462,14 +461,13 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JPanel createSelectedMissingEntailmentPanel(){
         JPanel missingEntailmentPanel = new JPanel();
         missingEntailmentPanel.setLayout(new BoxLayout(missingEntailmentPanel, BoxLayout.PAGE_AXIS));
-        this.selectedMissingEntailmentListModel = new OWLObjectListModel<>();
+        this.selectedMissingEntailmentListModel = new OWLObjectListModel<>(this.getOWLEditorKit());
         this.selectedMissingEntailmentList = new JList<>(this.selectedMissingEntailmentListModel);
         this.selectedMissingEntailmentList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2){
                     JList list = (JList) e.getSource();
-//                    todo: start here for bugfix on issue #73
                     Object selectedValue = list.getSelectedValue();
                     if (selectedValue instanceof OWLObject){
                         missingEntailmentTextEditor.setText(reverseParseOWLObject((OWLObject) selectedValue));
@@ -644,16 +642,21 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private String reverseParseOWLObject(OWLObject owlObject){
-        ManchesterOWLSyntaxOWLObjectRendererImpl owlObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-        String displayString = owlObjectRenderer.render(owlObject);
-        if (owlObject instanceof OWLClassAssertionAxiom){
-            return new StringBuilder(displayString).insert(displayString.indexOf("Type") + 4, ":").toString();
-        }
-        else if (owlObject instanceof OWLSubClassOfAxiom){
-            return new StringBuilder(displayString).insert(displayString.indexOf("SubClassOf") + 10, ":").toString();
-        } else {
-            return displayString;
-        }
+        return this.getOWLEditorKit().getOWLModelManager().getRendering(owlObject);
+//        LogicalAxiomRenderingOWLObjectVisitor visitor = new LogicalAxiomRenderingOWLObjectVisitor(
+//                this.getOWLEditorKit().getOWLModelManager().getOWLEntityRenderer());
+//        return owlObject.accept(visitor);
+
+//        ManchesterOWLSyntaxOWLObjectRendererImpl owlObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+//        String displayString = owlObjectRenderer.render(owlObject);
+//        if (owlObject instanceof OWLClassAssertionAxiom){
+//            return new StringBuilder(displayString).insert(displayString.indexOf("Type") + 4, ":").toString();
+//        }
+//        else if (owlObject instanceof OWLSubClassOfAxiom){
+//            return new StringBuilder(displayString).insert(displayString.indexOf("SubClassOf") + 10, ":").toString();
+//        } else {
+//            return displayString;
+//        }
     }
 
     protected void changeComputeButtonStatus(){

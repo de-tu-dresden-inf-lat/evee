@@ -95,7 +95,8 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
         }
         String ontoName = this.activeOntology.getOntologyID().getOntologyIRI().get().toString();
         SwingUtilities.invokeLater(() -> {
-            this.signatureSelectionUI = new EveeDynamicProofSignatureSelectionCoreUI(this);
+            this.signatureSelectionUI = new EveeDynamicProofSignatureSelectionCoreUI(this,
+                    this.getOWLEditorKit());
             this.signatureSelectionUI.createSignatureSelectionComponents(this.getOWLEditorKit());
             this.dialog = new JDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()));
             this.dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);

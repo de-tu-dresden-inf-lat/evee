@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -52,14 +51,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private JList<OWLEntity> forbiddenVocabularyList;
     private JPanel buttonHolderPanel;
     private static final String ADD_BTN_COMMAND = "ADD";
-//    private static final String ADD_BTN_ICON = "/downArrow.png";
+    private static final String ADD_BTN_ICON = "/DownArrow_Transparent.png";
     private static final String ADD_BTN_TOOLTIP = "Add selected OWLObjects to the vocabulary";
     private static final String ADD_ALL_BTN_COMMAND = "ADD_ALL";
+    private static final String ADD_ALL_BTN_ICON = "/DoubleDownArrow_Transparent.png";
     private static final String ADD_ALL_BTN_TOOLTIP = "Add all entities to the vocabulary";
     private static final String DEL_BTN_COMMAND = "DELETE";
-//    private static final String DEL_BTN_ICON = "/upArrow.png";
+    private static final String DEL_BTN_ICON = "/UpArrow_Transparent.png";
     private static final String DEL_BTN_TOOLTIP = "Delete selected OWLObjects from the vocabulary";
     private static final String DEL_ALL_BTN_COMMAND = "DELETE_ALL";
+    private static final String DEL_ALL_BTN_ICON = "/DoubleUpArrow_Transparent.png";
     private static final String DEL_ALL_BTN_TOOLTIP = "Delete all entities from the vocabulary";
     private static final String LOAD_SIGNATURE_COMMAND = "LOAD_SIGNATURE";
     private static final String LOAD_SIGNATURE_BUTTON_NAME = "Load permitted vocabulary";
@@ -127,7 +128,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.propertyTree.setOWLObjectComparator(this.owlEditorKit.getOWLModelManager().getOWLObjectComparator());
         tabbedPane.addTab("Object properties", propertyPane);
 //        individuals
-        this.ontologyIndividualsListModel = new OWLObjectListModel<>();
+        this.ontologyIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.ontologyIndividualsJList = new JList<>(this.ontologyIndividualsListModel);
         this.ontologyIndividualsJList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         Set<OWLNamedIndividual> individuals = this.owlEditorKit.getOWLModelManager().getActiveOntology().getIndividualsInSignature(Imports.INCLUDED);
@@ -172,34 +173,36 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.buttonHolderPanel.setLayout(new BoxLayout(this.buttonHolderPanel, BoxLayout.PAGE_AXIS));
         this.buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
         ArrayList<JButton> buttonList = new ArrayList<>();
-//        URL addURL = getClass().getResource(ADD_BTN_ICON);
-        JButton addButton = UIUtilities.createArrowButton(ADD_BTN_COMMAND,
-                BasicArrowButton.SOUTH, ADD_BTN_TOOLTIP, this);
+        URL addUrl = getClass().getResource(ADD_BTN_ICON);
+        JButton addButton = UIUtilities.createIconButton(ADD_BTN_COMMAND, addUrl,
+                ADD_BTN_TOOLTIP, this);
         buttonList.add(addButton);
-//        URL delURL = getClass().getResource(DEL_BTN_ICON);
-        JButton deleteButton = UIUtilities.createArrowButton(DEL_BTN_COMMAND,
-                BasicArrowButton.NORTH, DEL_BTN_TOOLTIP, this);
+        URL delUrl = getClass().getResource(DEL_BTN_ICON);
+        JButton deleteButton = UIUtilities.createIconButton(DEL_BTN_COMMAND, delUrl,
+                DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);
         JPanel firstButtonRowPanel = this.createButtonPanel(buttonList);
         this.buttonHolderPanel.add(firstButtonRowPanel);
-        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
-        JButton addAllButton = UIUtilities.createDoubleArrowButton(ADD_ALL_BTN_COMMAND,
-                BasicArrowButton.SOUTH, ADD_ALL_BTN_TOOLTIP, this);
+        URL addAllUrl = getClass().getResource(ADD_ALL_BTN_ICON);
+        JButton addAllButton = UIUtilities.createIconButton(ADD_ALL_BTN_COMMAND, addAllUrl,
+                ADD_ALL_BTN_TOOLTIP, this);
         buttonList.add(addAllButton);
-        JButton deleteAllButton = UIUtilities.createDoubleArrowButton(DEL_ALL_BTN_COMMAND,
-                BasicArrowButton.NORTH, DEL_ALL_BTN_TOOLTIP, this);
+        URL delAllUrl = getClass().getResource(DEL_ALL_BTN_ICON);
+        JButton deleteAllButton = UIUtilities.createIconButton(DEL_ALL_BTN_COMMAND, delAllUrl,
+                DEL_ALL_BTN_TOOLTIP, this);
         buttonList.add(deleteAllButton);
         JPanel secondButtonRowPanel = this.createButtonPanel(buttonList);
         this.buttonHolderPanel.add(secondButtonRowPanel);
-        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
         JButton addMissingEntailmentSignatureButton = UIUtilities.createNamedButton(ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
                 ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME, ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
         buttonList.add(addMissingEntailmentSignatureButton);
         JPanel thirdButtonRowPanel = this.createButtonPanel(buttonList);
         this.buttonHolderPanel.add(thirdButtonRowPanel);
-        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
         JButton loadSignatureButton = UIUtilities.createNamedButton(LOAD_SIGNATURE_COMMAND,
                 LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
@@ -223,10 +226,10 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     }
 
     private void createSelectedVocabularyListPane(){
-        this.permittedVocabularyListModel = new OWLObjectListModel<>();
+        this.permittedVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.permittedVocabularyList = new JList<>(this.permittedVocabularyListModel);
         this.permittedVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.forbiddenVocabularyListModel = new OWLObjectListModel<>();
+        this.forbiddenVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.forbiddenVocabularyList = new JList<>(this.forbiddenVocabularyListModel);
         this.forbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         this.resetVocabularyListModels();
@@ -287,6 +290,11 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         if (this.propertyTree != null){
             this.propertyTree.dispose();
         }
+        if (this.ontologyIndividualsListModel != null){
+            this.ontologyIndividualsListModel.dispose();
+        }
+        this.permittedVocabularyListModel.dispose();
+        this.forbiddenVocabularyListModel.dispose();
         modelManager.removeListener(this.SignatureModelManagerListener);
         modelManager.removeOntologyChangeListener(this.SignatureOntologyChangeListener);
     }

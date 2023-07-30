@@ -205,6 +205,7 @@ abstract public class AbstractAbductionSolver<Result>
                 this.logger.debug("Parameters unchanged");
                 if (this.cancelled){
                     this.logger.debug("Previous computation was cancelled, requesting new stream");
+                    this.cancelled = false;
                     this.computeNewExplanation();
                 }
                 else if (this.resultStreamIterator != null){

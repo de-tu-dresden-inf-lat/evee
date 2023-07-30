@@ -22,7 +22,9 @@ public class EveeDynamicProofSignatureSelectionCoreUI extends AbstractSignatureS
 
     private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofSignatureSelectionCoreUI.class);
 
-    public EveeDynamicProofSignatureSelectionCoreUI(EveeDynamicProofSignatureSelectionWindow signatureSelectionUI){
+    public EveeDynamicProofSignatureSelectionCoreUI(EveeDynamicProofSignatureSelectionWindow signatureSelectionUI,
+                                                    OWLEditorKit owlEditorKit){
+        super(owlEditorKit);
         this.signatureSelectionUI = signatureSelectionUI;
     }
 

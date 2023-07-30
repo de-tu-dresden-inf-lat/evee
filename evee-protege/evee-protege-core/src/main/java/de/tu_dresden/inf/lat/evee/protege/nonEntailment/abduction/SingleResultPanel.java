@@ -39,6 +39,7 @@ public class SingleResultPanel extends JPanel {
     protected static final String DELETE_FROM_ONTO_COMMAND = "DELETE_FROM_ONTO";
     protected static final String DELETE_FROM_ONTO_NAME = "Delete from Ontology";
     protected static final String DELETE_FROM_ONTO_TOOLTIP = "Delete the axioms of this result from the ontology";
+    private HypothesisFrameList hypothesisFrameList = null;
 
     private final Logger logger = LoggerFactory.getLogger(SingleResultPanel.class);
 
@@ -92,11 +93,11 @@ public class SingleResultPanel extends JPanel {
 //        hypothesis
         String label = "Hypothesis " + (hypothesisIndex+1);
         HypothesisFrame frame = new HypothesisFrame(this.owlEditorKit, label);
-        HypothesisFrameList frameList = new HypothesisFrameList(this.owlEditorKit, frame);
+        this.hypothesisFrameList = new HypothesisFrameList(this.owlEditorKit, frame);
         IgnoreSelectionModel selectionModel = new IgnoreSelectionModel();
-        frameList.setSelectionModel(selectionModel);
+        this.hypothesisFrameList.setSelectionModel(selectionModel);
         JPanel frameListHolderPanel = new JPanel(new BorderLayout());
-        frameListHolderPanel.add(frameList, BorderLayout.CENTER);
+        frameListHolderPanel.add(this.hypothesisFrameList, BorderLayout.CENTER);
         frame.setRootObject(result);
         JScrollPane singleResultScrollPane = new JScrollPane(frameListHolderPanel);
         this.add(singleResultScrollPane, BorderLayout.CENTER);
@@ -112,6 +113,9 @@ public class SingleResultPanel extends JPanel {
     }
 
     public void dispose(){
+        if (this.hypothesisFrameList != null){
+            this.hypothesisFrameList.dispose();
+        }
         for (ExplanationDialogPanel panel : this.openedDialogPanels){
             panel.dispose();
         }

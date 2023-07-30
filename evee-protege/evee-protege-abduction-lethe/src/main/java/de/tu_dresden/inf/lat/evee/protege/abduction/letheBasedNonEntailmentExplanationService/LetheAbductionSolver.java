@@ -7,6 +7,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.man.cs.lethe.abduction.OWLAbducer;
+import uk.ac.man.cs.lethe.abduction.ObservationEntailedException;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.DLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
 import uk.ac.man.cs.lethe.internal.tools.CanceledException;
@@ -32,6 +33,7 @@ public class LetheAbductionSolver
     private final OWLAbducer abducer;
     private final List<DLStatementAdapter> hypothesesAdapterList;
     private String errorMessage;
+    private static final String ALREADY_ENTAILED_WARNING = "Specified axioms are already entailed.";
 
     private final Logger logger = LoggerFactory.getLogger(LetheAbductionSolver.class);
 
@@ -80,6 +82,17 @@ public class LetheAbductionSolver
                 this.logger.debug("Computation completed");
                 return this.explanationComputationCompleted(result);
 //                return Stream.generate(this);
+            }
+            catch (ObservationEntailedException oe){
+                this.logger.error("Exception caught during abduction: ", oe);
+                this.explanationComputationFailed(ALREADY_ENTAILED_WARNING);
+                return null;
+            }
+            catch (CanceledException ce){
+                String message = "Computation cancelled.";
+                this.explanationComputationFailed(message);
+                this.logger.debug("Exception caught during abduction: ", ce);
+                return null;
             }
             catch (Throwable e) {
                 this.explanationComputationFailed("Error during abduction generation: " + e);
