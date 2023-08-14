@@ -18,9 +18,6 @@ public class OWLObjectSorter {
         this.df = df;
     }
 
-
-
-
     public <T extends OWLNamedObject> List<T> sortOWLObjectList(List<T> objectList) {
         List<T> finalList = new ArrayList<>();
         List<T> sorted = new ArrayList<>();
@@ -80,5 +77,15 @@ public class OWLObjectSorter {
         subsumers.removeAll(subsumed);
         returnList.add(subsumers.stream().collect(Collectors.toList()));
         return returnList;
+    }
+
+    public <N,M extends OWLNamedObject> Map<N, List<M>> sortOWLObjectMap(Map<N, Set<M>> map) {
+        Map<N, List<M>> listMap = new HashMap<>();
+        map.entrySet().stream()
+                .forEach(e -> listMap.put(e.getKey(),
+                        sortOWLObjectList(e.getValue().stream()
+                                .collect(Collectors.toList()))));
+//        logger.info("class map is sorted: "+listMap.keySet());
+        return listMap;
     }
 }

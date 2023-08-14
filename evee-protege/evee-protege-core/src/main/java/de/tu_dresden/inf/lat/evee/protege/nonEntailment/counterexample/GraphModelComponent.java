@@ -36,8 +36,8 @@ public class GraphModelComponent extends JPanel {
     private final DefaultListModel<OWLAxiom> axiomListModel;
     private final OWLEditorKit owlEditorKit;
     private final ModelManager modelManager;
-    private final OWLDataFactory df;
-    private final JPanel viewPanel;
+    private final OWLDataFactory df = OWLManager.getOWLDataFactory();
+    private final JPanel modelViewPanel;
     private Viewer viewer;
     private Map<String, List<OWLClass>> classMap;
     private JList classList;
@@ -48,42 +48,33 @@ public class GraphModelComponent extends JPanel {
 
     public GraphModelComponent(ModelManager modelManager, OWLEditorKit owlEditorKit) {
         this.modelManager = modelManager;
-        this.classMap = this.modelManager.getIndividualClassMap();
         this.owlEditorKit = owlEditorKit;
         this.classListModel = new DefaultListModel();
         this.axiomListModel = new DefaultListModel();
-        this.viewer = this.modelManager.getViewer();
-        this.df = OWLManager.getOWLDataFactory();
         this.setLayout(new BoxLayout(this, 0));
-        this.viewPanel = new JPanel();
-        this.viewPanel.setLayout(new BoxLayout(this.viewPanel, 0));
-        this.viewPanel.setMinimumSize(new Dimension(500, 500));
-        this.view = this.viewer.addDefaultView(false);
-        MouseManager mouseManager =new MouseManager(classMap,classListModel,viewer);
-        this.view.setMouseManager(mouseManager);
-        this.viewComponent = (Component) view;
-        this.viewComponent.addMouseWheelListener(mouseManager);
-        this.viewPanel.add(this.viewComponent);
-        this.add(this.viewPanel);
+        this.modelViewPanel = new JPanel();
+        this.modelViewPanel.setLayout(new BoxLayout(this.modelViewPanel, 0));
+        this.modelViewPanel.setMinimumSize(new Dimension(500, 500));
+        this.configureModelViewPanel();
+        this.add(this.modelViewPanel);
         this.add(this.getRightPanel());
     }
-
-    private void resetModel() {
-        this.classMap = this.modelManager.getIndividualClassMap();
-        this.viewer = this.modelManager.getViewer();
-        this.viewPanel.remove(this.viewComponent);
+    private void resetModelView() {
+        this.modelViewPanel.remove(this.viewComponent);
         this.classListModel.removeAllElements();
+        this.configureModelViewPanel();
+        this.updateUI();
+    }
+    private void configureModelViewPanel() {
+        this.viewer = this.modelManager.getGraphModelViewer();
+        this.classMap = this.modelManager.getIndividualClassMap();
         MouseManager mouseManager =new MouseManager(classMap,classListModel,viewer);
         this.view = this.viewer.addDefaultView(false);
         this.view.setMouseManager(mouseManager);
         this.viewComponent = (Component) view;
         this.viewComponent.addMouseWheelListener(mouseManager);
-        this.viewPanel.add(this.viewComponent);
-        this.updateUI();
-        logger.debug("model is updated");
+        this.modelViewPanel.add(this.viewComponent);
     }
-
-
 
     private JPanel getRightPanel() {
         this.createClassList();
@@ -174,8 +165,8 @@ public class GraphModelComponent extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logger.debug("refreshing model");
-                modelManager.refreshModel();
-                resetModel();
+                modelManager.refreshGraphModelViewer();
+                resetModelView();
             }
         });
         refreshButton.setAlignmentX(0.5F);
@@ -201,8 +192,8 @@ public class GraphModelComponent extends JPanel {
                         );
                 try {
                     logger.debug("recomputing model");
-                    modelManager.recomputeModel(additionalAxioms);
-                    resetModel();
+                    modelManager.refreshModelViewer(additionalAxioms);
+                    resetModelView();
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(new JPanel(), ex.getMessage(), "Error", 0);
                 }

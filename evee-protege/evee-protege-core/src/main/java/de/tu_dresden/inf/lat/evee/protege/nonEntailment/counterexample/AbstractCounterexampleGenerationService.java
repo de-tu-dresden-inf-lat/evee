@@ -79,7 +79,8 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
 
     public Component getResult() {
         ModelManager man = new ModelManager(this.model, this.owlEditorKit, this.counterexampleGenerator, this.workingCopy, this.observation);
-        return man.generateGraphModel();
+        man.refreshGraphModelComponent();
+        return man.getGraphModelComponent();
     }
 
     @Override
