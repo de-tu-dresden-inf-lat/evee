@@ -29,6 +29,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
     protected JList<OWLNamedIndividual> ontologyIndividualsJList;
     protected OWLObjectListModel<OWLEntity> selectedSignatureListModel;
     protected JList<OWLEntity> selectedSignatureJList;
+    private OWLEditorKit owlEditorKit;
     protected JButton addButton;
     protected final String ADD_BTN_COMMAND = "ADD_TO_SIGNATURE";
     protected String ADD_BTN_NAME;
@@ -44,7 +45,8 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
 
     private Logger logger = LoggerFactory.getLogger(AbstractSignatureSelectionUI.class);
 
-    protected AbstractSignatureSelectionUI() {
+    protected AbstractSignatureSelectionUI(OWLEditorKit owlEditorKit) {
+        this.owlEditorKit = owlEditorKit;
         this.setButtonNamesAndToolTipStrings();
     }
 
@@ -56,7 +58,6 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
         this.createSelectedSignatureListPane(owlEditorKit);
     }
 
-//    todo: this does not seem to be working correctly -> badly behaved listener found!
     public void dispose(){
         if (this.classesTree != null){
             this.classesTree.dispose();
@@ -64,6 +65,8 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
         if (this.propertyTree != null){
             this.propertyTree.dispose();
         }
+        this.ontologyIndividualsListModel.dispose();
+        this.selectedSignatureListModel.dispose();
     }
 
     protected void createOntologySignatureTabbedPanel(OWLEditorKit owlEditorKit){
@@ -89,7 +92,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
         this.propertyTree.setOWLObjectComparator(owlEditorKit.getOWLModelManager().getOWLObjectComparator());
         tabbedPane.addTab("Object properties", propertyPane);
 //        individuals
-        this.ontologyIndividualsListModel = new OWLObjectListModel<>();
+        this.ontologyIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.ontologyIndividualsJList = new JList<>(this.ontologyIndividualsListModel);
         this.ontologyIndividualsJList.setCellRenderer(new OWLCellRendererSimple(owlEditorKit));
         Set<OWLNamedIndividual> individuals = owlEditorKit.getOWLModelManager().getActiveOntology().getIndividualsInSignature(Imports.INCLUDED);
@@ -191,7 +194,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
     protected void createSelectedSignatureListPane(OWLEditorKit owlEditorKit){
         this.selectedSignaturePanel = new JPanel();
         this.selectedSignaturePanel.setLayout(new BoxLayout(this.selectedSignaturePanel, BoxLayout.PAGE_AXIS));
-        this.selectedSignatureListModel = new OWLObjectListModel<>();
+        this.selectedSignatureListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.selectedSignatureJList = new JList<>(this.selectedSignatureListModel);
         this.selectedSignatureJList.setCellRenderer(new OWLCellRendererSimple(owlEditorKit));
         JScrollPane scrollPane = new JScrollPane(this.selectedSignatureJList);

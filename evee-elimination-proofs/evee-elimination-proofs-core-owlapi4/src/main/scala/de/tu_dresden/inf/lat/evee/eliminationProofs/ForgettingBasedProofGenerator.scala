@@ -87,6 +87,9 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
 
     println("Ontology changed!")
 
+    if(ontology!=null && manager.contains(ontology))
+      manager.removeOntology(ontology)
+
     ontology = filter.filteredCopy(owlOntology,manager)
 
     owlDataFactory = manager.getOWLDataFactory
@@ -263,6 +266,9 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
       .flatMap(_.getSignature.asScala)
     adjacentSignature --= hiddenSignature
     */
+
+    logger.trace(s"axioms in ontology: ${ontology.getLogicalAxioms(Imports.INCLUDED).size()}")
+
     while(!doneForgettingAndJustifying && !canceled) {
       forgetAndJustify()
       updateProgressTrackers()
@@ -306,14 +312,14 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
         // TODO: try multiple justifications and choose the one which contains more of the hidden signature?
         var premises = justifier.justify(prevOnt, axiom).filter(notAddedTautology)
 
-        if(premises.isEmpty){
+      /*  if(premises.isEmpty){
           println("Something broke! empty justification")
           println(s"axiom: ${axiom}")
           println(s"axiom set: ${prevOnt}")
           println()
           assert(false)
           System.exit(1)
-        }
+        }*/ // This is actually possible: proof of tautologies
 
         if (skipSteps) {
           // check whether we should skip
@@ -368,15 +374,16 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
     var nextOntology::_ = ontologySteps
 
     logger.trace(s"current ontology: \n${nextOntology.map(formatter.format).mkString("\n")}\n")
-    
+
+    if (!justifier.entailed(nextOntology, toProve))
+      throw new ProofGenerationFailedException("Something got lost during forgetting!")
+
     // TODO: try multiple justifications, choose the one that contains more of the hidden signature?
     val just = justifier.justify(nextOntology,toProve)
 
     if(!maxSet)
       setMaxToProgressTrackers(just)
 
-    if(just.isEmpty)
-      throw new ProofGenerationFailedException("Something got lost during forgetting!")
 
     //assert(just.size>0, "something got lost while forgetting")
 

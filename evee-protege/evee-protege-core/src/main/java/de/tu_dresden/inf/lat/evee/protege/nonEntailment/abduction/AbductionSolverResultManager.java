@@ -33,7 +33,7 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
     private final OntologyChangeListener ontologyChangeListener;
 
 
-    private Logger logger = LoggerFactory.getLogger(AbductionSolverResultManager.class);
+    private final Logger logger = LoggerFactory.getLogger(AbductionSolverResultManager.class);
 
     public AbductionSolverResultManager(IAbductionSolverOntologyChangeEventListener ontologyChangeEventListener,
                                         IAbductionSolverResultButtonEventListener resultButtonEventListener){
@@ -95,6 +95,7 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
 
     protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
                                          List<Set<OWLAxiom>> hypotheses){
+        this.logger.debug("Creating result component");
         hypotheses.forEach(result -> {
             SingleResultPanel singleResultPanel = new SingleResultPanel(
                     this.owlEditorKit,ontology,
@@ -150,11 +151,16 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
                 this.logger.debug("Change made by AbductionSolver, event ignored");
                 ignoreOntologyChangeEvent = false;
             } else{
-                this.logger.debug("Change not made by AbductionSolver");
-                resetResultComponent();
-                abductionSolverOntologyChangeEventListener.handleEvent(
-                        new AbductionSolverOntologyChangeEvent(
-                                OntologyChangeEventType.ONTOLOGY_EDITED));
+                for (OWLOntologyChange change: list){
+                    if (change.getOntology().equals(owlEditorKit.getOWLModelManager().getActiveOntology())){
+                        this.logger.debug("Change (to active ontology) not made by AbductionSolver");
+                        resetResultComponent();
+                        abductionSolverOntologyChangeEventListener.handleEvent(
+                                new AbductionSolverOntologyChangeEvent(
+                                        OntologyChangeEventType.ONTOLOGY_EDITED));
+                        break;
+                    }
+                }
             }
         }
 

@@ -134,6 +134,10 @@
                     <include>plugin.xml</include>
                     <include>NonEntailmentDefaultTab.xml</include>
                     <include>plain.css</include>
+                    <include>DoubleDownArrow_Transparent.png</include>
+                    <include>DoubleUpArrow_Transparent.png</include>
+                    <include>DownArrow_Transparent.png</include>
+                    <include>UpArrow_Transparent.png</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
