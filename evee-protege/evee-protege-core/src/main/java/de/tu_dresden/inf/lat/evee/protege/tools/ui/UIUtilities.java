@@ -99,8 +99,17 @@ public class UIUtilities {
     private static void showMessage(String message, int messageType, OWLEditorKit owlEditorKit){
         SwingUtilities.invokeLater(() -> {
             JOptionPane errorPane = new JOptionPane(message, messageType);
+            String title = "";
+            switch (messageType){
+                case JOptionPane.ERROR_MESSAGE:
+                    title = "Error";
+                    break;
+                case JOptionPane.WARNING_MESSAGE:
+                    title = "Warning";
+                    break;
+            }
             JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
-                    owlEditorKit.getWorkspace()), "Error");
+                    owlEditorKit.getWorkspace()), title);
             errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
                     ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));

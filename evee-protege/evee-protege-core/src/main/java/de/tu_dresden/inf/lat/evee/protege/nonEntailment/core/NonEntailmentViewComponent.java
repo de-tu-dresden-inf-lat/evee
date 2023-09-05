@@ -1,8 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.NonEntailmentExplanationLoadingUIManager;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.NonEntailmentExplanationProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPlugin;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
@@ -255,11 +253,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     @Override
     protected void disposeOWLView() {
+        this.logger.debug("Disposing Missing Entailment View Component");
         this.signatureSelectionUI.dispose(this.getOWLModelManager());
         this.loadingUI.dispose();
         this.getOWLEditorKit().getOWLModelManager().removeListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().removeOntologyChangeListener(this.changeListener);
         this.nonEntailmentExplainerManager.dispose();
+        this.selectedMissingEntailmentListModel.dispose();
+        this.logger.debug("Missing Entailment View Component disposed");
     }
 
     @Override
@@ -297,7 +298,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     @Override
     public void handleEvent(ExplanationEvent<INonEntailmentExplanationService<?>> event){
-        this.logger.debug("Handling explanationEvent: {} of source: {}", event.getType(), event.getSource());
+        this.logger.debug("Handling explanationEvent: {} of source: {}", event.getType(), event.getSource().getClass());
         if (event.getSource().equals(
                 this.nonEntailmentExplainerManager.getCurrentExplainer())){
             switch (event.getType()){
@@ -428,35 +429,31 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JPanel createMissingEntailmentButtonPanel(){
         JPanel buttonHolderPanel = new JPanel();
         buttonHolderPanel.setLayout(new BoxLayout(buttonHolderPanel, BoxLayout.PAGE_AXIS));
-        JToolBar firstRowToolbar = new JToolBar();
-        firstRowToolbar.setOrientation(JToolBar.HORIZONTAL);
-        firstRowToolbar.setFloatable(false);
-        firstRowToolbar.setLayout(new BoxLayout(firstRowToolbar, BoxLayout.LINE_AXIS));
+        JPanel firstButtonRowPanel = new JPanel();
+        firstButtonRowPanel.setLayout(new BoxLayout(firstButtonRowPanel, BoxLayout.LINE_AXIS));
         JButton addMissingEntailmentButton = UIUtilities.createNamedButton(ADD_MISSING_ENTAILMENT_COMMAND,
                 ADD_MISSING_ENTAILMLENT_NAME, ADD_MISSING_ENTAILMENT_TOOLTIP, this);
-        firstRowToolbar.add(addMissingEntailmentButton);
-        firstRowToolbar.add(Box.createRigidArea(new Dimension(5, 0)));
+        firstButtonRowPanel.add(addMissingEntailmentButton);
+        firstButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         JButton deleteMissingEntailmentButton = UIUtilities.createNamedButton(DELETE_MISSING_ENTAILMENT_COMMAND,
                 DELETE_MISSING_ENTAILMENT_NAME, DELETE_MISSING_ENTAILMENT_TOOLTIP, this);
-        firstRowToolbar.add(deleteMissingEntailmentButton);
-        firstRowToolbar.add(Box.createRigidArea(new Dimension(5, 0)));
+        firstButtonRowPanel.add(deleteMissingEntailmentButton);
+        firstButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         JButton resetMissingEntailmentButton = UIUtilities.createNamedButton(RESET_MISSING_ENTAILMENT_COMMAND,
                 RESET_MISSING_ENTAILMENT_NAME, RESET_MISSING_ENTAILMENT_TOOLTIP, this);
-        firstRowToolbar.add(resetMissingEntailmentButton);
-        buttonHolderPanel.add(firstRowToolbar);
+        firstButtonRowPanel.add(resetMissingEntailmentButton);
+        buttonHolderPanel.add(firstButtonRowPanel);
         buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        JToolBar secondRowToolBar = new JToolBar();
-        secondRowToolBar.setOrientation(JToolBar.HORIZONTAL);
-        secondRowToolBar.setFloatable(false);
-        secondRowToolBar.setLayout(new BoxLayout(secondRowToolBar, BoxLayout.LINE_AXIS));
+        JPanel secondButtonRowPanel = new JPanel();
+        secondButtonRowPanel.setLayout(new BoxLayout(secondButtonRowPanel, BoxLayout.LINE_AXIS));
         JButton loadMissingEntailmentButton = UIUtilities.createNamedButton(LOAD_MISSING_ENTAILMENT_COMMAND,
                 LOAD_MISSING_ENTAILMENT_BUTTON_NAME, LOAD_MISSING_ENTAILMENT_TOOLTIP, this);
-        secondRowToolBar.add(loadMissingEntailmentButton);
-        secondRowToolBar.add(Box.createRigidArea(new Dimension(5, 0)));
+        secondButtonRowPanel.add(loadMissingEntailmentButton);
+        secondButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         JButton saveMissingEntailmentButton = UIUtilities.createNamedButton(SAVE_MISSING_ENTAILMENT_COMMAND,
                 SAVE_MISSING_ENTAILMENT_BUTTON_NAME, SAVE_MISSING_ENTAILMENT_TOOLTIP, this);
-        secondRowToolBar.add(saveMissingEntailmentButton);
-        buttonHolderPanel.add(secondRowToolBar);
+        secondButtonRowPanel.add(saveMissingEntailmentButton);
+        buttonHolderPanel.add(secondButtonRowPanel);
         buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
         return buttonHolderPanel;
     }
@@ -464,14 +461,13 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JPanel createSelectedMissingEntailmentPanel(){
         JPanel missingEntailmentPanel = new JPanel();
         missingEntailmentPanel.setLayout(new BoxLayout(missingEntailmentPanel, BoxLayout.PAGE_AXIS));
-        this.selectedMissingEntailmentListModel = new OWLObjectListModel<>();
+        this.selectedMissingEntailmentListModel = new OWLObjectListModel<>(this.getOWLEditorKit());
         this.selectedMissingEntailmentList = new JList<>(this.selectedMissingEntailmentListModel);
         this.selectedMissingEntailmentList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2){
                     JList list = (JList) e.getSource();
-//                    todo: start here for bugfix on issue #73
                     Object selectedValue = list.getSelectedValue();
                     if (selectedValue instanceof OWLObject){
                         missingEntailmentTextEditor.setText(reverseParseOWLObject((OWLObject) selectedValue));
@@ -508,8 +504,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.computeButton = UIUtilities.createNamedButton(COMPUTE_COMMAND,
                 COMPUTE_NAME, COMPUTE_TOOLTIP, this);
         this.computeButton.setEnabled(false);
+//        JToolBar computeButtonToolBar = new JToolBar();
+//        computeButtonToolBar.setOrientation(JToolBar.HORIZONTAL);
+//        computeButtonToolBar.setFloatable(false);
+//        computeButtonToolBar.setLayout(new BoxLayout(computeButtonToolBar, BoxLayout.LINE_AXIS));
+//        computeButtonToolBar.add(this.computeButton);
         JPanel buttonHelperPanel = new JPanel();
         buttonHelperPanel.setLayout(new BoxLayout(buttonHelperPanel, BoxLayout.LINE_AXIS));
+//        buttonHelperPanel.add(computeButtonToolBar);
         buttonHelperPanel.add(this.computeButton);
         buttonHelperPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         this.computeMessageLabel = UIUtilities.createLabel("");
@@ -640,13 +642,21 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private String reverseParseOWLObject(OWLObject owlObject){
-        if (owlObject instanceof OWLClassAssertionAxiom){
-            OWLClassAssertionAxiom assertion = ((OWLClassAssertionAxiom) owlObject);
-            return assertion.getIndividual() + " Type: " + assertion.getClassExpression();
-        }
-        else{
-            return owlObject.toString();
-        }
+        return this.getOWLEditorKit().getOWLModelManager().getRendering(owlObject);
+//        LogicalAxiomRenderingOWLObjectVisitor visitor = new LogicalAxiomRenderingOWLObjectVisitor(
+//                this.getOWLEditorKit().getOWLModelManager().getOWLEntityRenderer());
+//        return owlObject.accept(visitor);
+
+//        ManchesterOWLSyntaxOWLObjectRendererImpl owlObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+//        String displayString = owlObjectRenderer.render(owlObject);
+//        if (owlObject instanceof OWLClassAssertionAxiom){
+//            return new StringBuilder(displayString).insert(displayString.indexOf("Type") + 4, ":").toString();
+//        }
+//        else if (owlObject instanceof OWLSubClassOfAxiom){
+//            return new StringBuilder(displayString).insert(displayString.indexOf("SubClassOf") + 10, ":").toString();
+//        } else {
+//            return displayString;
+//        }
     }
 
     protected void changeComputeButtonStatus(){
@@ -695,14 +705,20 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                     changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
                 logger.debug("Change or reload of active ontology detected");
                 selectedMissingEntailmentListModel.removeAll();
+                change();
             }
-            change();
         }
 
         @Override
         public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> list) {
             logger.debug("Change to ontology detected");
-            change();
+            for (OWLOntologyChange change: list){
+                if (change.getOntology().equals(getOWLEditorKit().getOWLModelManager().getActiveOntology())){
+                    logger.debug("Change made to active ontology");
+                    change();
+                    break;
+                }
+            }
         }
 
         private void change(){

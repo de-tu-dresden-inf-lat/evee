@@ -57,16 +57,16 @@ public class DLStatementAdapter {
                 this.logger.debug("no result returned yet, generating result once");
                 this.singleResultReturned = true;
                 DLStatement simplifiedStatement = CheapSimplifier$.MODULE$.simplify(this.statement);
-//                this.logger.debug("Simplified statement:\n" + simplifiedStatement.toString());
+                this.logger.debug("Simplified statement:\n" + simplifiedStatement.toString());
                 Set<OWLLogicalAxiom> axiomSet = JavaConverters.setAsJavaSet(new OWLExporter().toOwl(null, simplifiedStatement));
-//                this.logger.debug("Simplified statement converted to owl:");
-//                axiomSet.forEach(axiom -> this.logger.debug(axiom.toString()));
-//                axiomSet = JavaConverters.setAsJavaSet(
-//                        hypothesisSimplifier.simplify(
-//                                JavaConverters.asScalaSet(axiomSet)
-//                                        .toSet()));
-//                this.logger.debug("Very simplified statement:");
-//                axiomSet.forEach(axiom -> this.logger.debug(axiom.toString()));
+                this.logger.debug("Simplified statement converted to owl:");
+                axiomSet.forEach(axiom -> this.logger.debug(axiom.toString()));
+                axiomSet = JavaConverters.setAsJavaSet(
+                        hypothesisSimplifier.simplify(
+                                JavaConverters.asScalaSet(axiomSet)
+                                        .toSet()));
+                this.logger.debug("Very simplified statement:");
+                axiomSet.forEach(axiom -> this.logger.debug(axiom.toString()));
                 result.addAll(axiomSet);
                 return result;
             }

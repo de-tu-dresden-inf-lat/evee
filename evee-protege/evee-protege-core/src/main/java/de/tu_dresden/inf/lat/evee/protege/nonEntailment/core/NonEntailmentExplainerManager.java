@@ -55,6 +55,7 @@ public class NonEntailmentExplainerManager {
         for (String serviceName : this.serviceMap.keySet()){
             try {
                 this.serviceMap.get(serviceName).dispose();
+                this.logger.debug("Service disposed: {}", serviceName);
             } catch (Exception ex) {
                 this.logger.error("Error when disposing Non-Entailment Explanation service named \"{}\"", serviceName);
                 this.logger.error(ex.getMessage(), ex);

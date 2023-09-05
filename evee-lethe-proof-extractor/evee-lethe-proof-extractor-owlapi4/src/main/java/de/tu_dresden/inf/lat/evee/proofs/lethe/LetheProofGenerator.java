@@ -241,10 +241,11 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     }
 
     public void addMissingInferences(OWLOntology currentJustification, IProof<OWLAxiom> proof) {
-        assert proof.hasInferenceFor(proof.getFinalConclusion()) : "final conclusion not proved!";
         Set<IInference<OWLAxiom>> missing = new HashSet<>();
         for(IInference<OWLAxiom> inference: proof.getInferences()){
-            for(OWLAxiom premise: inference.getPremises()){
+            List<OWLAxiom> axioms = new LinkedList<>(inference.getPremises());
+            axioms.add(proof.getFinalConclusion());
+            for(OWLAxiom premise: axioms){
                 if(cancelled)
                     return;
                 if(!proof.hasInferenceFor(premise)) {
@@ -265,6 +266,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             }
         }
         proof.addInferences(missing);
+        assert proof.hasInferenceFor(proof.getFinalConclusion()) : "final conclusion not proved!";
     }
 
     /**
