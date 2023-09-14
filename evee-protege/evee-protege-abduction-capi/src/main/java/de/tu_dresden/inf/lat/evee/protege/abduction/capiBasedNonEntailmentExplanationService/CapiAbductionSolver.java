@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExpla
 
 //import ch.qos.logback.classic.spi.ILoggingEvent;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.lat.capi.experiments.AbductionProblem;
@@ -35,6 +36,7 @@ public class CapiAbductionSolver
         extends AbstractAbductionSolver<List<Solution>>
         implements Supplier<Set<OWLAxiom>> {
 
+    private OWLOntology workingOntology;
     private List<Solution> solutions;
     private OWLEditorKit owlEditorKit;
     private IProgressTracker progressTracker;
@@ -52,6 +54,7 @@ public class CapiAbductionSolver
     private File spassOutputFile;
     private PostProcessing postProcessing = null;
     private boolean firstExecution;
+    private final OWLOntologyFilterTool ontologyFilter;
     private static final String PROBLEM_SPASS = "problem.spass";
     private static final String SPASS_MODEL = "problem.spass.model";
     private static final String SPASS_CLAUSES = "problem.spass.clauses";
@@ -85,6 +88,7 @@ public class CapiAbductionSolver
         this.preferencesManager = new CapiPreferencesManager();
         this.spassProcess = null;
         this.firstExecution = true;
+        this.ontologyFilter = new OWLOntologyFilterTool(new OWLOntologyFilterTool.ELFilter());
         this.logger.debug("CapiAbductionSolver created successfully");
     }
 
@@ -101,6 +105,11 @@ public class CapiAbductionSolver
 
     @Override
     public void computeExplanation(){
+        this.logger.debug("Filtering input ontology");
+        assert this.activeOntology != null;
+        this.ontologyFilter.setOntology(this.activeOntology);
+        this.workingOntology = this.ontologyFilter.filterOntology();
+        this.logger.debug("Input ontology filtered");
         this.logger.debug("Checking path to SPASS.");
         this.spassPath = this.preferencesManager.loadSpassPath();
         if (this.spassPath.equals("")){
@@ -108,7 +117,7 @@ public class CapiAbductionSolver
             this.sendViewComponentEvent(ExplanationEventType.RESULT_RESET);
             this.showSpassPathDialog();
         } else {
-            this.logger.debug("Path to SPASS is set, continuing normally");
+            this.logger.debug("Path to SPASS is set, computing explanation");
             super.computeExplanation();
         }
     }
@@ -128,7 +137,7 @@ public class CapiAbductionSolver
         this.simplifyConjunctions = this.preferencesManager.loadSimplifyConjunctions();
         this.semanticallyOrdered = this.preferencesManager.loadSemanticallyOrdered();
         this.logger.debug("Generating Explanations");
-        assertNotNull(this.ontology);
+        assertNotNull(this.workingOntology);
         this.solutions = null;
         if (this.checkResultInCache()){
             this.logger.debug("Cached result found, re-displaying cached result");
@@ -164,6 +173,16 @@ public class CapiAbductionSolver
     @Override
     public String getSupportsExplanationMessage() {
         return "Please enter a single 'SubClassOfAxiom' as missing entailment.";
+    }
+
+    @Override
+    public String getFilterWarningMessage() {
+        return "Warning: Some Axioms of this ontology were filtered. This service only supports EL.";
+    }
+
+    @Override
+    public boolean ignoresPartsOfOntology() {
+        return this.ontologyFilter.ontologyContainsIgnoredElements();
     }
 
     private void computeNewExplanation() {
@@ -204,7 +223,7 @@ public class CapiAbductionSolver
                 this.concatFileName(FileNames.PROBLEM))) {
             OWLOntology ontologyCopy = ontologyManager.createOntology();
             ontologyCopy = ontologyCopy.getOWLOntologyManager().copyOntology(
-                    this.ontology, OntologyCopy.DEEP);
+                    this.workingOntology, OntologyCopy.DEEP);
             ELFilter.deleteNonELAxioms(ontologyCopy);
             AbductionProblem abductionProblem = new AbductionProblem(ontologyCopy, missingEntailment);
             OWL2SpassConverter converter = new OWL2SpassConverter(true);
@@ -470,7 +489,7 @@ public class CapiAbductionSolver
                         solution -> {
                             lhsClassNames.addAll(this.parse2OWLClasses(solution.getLHS()));
                             rhsClassNames.addAll(this.parse2OWLClasses(solution.getRHS()));
-                            OWLDataFactory factory = this.ontology.getOWLOntologyManager().getOWLDataFactory();
+                            OWLDataFactory factory = this.activeOntology.getOWLOntologyManager().getOWLDataFactory();
                             result.add(factory.getOWLSubClassOfAxiom(
                                     factory.getOWLObjectIntersectionOf(lhsClassNames),
                                     factory.getOWLObjectIntersectionOf(rhsClassNames)));
@@ -486,7 +505,7 @@ public class CapiAbductionSolver
     private Set<OWLClass> parse2OWLClasses(Collection<ClassName> classNames){
         Set<OWLClass> resultClasses = new HashSet<>();
         classNames.forEach(className -> resultClasses.addAll(
-                this.ontology.getClassesInSignature().stream().filter(
+                this.workingOntology.getClassesInSignature().stream().filter(
                                 owlClass -> owlClass.getIRI().getRemainder().or("").equals(
                                         IRI.create(className.toString()).toString()))
                         .collect(Collectors.toSet())));

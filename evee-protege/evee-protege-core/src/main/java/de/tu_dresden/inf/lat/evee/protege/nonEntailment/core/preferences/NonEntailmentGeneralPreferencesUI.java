@@ -12,9 +12,12 @@ import java.util.Vector;
 public class NonEntailmentGeneralPreferencesUI extends OWLPreferencesPanel {
 
     private JComboBox<VocabularyTab> defaultTabComboBox;
+    private JCheckBox showFilterWarningChecKBox;
     private final NonEntailmentGeneralPreferencesManager preferencesManager;
     private static final String COMBO_BOX_LABEL = "Automatically add new entities to vocabulary:";
     private static final String COMBO_BOX_TOOL_TIP = "Select the vocabulary tab to which new entities should be added.";
+    private static final String FILTER_WARNING_LABEL = "Show Filter Warning Popup:";
+    private static final String FILTER_WARNING_TOOL_TIP = "Shows a Popup Warning Message if the ontology was filtered before computation";
 
     public NonEntailmentGeneralPreferencesUI(){
         this.preferencesManager = new NonEntailmentGeneralPreferencesManager();
@@ -25,6 +28,8 @@ public class NonEntailmentGeneralPreferencesUI extends OWLPreferencesPanel {
         this.preferencesManager.saveDefaultVocabularyTab(
                 (VocabularyTab) Objects.requireNonNull(
                         this.defaultTabComboBox.getSelectedItem()));
+        this.preferencesManager.saveShowFilterWarningMessage(
+                this.showFilterWarningChecKBox.isSelected());
     }
 
     @Override
@@ -42,6 +47,12 @@ public class NonEntailmentGeneralPreferencesUI extends OWLPreferencesPanel {
                     this.preferencesManager.loadDefaultVocabularyTab());
             this.defaultTabComboBox.setToolTipText(COMBO_BOX_TOOL_TIP);
             holderPanel.addGroupComponent(this.defaultTabComboBox);
+            holderPanel.addGroup(FILTER_WARNING_LABEL);
+            this.showFilterWarningChecKBox = new JCheckBox();
+            this.showFilterWarningChecKBox.setSelected(
+                    this.preferencesManager.loadShowFilterWarningMessage());
+            this.showFilterWarningChecKBox.setToolTipText(FILTER_WARNING_TOOL_TIP);
+            holderPanel.addGroupComponent(this.showFilterWarningChecKBox);
         });
     }
 

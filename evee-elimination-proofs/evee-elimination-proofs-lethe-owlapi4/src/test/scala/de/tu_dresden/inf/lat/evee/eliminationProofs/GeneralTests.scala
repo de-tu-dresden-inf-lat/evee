@@ -6,7 +6,7 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.grid.ForgettingBasedGridProo
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.{ApproximateProofMeasureAxiomSizeSum, ApproximateProofMeasureInferenceNumber, MinimalForgettingBasedProofGenerator, MinimalSignatureAndForgettingBasedProofGenerator, ProofEvaluatorAxiomNumber, ProofEvaluatorAxiomSizeSum, ProofEvaluatorInferenceNumber, SymbolMinimalForgettingBasedProofGenerator}
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.{LetheBasedKBProofGeneratorSkippingSteps, ProofGraphVisualiser}
-import de.tu_dresden.inf.lat.evee.general.tools.BasicProgressBar
+import de.tu_dresden.inf.lat.evee.general.tools.{BasicProgressBar, OWLOntologyFilterTool}
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProofGenerator, ISignatureBasedProofGenerator, ISimpleProofGenerator, ISimpleSignatureBasedProofGenerator}
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.OWLSignatureBasedMinimalTreeProofGenerator
@@ -38,7 +38,7 @@ class GeneralTests {
 
     var proofGenerator: ISignatureBasedProofGenerator[OWLEntity,OWLAxiom,OWLOntology] =
       new MinimalSignatureAndForgettingBasedProofGenerator(
-      measure,approximateMeasure,forgetter,ALCHTBoxFilter, justifier)
+      measure,approximateMeasure,forgetter,new OWLOntologyFilterTool.ALCHFilter(), justifier)
 
 
     proofGenerator = new OWLSignatureBasedMinimalTreeProofGenerator(proofGenerator)
@@ -57,7 +57,7 @@ class GeneralTests {
     val approximateMeasure = new ApproximateProofMeasureAxiomSizeSum()
 
     val proofGenerator = new MinimalForgettingBasedProofGenerator(
-      measure,approximateMeasure,forgetter, ALCHTBoxFilter, justifier)
+      measure,approximateMeasure,forgetter, new OWLOntologyFilterTool.ALCHFilter(), justifier)
 
     proofGenerator.addProgressTracker(new BasicProgressBar())
 
@@ -84,7 +84,7 @@ class GeneralTests {
     val forgetter = LetheBasedForgetter.ALC_ABox(2000)//  .ALC_ABox(1)
     val justifier = OWLApiBasedJustifier.UsingHermiT(ontologyManager)
 
-    val proofGenerator = new SymbolMinimalForgettingBasedProofGenerator(forgetter, ALCHTBoxFilter,
+    val proofGenerator = new SymbolMinimalForgettingBasedProofGenerator(forgetter, new OWLOntologyFilterTool.ALCHFilter(),
       justifier,skipSteps = false)
 
     proofGenerator.addProgressTracker(new BasicProgressBar)
@@ -132,7 +132,7 @@ class GeneralTests {
   }
 
   def testPizzaInference(proofGenerator: ISimpleProofGenerator[OWLClass,OWLAxiom,OWLOntology]): Unit = {
-    val ontology = ontologyManager.loadOntologyFromOntologyDocument(new File(Thread.currentThread().getContextClassLoader.getResource("pizza.owl").getPath))
+    val ontology = ontologyManager.loadOntologyFromOntologyDocument(new File(Thread.currentThread().getContextClassLoader.getResource("resources/pizza.owl").getPath))
     val factory = ontologyManager.getOWLDataFactory
 
     val lhs = factory.getOWLClass(IRI.create("http://www.co-ode.org/ontologies/pizza/pizza.owl#Margherita"))
@@ -164,7 +164,7 @@ class GeneralTests {
 
   def testPizzaInferenceWithSignature(proofGenerator: ISignatureBasedProofGenerator[OWLEntity,OWLAxiom,OWLOntology])
   : Unit = {
-    val ontology = ontologyManager.loadOntologyFromOntologyDocument(new File("pizza.owl"))
+    val ontology = ontologyManager.loadOntologyFromOntologyDocument(new File("resources/pizza.owl"))
     val factory = ontologyManager.getOWLDataFactory
 
     val lhs = factory.getOWLClass(

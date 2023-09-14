@@ -105,6 +105,11 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
             this.resultScrollingPanel.add(singleResultPanel);
             this.hypothesisIndex++;
         });
+        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+//            width *0.3 is default divider location for split pane in the main view
+        this.resultHolderPanel.setPreferredSize(new Dimension(
+                (int) (screenWidth * 0.3),
+                this.resultHolderPanel.getHeight()));
         this.resultHolderPanel.repaint();
         this.resultHolderPanel.revalidate();
     }

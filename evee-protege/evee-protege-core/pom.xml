@@ -138,6 +138,8 @@
                     <include>DoubleUpArrow_Transparent.png</include>
                     <include>DownArrow_Transparent.png</include>
                     <include>UpArrow_Transparent.png</include>
+                    <include>DownArrow_Transparent_Big_Mid.png</include>
+                    <include>UpArrow_Transparent_Big_Mid.png</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>

@@ -2,7 +2,6 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExpl
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +61,11 @@ public class LetheAbductionSolver
     }
 
     @Override
+    public String getFilterWarningMessage() {
+        return "Warning: Some Axioms of this ontology were filtered. This service only supports ALC.";
+    }
+
+    @Override
     public Stream<Set<OWLAxiom>> generateExplanations() {
         this.logger.debug("Generating Explanations");
         DLStatement result;
@@ -74,7 +78,7 @@ public class LetheAbductionSolver
         } else{
             this.logger.debug("No cached result found, trying to compute new explanation");
             try{
-                this.abducer.setBackgroundOntology(this.ontology);
+                this.abducer.setBackgroundOntology(this.activeOntology);
                 this.abducer.setAbducibles(this.vocabulary);
                 this.computationRunning = true;
                 result = this.abducer.abduce(this.missingEntailment);
@@ -108,6 +112,11 @@ public class LetheAbductionSolver
     @Override
     public boolean supportsExplanation() {
         return this.missingEntailment.size() != 0 && this.vocabulary.size() != 0;
+    }
+
+    @Override
+    public boolean ignoresPartsOfOntology() {
+        return true;
     }
 
     @Override

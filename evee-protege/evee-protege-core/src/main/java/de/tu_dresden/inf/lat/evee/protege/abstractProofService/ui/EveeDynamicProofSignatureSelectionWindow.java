@@ -291,11 +291,11 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
                 this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
                 this.signatureSelectionUI.clearSelectedSignatureUISelection();
             } catch (IOException e) {
-//                error-message already shown in SignatureFileHandler
+//                error-message already shown and logged in SignatureFileHandler
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
             } catch(LoadingAbortedException ignored){
-//                no handling necessary
+//                no handling necessary, logging already done in SignatureFileHandler
             }
         });
     }
@@ -310,7 +310,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
                 signatureFileHandler.saveSignature();
                 this.signatureSelectionUI.clearSelectedSignatureUISelection();
             } catch (IOException e){
-//                error-message already shown in SignatureFileHandler
+//                error-message already shown and logged in SignatureFileHandler
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
             }
@@ -339,7 +339,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
 //                        this.useSignatureCheckBox.isSelected());
             }
             catch (IllegalArgumentException e){
-                this.logger.error("Error while saving signature to Protege Preferences.", e);
+                this.logger.error("Error while saving signature to Protege Preferences: ", e);
                 String errorString = "<center>" + e + "</center>";
                 UIUtilities.showError(SIGNATURE_SAVING_ERROR_MSG + errorString, this.getOWLEditorKit());
             }

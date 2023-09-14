@@ -11,6 +11,7 @@ public class NonEntailmentGeneralPreferencesManager {
     private static final String SET_ID = "EVEE_NON_ENTAILMENT_PREFERENCES";
     private static final String PREFERENCE_ID = "GENERAL";
     private static final String DEFAULT_TAB = "DEFAULT_TAB";
+    private static final String SHOW_FILTER_WARNING = "SHOW_FILTER_WARNING";
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentGeneralPreferencesManager.class);
 
@@ -36,6 +37,19 @@ public class NonEntailmentGeneralPreferencesManager {
         Preferences preferences = this.getProtegePreferences();
         preferences.putString(DEFAULT_TAB, vocabularyTab.toString());
         this.logger.debug("Saved to default vocabulary tab: {}", vocabularyTab);
+    }
+
+    public boolean loadShowFilterWarningMessage(){
+        Preferences preferences = this.getProtegePreferences();
+        boolean showWarning = preferences.getBoolean(SHOW_FILTER_WARNING, true);
+        this.logger.debug("Loaded boolean show filter warning message: {}", showWarning);
+        return showWarning;
+    }
+
+    public void saveShowFilterWarningMessage(boolean showFilterWarning){
+        Preferences preferences = this.getProtegePreferences();
+        preferences.putBoolean(SHOW_FILTER_WARNING, showFilterWarning);
+        this.logger.debug("Saved boolean show filter warning message: {}", showFilterWarning);
     }
 
 }

@@ -51,13 +51,13 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private JList<OWLEntity> forbiddenVocabularyList;
     private JPanel buttonHolderPanel;
     private static final String ADD_BTN_COMMAND = "ADD";
-    private static final String ADD_BTN_ICON = "/DownArrow_Transparent.png";
+    private static final String ADD_BTN_ICON = "/DownArrow_Transparent_Big_Mid.png";
     private static final String ADD_BTN_TOOLTIP = "Add selected OWLObjects to the vocabulary";
     private static final String ADD_ALL_BTN_COMMAND = "ADD_ALL";
     private static final String ADD_ALL_BTN_ICON = "/DoubleDownArrow_Transparent.png";
     private static final String ADD_ALL_BTN_TOOLTIP = "Add all entities to the vocabulary";
     private static final String DEL_BTN_COMMAND = "DELETE";
-    private static final String DEL_BTN_ICON = "/UpArrow_Transparent.png";
+    private static final String DEL_BTN_ICON = "/UpArrow_Transparent_Big_Mid.png";
     private static final String DEL_BTN_TOOLTIP = "Delete selected OWLObjects from the vocabulary";
     private static final String DEL_ALL_BTN_COMMAND = "DELETE_ALL";
     private static final String DEL_ALL_BTN_ICON = "/DoubleUpArrow_Transparent.png";
@@ -106,7 +106,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 
     private void createOntologySignatureTabbedPane(){
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setPreferredSize(new Dimension(400, 400));
+//        tabbedPane.setPreferredSize(new Dimension(400, 400));
 //        todo: highlighting keywords for classes + properties? see method "initialiseView" in Protege's "AbstractOWLEntityHierarchyViewComponent"
 //        classes
         this.classesTree = new OWLModelManagerTree<>(
@@ -234,7 +234,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.forbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         this.resetVocabularyListModels();
         this.vocabularyTabbedPane = new JTabbedPane();
-        this.vocabularyTabbedPane.setPreferredSize(new Dimension(400, 400));
+//        this.vocabularyTabbedPane.setPreferredSize(new Dimension(400, 400));
         this.vocabularyTabbedPane.addTab("Permitted Vocabulary",
                 ComponentFactory.createScrollPane(this.permittedVocabularyList));
         this.vocabularyTabbedPane.addTab("Forbidden Vocabulary",
@@ -362,7 +362,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             this.moveEntities2VocabularyList(entitiesToAdd,
                     this.tabIndex2Name(selectedVocabularyTabIndex));
             this.clearVocabularySelection();
-            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+            this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
         });
     }
 
@@ -372,7 +372,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             VocabularyTab tabToAdd = this.tabIndex2Name(this.vocabularyTabbedPane.getSelectedIndex());
             this.addAll2VocabularyList(tabToAdd);
             this.clearVocabularySelection();
-            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+            this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
         });
     }
 
@@ -389,7 +389,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             this.moveEntities2VocabularyList(entitiesToDelete,
                     this.tabIndex2ComplementName(deleteFromTabIndex));
             this.clearVocabularySelection();
-            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+            this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
         });
     }
 
@@ -399,7 +399,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             VocabularyTab tabToAdd = this.tabIndex2ComplementName(this.vocabularyTabbedPane.getSelectedIndex());
             this.addAll2VocabularyList(tabToAdd);
             this.clearVocabularySelection();
-            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+            this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
         });
     }
 
@@ -413,7 +413,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             int tabIndex = this.vocabularyTabbedPane.getSelectedIndex();
             this.moveEntities2VocabularyList(missingEntailmentSet,
                     this.tabIndex2Name(tabIndex));
-            this.nonEntailmentViewComponent.changeComputeButtonStatus();
+            this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
         });
     }
 
@@ -456,9 +456,9 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                 this.clearVocabularySelection();
 //                this.vocabularyTabbedPane.setSelectedIndex(0);
             } catch (IOException ignored){
-//                error-message already shown in SignatureFileHandler
+//                error-message already shown and logged in SignatureFileHandler
             } catch (LoadingAbortedException ignored){
-//                no handling necessary
+//                no handling necessary, logging-message created in SignatureFileHandler
             }
         });
     }
@@ -472,7 +472,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                 signatureFileHandler.saveSignature();
                 this.clearVocabularySelection();
             } catch (IOException ignored){
-//                error-message already shown in SignatureFileHandler
+//                error-message already shown and logged in SignatureFileHandler
             }
         });
     }

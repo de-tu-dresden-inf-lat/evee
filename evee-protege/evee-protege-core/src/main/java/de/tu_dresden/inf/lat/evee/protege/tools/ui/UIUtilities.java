@@ -108,13 +108,13 @@ public class UIUtilities {
                     title = "Warning";
                     break;
             }
-            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
+            JDialog dialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
                     owlEditorKit.getWorkspace()), title);
-            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+            dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
                     ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
-            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            errorDialog.setVisible(true);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setVisible(true);
         });
     }
 

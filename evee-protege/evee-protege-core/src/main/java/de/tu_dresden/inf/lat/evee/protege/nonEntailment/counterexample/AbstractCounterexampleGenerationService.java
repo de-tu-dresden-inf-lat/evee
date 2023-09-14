@@ -87,6 +87,11 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
         return supportsExplanationMessage;
     }
 
+    @Override
+    public boolean ignoresPartsOfOntology(){
+        return false;
+    }
+
     public boolean supportsExplanation() {
         return this.counterexampleGenerator.supportsExplanation();
     }
@@ -168,4 +173,10 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     public boolean successful() {
         return true;
     }
+
+    @Override
+    public String getFilterWarningMessage(){
+        return "";
+    }
+
 }

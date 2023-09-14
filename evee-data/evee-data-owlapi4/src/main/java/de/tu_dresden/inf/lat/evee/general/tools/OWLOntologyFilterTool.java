@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OWLOntologyFilterTool {
 
@@ -18,7 +21,7 @@ public class OWLOntologyFilterTool {
 
     public OWLOntologyFilterTool(IOWLOntologyFilter filter){
         this.ontology = null;
-        this.filter = null;
+        this.filter = filter;
         this.ontologyContainsIgnoredElements = false;
     }
 
@@ -27,8 +30,7 @@ public class OWLOntologyFilterTool {
     }
 
     /**
-     * @return A copy of the ontology which only contains supported axioms and non-logical axioms
-     * (annotations and declaration axioms)
+     * @return A copy of the ontology which only contains supported axioms
      */
     public OWLOntology filterOntology(){
         assert this.ontology != null;
@@ -37,13 +39,15 @@ public class OWLOntologyFilterTool {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         OWLOntology filteredOntology = null;
         try {
+            logger.debug("try-statement entered");
             OWLOntology temporaryOntology = manager.createOntology();
+            logger.debug("temporaryOntology created");
             this.ontology.getAxioms().forEach(axiom -> {
-                if ( (! isIrrelevantAxiomType(axiom)) &&
+                if ( (axiom.isOfType(this.filter.getSupportedFromABoxTBoxRBox()) &&
                         (! axiomIsSupported(
-                                axiom, this.filter.getAxiomTypes(),
-                                this.filter.getConceptTypes()))){
-                    this.logger.debug("Axiom filtered: " + axiom);
+                                axiom, this.filter.getSupportedAxiomTypes(),
+                                this.filter.getSupportedConceptTypes())))){
+                    this.logger.debug("Axiom not supported: " + axiom);
                     this.ontologyContainsIgnoredElements = true;
                 } else {
                     manager.addAxiom(temporaryOntology, axiom);
@@ -56,108 +60,154 @@ public class OWLOntologyFilterTool {
         return filteredOntology;
     }
 
-    public boolean containsIgnoredElements(){
+    public boolean ontologyContainsIgnoredElements(){
         return this.ontologyContainsIgnoredElements;
-    }
-
-    private boolean isIrrelevantAxiomType(OWLAxiom axiom){
-        AxiomType<?> axiomType = axiom.getAxiomType();
-        return (axiomType.equals(AxiomType.ANNOTATION_ASSERTION)) ||
-                (axiomType.equals(AxiomType.DECLARATION));
     }
 
     private boolean axiomIsSupported(OWLAxiom axiom,
                                      List<AxiomType<? extends OWLAxiom>> supportedAxioms,
                                      List<ClassExpressionType> supportedConcepts) {
         if (! supportedAxioms.contains(axiom.getAxiomType())) {
+            this.logger.debug("Axiom type not supported: {}", axiom.getAxiomType());
             return false;
         }
-        if (axiom.getNestedClassExpressions().stream()
-                .anyMatch(expr -> ! supportedConcepts.contains(expr.getClassExpressionType()))) {
-            return false;
-        }
-        return true;
+        AtomicBoolean supported = new AtomicBoolean(true);
+        axiom.getNestedClassExpressions().forEach(expr -> {
+            if (! supportedConcepts.contains(expr.getClassExpressionType())){
+                this.logger.debug("Expression type not supported: {}", expr.getClassExpressionType());
+                supported.set(false);
+            }
+        });
+        return supported.get();
     }
 
     public static class ELFilter implements IOWLOntologyFilter {
 
         @Override
-        public List<AxiomType<? extends OWLAxiom>> getAxiomTypes() {
+        public List<AxiomType<? extends OWLAxiom>> getSupportedAxiomTypes() {
             return Arrays.asList(AxiomType.EQUIVALENT_CLASSES, AxiomType.SUBCLASS_OF,
                     AxiomType.DECLARATION);
         }
 
         @Override
-        public List<ClassExpressionType> getConceptTypes() {
+        public List<ClassExpressionType> getSupportedConceptTypes() {
             return Arrays.asList(ClassExpressionType.OWL_CLASS, ClassExpressionType.OBJECT_INTERSECTION_OF,
                     ClassExpressionType.OBJECT_SOME_VALUES_FROM);
+        }
+
+        @Override
+        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+            return AxiomType.TBoxAndRBoxAxiomTypes;
+        }
+    }
+
+    public static class ELBottomFilter implements IOWLOntologyFilter {
+
+        public List<AxiomType<? extends OWLAxiom>> getSupportedAxiomTypes() {
+            return Arrays.asList(AxiomType.EQUIVALENT_CLASSES, AxiomType.SUBCLASS_OF,
+                    AxiomType.DECLARATION, AxiomType.DISJOINT_CLASSES);
+        }
+
+        @Override
+        public List<ClassExpressionType> getSupportedConceptTypes() {
+            return Arrays.asList(ClassExpressionType.OWL_CLASS, ClassExpressionType.OBJECT_INTERSECTION_OF,
+                    ClassExpressionType.OBJECT_SOME_VALUES_FROM);
+        }
+
+        @Override
+        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+            return AxiomType.TBoxAndRBoxAxiomTypes;
         }
     }
 
     public static class ELHFilter implements IOWLOntologyFilter {
 
         @Override
-        public List<AxiomType<? extends OWLAxiom>> getAxiomTypes() {
+        public List<AxiomType<? extends OWLAxiom>> getSupportedAxiomTypes() {
             return Arrays.asList(AxiomType.EQUIVALENT_CLASSES, AxiomType.SUBCLASS_OF,
                     AxiomType.OBJECT_PROPERTY_DOMAIN, AxiomType.DISJOINT_CLASSES,
-                    AxiomType.SUB_OBJECT_PROPERTY, AxiomType.DECLARATION);
+                    AxiomType.SUB_OBJECT_PROPERTY);
         }
 
         @Override
-        public List<ClassExpressionType> getConceptTypes() {
+        public List<ClassExpressionType> getSupportedConceptTypes() {
             return Arrays.asList(ClassExpressionType.OWL_CLASS, ClassExpressionType.OBJECT_INTERSECTION_OF,
                     ClassExpressionType.OBJECT_SOME_VALUES_FROM);
         }
-    }
-
-    public static class ALCFilter implements IOWLOntologyFilter {
 
         @Override
-        public List<AxiomType<? extends OWLAxiom>> getAxiomTypes() {
-            return Arrays.asList(AxiomType.EQUIVALENT_CLASSES, AxiomType.SUBCLASS_OF,
+        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+            return AxiomType.TBoxAndRBoxAxiomTypes;
+        }
+    }
+
+    public static class ALCTBoxRBoxFilter implements IOWLOntologyFilter {
+
+        @Override
+        public List<AxiomType<? extends OWLAxiom>> getSupportedAxiomTypes() {
+            return Arrays.asList(AxiomType.SUBCLASS_OF, AxiomType.EQUIVALENT_CLASSES,
                     AxiomType.OBJECT_PROPERTY_DOMAIN, AxiomType.OBJECT_PROPERTY_RANGE,
                     AxiomType.DISJOINT_CLASSES, AxiomType.DISJOINT_UNION);
         }
 
         @Override
-        public List<ClassExpressionType> getConceptTypes() {
+        public List<ClassExpressionType> getSupportedConceptTypes() {
             return Arrays.asList(ClassExpressionType.OWL_CLASS, ClassExpressionType.OBJECT_INTERSECTION_OF,
                     ClassExpressionType.OBJECT_UNION_OF, ClassExpressionType.OBJECT_COMPLEMENT_OF,
                     ClassExpressionType.OBJECT_SOME_VALUES_FROM, ClassExpressionType.OBJECT_ALL_VALUES_FROM);
+        }
+
+        @Override
+        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+            return AxiomType.TBoxAndRBoxAxiomTypes;
         }
     }
 
     public static class ALCHFilter implements IOWLOntologyFilter {
 
         @Override
-        public List<AxiomType<? extends OWLAxiom>> getAxiomTypes() {
-            return Arrays.asList(AxiomType.EQUIVALENT_CLASSES, AxiomType.SUBCLASS_OF,
+        public List<AxiomType<? extends OWLAxiom>> getSupportedAxiomTypes() {
+            return Arrays.asList(AxiomType.SUBCLASS_OF, AxiomType.EQUIVALENT_CLASSES,
                     AxiomType.OBJECT_PROPERTY_DOMAIN, AxiomType.OBJECT_PROPERTY_RANGE,
                     AxiomType.DISJOINT_CLASSES, AxiomType.DISJOINT_UNION,
-                    AxiomType.SUB_OBJECT_PROPERTY, AxiomType.DECLARATION);
+                    AxiomType.SUB_OBJECT_PROPERTY);
         }
 
         @Override
-        public List<ClassExpressionType> getConceptTypes() {
+        public List<ClassExpressionType> getSupportedConceptTypes() {
             return Arrays.asList(ClassExpressionType.OWL_CLASS, ClassExpressionType.OBJECT_INTERSECTION_OF,
                     ClassExpressionType.OBJECT_UNION_OF, ClassExpressionType.OBJECT_COMPLEMENT_OF,
                     ClassExpressionType.OBJECT_SOME_VALUES_FROM, ClassExpressionType.OBJECT_ALL_VALUES_FROM);
         }
+
+        @Override
+        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+            return null;
+        }
     }
 
-    public static class ELBottomFilter implements IOWLOntologyFilter {
+    public static class ALCKBFilter implements IOWLOntologyFilter {
 
-        public List<AxiomType<? extends OWLAxiom>> getAxiomTypes() {
-            return Arrays.asList(AxiomType.EQUIVALENT_CLASSES, AxiomType.SUBCLASS_OF,
-                    AxiomType.DECLARATION, AxiomType.DISJOINT_CLASSES);
+        @Override
+        public List<AxiomType<? extends OWLAxiom>> getSupportedAxiomTypes() {
+            return Arrays.asList(AxiomType.SUBCLASS_OF, AxiomType.EQUIVALENT_CLASSES,
+                    AxiomType.OBJECT_PROPERTY_DOMAIN, AxiomType.OBJECT_PROPERTY_RANGE,
+                    AxiomType.DISJOINT_CLASSES, AxiomType.DISJOINT_UNION);
         }
 
         @Override
-        public List<ClassExpressionType> getConceptTypes() {
+        public List<ClassExpressionType> getSupportedConceptTypes() {
             return Arrays.asList(ClassExpressionType.OWL_CLASS, ClassExpressionType.OBJECT_INTERSECTION_OF,
-                    ClassExpressionType.OBJECT_SOME_VALUES_FROM);
+                    ClassExpressionType.OBJECT_UNION_OF, ClassExpressionType.OBJECT_COMPLEMENT_OF,
+                    ClassExpressionType.OBJECT_SOME_VALUES_FROM, ClassExpressionType.OBJECT_ALL_VALUES_FROM);
+        }
+
+        @Override
+        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+            Set<AxiomType<? extends OWLAxiom>> result = new HashSet<>(AxiomType.TBoxAndRBoxAxiomTypes);
+            result.addAll(AxiomType.ABoxAxiomTypes);
+            return result;
         }
     }
-
 
 }

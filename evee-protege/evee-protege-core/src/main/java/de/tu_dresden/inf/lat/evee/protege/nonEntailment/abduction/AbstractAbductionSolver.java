@@ -35,7 +35,7 @@ abstract public class AbstractAbductionSolver<Result>
     protected Set<OWLAxiom> lastUsedMissingEntailment = null;
     protected Set<OWLEntity> vocabulary = null;
     protected Set<OWLEntity> lastUsedVocabulary = null;
-    protected OWLOntology ontology = null;
+    protected OWLOntology activeOntology = null;
     private Iterator<Set<OWLAxiom>> resultStreamIterator = null;
     protected JPanel settingsHolderPanel;
     private JSpinner abductionNumberSpinner;
@@ -88,7 +88,7 @@ abstract public class AbstractAbductionSolver<Result>
      * @return true iff the cache contains a result for the currently active ontology, missing entailment and vocabulary
      */
     protected boolean checkResultInCache(){
-        return this.cachedResults.get(this.ontology)
+        return this.cachedResults.get(this.activeOntology)
                 .containsResultFor(this.missingEntailment, this.vocabulary);
     }
 
@@ -98,13 +98,13 @@ abstract public class AbstractAbductionSolver<Result>
      */
     protected void saveResultToCache(Result result){
         this.logger.debug("Trying to solve result to cache");
-        if (this.ontology == null ||
+        if (this.activeOntology == null ||
                 this.missingEntailment == null ||
                 this.vocabulary == null){
             this.logger.debug("Cannot save result to cache");
             return;
         }
-        this.cachedResults.get(this.ontology).
+        this.cachedResults.get(this.activeOntology).
                 putResult(this.missingEntailment, this.vocabulary, result);
         this.logger.debug("Result saved to cache");
     }
@@ -115,13 +115,13 @@ abstract public class AbstractAbductionSolver<Result>
      */
     protected Result loadResultFromCache(){
         this.logger.debug("Trying to load result from cache");
-        if (! this.cachedResults.get(this.ontology).containsResultFor(
+        if (! this.cachedResults.get(this.activeOntology).containsResultFor(
                 this.missingEntailment, this.vocabulary)){
             this.logger.debug("No cached result found");
             return null;
         } else {
             this.logger.debug("Cached result loaded");
-            return this.cachedResults.get(this.ontology).getResult(
+            return this.cachedResults.get(this.activeOntology).getResult(
                     this.missingEntailment, this.vocabulary);
         }
     }
@@ -160,7 +160,7 @@ abstract public class AbstractAbductionSolver<Result>
     @Override
     public void setOntology(OWLOntology ontology) {
         this.logger.debug("Setting ontology:\n{}", ontology.getOntologyID());
-        this.ontology = ontology;
+        this.activeOntology = ontology;
         if (this.cachedResults.get(ontology) == null){
             this.logger.debug("No cache for ontology detected, creating new cache");
             this.cachedResults.put(ontology, new AbductionCache<>());
@@ -191,7 +191,7 @@ abstract public class AbstractAbductionSolver<Result>
     @Override
     public void computeExplanation() {
         this.logger.debug("Computing explanation");
-        assertNotNull(this.ontology);
+        assertNotNull(this.activeOntology);
         assertNotNull(this.missingEntailment);
         assertNotNull(this.vocabulary);
         SwingUtilities.invokeLater(() -> {
@@ -379,7 +379,7 @@ abstract public class AbstractAbductionSolver<Result>
     }
 
     protected void createResultComponent(){
-        this.resultManager.createResultComponent(ontology,
+        this.resultManager.createResultComponent(activeOntology,
                 this.lastUsedMissingEntailment,
                 this.createHypothesesListFromStream());
     }

@@ -6,8 +6,9 @@ import org.semanticweb.owlapi.apibinding.OWLManager
 import java.io.File
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.{LetheBasedForgetter, OWLApiBasedJustifier}
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool
 import de.tu_dresden.inf.lat.evee.proofs.data.AbstractSimpleOWLProofGenerator
-import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProof, ISimpleProofGenerator, IProofWriter}
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProof, IProofWriter, ISimpleProofGenerator}
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofWriter
 import org.semanticweb.HermiT.ReasonerFactory
 
@@ -74,7 +75,7 @@ object GenerateAllProofs {
     val forgetter = LetheBasedForgetter.ALC_ABox()
     val justifier = OWLApiBasedJustifier.UsingHermiT(ontology.getOWLOntologyManager)
 
-    val generator = new ForgettingBasedProofGenerator(forgetter,ALCHTBoxFilter, justifier)
+    val generator = new ForgettingBasedProofGenerator(forgetter, new OWLOntologyFilterTool.ALCHFilter(), justifier)
     generator.setOntology(ontology)
     return generator
   }

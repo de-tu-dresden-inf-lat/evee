@@ -5,6 +5,7 @@ import de.tu_dresden.inf.lat.dltools.DLFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.ForgettingBasedProofGenerator
 import de.tu_dresden.inf.lat.evee.eliminationProofs.dataStructures.{Forgetter, Justifier}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.tools.SearchTreeProgressTracker
+import de.tu_dresden.inf.lat.evee.general.interfaces.IOWLOntologyFilter
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.{ProofGenerationCancelledException, ProofGenerationFailedException}
 import org.semanticweb.HermiT
@@ -15,7 +16,8 @@ import scala.collection.{JavaConverters, mutable}
 import scala.collection.JavaConverters.{asScalaIteratorConverter, asScalaSetConverter}
 
 class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
-                                                 filter: DLFilter,
+                                                 filter: IOWLOntologyFilter,
+//                                                 filter: DLFilter,
                                                  justifier: Justifier,
                                                  skipSteps: Boolean = true,
                                                  var varyJustifications: Boolean = false)

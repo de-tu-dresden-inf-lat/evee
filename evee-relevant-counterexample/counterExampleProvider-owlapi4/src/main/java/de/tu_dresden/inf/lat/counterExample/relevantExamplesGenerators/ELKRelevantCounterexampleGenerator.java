@@ -175,4 +175,9 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     public boolean successful() {
         return true;
     }
+
+    @Override
+    public boolean ignoresPartsOfOntology() {
+        return false;
+    }
 }

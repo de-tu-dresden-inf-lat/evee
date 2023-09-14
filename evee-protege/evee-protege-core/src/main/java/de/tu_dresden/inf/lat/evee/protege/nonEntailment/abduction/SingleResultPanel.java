@@ -57,6 +57,7 @@ public class SingleResultPanel extends JPanel {
 
     private void createUI(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
                           Set<OWLAxiom> result, int hypothesisIndex){
+        this.setLayout(new BorderLayout());
         this.setBorder(new CompoundBorder(
                 new EmptyBorder(5, 5, 5, 5),
                 new CompoundBorder(new LineBorder(Color.BLACK, 1),

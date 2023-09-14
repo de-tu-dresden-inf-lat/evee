@@ -148,4 +148,9 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     public boolean successful() {
         return true;
     }
+
+    @Override
+    public boolean ignoresPartsOfOntology() {
+        return false;
+    }
 }

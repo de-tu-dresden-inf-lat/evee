@@ -1,8 +1,9 @@
 package de.tu_dresden.inf.lat.evee.eliminationProofs
 
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.{LetheBasedForgetter, OWLApiBasedJustifier}
-import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.{ApproximateProofMeasureAxiomSizeSum, ProofEvaluatorInferenceNumber, ApproximateProofMeasureInferenceNumber, MinimalForgettingBasedProofGenerator, SymbolMinimalForgettingBasedProofGenerator}
+import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.{ApproximateProofMeasureAxiomSizeSum, ApproximateProofMeasureInferenceNumber, MinimalForgettingBasedProofGenerator, ProofEvaluatorInferenceNumber, SymbolMinimalForgettingBasedProofGenerator}
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool
 import de.tu_dresden.inf.lat.evee.proofs.tools.RecursiveProofEvaluator
 import de.tu_dresden.inf.lat.evee.proofs.tools.measures.{OWLAxiomSizeWeightedTreeSizeMeasure, TreeSizeMeasure}
 import org.semanticweb.owlapi.apibinding.OWLManager
@@ -11,7 +12,8 @@ import org.semanticweb.owlapi.model.OWLAxiom
 class LetheBasedHeuristicProofGenerator
   extends ForgettingBasedProofGenerator(
     LetheBasedForgetter.ALC_ABox(2000),
-    ALCHTBoxFilter,
+    new OWLOntologyFilterTool.ALCHFilter(),
+//    ALCHTBoxFilter,
     OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
     skipSteps = true
   )
@@ -19,7 +21,8 @@ class LetheBasedHeuristicProofGenerator
 class LetheBasedSymbolMinimalProofGenerator
 extends SymbolMinimalForgettingBasedProofGenerator(
     LetheBasedForgetter.ALC_ABox(2000),
-    ALCHTBoxFilter,
+  new OWLOntologyFilterTool.ALCHFilter(),
+//    ALCHTBoxFilter,
     OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
     skipSteps = true
 )
@@ -31,7 +34,8 @@ extends MinimalForgettingBasedProofGenerator(
   //new RecursiveProofEvaluator[OWLAxiom](new TreeSizeMeasure[OWLAxiom]),
   new ApproximateProofMeasureInferenceNumber,
   LetheBasedForgetter.ALC_ABox(2000),
-  ALCHTBoxFilter,
+  new OWLOntologyFilterTool.ALCHFilter(),
+//  ALCHTBoxFilter,
   OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager())
 )
 
@@ -41,28 +45,32 @@ class LetheBasedWeightedSizeMinimalProofGenerator
     new RecursiveProofEvaluator[OWLAxiom](new OWLAxiomSizeWeightedTreeSizeMeasure()),
     new ApproximateProofMeasureAxiomSizeSum,
     LetheBasedForgetter.ALC_ABox(2000),
-    ALCHTBoxFilter,
+    new OWLOntologyFilterTool.ALCHFilter(),
+//    ALCHTBoxFilter,
     OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager())
   )
 
 class LetheBasedALCHProofGenerator
   extends ForgettingBasedProofGenerator(
     LetheBasedForgetter.ALCH(),
-    ALCHTBoxFilter,
+    new OWLOntologyFilterTool.ALCHFilter(),
+//    ALCHTBoxFilter,
     OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
     skipSteps = false)
 
 class LetheBasedALCHProofGeneratorSkippingSteps
   extends ForgettingBasedProofGenerator(
     LetheBasedForgetter.ALCH(),
-    ALCHTBoxFilter,
+    new OWLOntologyFilterTool.ALCHFilter(),
+//    ALCHTBoxFilter,
     OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
     skipSteps = true)
 
 class LetheBasedKBProofGenerator
   extends ForgettingBasedProofGenerator(
     LetheBasedForgetter.ALC_ABox(),
-    ALCHTBoxFilter,
+    new OWLOntologyFilterTool.ALCHFilter(),
+//    ALCHTBoxFilter,
     OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
     skipSteps = false
   )
@@ -70,7 +78,8 @@ class LetheBasedKBProofGenerator
 class LetheBasedKBProofGeneratorSkippingSteps
   extends ForgettingBasedProofGenerator(
     LetheBasedForgetter.ALC_ABox(),
-    ALCHTBoxFilter,
+    new OWLOntologyFilterTool.ALCHFilter(),
+//    ALCHTBoxFilter,
     OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
     skipSteps = true
   )

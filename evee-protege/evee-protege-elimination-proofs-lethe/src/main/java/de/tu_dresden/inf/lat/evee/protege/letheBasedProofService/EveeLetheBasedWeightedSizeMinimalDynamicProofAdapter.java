@@ -5,6 +5,7 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ApproximateProofMeasureAxiomSizeSum;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.MinimalForgettingBasedProofGenerator;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.evee.proofs.tools.RecursiveProofEvaluator;
 import de.tu_dresden.inf.lat.evee.proofs.tools.measures.OWLAxiomSizeWeightedTreeSizeMeasure;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
@@ -43,7 +44,8 @@ public class EveeLetheBasedWeightedSizeMinimalDynamicProofAdapter extends Abstra
                 new RecursiveProofEvaluator<>(new OWLAxiomSizeWeightedTreeSizeMeasure()),
                 new ApproximateProofMeasureAxiomSizeSum(JavaConverters.asScalaSet(new HashSet<OWLEntity>()).toSet()),
                 LetheBasedForgetter.ALC_ABox(timeOut),
-                ALCHTBoxFilter$.MODULE$,
+                new OWLOntologyFilterTool.ALCHFilter(),
+//                ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps);
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
