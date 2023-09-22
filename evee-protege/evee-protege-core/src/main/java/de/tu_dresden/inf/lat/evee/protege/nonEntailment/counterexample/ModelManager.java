@@ -4,9 +4,11 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 import com.google.common.collect.Sets;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 
+import de.tu_dresden.inf.lat.evee.general.interfaces.IIsCancellable;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.NonEntailmentExplanationProgressTracker;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.GraphModelComponent;
 import org.apache.log4j.Logger;
-import org.graphstream.graph.Edge;
 import org.graphstream.ui.graphicGraph.GraphicEdge;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
 import org.graphstream.ui.graphicGraph.GraphicNode;
@@ -21,16 +23,18 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 //import org.graphstream.graph.*;
 //import org.graphstream.graph.implementations.*;
 //import org.graphstream.ui.swing_viewer.*;
 //import org.graphstream.ui.view.Viewer;
 
 
-public class ModelManager {
+public class ModelManager implements IIsCancellable {
+
+    private final String EDGE_LABEL_GROUPING = "line";
     private final ReasonerFactory rf = new ReasonerFactory();
     private final OWLDataFactory df = OWLManager.createOWLOntologyManager().getOWLDataFactory();;
     private final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -39,6 +43,9 @@ public class ModelManager {
     private final OWLOntology ont;
     private OWLReasoner res;
     private Set<OWLIndividualAxiom> model;
+
+
+
     private Map<String, List<OWLClass>> individualClassMap;
     private Map<String[],List<OWLObjectProperty>> objectPropertyMap;
     private int baseLabelDistance= -20;
@@ -71,23 +78,25 @@ public class ModelManager {
 
 
 
-    public void refreshModelViewer(Set<OWLAxiom> additionalAxioms) throws Exception {
-        this.man.addAxioms(this.ont, additionalAxioms);
+    public void refreshModelViewer(Set<OWLAxiom> additionalAxioms, NonEntailmentExplanationProgressTracker progressTracker) throws Exception {
+        man.addAxioms(ont, additionalAxioms);
         try {
-            this.res = this.rf.createReasoner(this.ont);
-            this.res.precomputeInferences();
+            progressTracker.setMax(4);
+            res = rf.createReasoner(ont);
+            res.precomputeInferences();
             if(!isConsistent()) {
                 throw new ModelGenerationException("Ontology is inconsistent!");
             }
             logger.info("Ontology with the additional axioms is consistent");
-            this.model = this.counterExampleGenerator.generateModel();
-            this.markedIndividuals = counterExampleGenerator.getMarkedIndividuals();
+            counterExampleGenerator.addProgressTracker(progressTracker);
+            model = counterExampleGenerator.generateModel();
+            markedIndividuals = counterExampleGenerator.getMarkedIndividuals();
+            man.removeAxioms(ont, additionalAxioms);
             refreshGraphModelViewer();
-            this.man.removeAxioms(this.ont, additionalAxioms);
             logger.info("new graph is created");
         } catch (Exception e) {
-            this.man.removeAxioms(this.ont, additionalAxioms);
-            throw e;
+            man.removeAxioms(ont, additionalAxioms);
+            throw  e;
         }
     }
 
@@ -159,6 +168,7 @@ public class ModelManager {
 
 
     private void createEdges() {
+
         objectPropertyMap.entrySet().stream()
                 .forEach(e -> {
                     String subj = e.getKey()[0];
@@ -169,9 +179,19 @@ public class ModelManager {
                                     && edge.getNode1().getId().equals(subj))) {
                         forward = false;
                     }
-                    for (int i =0;i<e.getValue().size();i++) {
-                        String prop = e.getValue().get(i).getIRI().getShortForm();
-                        createEdge(subj,prop,obj,i,forward);
+                    if(EDGE_LABEL_GROUPING == "column") {
+                        for (int i =0;i<e.getValue().size();i++) {
+                            String prop = owlEntityToLabel(e.getValue().get(i));
+                            createEdge(subj,prop,obj,i);
+                        }
+                    } else {
+                        String prop = owlEntityToLabel(e.getValue().get(0));
+                        if (e.getValue().size()>1) {
+                            for (int i =1;i<e.getValue().size();i++) {
+                                prop = prop + ", " + owlEntityToLabel(e.getValue().get(i));
+                            }
+                        }
+                        createEdge(subj,prop,obj,0);
                     }
                 });
     }
@@ -179,17 +199,12 @@ public class ModelManager {
     private void createEdge(String subj,
                             String prop,
                             String obj,
-                            int edgeNum,
-                            boolean forwardEdge) {
+                            int edgeNum) {
         int labelDistance = (edgeNum+1) * baseLabelDistance;
-        String textColor= GraphStyleSheets.PROTEGE_BLUE_1;
+        String textColor= GraphStyleSheets.PROTEGE_BLUE;
         String fillColor= GraphStyleSheets.PROTEGE_BLUE_1;
         String alignment="along;";
-        if (!forwardEdge) {
-            textColor= GraphStyleSheets.PROTEGE_BLUE;
-            fillColor= GraphStyleSheets.PROTEGE_BLUE;
-            labelDistance = labelDistance * -1;
-        }
+
         if (subj.equals(obj)) {
             alignment = "center;";
         }
@@ -197,26 +212,40 @@ public class ModelManager {
             fillColor= "rgba(0,0,0,0);";
         }
 
-        GraphicEdge edge = (GraphicEdge) graphModel.addEdge("edge"+subj + obj+ prop, subj, obj, true);
+        GraphicEdge edge = (GraphicEdge) graphModel.addEdge("edge"+subj + obj+edgeNum, subj, obj, true);
         edge.setAttribute("ui.label", prop);
+//        edge.setAttribute("properties",prop);
         edge.setAttribute("ui.style","text-color: "+textColor+
                 "text-offset: 0, "+labelDistance+";"+
                 "fill-color: "+fillColor+
                 "text-alignment: "+alignment);
-
-        logger.debug("edge"+ edge.getId()+" is curved:"+ edge.isCurve());
+//        logger.info("prop of node"+edge.getAttribute("properties").toString());
     }
 
     private void createNodes() {
         logger.debug("root inds:"+this.markedIndividuals);
         individualClassMap.keySet().stream().forEach(k -> {
             GraphicNode n = (GraphicNode) graphModel.addNode(k);
+
             for(IRI iri:this.markedIndividuals) {
                 if(iri.getShortForm().equalsIgnoreCase(n.getId())) {
                     n.setAttribute("ui.class", "root");
                 }
             }
         });
+    }
+
+    private String owlEntityToLabel(OWLEntity obj) {
+
+        for(OWLAnnotation a : EntitySearcher.getAnnotations(obj, ont, df.getRDFSLabel())) {
+            OWLAnnotationValue val = a.getValue();
+            if(val instanceof OWLLiteral) {
+                if(((OWLLiteral) val).hasLang("en")) {
+                    return ((OWLLiteral) val).getLiteral();
+                }
+            }
+        }
+        return obj.getIRI().getShortForm();
     }
 
     private void createSpriteLabel(String nodeID,
@@ -226,20 +255,8 @@ public class ModelManager {
         String label = "...";
         String identifier = "unroll";
         if (!Objects.equals(cls,null)) {
-
-            for(OWLAnnotation a : EntitySearcher.getAnnotations(cls, ont, df.getRDFSLabel())) {
-                OWLAnnotationValue val = a.getValue();
-                if(val instanceof OWLLiteral) {
-                    if(((OWLLiteral) val).hasLang("en")) {
-                        label = ((OWLLiteral) val).getLiteral();
-                        identifier = ((OWLLiteral) val).getLiteral();
-                    }
-                }
-            }
-            if (label.equals("...")) {
-                label = cls.getIRI().getShortForm();
-                identifier = cls.getIRI().getShortForm();
-            }
+            label = owlEntityToLabel(cls);
+            identifier = label;
         }
 
         Sprite sprite = sMan.addSprite(nodeID + identifier);
@@ -296,7 +313,7 @@ public class ModelManager {
     public void setMaxLabelNumber(int maxLabelNumber) {
         this.maxLabelNumber = maxLabelNumber;
     }
-    protected OWLOntology getOnt() {
+    public OWLOntology getOnt() {
         return this.ont;
     }
     public GraphicGraph getGraphModel() {
@@ -308,4 +325,15 @@ public class ModelManager {
     public Viewer getGraphModelViewer() {
         return this.graphModelViewer;
     }
+    public Map<String[], List<OWLObjectProperty>> getObjectPropertyMap() {
+        return objectPropertyMap;
+    }
+
+    @Override
+    public boolean successful() {
+        return false;
+    }
+
+
+
 }

@@ -123,6 +123,12 @@
             <version>3.3.0-v3346</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-data-owlapi4</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

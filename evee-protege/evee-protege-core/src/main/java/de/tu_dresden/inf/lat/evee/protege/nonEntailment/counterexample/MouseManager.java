@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 
-import info.aduna.text.StringUtil;
 import org.apache.log4j.Logger;
 import org.graphstream.ui.geom.Point2;
 import org.graphstream.ui.geom.Point3;
@@ -14,19 +13,20 @@ import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.camera.Camera;
 import org.graphstream.ui.view.util.InteractiveElement;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MouseManager extends DefaultMouseManager implements MouseWheelListener {
     private long curTime;
 
     private DefaultListModel<OWLClass> classListModel;
-    private Map<String, List<OWLClass>> classMap;
+    private Map<String, List<OWLClass>> individualClassMap;
+    private Map<String[],List<OWLObjectProperty>> objectPropertyMap;
     private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(
             InteractiveElement.NODE);
     private final Logger logger = Logger.getLogger(MouseManager.class);
@@ -40,10 +40,12 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     private boolean isFirstClick;
     private EdgeLabelPositioner edgeLabelPositioner;
     public MouseManager(Map<String, List<OWLClass>> classMap,
+                        Map<String[],List<OWLObjectProperty>> objectPropertyMap,
                         DefaultListModel<OWLClass> classListModel,
                         Viewer viewer) {
         this.viewer = viewer;
-        this.classMap = classMap;
+        this.individualClassMap = classMap;
+        this.objectPropertyMap = objectPropertyMap;
         this.classListModel = classListModel;
         this.isFirstClick = true;
         this.edgeLabelPositioner = new EdgeLabelPositioner();
@@ -78,6 +80,8 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
         }
         if(isFirstClick) {
             viewer.disableAutoLayout();
+            logger.debug("positioner will be called");
+            edgeLabelPositioner.positionLabelsOnFirstClick(objectPropertyMap,graph);
             this.isFirstClick = false;
         }
     }
@@ -101,10 +105,16 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     @Override
     public void mouseDragged(MouseEvent event) {
         if(elementMoving) {
-            edgeLabelPositioner.positionLabels(curNode,viewer.getGraphicGraph());
-//            logger.debug("coordinates before movinng:"+curNode.getId()+":x:"+curNode.getX()+"y:"+curNode.getY());
+            double oldPositionX = curNode.getX();
+
             elementMoving(curElement, event);
-//            logger.debug("coordinates after movinng:"+curNode.getId()+":x:"+curNode.getX()+"y:"+curNode.getY());
+            double newPositionX = curNode.getX();
+
+            edgeLabelPositioner.positionLabelsOnNodeMove(curNode,
+                    oldPositionX,
+                    newPositionX,
+                    viewer.getGraphicGraph());
+//
         } else {
             cameraMoving(event);
         }
@@ -136,9 +146,9 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     }
     public void selectNewNode(String nodeID) {
         logger.debug("button is released");
-        if (classMap.containsKey(nodeID)) {
+        if (individualClassMap.containsKey(nodeID)) {
 
-            List<OWLClass> classList = classMap.get(nodeID);
+            List<OWLClass> classList = individualClassMap.get(nodeID);
             classListModel.removeAllElements();
             for (OWLClass cl : classList) {
                 classListModel.addElement(cl);

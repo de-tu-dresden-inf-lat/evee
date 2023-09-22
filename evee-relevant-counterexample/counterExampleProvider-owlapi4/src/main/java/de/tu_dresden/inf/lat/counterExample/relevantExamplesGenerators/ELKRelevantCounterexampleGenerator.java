@@ -5,6 +5,7 @@ import de.tu_dresden.inf.lat.counterExample.ModelRefiner;
 import de.tu_dresden.inf.lat.counterExample.data.ModelType;
 import de.tu_dresden.inf.lat.counterExample.tools.OntologyFilter;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.model.data.Element;
 import de.tu_dresden.inf.lat.model.data.Relation;
@@ -33,6 +34,7 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     private Set<IRI> markedIndividuals;
 
     private boolean modelTypeReverted = false;
+    private IProgressTracker progressTracker;
 
     public boolean isModelTypeReverted() {
         return modelTypeReverted;
@@ -66,6 +68,8 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     @Override
     public Set<OWLIndividualAxiom> generateModel() {
         try {
+            progressTracker.setMessage("Generating counterexample");
+            progressTracker.increment();
             OWLSubClassOfAxiom subClsOf;
             OWLAxiom axiom = this.observation.iterator().next();
             if (axiom instanceof OWLSubClassOfAxiom)
@@ -87,6 +91,8 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             RelevantCounterExample generator = getRelevantGenerator(type, elkModelGenerator);
 
             Set<Element> model = generator.generate();
+            progressTracker.setMessage("Filtering the generated counterexample.");
+            progressTracker.increment();
 
             markedIndividuals = new HashSet<>();
             markedIndividuals.add(IRI.create(ELEMENT_PREFIX + elkModelGenerator.getMapper().getLHSRepresentativeElement().getName()));
@@ -175,4 +181,9 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     public boolean successful() {
         return true;
     }
+
+    @Override
+    public void addProgressTracker(IProgressTracker tracker) {
+        this.progressTracker = tracker;
+    };
 }

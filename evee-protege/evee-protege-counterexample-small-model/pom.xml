@@ -63,6 +63,18 @@
             <version>0.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-protege-core</artifactId>
+            <version>0.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-data-owlapi4</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
 
         <!--        <dependency>-->

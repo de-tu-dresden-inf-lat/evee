@@ -63,7 +63,13 @@
             <artifactId>counterExampleProvider-owlapi4</artifactId>
             <version>${revision}</version>
         </dependency>
-<!--        <dependency>-->
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-protege-core</artifactId>
+            <version>0.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--        <dependency>-->
 <!--            <groupId>com.github.jsonld-java</groupId>-->
 <!--            <artifactId>jsonld-java</artifactId>-->
 <!--            <version>0.13.0</version>-->
