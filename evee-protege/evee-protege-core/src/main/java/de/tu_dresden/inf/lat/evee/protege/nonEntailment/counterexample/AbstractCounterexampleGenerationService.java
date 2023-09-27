@@ -31,6 +31,7 @@ import static org.semanticweb.owlapi.model.parameters.OntologyCopy.DEEP;
 abstract public class AbstractCounterexampleGenerationService implements INonEntailmentExplanationService<OWLIndividualAxiom> {
     protected String supportsExplanationMessage;
     protected OWLEditorKit owlEditorKit;
+    protected ModelGenerationSwingWorker worker;
     protected String errorMessage;
     protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     protected Set<OWLAxiom> observation;
@@ -49,22 +50,13 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
         this.man = OWLManager.createOWLOntologyManager();
     }
 
-//    protected JTabbedPane getTabbedPane() {
-//
-//        ModelManager man = new ModelManager(this.model, this.owlEditorKit, this, this.workingCopy);
-//        Component graphComponent = man.getGraphModel();
-//        Component tableComponent = man.getTableModel();
-//        JTabbedPane tabbedPane = new JTabbedPane();
-//        tabbedPane.setPreferredSize(new Dimension(400, 400));
-//        tabbedPane.addTab("Graph View", graphComponent);
-//        tabbedPane.addTab("Table View", tableComponent);
-//        return tabbedPane;
-//    }
+
 
     public void computeExplanation() {
-        ModelGenerationSpringWorker worker = new ModelGenerationSpringWorker(this);
+        worker = new ModelGenerationSwingWorker(this);
 
         worker.execute();
+
     }
 
     public Component getResult() {
@@ -166,29 +158,26 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     };
 
 
-    private class ModelGenerationSpringWorker extends SwingWorker<Void, Void> {
+    private class ModelGenerationSwingWorker extends SwingWorker<Void, Void> {
         private INonEntailmentExplanationService<OWLIndividualAxiom> service;
         private boolean computationSucessfull = false;
-        public ModelGenerationSpringWorker(INonEntailmentExplanationService<OWLIndividualAxiom> service) {
+        public ModelGenerationSwingWorker(INonEntailmentExplanationService<OWLIndividualAxiom> service) {
            this.service = service;
         }
 
         @Override
         protected Void doInBackground()  {
             try {
+                computationSucessfull = false;
                 checkSubsumption((OWLSubClassOfAxiom) observation.stream().findFirst().get());
                 progressTracker.setMax(4);
                 counterexampleGenerator.addProgressTracker(progressTracker);
-                logger.debug("model generation is started");
+                logger.info("model generation is started");
                 model = counterexampleGenerator.generateModel();
-                logger.debug("model is generated:" + model);
+                logger.info("model is generated");
                 this.computationSucessfull = true;
             } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                String sStackTrace = sw.toString();
-                logger.info(sStackTrace);
+                logger.error("model generation error",e);
                 errorMessage = e.getMessage();
             }
             return null;
@@ -205,6 +194,11 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
             }
             progressTracker.done();
         }
+    }
+    @Override
+    public void cancel() {
+        logger.info("cancellation of computation is called");
+        this.worker.cancel(true);
     }
 
 }
