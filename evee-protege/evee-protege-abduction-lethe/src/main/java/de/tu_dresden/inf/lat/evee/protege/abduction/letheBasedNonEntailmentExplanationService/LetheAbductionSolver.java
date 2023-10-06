@@ -160,7 +160,8 @@ public class LetheAbductionSolver
     }
 
     private boolean redundant(Set<OWLAxiom> hypothesis) {
-        return previousHypotheses.stream().anyMatch(hypothesis::containsAll);
+        //return previousHypotheses.stream().anyMatch(hypothesis::containsAll);
+        return previousHypotheses.stream().anyMatch(x -> x.stream().allMatch(y -> hypothesis.stream().anyMatch(y::equals)));
     }
 
     protected Stream<Set<OWLAxiom>> explanationComputationCompleted(DLStatement hypotheses){
