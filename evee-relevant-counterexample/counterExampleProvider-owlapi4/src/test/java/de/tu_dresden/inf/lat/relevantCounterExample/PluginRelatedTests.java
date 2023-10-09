@@ -27,10 +27,10 @@ public class PluginRelatedTests {
         factory = manager.getOWLDataFactory();
 
         sushiOnt = manager.loadOntologyFromOntologyDocument(
-                Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream(
+                Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream(
                         "ontologies/Sushi_X.owl")));
         pizzaOnt =  manager.loadOntologyFromOntologyDocument(
-                Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream(
+                Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream(
                         "ontologies/pizza.owl")));
     }
 
