@@ -3,6 +3,7 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLNonEntailmentExplainer;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
@@ -16,6 +17,7 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,6 +40,8 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     protected IOWLCounterexampleGenerator counterexampleGenerator;
     protected OWLOntologyManager man;
     private final Logger logger = Logger.getLogger(AbstractCounterexampleGenerationService.class);
+    private IProgressTracker progressTracker;
+
     public AbstractCounterexampleGenerationService() {
         this.observation = new HashSet<>();
         this.errorMessage = "";
@@ -58,28 +62,15 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
 //    }
 
     public void computeExplanation() {
-        try {
-            checkSubsumption((OWLSubClassOfAxiom) observation.stream().findFirst().get());
-//            ((IOWLNonEntailmentExplainer) counterexampleGenerator).setOntology(workingCopy);
-            model = counterexampleGenerator.generateModel();
-            logger.debug("model is generated:"+model);
-            this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
-                    ExplanationEventType.COMPUTATION_COMPLETE));
-        } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            String sStackTrace = sw.toString();
-            logger.info(sStackTrace);
-            this.errorMessage = e.getMessage();
-            this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
-                    ExplanationEventType.ERROR));
-        }
+        ModelGenerationSpringWorker worker = new ModelGenerationSpringWorker(this);
+
+        worker.execute();
     }
 
     public Component getResult() {
         ModelManager man = new ModelManager(this.model, this.owlEditorKit, this.counterexampleGenerator, this.workingCopy, this.observation);
-        return man.generateGraphModel();
+        man.refreshGraphModelComponent();
+        return man.getGraphModelComponent();
     }
 
     @Override
@@ -168,4 +159,52 @@ abstract public class AbstractCounterexampleGenerationService implements INonEnt
     public boolean successful() {
         return true;
     }
+
+    @Override
+    public void addProgressTracker(IProgressTracker tracker) {
+        this.progressTracker = tracker;
+    };
+
+
+    private class ModelGenerationSpringWorker extends SwingWorker<Void, Void> {
+        private INonEntailmentExplanationService<OWLIndividualAxiom> service;
+        private boolean computationSucessfull = false;
+        public ModelGenerationSpringWorker(INonEntailmentExplanationService<OWLIndividualAxiom> service) {
+           this.service = service;
+        }
+
+        @Override
+        protected Void doInBackground()  {
+            try {
+                checkSubsumption((OWLSubClassOfAxiom) observation.stream().findFirst().get());
+                progressTracker.setMax(4);
+                counterexampleGenerator.addProgressTracker(progressTracker);
+                logger.debug("model generation is started");
+                model = counterexampleGenerator.generateModel();
+                logger.debug("model is generated:" + model);
+                this.computationSucessfull = true;
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                String sStackTrace = sw.toString();
+                logger.info(sStackTrace);
+                errorMessage = e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            if (computationSucessfull) {
+                viewComponentListener.handleEvent(new ExplanationEvent<>(this.service,
+                        ExplanationEventType.COMPUTATION_COMPLETE));
+            } else {
+                viewComponentListener.handleEvent(new ExplanationEvent<>(this.service,
+                        ExplanationEventType.ERROR));
+            }
+            progressTracker.done();
+        }
+    }
+
 }

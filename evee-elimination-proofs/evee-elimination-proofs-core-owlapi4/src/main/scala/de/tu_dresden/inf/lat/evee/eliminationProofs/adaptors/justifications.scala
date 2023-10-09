@@ -16,7 +16,7 @@ import scala.collection.JavaConverters._
 object OWLApiBasedJustifier {
 
   def UsingHermiT( manager: OWLOntologyManager)  =
-    new OWLApiBasedJustifier(new HermiT.Reasoner.ReasonerFactory, manager)
+    new OWLApiBasedJustifier(new org.semanticweb.HermiT.ReasonerFactory(), manager)
 
 }
 
@@ -55,13 +55,18 @@ extends DefaultExplanationGenerator(ontologyManager, reasonerFactory, ontology, 
 }
 
 class OWLApiBasedJustifier(reasonerFactory: OWLReasonerFactory,
-                           ontologyManager: OWLOntologyManager) extends Justifier {
+                           ontologyManager: OWLOntologyManager)
+  extends Justifier {
 
   val factory = ontologyManager.getOWLDataFactory
 
   override def entailed(axioms: Iterable[OWLAxiom], axiom: OWLAxiom): Boolean = {
-    val reasoner = reasonerFactory.createReasoner(ontologyManager.createOntology(axioms.toSet.asJava))
-    return reasoner.isEntailed(axiom)
+    val ontology = ontologyManager.createOntology(axioms.toSet.asJava);
+    val reasoner = reasonerFactory.createReasoner(ontology);
+    val result = reasoner.isEntailed(axiom)
+    reasoner.dispose()
+    ontologyManager.removeOntology(ontology);
+    result
   }
 
   override def justify(axioms: Iterable[OWLAxiom], axiom: OWLAxiom): Set[OWLAxiom] = {
@@ -75,35 +80,47 @@ class OWLApiBasedJustifier(reasonerFactory: OWLReasonerFactory,
     //println("Justify "+SimpleOWLFormatter.format(axiom))
     //println("In "+axioms2.map(SimpleOWLFormatter.format))
 
+    val ontologyManager = OWLManager.createOWLOntologyManager();
+
+    val ontology = ontologyManager.createOntology(axioms2.toSet.asJava)
+
     val explanationGenerator =
       new ExtendedDefaultExplanationGenerator(
         ontologyManager,
         reasonerFactory,
-        ontologyManager.createOntology(axioms2.toSet.asJava),
+        ontology,
         new SilentExplanationProgressMonitor()
       )
 
     val explanation = explanationGenerator.getExplanation(axiom).asScala.toSet
 
+    ontologyManager.removeOntology(ontology)
+
     /*println("Justification for "+SimpleOWLFormatter.format(axiom))
     println(" in "+axioms.map(SimpleOWLFormatter.format))
     println(" is "+explanation.map(SimpleOWLFormatter.format))
     */
+
     explanation
   }
 
 
   override def justifyAll(axioms: Iterable[OWLAxiom], axiom: OWLAxiom): Set[Set[OWLAxiom]] = {
+    val ontology = ontologyManager.createOntology(axioms.toSet.asJava);
     val explanationGenerator =
       new ExtendedDefaultExplanationGenerator(
         ontologyManager,
         reasonerFactory,
-        ontologyManager.createOntology(axioms.toSet.asJava),
+        ontology,
         new SilentExplanationProgressMonitor()
       )
 
-    explanationGenerator.getExplanations(axiom).asScala.toSet
+    val result = explanationGenerator.getExplanations(axiom).asScala.toSet
       .map((x: java.util.Set[OWLAxiom]) => x.asScala.toSet)
+
+    ontologyManager.removeOntology(ontology)
+
+    result
   }
 
   override def toString() = {
@@ -115,9 +132,15 @@ class OWLApiBasedJustifier(reasonerFactory: OWLReasonerFactory,
     val ontology = ontologyManager.createOntology(axioms.toSet.asJava)
     val reasoner = reasonerFactory.createReasoner(ontology)
 
-    if(reasoner.isEntailed(axiom))
-      return Some(justify(axioms,axiom))
+
+    val result = if(reasoner.isEntailed(axiom))
+      Some(justify(axioms,axiom))
     else
-      return None
+      None
+
+    reasoner.dispose()
+    ontologyManager.removeOntology(ontology)
+
+    result
   }
 }

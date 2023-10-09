@@ -42,10 +42,15 @@ class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
 
   override def computeOntologySteps(): Unit = {
 
+    val ontologyAxioms = JavaConverters.asScalaSet(ontology.getLogicalAxioms(Imports.INCLUDED))
+
+    if (!justifier.entailed(ontologyAxioms, toProve))
+      throw new ProofGenerationFailedException("cannot prove what is not entailed");
+
     forgettingCache.clear()
 
     logger.debug(s"toProve: ${SimpleOWLFormatter.format(toProve)}")
-    val initial = justifier.justify(JavaConverters.asScalaSet(ontology.getLogicalAxioms(Imports.INCLUDED)), toProve)
+    val initial = justifier.justify(ontologyAxioms, toProve)
 
     logger.debug("Initial: ")
     logger.debug(s"${initial.map(SimpleOWLFormatter.format).mkString("\n")}")
@@ -151,7 +156,7 @@ class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
 
 
       if(!done.isEmpty)
-        progressTrackers.setMessage("trying "+done.map(SimpleOWLFormatter.format(_)).mkString(", "))
+        progressTrackers.setMessage("trying forgetting order "+done.map(SimpleOWLFormatter.format(_)).mkString(", "))
 
 
       nextOptions.foreach(nextOption => {
@@ -200,10 +205,11 @@ class SymbolMinimalForgettingBasedProofGenerator(var forgetter: Forgetter,
             forgetter.forget(premises, name)
           )
         }
+        if (!justifier.entailed(nextAxioms, toProve))
+          throw new ProofGenerationFailedException("entailments lost during forgetting operation");
+
         if(!varyJustifications) {
           nextAxioms = justifier.justify(nextAxioms, toProve)
-          if(nextAxioms.isEmpty)
-            throw new ProofGenerationFailedException("entailments lost during forgetting operation");
 
           Some(nextAxioms, name)
         } else {
@@ -250,7 +256,10 @@ class RobustForgetter(forgetter: Forgetter) extends Forgetter {
       logger.trace("Forget "+SimpleOWLFormatter.format(name))
       val ui = forgetter.forget(axioms, name)
       val before = axioms.toSet[OWLAxiom].flatMap(_.getSignature.asScala)
-      if(!ui.flatMap(_.getSignature.asScala).forall(before)) {
+      logger.trace(s"forgetting result: ${ui.map(SimpleOWLFormatter.format)}")
+      if(!ui.flatMap(_.getSignature.asScala)
+        .filterNot(e => e.isTopEntity || e.isBottomEntity)
+        .forall(before)) {
         logger.trace(s"definers introduced - take as failed")
         return axioms.toSet
       } else

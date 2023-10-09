@@ -5,6 +5,8 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -17,6 +19,7 @@ public class AbductionSolverThread extends Thread implements IExplanationGenerat
                             Stream<Set<OWLAxiom>>>>> abstractAbductionSolverListener;
     private final AbstractAbductionSolver<?> abductionSolver;
     private Stream<Set<OWLAxiom>> resultStream;
+    private final Logger logger = LoggerFactory.getLogger(AbductionSolverThread.class);
 
     public AbductionSolverThread(IExplanationGenerationListener<
             ExplanationEvent<
@@ -40,6 +43,7 @@ public class AbductionSolverThread extends Thread implements IExplanationGenerat
     }
 
     public void run(){
+        this.logger.debug("Running thread");
         this.resultStream = abductionSolver.generateExplanations();
         this.abstractAbductionSolverListener.handleEvent(
                 new ExplanationEvent<>(this,

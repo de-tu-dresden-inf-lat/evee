@@ -27,4 +27,6 @@
     <logger name="uk.ac.man.cs.lethe.internal.dl.forgetting.abox.ABoxSingleConceptForgetter" level="off"/>
     <logger name="de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.SymbolMinimalForgettingBasedProofGenerator"
     level="off"/>
+    <logger name="de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.RobustForgetter"
+            level="off"/>
 </configuration>

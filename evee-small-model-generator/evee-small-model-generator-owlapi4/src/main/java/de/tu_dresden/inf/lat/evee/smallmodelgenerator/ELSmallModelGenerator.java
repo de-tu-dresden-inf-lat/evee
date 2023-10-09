@@ -19,7 +19,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     public OWLOntology ont;
     public int curName;
     public Set<OWLAxiom> TBoxAxioms;
-    public Set<OWLAxiom> ABoxAxioms;
+
     public boolean bigModel;
     private final OWLDataFactory df;
     private boolean consistent;

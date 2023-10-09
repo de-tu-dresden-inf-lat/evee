@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,14 +51,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private JList<OWLEntity> forbiddenVocabularyList;
     private JPanel buttonHolderPanel;
     private static final String ADD_BTN_COMMAND = "ADD";
-//    private static final String ADD_BTN_ICON = "/downArrow.png";
+    private static final String ADD_BTN_ICON = "/DownArrow_Transparent.png";
     private static final String ADD_BTN_TOOLTIP = "Add selected OWLObjects to the vocabulary";
     private static final String ADD_ALL_BTN_COMMAND = "ADD_ALL";
+    private static final String ADD_ALL_BTN_ICON = "/DoubleDownArrow_Transparent.png";
     private static final String ADD_ALL_BTN_TOOLTIP = "Add all entities to the vocabulary";
     private static final String DEL_BTN_COMMAND = "DELETE";
-//    private static final String DEL_BTN_ICON = "/upArrow.png";
+    private static final String DEL_BTN_ICON = "/UpArrow_Transparent.png";
     private static final String DEL_BTN_TOOLTIP = "Delete selected OWLObjects from the vocabulary";
     private static final String DEL_ALL_BTN_COMMAND = "DELETE_ALL";
+    private static final String DEL_ALL_BTN_ICON = "/DoubleUpArrow_Transparent.png";
     private static final String DEL_ALL_BTN_TOOLTIP = "Delete all entities from the vocabulary";
     private static final String LOAD_SIGNATURE_COMMAND = "LOAD_SIGNATURE";
     private static final String LOAD_SIGNATURE_BUTTON_NAME = "Load permitted vocabulary";
@@ -126,7 +128,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.propertyTree.setOWLObjectComparator(this.owlEditorKit.getOWLModelManager().getOWLObjectComparator());
         tabbedPane.addTab("Object properties", propertyPane);
 //        individuals
-        this.ontologyIndividualsListModel = new OWLObjectListModel<>();
+        this.ontologyIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.ontologyIndividualsJList = new JList<>(this.ontologyIndividualsListModel);
         this.ontologyIndividualsJList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         Set<OWLNamedIndividual> individuals = this.owlEditorKit.getOWLModelManager().getActiveOntology().getIndividualsInSignature(Imports.INCLUDED);
@@ -171,34 +173,36 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.buttonHolderPanel.setLayout(new BoxLayout(this.buttonHolderPanel, BoxLayout.PAGE_AXIS));
         this.buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
         ArrayList<JButton> buttonList = new ArrayList<>();
-//        URL addURL = getClass().getResource(ADD_BTN_ICON);
-        JButton addButton = UIUtilities.createArrowButton(ADD_BTN_COMMAND,
-                BasicArrowButton.SOUTH, ADD_BTN_TOOLTIP, this);
+        URL addUrl = getClass().getResource(ADD_BTN_ICON);
+        JButton addButton = UIUtilities.createIconButton(ADD_BTN_COMMAND, addUrl,
+                ADD_BTN_TOOLTIP, this);
         buttonList.add(addButton);
-//        URL delURL = getClass().getResource(DEL_BTN_ICON);
-        JButton deleteButton = UIUtilities.createArrowButton(DEL_BTN_COMMAND,
-                BasicArrowButton.NORTH, DEL_BTN_TOOLTIP, this);
+        URL delUrl = getClass().getResource(DEL_BTN_ICON);
+        JButton deleteButton = UIUtilities.createIconButton(DEL_BTN_COMMAND, delUrl,
+                DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);
-        JToolBar firstToolbar = this.createButtonToolBar(buttonList);
-        this.buttonHolderPanel.add(firstToolbar);
-        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        JPanel firstButtonRowPanel = this.createButtonPanel(buttonList);
+        this.buttonHolderPanel.add(firstButtonRowPanel);
+        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
-        JButton addAllButton = UIUtilities.createDoubleArrowButton(ADD_ALL_BTN_COMMAND,
-                BasicArrowButton.SOUTH, ADD_ALL_BTN_TOOLTIP, this);
+        URL addAllUrl = getClass().getResource(ADD_ALL_BTN_ICON);
+        JButton addAllButton = UIUtilities.createIconButton(ADD_ALL_BTN_COMMAND, addAllUrl,
+                ADD_ALL_BTN_TOOLTIP, this);
         buttonList.add(addAllButton);
-        JButton deleteAllButton = UIUtilities.createDoubleArrowButton(DEL_ALL_BTN_COMMAND,
-                BasicArrowButton.NORTH, DEL_ALL_BTN_TOOLTIP, this);
+        URL delAllUrl = getClass().getResource(DEL_ALL_BTN_ICON);
+        JButton deleteAllButton = UIUtilities.createIconButton(DEL_ALL_BTN_COMMAND, delAllUrl,
+                DEL_ALL_BTN_TOOLTIP, this);
         buttonList.add(deleteAllButton);
-        JToolBar secondToolBar = this.createButtonToolBar(buttonList);
-        this.buttonHolderPanel.add(secondToolBar);
-        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        JPanel secondButtonRowPanel = this.createButtonPanel(buttonList);
+        this.buttonHolderPanel.add(secondButtonRowPanel);
+        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
         JButton addMissingEntailmentSignatureButton = UIUtilities.createNamedButton(ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
                 ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME, ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
         buttonList.add(addMissingEntailmentSignatureButton);
-        JToolBar thirdToolBar = this.createButtonToolBar(buttonList);
-        this.buttonHolderPanel.add(thirdToolBar);
-        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        JPanel thirdButtonRowPanel = this.createButtonPanel(buttonList);
+        this.buttonHolderPanel.add(thirdButtonRowPanel);
+        this.buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
         JButton loadSignatureButton = UIUtilities.createNamedButton(LOAD_SIGNATURE_COMMAND,
                 LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
@@ -206,28 +210,26 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         JButton saveSignatureButton = UIUtilities.createNamedButton(SAVE_SIGNATURE_COMMAND,
                 SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
         buttonList.add(saveSignatureButton);
-        JToolBar fourthToolBar = this.createButtonToolBar(buttonList);
-        this.buttonHolderPanel.add(fourthToolBar);
+        JPanel fourthButtonRowPanel = this.createButtonPanel(buttonList);
+        this.buttonHolderPanel.add(fourthButtonRowPanel);
     }
 
-    private JToolBar createButtonToolBar(List<JButton> buttons){
-        JToolBar toolbar = new JToolBar();
-        toolbar.setOrientation(JToolBar.HORIZONTAL);
-        toolbar.setFloatable(false);
-        toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.LINE_AXIS));
-        toolbar.add(buttons.get(0));
+    private JPanel createButtonPanel(List<JButton> buttons){
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+        buttonPanel.add(buttons.get(0));
         for (int idx = 1; idx < buttons.size(); idx++){
-            toolbar.add(Box.createRigidArea(new Dimension(10, 0)));
-            toolbar.add(buttons.get(idx));
+            buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPanel.add(buttons.get(idx));
         }
-        return toolbar;
+        return buttonPanel;
     }
 
     private void createSelectedVocabularyListPane(){
-        this.permittedVocabularyListModel = new OWLObjectListModel<>();
+        this.permittedVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.permittedVocabularyList = new JList<>(this.permittedVocabularyListModel);
         this.permittedVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.forbiddenVocabularyListModel = new OWLObjectListModel<>();
+        this.forbiddenVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.forbiddenVocabularyList = new JList<>(this.forbiddenVocabularyListModel);
         this.forbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         this.resetVocabularyListModels();
@@ -288,6 +290,11 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         if (this.propertyTree != null){
             this.propertyTree.dispose();
         }
+        if (this.ontologyIndividualsListModel != null){
+            this.ontologyIndividualsListModel.dispose();
+        }
+        this.permittedVocabularyListModel.dispose();
+        this.forbiddenVocabularyListModel.dispose();
         modelManager.removeListener(this.SignatureModelManagerListener);
         modelManager.removeOntologyChangeListener(this.SignatureOntologyChangeListener);
     }
@@ -502,6 +509,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         @Override
         public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> ontologyChanges) throws OWLException {
             SwingUtilities.invokeLater(() -> {
+                boolean changeForActiveOntology = false;
+                for (OWLOntologyChange change: ontologyChanges){
+                    if (change.getOntology().equals(owlEditorKit.getOWLModelManager().getActiveOntology())){
+                        changeForActiveOntology = true;
+                        break;
+                    }
+                }
+                if (! changeForActiveOntology){
+                    return;
+                }
 //                ontology signature component:
                 ontologyIndividualsListModel.removeAll();
                 ontologyIndividualsListModel.addElements(

@@ -15,4 +15,5 @@ public class ELCounterexampleGenerationService extends AbstractCounterexampleGen
         setCounterexampleGenerator(new ELCounterexampleGenerator());
         setSupportsExplanationMessage("Please enter some observation containing a single OWLSubClassOfAxiom expressed in EL");
     }
+
 }

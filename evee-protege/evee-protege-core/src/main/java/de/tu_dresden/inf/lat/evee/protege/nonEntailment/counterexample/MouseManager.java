@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.graphstream.ui.geom.Point2;
 import org.graphstream.ui.geom.Point3;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.graphicGraph.GraphicNode;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.swing_viewer.util.DefaultMouseManager;
@@ -12,35 +13,42 @@ import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.camera.Camera;
 import org.graphstream.ui.view.util.InteractiveElement;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MouseManager extends DefaultMouseManager implements MouseWheelListener {
     private long curTime;
 
     private DefaultListModel<OWLClass> classListModel;
-    private Map<String, List<OWLClass>> classMap;
-    private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(InteractiveElement.NODE);
+    private Map<String, List<OWLClass>> individualClassMap;
+    private Map<String[],List<OWLObjectProperty>> objectPropertyMap;
+    private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(
+            InteractiveElement.NODE);
     private final Logger logger = Logger.getLogger(MouseManager.class);
     private String previousNodeID ="";
     private Sprite selectionSprite;
-
+    private boolean elementMoving = false;
     private Camera camera;
     private MouseEvent last;
     private Viewer viewer;
+    private GraphicNode curNode = null;
     private boolean isFirstClick;
+    private EdgeLabelPositioner edgeLabelPositioner;
     public MouseManager(Map<String, List<OWLClass>> classMap,
+                        Map<String[],List<OWLObjectProperty>> objectPropertyMap,
                         DefaultListModel<OWLClass> classListModel,
                         Viewer viewer) {
         this.viewer = viewer;
-        this.classMap = classMap;
+        this.individualClassMap = classMap;
+        this.objectPropertyMap = objectPropertyMap;
         this.classListModel = classListModel;
         this.isFirstClick = true;
+        this.edgeLabelPositioner = new EdgeLabelPositioner();
     }
     @Override
     public void init(GraphicGraph graph, View view) {
@@ -63,10 +71,17 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     @Override
     public void mousePressed(MouseEvent event) {
         curElement = view.findGraphicElementAt(interactiveEliments,event.getX(), event.getY());
+
+
         curTime = System.currentTimeMillis();
-//        logger.debug("mouse is pressed");
+        if (curElement != null) {
+                elementMoving= true;
+                curNode = (GraphicNode) viewer.getGraphicGraph().getNode(curElement.getId());
+        }
         if(isFirstClick) {
             viewer.disableAutoLayout();
+            logger.debug("positioner will be called");
+            edgeLabelPositioner.positionLabelsOnFirstClick(objectPropertyMap,graph);
             this.isFirstClick = false;
         }
     }
@@ -77,34 +92,40 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
         last = null;
         if (curElement != null) {
             if(System.currentTimeMillis()-curTime <300) {
+                logger.info( curElement.getId() +" is clicked");
+
                 selectNewNode(curElement.getId());
             }
             curElement = null;
-
+            curNode = null;
+            elementMoving = false;
         }
 
     }
     @Override
     public void mouseDragged(MouseEvent event) {
-        if (curElement != null) {
-            elementMoving(curElement, event);
-        } else {
-            if(last!=null) {
+        if(elementMoving) {
+            double oldPositionX = curNode.getX();
 
-                Point3 viewCenterGu = camera.getViewCenter();
-                Point3 viewCenterPx=camera.transformGuToPx(viewCenterGu.x,viewCenterGu.y,0);
-                int xdelta=event.getX()-last.getX();//determine direction
-                int ydelta=event.getY()-last.getY();//determine direction
-                logger.debug("dx:"+xdelta);
-                logger.debug("dy:"+xdelta);
-                viewCenterPx.x-=xdelta;
-                viewCenterPx.y-=ydelta;
-                Point3 newViewCenterGu =camera.transformPxToGu(viewCenterPx.x,viewCenterPx.y);
-                camera.setViewCenter(newViewCenterGu.x,newViewCenterGu.y, 0);
-            }
-            last = event;
-            logger.debug("new last: "+last.getX()+", "+last.getY());
+            elementMoving(curElement, event);
+            double newPositionX = curNode.getX();
+
+            edgeLabelPositioner.positionLabelsOnNodeMove(curNode,
+                    oldPositionX,
+                    newPositionX,
+                    viewer.getGraphicGraph());
+//
+        } else {
+            cameraMoving(event);
         }
+
+//        if (curElement != null) {
+//            if(!(curElement.getId().substring(0,4) == "edge")) {
+//                elementMoving(curElement, event);
+//            }
+//        } else {
+//            cameraMoving(event);
+//        }
     }
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -125,9 +146,9 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     }
     public void selectNewNode(String nodeID) {
         logger.debug("button is released");
-        if (classMap.containsKey(nodeID)) {
+        if (individualClassMap.containsKey(nodeID)) {
 
-            List<OWLClass> classList = classMap.get(nodeID);
+            List<OWLClass> classList = individualClassMap.get(nodeID);
             classListModel.removeAllElements();
             for (OWLClass cl : classList) {
                 classListModel.addElement(cl);
@@ -153,5 +174,24 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
         selectionSprite.setAttribute("ui.style","stroke-mode:plain;");
         selectionSprite.setAttribute("ui.style","size:30px;");
         selectionSprite.setPosition(0,0,0);
+    }
+
+    private void cameraMoving(MouseEvent event) {
+        if(last!=null) {
+
+            Point3 viewCenterGu = camera.getViewCenter();
+            Point3 viewCenterPx=camera.transformGuToPx(viewCenterGu.x,viewCenterGu.y,0);
+            int xdelta=event.getX()-last.getX();//determine direction
+            int ydelta=event.getY()-last.getY();//determine direction
+            logger.debug("dx:"+xdelta);
+            logger.debug("dy:"+xdelta);
+            viewCenterPx.x-=xdelta;
+            viewCenterPx.y-=ydelta;
+            Point3 newViewCenterGu =camera.transformPxToGu(viewCenterPx.x,viewCenterPx.y);
+            camera.setViewCenter(newViewCenterGu.x,newViewCenterGu.y, 0);
+        }
+        last = event;
+        logger.debug("new last: "+last.getX()+", "+last.getY());
+
     }
 }

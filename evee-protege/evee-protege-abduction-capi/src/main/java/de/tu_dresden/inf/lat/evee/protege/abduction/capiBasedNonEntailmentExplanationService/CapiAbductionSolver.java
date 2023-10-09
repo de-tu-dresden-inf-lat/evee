@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
+//import ch.qos.logback.classic.spi.ILoggingEvent;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
@@ -59,7 +59,7 @@ public class CapiAbductionSolver
     private static final String TEMPORARY_ONTOLOGY = "eveeTemporaryOntologyFile.owl";
     private static final String NAME_MAP = "eveeTemporaryOntologyFile.nameMap";
     private final CapiPreferencesManager preferencesManager;
-    private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to the SPASS executable and hit 'Compute' again</html>";
+    private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to the SPASS executable and try again</html>";
 
 //    private Appender<ILoggingEvent> stdoutAppender = null;
 //    private Appender<ILoggingEvent> filesAppender = null;
@@ -100,6 +100,20 @@ public class CapiAbductionSolver
     }
 
     @Override
+    public void computeExplanation(){
+        this.logger.debug("Checking path to SPASS.");
+        this.spassPath = this.preferencesManager.loadSpassPath();
+        if (this.spassPath.equals("")){
+            this.logger.debug("Path to SPASS not set, requesting user input");
+            this.sendViewComponentEvent(ExplanationEventType.RESULT_RESET);
+            this.showSpassPathDialog();
+        } else {
+            this.logger.debug("Path to SPASS is set, continuing normally");
+            super.computeExplanation();
+        }
+    }
+
+    @Override
     public Stream<Set<OWLAxiom>> generateExplanations() {
         if (this.firstExecution){
             this.firstExecution = false;
@@ -108,13 +122,7 @@ public class CapiAbductionSolver
                 super.resetCache();
             }
         }
-        this.spassPath = this.preferencesManager.loadSpassPath();
         this.cancelled = false;
-        if (this.spassPath.equals("")){
-            this.sendViewComponentEvent(ExplanationEventType.RESULT_RESET);
-            this.showSpassPathDialog();
-            return null;
-        }
         this.timeLimit = this.preferencesManager.loadTimeLimit();
         this.removeRedundancies = this.preferencesManager.loadRemoveRedundancies();
         this.simplifyConjunctions = this.preferencesManager.loadSimplifyConjunctions();
@@ -488,9 +496,13 @@ public class CapiAbductionSolver
     private void computationCompleted(){
         this.computationSuccessful = ! this.cancelled;
         if (this.computationSuccessful){
+            this.logger.debug("Computation was not cancelled, display of result possible");
             this.saveResultToCache(this.solutions);
             this.setActiveOntologyEditedExternally(false);
             this.currentSolutionIndex = 0;
+        } else{
+            this.logger.debug("Computation was cancelled, cannot show result");
+            this.computationFailed("Last computation was cancelled");
         }
     }
 
@@ -498,7 +510,6 @@ public class CapiAbductionSolver
         this.computationSuccessful = false;
         this.setActiveOntologyEditedExternally(false);
         this.errorMessage = errorMessage;
-        this.sendViewComponentEvent(ExplanationEventType.ERROR);
     }
 
 
@@ -515,9 +526,7 @@ public class CapiAbductionSolver
                 @Override
                 public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {
                     SwingUtilities.invokeLater(() -> {
-//                        todo: what was this used for!?
-//                        windowEvent.getWindow().dispose();
-                        logger.debug("window disposed, why isn't this showing now!?");
+                        windowEvent.getWindow().dispose();
                         JFileChooser fileChooser = new JFileChooser();
                         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                         int result = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(
