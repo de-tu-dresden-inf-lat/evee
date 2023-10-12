@@ -1,21 +1,31 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util;
 
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class OWLObjectSorter {
+public class OWLObjectCollectionSorter {
 
     private OWLReasoner res;
     private final OWLDataFactory df;
 
-    OWLObjectSorter(OWLReasoner res, OWLDataFactory df) {
-        this.res = res;
-        this.df = df;
+    public OWLObjectCollectionSorter(OWLOntology ont) {
+        OWLReasonerFactory reasonerFactory = new ReasonerFactory();
+        this.res = reasonerFactory.createReasoner(ont);
+        this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+    }
+    public <N,M extends OWLNamedObject> Map<N, List<M>> sortOWLObjectMap(Map<N, Set<M>> map) {
+        Map<N, List<M>> listMap = new HashMap<>();
+        map.entrySet().stream()
+                .forEach(e -> listMap.put(e.getKey(),
+                        sortOWLObjectList(e.getValue().stream()
+                                .collect(Collectors.toList()))));
+        return listMap;
     }
 
     public <T extends OWLNamedObject> List<T> sortOWLObjectList(List<T> objectList) {
@@ -79,13 +89,4 @@ public class OWLObjectSorter {
         return returnList;
     }
 
-    public <N,M extends OWLNamedObject> Map<N, List<M>> sortOWLObjectMap(Map<N, Set<M>> map) {
-        Map<N, List<M>> listMap = new HashMap<>();
-        map.entrySet().stream()
-                .forEach(e -> listMap.put(e.getKey(),
-                        sortOWLObjectList(e.getValue().stream()
-                                .collect(Collectors.toList()))));
-//        logger.info("class map is sorted: "+listMap.keySet());
-        return listMap;
-    }
 }

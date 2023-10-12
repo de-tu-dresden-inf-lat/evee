@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util;
 
 import java.util.HashMap;
 import java.util.Map;
