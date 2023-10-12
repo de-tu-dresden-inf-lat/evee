@@ -20,7 +20,7 @@ import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
  *         Generate type-a relevant counter example extracted from the canonical
  *         model
  */
-public class AlphaRelevantGenerator extends RelevantCounterExample {
+public class AlphaRelevantGenerator extends RelevantCounterExampleGenerator {
 
 	private final Logger logger = Logger.getLogger(AlphaRelevantGenerator.class);
 
@@ -44,11 +44,6 @@ public class AlphaRelevantGenerator extends RelevantCounterExample {
 		}
 
 		cleanReverseEdges(typeAModel);
-
-		// TODO Remove these and use the refined, but first FIX it
-		// filterEdges(typeAModel);
-//		removeUnreachableElements(typeAModel, this.model.getMapper().getLHSRepresentativeElement(),
-//				this.model.getMapper().getLHSRepresentativeElement());
 
 		Instant finish = Instant.now();
 		logger.info("Total " + GeneralTools.getDuration(start, finish));

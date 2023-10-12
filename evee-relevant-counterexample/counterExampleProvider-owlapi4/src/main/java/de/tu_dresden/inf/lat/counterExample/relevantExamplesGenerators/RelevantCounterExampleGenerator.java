@@ -27,15 +27,15 @@ import de.tu_dresden.inf.lat.model.tools.ToOWLTools;
  * @author Christian Alrabbaa
  *
  */
-public abstract class RelevantCounterExample {
-	private static final Logger logger = Logger.getLogger(RelevantCounterExample.class);
+public abstract class RelevantCounterExampleGenerator {
+	private static final Logger logger = Logger.getLogger(RelevantCounterExampleGenerator.class);
 
 	protected final ElkModel model;
 	protected final OWLAxiom conclusion;
 	protected final OWLOntology module;
 	protected final RelationReasons relationReasons;
 
-	public RelevantCounterExample(ELKModelGenerator elkCounterModelGenerator) throws OWLOntologyCreationException {
+	public RelevantCounterExampleGenerator(ELKModelGenerator elkCounterModelGenerator) throws OWLOntologyCreationException {
 		this.model = elkCounterModelGenerator.generateFullRelevantCanonicalModel();
 		this.conclusion = elkCounterModelGenerator.getConclusion();
 		this.module = elkCounterModelGenerator.getOntology();
@@ -64,7 +64,7 @@ public abstract class RelevantCounterExample {
 	public int getEdgeCount(Set<Element> model) {
 		int res = 0;
 		for (Element e : model) {
-			res = res + e.getRelations().stream().filter(x -> x.isForward()).collect(Collectors.toSet()).size();
+			res = res + e.getRelations().stream().filter(Relation::isForward).collect(Collectors.toSet()).size();
 		}
 		return res;
 	}
@@ -93,7 +93,7 @@ public abstract class RelevantCounterExample {
 	public int getTypesCount(Set<Element> model) {
 		Set<OWLClassExpression> res = new HashSet<>();
 		for (Element e : model) {
-			res.addAll(e.getTypes().stream().collect(Collectors.toSet()));
+			res.addAll(new HashSet<>(e.getTypes()));
 		}
 		return res.size();
 	}
@@ -107,7 +107,7 @@ public abstract class RelevantCounterExample {
 	public int getOriginalTypesCount(Set<Element> model) {
 		Set<OWLClassExpression> res = new HashSet<>();
 		for (Element e : model) {
-			res.addAll(e.getOriginalTypes(this.model.getMapper()).stream().collect(Collectors.toSet()));
+			res.addAll(new HashSet<>(e.getOriginalTypes(this.model.getMapper())));
 		}
 		return res.size();
 	}
@@ -172,7 +172,6 @@ public abstract class RelevantCounterExample {
 				processedRelations.add(r);
 
 				targetElement = getElementFrom(r.getElement2(), model);
-				// reachableElements.add(targetElement);
 				fillReachableElementsSet(targetElement, reachableElements, model, processedRelations);
 			}
 		}
@@ -186,13 +185,11 @@ public abstract class RelevantCounterExample {
 
 	}
 
-	protected boolean evaluateFound(Relation relation, Map<Relation, Set<Boolean>> map) {
-		Set<Boolean> foundInstances = map.get(relation);
+	protected <T> boolean evaluateFound(T t, Map<T, Set<Boolean>> map) {
+		Set<Boolean> foundInstances = map.get(t);
 		if (foundInstances == null)
 			return false;
-		if (foundInstances.contains(true))
-			return true;
-		return false;
+		return foundInstances.contains(true);
 	}
 
 	protected Set<Relation> FilterIncomingEdges(Element element) {
@@ -223,7 +220,6 @@ public abstract class RelevantCounterExample {
 			for (Relation r : finalizedElement.getRelations()) {
 				element.addRelation(r);
 				if (r.isForward()) {
-//					element.addRelation(r);
 					if (!finalModel.contains(r.getElement2()))
 						newIntermediate.add(r.getElement2());
 				}
@@ -279,9 +275,6 @@ public abstract class RelevantCounterExample {
 	}
 
 	protected OWLClassExpression makeConcept(OWLClassExpression toRemove, OWLClassExpression toModify) {
-//		System.out.println("elemet -> " + e);
-//		System.out.println("toremove -> " + toRemove);
-//		System.out.println("res from alias" + restrictionFromAlias);
 
 		if (!(toModify instanceof OWLObjectSomeValuesFrom))
 			return toModify;

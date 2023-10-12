@@ -21,6 +21,9 @@ import de.tu_dresden.inf.lat.model.data.EntryPair;
 import de.tu_dresden.inf.lat.model.data.Relation;
 import de.tu_dresden.inf.lat.model.tools.GeneralTools;
 
+/**
+ * @author Christian Alrabbaa
+ */
 public class FlatDiffRelevantGenerator extends DiffRelevantGenerator {
 
 	private final Logger logger = Logger.getLogger(FlatDiffRelevantGenerator.class);
@@ -92,7 +95,7 @@ public class FlatDiffRelevantGenerator extends DiffRelevantGenerator {
 
 	private void cutAtTrimPoints(Set<Element> model, Set<Element> trimPoints) {
 		for (Element e : trimPoints) {
-			Sets.newHashSet(getElementFrom(e, model).getRelations()).stream().filter(x -> x.isForward())
+			Sets.newHashSet(getElementFrom(e, model).getRelations()).stream().filter(Relation::isForward)
 					.forEach(getElementFrom(e, model)::removeRelation);
 		}
 	}
@@ -101,14 +104,13 @@ public class FlatDiffRelevantGenerator extends DiffRelevantGenerator {
 			Map<Relation, Set<Boolean>> edgeFoundMap, Set<EntryPair<Element, Element>> processed,
 			Set<Element> reachableFromBoth) {
 
-		Set<Relation> rhsElementRelations = rHSElement.getRelations().stream().filter(x -> x.isForward())
+		Set<Relation> rhsElementRelations = rHSElement.getRelations().stream().filter(Relation::isForward)
 				.collect(Collectors.toSet());
 		Set<Relation> cRelations;
 		Stream<Relation> lhsElementRelations;
 		EntryPair<Element, Element> processedPair;
 		for (Relation r2 : rhsElementRelations) {
-//			System.out.println("rhs relation" + r2);
-			lhsElementRelations = lHSElement.getRelations().stream().filter(x -> x.isForward());
+			lhsElementRelations = lHSElement.getRelations().stream().filter(Relation::isForward);
 
 			cRelations = lhsElementRelations.filter(x -> x.getRoleName().equals(r2.getRoleName()))
 					.collect(Collectors.toSet());
@@ -120,8 +122,7 @@ public class FlatDiffRelevantGenerator extends DiffRelevantGenerator {
 
 			if (!reachableFromBoth.contains(r2.getElement2())) {
 				for (Relation r1 : cRelations) {
-//					System.out.println("lhs relation" + r1);
-					processedPair = new EntryPair<Element, Element>(getElementFrom(r1.getElement2(), model),
+					processedPair = new EntryPair<>(getElementFrom(r1.getElement2(), model),
 							getElementFrom(r2.getElement2(), model));
 					if (processed.contains(processedPair))
 						continue;

@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators;
 
 import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
-import de.tu_dresden.inf.lat.counterExample.ModelRefiner;
+import de.tu_dresden.inf.lat.counterExample.RedundancyRefiner;
 import de.tu_dresden.inf.lat.counterExample.data.ModelType;
 import de.tu_dresden.inf.lat.counterExample.tools.OntologyFilter;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
@@ -88,7 +88,7 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
                 modelTypeReverted = false;
 
             ELKModelGenerator elkModelGenerator = new ELKModelGenerator(ontology, subClsOf);
-            RelevantCounterExample generator = getRelevantGenerator(type, elkModelGenerator);
+            RelevantCounterExampleGenerator generator = getRelevantGenerator(type, elkModelGenerator);
 
             Set<Element> model = generator.generate();
             progressTracker.setMessage("Filtering the generated counterexample.");
@@ -100,8 +100,8 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
                 markedIndividuals.add(IRI.create(ELEMENT_PREFIX + elkModelGenerator.getMapper().getRHSRepresentativeElement().getName()));
 
             //This is needed to remove normalisation concepts and other redundant elements
-            ModelRefiner refiner = new ModelRefiner(ontology);
-            refiner.refine(generator, model, type);
+            RedundancyRefiner rr = new RedundancyRefiner(model, generator);
+            rr.refine();
 
             Set<OWLIndividualAxiom> owlModel = new HashSet<>();
             for (Element element : model) {
@@ -143,7 +143,7 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
      * @return
      * @throws OWLOntologyCreationException
      */
-    private RelevantCounterExample getRelevantGenerator(ModelType type, ELKModelGenerator elkModelGenerator)
+    private RelevantCounterExampleGenerator getRelevantGenerator(ModelType type, ELKModelGenerator elkModelGenerator)
             throws OWLOntologyCreationException {
         switch (type) {
             case Alpha: return new AlphaRelevantGenerator(elkModelGenerator);

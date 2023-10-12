@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <Ontology xmlns="http://www.w3.org/2002/07/owl#"
-     xml:base="http://relevantC"
+     xml:base="http://simple"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     ontologyIRI="http://relevantC">
-    <Prefix name="" IRI="http://relevantC#"/>
+     ontologyIRI="http://simple">
+    <Prefix name="" IRI="http://simple#"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
     <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
@@ -22,56 +22,50 @@
         <Class IRI="#C"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#Concept1"/>
+        <Class IRI="#D"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#Concept2"/>
+        <Class IRI="#F"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="http://relevantOntologyExample#r"/>
-    </Declaration>
-    <Declaration>
-        <ObjectProperty IRI="http://relevantOntologyExample#s"/>
+        <ObjectProperty IRI="#r"/>
     </Declaration>
     <SubClassOf>
         <Class IRI="#A"/>
         <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="http://relevantOntologyExample#r"/>
+            <ObjectProperty IRI="#r"/>
+            <Class IRI="#B"/>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#A"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="#r"/>
             <ObjectIntersectionOf>
-                <Class IRI="#C"/>
-                <ObjectSomeValuesFrom>
-                    <ObjectProperty IRI="http://relevantOntologyExample#r"/>
-                    <Class IRI="#Concept1"/>
-                </ObjectSomeValuesFrom>
+                <Class IRI="#B"/>
+                <Class IRI="#D"/>
             </ObjectIntersectionOf>
         </ObjectSomeValuesFrom>
     </SubClassOf>
     <SubClassOf>
         <Class IRI="#B"/>
         <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="http://relevantOntologyExample#r"/>
-            <ObjectIntersectionOf>
-                <Class IRI="#C"/>
-                <ObjectSomeValuesFrom>
-                    <ObjectProperty IRI="http://relevantOntologyExample#r"/>
-                    <Class IRI="#Concept2"/>
-                </ObjectSomeValuesFrom>
-            </ObjectIntersectionOf>
+            <ObjectProperty IRI="#r"/>
+            <Class IRI="#C"/>
         </ObjectSomeValuesFrom>
     </SubClassOf>
     <SubClassOf>
-        <Class IRI="#Concept1"/>
+        <ObjectIntersectionOf>
+            <Class IRI="#B"/>
+            <Class IRI="#D"/>
+        </ObjectIntersectionOf>
         <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="http://relevantOntologyExample#s"/>
-            <Class abbreviatedIRI="owl:Thing"/>
+            <ObjectProperty IRI="#r"/>
+            <Class IRI="#A"/>
         </ObjectSomeValuesFrom>
     </SubClassOf>
     <SubObjectPropertyOf>
-        <ObjectProperty IRI="http://relevantOntologyExample#r"/>
-        <ObjectProperty abbreviatedIRI="owl:topObjectProperty"/>
-    </SubObjectPropertyOf>
-    <SubObjectPropertyOf>
-        <ObjectProperty IRI="http://relevantOntologyExample#s"/>
+        <ObjectProperty IRI="#r"/>
         <ObjectProperty abbreviatedIRI="owl:topObjectProperty"/>
     </SubObjectPropertyOf>
 </Ontology>
