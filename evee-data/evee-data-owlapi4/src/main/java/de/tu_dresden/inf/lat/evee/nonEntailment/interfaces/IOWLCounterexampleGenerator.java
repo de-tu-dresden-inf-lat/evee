@@ -6,5 +6,5 @@ import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 import java.util.Set;
 
 public interface IOWLCounterexampleGenerator extends IOWLNonEntailmentExplainer<OWLIndividualAxiom>, IOWLModelGenerator {
-    Set<IRI> getMarkedIndividuals();
+
 }

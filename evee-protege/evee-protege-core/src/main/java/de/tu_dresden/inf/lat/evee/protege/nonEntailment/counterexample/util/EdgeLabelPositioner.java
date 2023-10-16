@@ -1,13 +1,10 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util;
 
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.Node;
 import org.graphstream.ui.graphicGraph.GraphicEdge;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
 import org.graphstream.ui.graphicGraph.GraphicNode;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -15,37 +12,34 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class EdgeLabelPositioner {
-    private final Logger logger = Logger.getLogger(EdgeLabelPositioner.class);
+    private final static Logger logger = Logger.getLogger(EdgeLabelPositioner.class);
 
 
-    public void positionLabelsOnFirstClick(Map<String[],List<OWLObjectProperty>> objectPropertyMap,
-                                           GraphicGraph graphModel) {
+    public static void initializeLabelsPositions(GraphicGraph graphModel) {
 
         graphModel.edges().map(e -> (GraphicEdge) e)
                 .filter(e -> e.getGroup()!=null)
                 .filter(e -> e.getNode0()!= e.getNode1())
                 .forEach(e ->{
-                    boolean positiveOffset = true;
+                    boolean isPositiveOffset = true;
                     if(e.getStyle().getTextOffset().get(1)<0) {
-                        positiveOffset = false;
+                        isPositiveOffset = false;
                     }
 
-                    if(ifChangeLebelsPositions( (GraphicNode) e.getNode0(),
+                    if(needChangeLabelsPositions( (GraphicNode) e.getNode0(),
                             (GraphicNode) e.getNode1(),
-                            positiveOffset)) {
-                        logger.debug("change position for "+e.getNode0().getId()+e.getNode1().getId());
-                        positionLabele(e);
+                            e,
+                            isPositiveOffset)) {
+
+                        positionLabel(e);
                     }
                 });
     }
 
 
-    public void positionLabelsOnNodeMove(GraphicNode node,
+    public static void positionLabelsOnNodeMove(GraphicNode node,
                                          double oldPositionX,
-                                         double newPositionX,
-                                         GraphicGraph graphModel) {
-
-
+                                         double newPositionX) {
 
         Set<GraphicEdge> curvedEdges = node.edges()
                 .map(e -> (GraphicEdge) e)
@@ -56,14 +50,14 @@ public class EdgeLabelPositioner {
 
         Map<GraphicNode, Set<GraphicEdge>> curvedEdgesMap = initializeCurvedEdgesMap(curvedEdges,node);
         curvedEdgesMap.entrySet().stream()
-                .filter(e -> ifChangeLebelsPositionsOnMove(oldPositionX,
+                .filter(e -> needChangeLabelsPositionsOnMove(oldPositionX,
                         newPositionX,
                         e.getKey()))
-                .forEach(e -> e.getValue().forEach(ed ->positionLabele(ed)));
+                .forEach(e -> e.getValue().forEach(ed -> positionLabel(ed)));
 
 
     }
-    private Map<GraphicNode, Set<GraphicEdge>> initializeCurvedEdgesMap(Set<GraphicEdge> curvedEdges,GraphicNode node) {
+    private static Map<GraphicNode, Set<GraphicEdge>> initializeCurvedEdgesMap(Set<GraphicEdge> curvedEdges,GraphicNode node) {
         Map<GraphicNode, Set<GraphicEdge>> curvedEdgesMap = new HashMap<>();
         curvedEdges.stream().forEach(e -> {
             curvedEdgesMap.merge(
@@ -76,9 +70,9 @@ public class EdgeLabelPositioner {
         });
         return curvedEdgesMap;
     }
-    private boolean ifChangeLebelsPositionsOnMove(double oldPositionX,
-                                                  double newPositionX,
-                                                  GraphicNode targetNode) {
+    private static boolean needChangeLabelsPositionsOnMove(double oldPositionX,
+                                                           double newPositionX,
+                                                           GraphicNode targetNode) {
 
         double targetNodePositionX = targetNode.getX();
 
@@ -93,19 +87,43 @@ public class EdgeLabelPositioner {
         }
         return false;
     }
+    private static boolean needChangeLabelsPositions(GraphicNode n0,
+                                                     GraphicNode n1,
+                                                     GraphicEdge e,
+                                                     boolean isPositiveOffset) {
 
-    private boolean ifChangeLebelsPositions(GraphicNode n0,
-                                            GraphicNode n1,
-                                            boolean positiveOffset) {
-        if(n0.getX()>= n1.getX()) {
-            positiveOffset = !positiveOffset;
+
+
+        boolean beforeMovingIsOnTop = !isPositiveOffset;
+
+        if((n0.getX() < n1.getX()) && !beforeMovingIsOnTop) {
+            return true;
         }
-        if(positiveOffset) {
+        if(!(n0.getX() < n1.getX()) && beforeMovingIsOnTop) {
+            return true;
+        }
+
+
+
+
+        logger.debug("current edge:" +n0.getId()+" to "+n1.getId());
+        logger.debug("before positioning offset is positive: "+isPositiveOffset);
+        return false;
+
+    }
+
+    private static boolean needChangeLabelsPositions(GraphicNode n0,
+                                                     GraphicNode n1,
+                                                     boolean isPositiveOffset) {
+        if(n0.getX()>= n1.getX()) {
+            isPositiveOffset = !isPositiveOffset;
+        }
+        if(isPositiveOffset) {
             return false;
         }
         return true;
     }
-    private void positionLabele(GraphicEdge edge) {
+    private static void positionLabel(GraphicEdge edge) {
 
         double CurrentOffset = edge.getStyle().getTextOffset().get(1);
         edge.getStyle().getTextOffset().setValue(1, -CurrentOffset);

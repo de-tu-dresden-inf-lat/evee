@@ -97,14 +97,14 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     @Override
     public Set<OWLIndividualAxiom> generateModel() throws ModelGenerationException {
         OWLAxiom observation = this.observation.iterator().next();
-        progressTracker.setMessage("Creating working copy");
-        progressTracker.increment();
         subClassExpr = ((OWLSubClassOfAxiom) observation).getSubClass();
         superClassExpr = ((OWLSubClassOfAxiom) observation).getSuperClass();
         checkClassExpressions();
         workingCopy = getWorkingCopy();
-        progressTracker.setMessage("Generating counterexample");
-        progressTracker.increment();
+        if(progressTracker != null) {
+            progressTracker.setMessage("Generating counterexample");
+            progressTracker.increment();
+        }
         IOWLModelGenerator modelGenerator = new ELSmallModelGenerator();
         modelGenerator.setOntology(workingCopy);
         Set<OWLIndividualAxiom> model = modelGenerator.generateModel();
