@@ -17,9 +17,11 @@ Ontology: <http://www.co-ode.org/ontologies/pizza>
 Annotations: 
     dc:description "An ontology about pizzas and their toppings.
 
-This is an example ontology that contains all constructs required for the various versions of the Pizza Tutorial run by Manchester University (see http://owl.cs.manchester.ac.uk/publications/talks-and-tutorials/protg-owl-tutorial).
+This ontology is based on the famous pizza ontology, but has been modified to be used for a user study. Many things have been left intact (including the annotations), but additional pizza types have been added, and descriptions purposefully changed so that the expected reasoning result cannot be inferred anymore.
 
-NOTE: this is a modified version of the ontology in which purposefully bugs have been added, in order to be used for a user study on repairing ontologies."@en,
+The aim of this user study is to fix the ontology based on the comments of the subclasses of NamedPizza. If the comment lists a superclass that has not been derived, then this should be fixed. See also the comment of NamedPizza for how logical descriptions of NamedPizza's should look like.
+
+NOTE: even though the missing entailments to be fixed all concern subclasses of NamedPizza, sometimes, in order to fix them, one has to modify the descriptions of other classes."@en,
     dc:title "pizza"@en,
     terms:contributor "Alan Rector",
     terms:contributor "Chris Wroe",
@@ -142,9 +144,10 @@ Class: <http://www.co-ode.org/ontologies/pizza#Boscaiola>
 
     Annotations: 
         dc:description "Boscaiola"@en,
-        rdfs:comment "This pizza is:
-- white
-- meaty"@en
+        rdfs:comment "This pizza should be:
+- a CheesyPizza
+- a MeatyPizza
+- a WhitePizza"@en
     
     SubClassOf: 
         pizza:NamedPizza,
@@ -155,6 +158,10 @@ Class: <http://www.co-ode.org/ontologies/pizza#Boscaiola>
     
 Class: <http://www.co-ode.org/ontologies/pizza#DairyFreePizza>
 
+    EquivalentTo: 
+        pizza:Pizza
+         and (not (pizza:hasTopping some pizza:CheeseTopping))
+    
     SubClassOf: 
         pizza:Pizza
     
@@ -162,10 +169,10 @@ Class: <http://www.co-ode.org/ontologies/pizza#DairyFreePizza>
 Class: <http://www.co-ode.org/ontologies/pizza#Diavola>
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- cheesy
-- meaty
-- spicy"@en,
+        rdfs:comment "This pizza should be:
+- a CheesyPizza
+- a MeatyPizza
+- a SpicyPizza"@en,
         rdfs:label "Diavola"@en
     
     SubClassOf: 
@@ -209,8 +216,10 @@ Class: <http://www.co-ode.org/ontologies/pizza#FriarelliTopping>
 Class: <http://www.co-ode.org/ontologies/pizza#Marinara>
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- vegan"@en,
+        rdfs:comment "This pizza should be:
+- a DairyFreePizza
+- a VeganPizza
+- a VegetarianPizza"@en,
         rdfs:label "Marinara"@en
     
     SubClassOf: 
@@ -236,10 +245,10 @@ Class: <http://www.co-ode.org/ontologies/pizza#OreganoTopping>
 Class: <http://www.co-ode.org/ontologies/pizza#PizzaFriarelli>
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- meaty
-- cheesy
-- white"@en,
+        rdfs:comment "This pizza should be:
+- a MeatyPizza
+- a CheesyPizza
+- a WhitePizza"@en,
         rdfs:label "Pizza Friarelli"@en
     
     SubClassOf: 
@@ -259,6 +268,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#SausageTopping>
 Class: <http://www.co-ode.org/ontologies/pizza#SpianataCalabra>
 
     Annotations: 
+        rdfs:comment "A very hot type of salami topping."@en,
         rdfs:label "Spianata Calabra Piccante"@en
     
     SubClassOf: 
@@ -315,9 +325,9 @@ Class: owl:Thing
 Class: pizza:American
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- meaty
-- cheesy"@en,
+        rdfs:comment "This pizza should be:
+- a CheesyPizza
+- a MeatyPizza"@en,
         rdfs:label "American"@en,
         rdfs:label "Americana"@pt,
         skos:altLabel "American"@en,
@@ -334,10 +344,10 @@ Class: pizza:American
 Class: pizza:AmericanHot
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- cheesy
-- meaty
-- spicy"@en,
+        rdfs:comment "This pizza should be:
+- a CheesyPizza
+- a MeatyPizza
+- a SpicyPizza"@en,
         rdfs:label "AmericanHot"@en,
         rdfs:label "AmericanaPicante"@pt,
         skos:altLabel "American Hot"@en,
@@ -515,16 +525,16 @@ Class: pizza:FourCheesesTopping
         skos:prefLabel "Four Cheeses"@en
     
     SubClassOf: 
-        pizza:CheeseTopping,
+        pizza:VegetarianTopping,
         pizza:hasSpiciness some pizza:Mild
     
     
 Class: pizza:FourSeasons
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- meaty
-- cheesy"@en,
+        rdfs:comment "This pizza should be:
+- a MeatyPizza
+- a CheesyPizza"@en,
         rdfs:label "FourSeasons"@en,
         rdfs:label "QuatroQueijos"@pt,
         skos:altLabel "Four Seasons"@en,
@@ -556,8 +566,8 @@ Class: pizza:FruitTopping
 Class: pizza:FruttiDiMare
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- dairy free"@en,
+        rdfs:comment "This pizza should be:
+- DairyFree"@en,
         rdfs:label "FrutosDoMar"@pt,
         rdfs:label "FruttiDiMare"@en,
         skos:altLabel "Frutti Di Mare"@en,
@@ -574,10 +584,10 @@ Class: pizza:FruttiDiMare
 Class: pizza:Funghi
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- cheesy
-- meaty
-- vegetarian"@en,
+        rdfs:comment "This pizza should be:
+- CheesyPizza
+- MeatyPizza
+- VegetarianPizza"@en,
         rdfs:label "Cogumelo"@pt,
         rdfs:label "Funghi"@en,
         skos:altLabel "Funghi"@en,
@@ -641,7 +651,7 @@ Class: pizza:HamTopping
 
     Annotations: 
         rdfs:label "CoberturaDePresunto"@pt,
-        rdfs:label "Ham"@en,
+        rdfs:label "HamTopping"@en,
         skos:prefLabel "Ham"@en
     
     SubClassOf: 
@@ -694,19 +704,6 @@ Class: pizza:HotSpicedBeefTopping
         pizza:hasSpiciness some pizza:Hot
     
     
-Class: pizza:IceCream
-
-    Annotations: 
-        rdfs:comment "A class to demonstrate mistakes made with setting a property domain. The property hasTopping has a domain of Pizza. This means that the reasoner can infer that all individuals using the hasTopping property must be of type Pizza. Because of the restriction on this class, all members of IceCream must use the hasTopping property, and therefore must also be members of Pizza. However, Pizza and IceCream are disjoint, so this causes an inconsistency. If they were not disjoint, IceCream would be inferred to be a subclass of Pizza."@en,
-        rdfs:label "IceCream"@en,
-        rdfs:label "Sorvete"@pt,
-        skos:prefLabel "Ice Cream"@en
-    
-    SubClassOf: 
-        pizza:Food,
-        pizza:hasTopping some pizza:FruitTopping
-    
-    
 Class: pizza:InterestingPizza
 
     Annotations: 
@@ -743,9 +740,9 @@ Class: pizza:LeekTopping
 Class: pizza:Margherita
 
     Annotations: 
-        rdfs:comment "This pizza is 
-- cheesy
-- vegetarian"@en,
+        rdfs:comment "This pizza should be a 
+- CheesyPizza
+- VegetarianPizza"@en,
         rdfs:label "Margherita"@en,
         rdfs:label "Margherita"@pt,
         skos:altLabel "Margherita"@en,
@@ -840,6 +837,9 @@ Class: pizza:NamedPizza
 
     Annotations: 
         rdfs:comment "A pizza that can be found on a pizza menu"@en,
+        rdfs:comment "Rules: NamedPizzas should be fully specified by their ingredients. That is, the logical description of each subclass of NamedPizza should be exact on what should be on it, that is, only refer to its toppings, and should not use generic concepts such as VegetarianPizza, MeatyPizza etc. 
+
+This also means that the description of a NamedPizza should not include names of toppings that are not on that pizza."@en,
         rdfs:label "PizzaComUmNome"@pt
     
     SubClassOf: 
@@ -849,9 +849,9 @@ Class: pizza:NamedPizza
 Class: pizza:Napoletana
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- cheesy
-- vegetarian"@en,
+        rdfs:comment "This pizza should be:
+- a CheesyPizza
+- a VegetarianPizza"@en,
         rdfs:label "Napoletana"@en,
         rdfs:label "Napoletana"@pt,
         skos:altLabel "Napoletana"@en,
@@ -1050,10 +1050,10 @@ Class: pizza:PrawnsTopping
 Class: pizza:QuattroFormaggi
 
     Annotations: 
-        rdfs:comment "This pizza is:
-- cheesy
-- vegetarian
-- white"@en,
+        rdfs:comment "This pizza should be:
+- a CheesyPizza
+- a VegetarianPizza
+- a WhitePizza"@en,
         rdfs:label "QuatroQueijos"@pt,
         rdfs:label "QuattroFormaggi"@en,
         skos:altLabel "Quattro Formaggi"@en,
@@ -1062,7 +1062,8 @@ Class: pizza:QuattroFormaggi
     
     SubClassOf: 
         pizza:NamedPizza,
-        pizza:hasTopping some pizza:FourCheesesTopping
+        pizza:hasTopping some pizza:FourCheesesTopping,
+        pizza:hasTopping only pizza:FourCheesesTopping
     
     
 Class: pizza:RealItalianPizza
@@ -1396,7 +1397,4 @@ DisjointClasses:
 
 DisjointClasses: 
     pizza:GreenPepperTopping,pizza:JalapenoPepperTopping,pizza:PeperonataTopping,pizza:SweetPepperTopping
-
-DisjointClasses: 
-    pizza:IceCream,pizza:Pizza,pizza:PizzaBase,pizza:PizzaTopping
 
