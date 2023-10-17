@@ -97,7 +97,7 @@ abstract public class AbstractAbductionSolver<Result>
      * @param result newly computed result of abduction process that should be saved to cache
      */
     protected void saveResultToCache(Result result){
-        this.logger.debug("Trying to solve result to cache");
+        this.logger.debug("Trying to save result to cache");
         if (this.activeOntology == null ||
                 this.missingEntailment == null ||
                 this.vocabulary == null){

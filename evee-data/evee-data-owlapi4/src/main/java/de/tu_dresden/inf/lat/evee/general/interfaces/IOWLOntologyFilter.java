@@ -13,6 +13,6 @@ public interface IOWLOntologyFilter {
 
     List<ClassExpressionType> getSupportedConceptTypes();
 
-    Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox();
+    Set<AxiomType<?>> getSupportedFromABoxTBoxRBox();
 
 }

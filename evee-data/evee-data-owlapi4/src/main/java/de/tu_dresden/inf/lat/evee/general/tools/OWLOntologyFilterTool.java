@@ -43,6 +43,7 @@ public class OWLOntologyFilterTool {
             OWLOntology temporaryOntology = manager.createOntology();
             logger.debug("temporaryOntology created");
             this.ontology.getAxioms().forEach(axiom -> {
+                ;
                 if ( (axiom.isOfType(this.filter.getSupportedFromABoxTBoxRBox()) &&
                         (! axiomIsSupported(
                                 axiom, this.filter.getSupportedAxiomTypes(),
@@ -96,7 +97,7 @@ public class OWLOntologyFilterTool {
         }
 
         @Override
-        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+        public Set<AxiomType<?>> getSupportedFromABoxTBoxRBox() {
             return AxiomType.TBoxAndRBoxAxiomTypes;
         }
     }
@@ -115,7 +116,7 @@ public class OWLOntologyFilterTool {
         }
 
         @Override
-        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+        public Set<AxiomType<?>> getSupportedFromABoxTBoxRBox() {
             return AxiomType.TBoxAndRBoxAxiomTypes;
         }
     }
@@ -136,7 +137,7 @@ public class OWLOntologyFilterTool {
         }
 
         @Override
-        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+        public Set<AxiomType<?>> getSupportedFromABoxTBoxRBox() {
             return AxiomType.TBoxAndRBoxAxiomTypes;
         }
     }
@@ -158,7 +159,7 @@ public class OWLOntologyFilterTool {
         }
 
         @Override
-        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
+        public Set<AxiomType<?>> getSupportedFromABoxTBoxRBox() {
             return AxiomType.TBoxAndRBoxAxiomTypes;
         }
     }
@@ -181,8 +182,8 @@ public class OWLOntologyFilterTool {
         }
 
         @Override
-        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
-            return null;
+        public Set<AxiomType<?>> getSupportedFromABoxTBoxRBox() {
+            return AxiomType.TBoxAndRBoxAxiomTypes;
         }
     }
 
@@ -203,8 +204,8 @@ public class OWLOntologyFilterTool {
         }
 
         @Override
-        public Set<AxiomType<? extends OWLAxiom>> getSupportedFromABoxTBoxRBox() {
-            Set<AxiomType<? extends OWLAxiom>> result = new HashSet<>(AxiomType.TBoxAndRBoxAxiomTypes);
+        public Set<AxiomType<?>> getSupportedFromABoxTBoxRBox() {
+            Set<AxiomType<?>> result = new HashSet<>(AxiomType.TBoxAndRBoxAxiomTypes);
             result.addAll(AxiomType.ABoxAxiomTypes);
             return result;
         }

@@ -42,6 +42,7 @@ public class CapiAbductionSolver
     private IProgressTracker progressTracker;
     private int currentSolutionIndex;
     private boolean computationSuccessful;
+    private boolean emptySolutionFound;
     private int skolemBound;
     private String errorMessage = "";
     private String spassPath;
@@ -83,6 +84,7 @@ public class CapiAbductionSolver
         this.logger.debug("Creating CapiAbductionSolver");
         this.solutions = new ArrayList<>();
         this.computationSuccessful = false;
+        this.emptySolutionFound = false;
         this.cancelled = false;
         this.currentSolutionIndex = 0;
         this.preferencesManager = new CapiPreferencesManager();
@@ -132,6 +134,7 @@ public class CapiAbductionSolver
             }
         }
         this.cancelled = false;
+        this.emptySolutionFound = false;
         this.timeLimit = this.preferencesManager.loadTimeLimit();
         this.removeRedundancies = this.preferencesManager.loadRemoveRedundancies();
         this.simplifyConjunctions = this.preferencesManager.loadSimplifyConjunctions();
@@ -385,6 +388,9 @@ public class CapiAbductionSolver
                     }
                 }
                 this.solutions = new ArrayList<>(generatedSolutions);
+                if (this.solutions.size() == 0){
+                    this.emptySolutionFound = true;
+                }
                 this.logger.debug("Solutions successfully generated");
                 this.progressTracker.setMessage("Solutions successfully generated");
                 this.logger.debug("Generated solutions:\n" + this.solutions);
@@ -515,12 +521,18 @@ public class CapiAbductionSolver
     private void computationCompleted(){
         this.computationSuccessful = ! this.cancelled;
         if (this.computationSuccessful){
-            this.logger.debug("Computation was not cancelled, display of result possible");
-            this.saveResultToCache(this.solutions);
-            this.setActiveOntologyEditedExternally(false);
-            this.currentSolutionIndex = 0;
+            this.logger.debug("Computation was not cancelled");
+            if (this.emptySolutionFound){
+                this.logger.debug("Computation found an empty result, displaying result not possible.");
+                this.computationFailed("No solution found, please adjust missing entailment or vocabulary.");
+            } else {
+                this.logger.debug("Computation found a non-empty result, displaying result possible.");
+                this.saveResultToCache(this.solutions);
+                this.setActiveOntologyEditedExternally(false);
+                this.currentSolutionIndex = 0;
+            }
         } else{
-            this.logger.debug("Computation was cancelled, cannot show result");
+            this.logger.debug("Computation was cancelled, cannot display result.");
             this.computationFailed("Last computation was cancelled");
         }
     }

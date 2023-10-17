@@ -120,7 +120,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
         this.loadingScreen.setSize(600, 150);
         this.loadingScreen.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
                 ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace())));
-        this.loadingScreen.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+        this.loadingScreen.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         this.loadingScreen.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
