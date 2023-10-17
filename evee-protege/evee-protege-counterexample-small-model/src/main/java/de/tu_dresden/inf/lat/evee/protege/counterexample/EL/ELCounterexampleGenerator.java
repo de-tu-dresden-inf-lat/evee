@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.counterexample.EL;
 
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.smallmodelgenerator.*;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
@@ -19,6 +20,7 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     private final Logger logger = LoggerFactory.getLogger(ELCounterexampleGenerator.class);
 //    boolean subsumed;
     private OWLClassExpression subClassExpr;
+    private IProgressTracker progressTracker;
     private OWLClassExpression superClassExpr;
 //    private int removedAxioms = 0;
     private OWLOntology activeOntology;
@@ -99,6 +101,10 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
         superClassExpr = ((OWLSubClassOfAxiom) observation).getSuperClass();
         checkClassExpressions();
         workingCopy = getWorkingCopy();
+        if(progressTracker != null) {
+            progressTracker.setMessage("Generating counterexample");
+            progressTracker.increment();
+        }
         IOWLModelGenerator modelGenerator = new ELSmallModelGenerator();
         modelGenerator.setOntology(workingCopy);
         Set<OWLIndividualAxiom> model = modelGenerator.generateModel();
@@ -148,6 +154,10 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     public boolean successful() {
         return true;
     }
+    @Override
+    public void addProgressTracker(IProgressTracker tracker) {
+        this.progressTracker = tracker;
+    };
 
     @Override
     public boolean ignoresPartsOfOntology() {

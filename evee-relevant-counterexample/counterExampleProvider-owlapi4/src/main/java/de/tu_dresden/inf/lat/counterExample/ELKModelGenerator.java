@@ -7,16 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import com.google.common.collect.Sets;
@@ -88,23 +79,6 @@ public class ELKModelGenerator {
 	}
 
 	/**
-	 * Private Constructor, to pass the same mapper object to new ELKCounterModel
-	 * Objects
-	 * 
-	 * @param ontology
-	 * @param conclusion
-	 * @param mapper
-	 * @throws OWLOntologyCreationException
-	 */
-//	private ELKCounterModel(OWLOntology ontology, OWLSubClassOfAxiom conclusion, Mapper mapper,
-//			Set<OWLAxiom> addedAxioms) throws OWLOntologyCreationException {
-//		this.ontology = ontology;
-//		this.conclusion = conclusion;
-//		this.mapper = mapper;
-//		this.addedAxioms = addedAxioms;
-//	}
-
-	/**
 	 * Return the ontology
 	 * 
 	 * @return Ontology
@@ -143,22 +117,7 @@ public class ELKModelGenerator {
 		if (this.fullCanonicalModel != null)
 			return this.fullCanonicalModel;
 
-//		if (!mapper.getAliasLHS().equals(mapper.getOriginalLHS())) {
-//			OWLEquivalentClassesAxiom newAxiom = owlTools.getOWLEquivalenceAxiom(mapper.getAliasLHS(),
-//					mapper.getOriginalLHS());
-//			addAxiom(newAxiom);
-//		}
-//
-//		if (!mapper.getAliasRHS().equals(mapper.getOriginalRHS())) {
-//			OWLEquivalentClassesAxiom newAxiom = owlTools.getOWLEquivalenceAxiom(mapper.getAliasRHS(),
-//					mapper.getOriginalRHS());
-//			addAxiom(newAxiom);
-//		}
-
-//		ELKCounterModel elkCounterModel = new ELKCounterModel(this.ontology, this.conclusion, this.mapper,
-//				this.addedAxioms);
-
-		Set<Element> canonicalModelElements = this.computeCanonicalModel();// getCanonicalModel();
+		Set<Element> canonicalModelElements = this.computeCanonicalModel();
 
 		logger.info("Full canonical model has been generated! total number of model elements = "
 				+ canonicalModelElements.size());
@@ -195,39 +154,13 @@ public class ELKModelGenerator {
 	}
 
 	/**
-	 * Compute the part of the canonical model that serves as a counter model for
-	 * the conclusion
-	 *
-	 * @throws OWLOntologyCreationException
-	 */
-	private Set<Element> ComputePartOfCanonicalModel() throws OWLOntologyCreationException {
-		// TODO fix me, best to get rid of me
-
-//		OWLEquivalentClassesAxiom newAxiom = owlTools.getOWLEquivalenceAxiom(mapper.getAliasLHS(),
-//				mapper.getOriginalLHS());
-//
-//		addAxiom(newAxiom);
-//
-//		OWLOntology modOntology = Segmenter.getSegmentAsOntology(this.ontology, this.mapper.getAliasLHS(),
-//				IRI.create(""));
-//
-//		logger.debug("Extracting relevant axioms");
-//		logger.debug("Total number of needed axioms = " + modOntology.axioms().count() + " out of "
-//				+ ontology.axioms().count());
-//
-//		ELKCounterModel modModel = new ELKCounterModel(modOntology, conclusion, mapper, addedAxioms);
-//
-		return this.computeCanonicalModel();// getCanonicalModel();
-	}
-
-	/**
 	 * Compute the canonical model of the provided ontology
 	 * 
 	 * @throws OWLOntologyCreationException
 	 */
 	private Set<Element> computeCanonicalModel() throws OWLOntologyCreationException {
 
-		// Setup the needed structure
+		// Set up the needed structure
 		logger.info("Normalising the TBox");
 		Instant start = Instant.now(), total = start;
 
@@ -263,133 +196,23 @@ public class ELKModelGenerator {
 
 		finish = Instant.now();
 		logger.info(GeneralTools.getDuration(start, finish));
-
-//		if (!isFinilized) {
-//			// create relations and add them to the corresponding elements
-//			logger.info("Instantiating relations");
-//			start = Instant.now();
-//
-//			UpdateElements(elements);
-//
-//			// remove artificial concept names (for restrictions and LHS of the conclusion)
-//			elements.forEach(element -> element.updateTypes(mapper));
-//
-//			finish = Instant.now();
-//			logger.info(GeneralTools.getDuration(start, finish));
-//		}
 		logger.info("Total " + GeneralTools.getDuration(total, finish));
 
-//		System.out.println(
-//				"original ontology axioms count after normalisation = " + this.originalOntology.axioms().count());
-		// remove axioms generated from normalisation
 		removePreviouslyAddedAxioms();
-//		System.out.println("restored original Ontology axioms count = " + this.originalOntology.axioms().count());
 
 		return elements;
 	}
 
-//	private void UpdateElements(Set<Element> elements) {
-//		RestrictionMapper restrictionsMap = this.mapper.getRestrictionMapper();
-//
-//		elements.forEach(element_1 -> {
-//			element_1.getTypes().forEach(type -> {
-//
-//				// index 0 isSuccessor,
-//				// index 1 isPredecessor, and
-//				// index 2 the filler.
-//				Object[] data = new Object[] { false, false, null };
-//
-//				if (restrictionsMap.getClass2Restriction().containsKey(type)) {
-//					OWLObjectSomeValuesFrom qer = restrictionsMap.getClass2Restriction().get(type);
-//					OWLObjectProperty prop = prepareRelation(qer, data);
-//
-//					Element element_2 = getElement((OWLClassExpression) data[2]);
-//
-//					if (element_2.equals(element_1))
-//						data[0] = data[1] = true;
-//
-//					element_1.addRelation(new Relation(prop, element_2, (boolean) data[0], (boolean) data[1]));
-//					element_2.addRelation(new Relation(prop, element_1, (boolean) data[1], (boolean) data[0]));
-//
-//				}
-//			});
-//		});
-//
-//	}
-
-//	private Element getElement(OWLClassExpression filler) {
-//
-//		if (filler instanceof OWLClass)
-//			return mapper.getClassRepresentatives().get(filler);
-//
-//		if (filler instanceof OWLObjectSomeValuesFrom)
-//			return mapper.getClassRepresentatives()
-//					.get(mapper.getRestrictionMapper().getRestriction2Class().get(filler));
-//
-//		return mapper.getClassRepresentatives().get(mapper.getConjunctionMapper().getConjunction2Class().get(filler));
-//	}
-
-//	private OWLObjectProperty prepareRelation(OWLClassExpression type, Object[] data) {
-//
-//		if (type instanceof OWLObjectSomeValuesFrom) {
-//			OWLObjectSomeValuesFrom qer = (OWLObjectSomeValuesFrom) type;
-//			OWLObjectPropertyExpression proExp = qer.getProperty();
-//
-//			data[2] = qer.getFiller();
-//
-//			if (proExp instanceof OWLObjectProperty) {
-//				data[1] = true;
-//				return ((OWLObjectProperty) proExp);
-//			}
-//			if (proExp instanceof OWLObjectInverseOf)
-//				data[0] = true;
-//			return ((OWLObjectInverseOf) proExp).getNamedProperty();
-//		}
-//
-//		assert false : "It should not be something other than OWLObjectSomeValuesFrom, but it was "
-//				+ type.getClass().getSimpleName() + " -> " + type;
-//		return null;
-//
-//	}
-
 	private void applyClassHierarchy(Set<Element> elements, OWLReasoner reasoner) {
-
-		// * Set<Element> notNeeded = new HashSet<>();
-
-//		mapper.getRestrictionMapper().getClass2Restriction().entrySet().forEach(System.out::println);
-
 		elements.forEach(element -> {
 			Set<OWLClassExpression> tmp = new HashSet<>();
 			for (OWLClassExpression exp : element.getTypes()) {
-
-//				System.out.println("super of " + exp + " are : ");
-//				reasoner.getSuperClasses(exp).entities().forEach(System.out::println);
-//				reasoner.getEquivalentClasses(exp).entities().forEach(System.out::println);
-				// * Set<OWLClass> superClasses =
-				// resoner.getSuperClasses(exp).entities().collect(Collectors.toSet());
 				tmp.addAll(reasoner.getSuperClasses(exp, false).getFlattened());
 				tmp.addAll(reasoner.getEquivalentClasses(exp).getEntities());
-
-				// TODO check if this is correct
-				// The assumption is the following: If a concept has only top as a super
-				// concept, then a dedicated element for this class is not needed
-
-//				* if (superClasses.size() == 1 && superClasses.contains(owlTools.getOWLTop())) {
-//				* 	notNeeded.add(element);
-//				*	continue;
-//			*	}
-
 			}
-//			System.out.println("supper of " + element);
-//			System.out.println(tmp);
 
 			element.addTypes(tmp);
-			// TODO add an option to choose optimised model, also remove unreachable element
-			// that result of optimisation.
-			// element.addTypes(filterEdges(tmp));
 		});
-
-		// * elements.removeAll(notNeeded);
 	}
 
 	/**
@@ -430,8 +253,7 @@ public class ELKModelGenerator {
 	/**
 	 * Return a set of elements, where for each satisfiable concept name (in the
 	 * TBox or artificial) a corresponding element is created
-	 * 
-	 * @param map
+	 *
 	 * @param reasoner
 	 * @return
 	 */
@@ -464,11 +286,9 @@ public class ELKModelGenerator {
 	 * 
 	 * @throws OWLOntologyCreationException
 	 */
-	private ElkReasoner classify() throws OWLOntologyCreationException {
-
+	private ElkReasoner classify(){
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(this.ontology);
-		return reasoner;
+		return reasonerFactory.createReasoner(this.ontology);
 	}
 
 	/**
@@ -489,19 +309,34 @@ public class ELKModelGenerator {
 
 			OWLClass cls;
 			OWLEquivalentClassesAxiom newAxiom = null;
+			Set<OWLEquivalentClassesAxiom> moreAxioms = new HashSet<>();
+
 			if (concept instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom qer = (OWLObjectSomeValuesFrom) concept;
 
-				if (!resMapper.getRestriction2Class().keySet().contains(qer)) {
+				if (!resMapper.getRestriction2Class().containsKey(qer)) {
 					cls = generator.getNextConceptName();
 					resMapper.addEntry(cls, qer);
 
 					newAxiom = owlTools.getOWLEquivalenceAxiom(cls, qer);
+					for (OWLClassExpression owlClassExpression : qer.getFiller().asConjunctSet()) {
+
+						OWLObjectSomeValuesFrom subQER =
+								(OWLObjectSomeValuesFrom) owlTools.getOWLExistentialRestriction(qer.getProperty(),	owlClassExpression);
+
+						if (!resMapper.getRestriction2Class().containsKey(subQER)) {
+							cls = generator.getNextConceptName();
+							resMapper.addEntry(cls, subQER);
+						}else
+							cls = resMapper.getRestriction2Class().get(subQER);
+
+						moreAxioms.add(owlTools.getOWLEquivalenceAxiom(cls, subQER));
+					}
 				}
 			} else if (concept instanceof OWLObjectIntersectionOf) {
 				OWLObjectIntersectionOf conjunction = (OWLObjectIntersectionOf) concept;
 
-				if (!conjMapper.getConjunction2Class().keySet().contains(conjunction)) {
+				if (!conjMapper.getConjunction2Class().containsKey(conjunction)) {
 					cls = generator.getNextConceptName();
 					conjMapper.addEntry(cls, conjunction);
 
@@ -509,6 +344,7 @@ public class ELKModelGenerator {
 				}
 			}
 			addAxiom(newAxiom);
+			moreAxioms.forEach(this::addAxiom);
 		});
 	}
 
@@ -521,12 +357,20 @@ public class ELKModelGenerator {
 
 		Set<OWLClassExpression> res = new HashSet<>();
 
-		this.ontology.getAxioms().stream().forEach(axiom -> {
+		this.ontology.getAxioms().forEach(axiom -> {
 			owlTools.getAsSubClassOf(axiom).forEach(subClassOf -> {
 				res.addAll(owlTools.getSubConcepts(subClassOf.getSubClass()));
 				res.addAll(owlTools.getSubConcepts(subClassOf.getSuperClass()));
 			});
 		});
+
+		Set<OWLObjectSomeValuesFrom> tmp = new HashSet<>();
+		res.stream().filter(x-> x instanceof OWLObjectSomeValuesFrom).forEach(x->
+				tmp.add((OWLObjectSomeValuesFrom) owlTools.getOWLExistentialRestriction(((OWLObjectSomeValuesFrom) x).getProperty(),
+						owlTools.getOWLTop()))
+		);
+		res.addAll(tmp);
+
 		return res;
 	}
 
@@ -534,7 +378,6 @@ public class ELKModelGenerator {
 		if (axiom != null)
 			try {
 				owlTools.addAxiom(axiom, this.ontology);
-//				this.addedAxioms.add(axiom);
 			} catch (OWLOntologyStorageException e) {
 				e.printStackTrace();
 			}
@@ -542,7 +385,7 @@ public class ELKModelGenerator {
 
 	private void removePreviouslyAddedAxioms() {
 
-		this.originalOntology.getAxioms().stream().forEach(axiom -> {
+		this.originalOntology.getAxioms().forEach(axiom -> {
 			if (!this.originalAxioms.contains(axiom)) {
 				try {
 					owlTools.removeAxiom(axiom, this.originalOntology);

@@ -4,6 +4,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.tu_dresden.inf.lat.counterExample.RedundancyRefiner;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.model.tools.ToOWLTools;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.elk.owlapi.ElkReasoner;
@@ -14,19 +17,17 @@ import org.semanticweb.owlapi.model.*;
 import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
 
 import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
-import de.tu_dresden.inf.lat.counterExample.ModelRefiner;
-import de.tu_dresden.inf.lat.counterExample.data.ModelType;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.AlphaRelevantGenerator;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.BetaRelevantGenerator;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.DiffRelevantGenerator;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.FlatDiffRelevantGenerator;
-import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.RelevantCounterExample;
+import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.RelevantCounterExampleGenerator;
 import de.tu_dresden.inf.lat.counterExample.tools.Segmenter;
 import de.tu_dresden.inf.lat.model.data.Element;
 
 import static org.junit.Assert.*;
 
-public class RelevantCounterExamplesTest {
+public class RelevantCounterExampleGeneratorTest {
 
 	private static OWLOntologyManager manager;
 	private static OWLDataFactory factory;
@@ -49,50 +50,49 @@ public class RelevantCounterExamplesTest {
 		manager = OWLManager.createOWLOntologyManager();
 		factory = manager.getOWLDataFactory();
 		pizzaOntology = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/pizza.owl")));
-		mammalOntology = manager.loadOntologyFromOntologyDocument(Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader()
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/pizza.owl")));
+		mammalOntology = manager.loadOntologyFromOntologyDocument(Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader()
 				.getResourceAsStream("ontologies/relevantExampleElephant.owl")));
 		testModule = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/testModule.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/testModule.owl")));
 		relevantA = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/relevantA.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/relevantA.owl")));
 		relevantB = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/relevantB.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/relevantB.owl")));
 		relevantC = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/relevantC.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/relevantC.owl")));
 		relevantD = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/relevantD.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/relevantD.owl")));
 		relevantE = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/relevantE.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/relevantE.owl")));
 		relevantCycle = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/relevantCycle.owl")));
-		relevantCycle2 = manager.loadOntologyFromOntologyDocument(Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader()
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/relevantCycle.owl")));
+		relevantCycle2 = manager.loadOntologyFromOntologyDocument(Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader()
 				.getResourceAsStream("ontologies/relevantCycle2.owl")));
-		relevantCycle3 = manager.loadOntologyFromOntologyDocument(Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader()
+		relevantCycle3 = manager.loadOntologyFromOntologyDocument(Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader()
 				.getResourceAsStream("ontologies/relevantCycle3.owl")));
 		coreTest = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/coreTest.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/coreTest.owl")));
 		ore1 = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/ore_ont_13752.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/ore_ont_13752.owl")));
 		ore2 = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/ore_ont_10742.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/ore_ont_10742.owl")));
 		ore3 = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/ore_ont_8974.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/ore_ont_8974.owl")));
 
-		redundancyTest1 = manager.loadOntologyFromOntologyDocument(Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader()
+		redundancyTest1 = manager.loadOntologyFromOntologyDocument(Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader()
 				.getResourceAsStream("ontologies/redundancyTest1.owl")));
 
 		notLoop = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/notLoop.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/notLoop.owl")));
 
 		square1 = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/square1.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/square1.owl")));
 		square2 = manager.loadOntologyFromOntologyDocument(
-				Objects.requireNonNull(RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/square2.owl")));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/square2.owl")));
 
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
 	public void test0() {
 		Element e1 = new Element("e91");
@@ -102,7 +102,6 @@ public class RelevantCounterExamplesTest {
 		assertEquals(e2, e1);
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
 	public void test00() throws OWLOntologyCreationException {
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
@@ -116,7 +115,6 @@ public class RelevantCounterExamplesTest {
 		assertEquals(17, modOntology.getAxiomCount());
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
 	public void test000() throws OWLOntologyCreationException {
 
@@ -131,9 +129,8 @@ public class RelevantCounterExamplesTest {
 		assertEquals(modOntology2.getAxiomCount(), testModule.getAxiomCount());
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
-	public void test1() throws OWLOntologyCreationException {
+	public void test1() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
 				factory.getOWLObjectIntersectionOf(
@@ -142,7 +139,7 @@ public class RelevantCounterExamplesTest {
 				owlClass("http://www.co-ode.org/ontologies/pizza/pizza.owl#SauceTopping"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(pizzaOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(pizzaOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
@@ -153,65 +150,71 @@ public class RelevantCounterExamplesTest {
 		Set<Element> m2 = model.generateFullRelevantCanonicalModel().getFinalizedModelElements();
 		assertSame(m1, m2);
 
-		RelevantCounterExample aRelGenerator = new AlphaRelevantGenerator(model);
-//TODO add a test for the full canonical model
-//		assertEquals(162, m1.size());
-		assertEquals(26, m1.size());
-		assertEquals(2, aRelGenerator.generate().size());
+		RelevantCounterExampleGenerator aRelGenerator = new AlphaRelevantGenerator(model);
+		Set<Element> typeAModel = aRelGenerator.generate();
+
+		RedundancyRefiner rr = new RedundancyRefiner(typeAModel, aRelGenerator);
+		rr.refine();
+
+		assertEquals(28, m1.size());
+		assertEquals(2, typeAModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
-	public void test2() throws OWLOntologyCreationException {
+	public void test2() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
 				owlClass("http://relevantOntologyExample#Mammal"),
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample aRelGenerator = new AlphaRelevantGenerator(model);
+		RelevantCounterExampleGenerator aRelGenerator = new AlphaRelevantGenerator(model);
 		Set<Element> typeAModel = aRelGenerator.generate();
+
+		RedundancyRefiner rr = new RedundancyRefiner(typeAModel, aRelGenerator);
+		rr.refine();
+
 		typeAModel.forEach(System.out::println);
-		// TODO add a test for the full canonical model
-//		assertEquals(22, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(3, typeAModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
-	public void test3() throws OWLOntologyCreationException {
+	public void test3() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
 				owlClass("http://relevantOntologyExample#Mammal"),
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample bRelGenerator = new BetaRelevantGenerator(model);
+		RelevantCounterExampleGenerator bRelGenerator = new BetaRelevantGenerator(model);
 		Set<Element> typeBModel = bRelGenerator.generate();
+
+		RedundancyRefiner rr = new RedundancyRefiner(typeBModel, bRelGenerator);
+		rr.refine();
+
 		typeBModel.forEach(System.out::println);
-		// TODO add a test for the full canonical model
-//		assertEquals(22, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(7, typeBModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
-	public void test4() throws OWLOntologyCreationException {
+	public void test4() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(factory.getOWLObjectSomeValuesFrom(
 				owlProperty("http://relevantOntologyExample#livesBy"),
@@ -220,24 +223,28 @@ public class RelevantCounterExamplesTest {
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample aRelGenerator = new AlphaRelevantGenerator(model);
+		RelevantCounterExampleGenerator aRelGenerator = new AlphaRelevantGenerator(model);
+
 		Set<Element> typeAModel = aRelGenerator.generate();
+
+		RedundancyRefiner rr = new RedundancyRefiner(typeAModel, aRelGenerator);
+		rr.refine();
+
 		typeAModel.forEach(System.out::println);
-		// TODO add a test for the full canonical model
-//		assertEquals(24, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(17, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		assertEquals(24, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(3, typeAModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
+
 	@Test
-	public void test5() throws OWLOntologyCreationException {
+	public void test5() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(factory.getOWLObjectSomeValuesFrom(
 				owlProperty("http://relevantOntologyExample#livesBy"),
@@ -246,52 +253,54 @@ public class RelevantCounterExamplesTest {
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample bRelGenerator = new BetaRelevantGenerator(model);
+		RelevantCounterExampleGenerator bRelGenerator = new BetaRelevantGenerator(model);
 		Set<Element> typeBModel = bRelGenerator.generate();
+
+		RedundancyRefiner rr = new RedundancyRefiner(typeBModel, bRelGenerator);
+		rr.refine();
+
 		typeBModel.forEach(System.out::println);
-		// TODO add a test for the full canonical model
-//		assertEquals(24, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(17, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		assertEquals(24, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(9, typeBModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
+
 	@Test
-	public void test6() throws OWLOntologyCreationException {
+	public void test6() throws OWLOntologyCreationException, ModelGenerationException {
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
 				factory.getOWLObjectIntersectionOf(owlClass("http://relevantOntologyExample#Mammal"),
 						owlClass("http://relevantOntologyExample#Female")),
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(mammalOntology);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
 		typeDiffModel.forEach(System.out::println);
-		// TODO add a test for the full canonical model
-//		assertEquals(22, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(19, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		assertEquals(27, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(7, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
+
 	@Test
-	public void test6Flat() throws OWLOntologyCreationException {
+	public void test6Flat() throws OWLOntologyCreationException, ModelGenerationException {
 		System.out.println("6flat");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
 				factory.getOWLObjectIntersectionOf(owlClass("http://relevantOntologyExample#Mammal"),
@@ -299,30 +308,29 @@ public class RelevantCounterExamplesTest {
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 		Set<Element> flatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(mammalOntology);
-		refiner.refine(flatRelGenerator, flatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(flatModel, flatRelGenerator);
+		rr.refine();
 
 		flatModel.forEach(System.out::println);
 
-		// TODO add a test for the full canonical model
-//		assertEquals(22, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(19, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		assertEquals(27, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(6, flatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
+
 	@Test
-	public void test66() throws OWLOntologyCreationException {
-		System.out.println("test6");
+	public void test66() throws OWLOntologyCreationException, ModelGenerationException {
+		System.out.println("test66");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
 				factory.getOWLObjectIntersectionOf(owlClass("http://relevantOntologyExample#Mammal"),
 						owlClass("http://relevantOntologyExample#Female")),
@@ -334,24 +342,21 @@ public class RelevantCounterExamplesTest {
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample bRelGenerator = new BetaRelevantGenerator(model);
-		Set<Element> typeBmodel = bRelGenerator.generate();
+		RelevantCounterExampleGenerator bRelGenerator = new BetaRelevantGenerator(model);
+		Set<Element> typeBModel = bRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(mammalOntology);
-		refiner.refine(bRelGenerator, typeBmodel, ModelType.Beta);
+		RedundancyRefiner rr = new RedundancyRefiner(typeBModel, bRelGenerator);
+		rr.refine();
 
-		typeBmodel.forEach(System.out::println);
+		typeBModel.forEach(System.out::println);
 
-		// TODO add a test for the full canonical model
-//		assertEquals(22, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(19, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(8, typeBmodel.size());
+		assertEquals(27, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(8, typeBModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void test55() throws OWLOntologyCreationException {
+	public void test55() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(factory.getOWLObjectSomeValuesFrom(
 				owlProperty("http://relevantOntologyExample#livesBy"),
@@ -360,29 +365,32 @@ public class RelevantCounterExamplesTest {
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample bRelGenerator = new BetaRelevantGenerator(model);
+		RelevantCounterExampleGenerator bRelGenerator = new BetaRelevantGenerator(model);
 		Set<Element> typeBModel = bRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(mammalOntology);
-		refiner.refine(bRelGenerator, typeBModel, ModelType.Beta);
+		RedundancyRefiner rr = new RedundancyRefiner(typeBModel, bRelGenerator);
+		rr.refine();
 
 		typeBModel.forEach(System.out::println);
 
-		// TODO add a test for the full canonical model
-//		assertEquals(24, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(17, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(24, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(9, typeBModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
+
+		assertEquals(31,
+				new ELKModelGenerator(mammalOntology,
+						ToOWLTools.getInstance().getOWLSubClassOfAxiom(ToOWLTools.getInstance().getOWLBot(),
+								ToOWLTools.getInstance().getOWLTop())).generateFullRawCanonicalModelElements().size());
+
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
-	public void test7() throws OWLOntologyCreationException {
+	public void test7() throws OWLOntologyCreationException, ModelGenerationException {
 		System.out.println("test7");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
 				factory.getOWLObjectIntersectionOf(factory.getOWLObjectSomeValuesFrom(
@@ -391,28 +399,31 @@ public class RelevantCounterExamplesTest {
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(mammalOntology);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
 		typeDiffModel.forEach(System.out::println);
-		// TODO add a test for the full canonical model
-//		assertEquals(25, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		assertEquals(29, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(7, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
+
+		assertEquals(31,
+				new ELKModelGenerator(mammalOntology,
+						ToOWLTools.getInstance().getOWLSubClassOfAxiom(ToOWLTools.getInstance().getOWLBot(),
+								ToOWLTools.getInstance().getOWLTop())).generateFullRawCanonicalModelElements().size());
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void test7Flat() throws OWLOntologyCreationException {
+	public void test7Flat() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(
 				factory.getOWLObjectIntersectionOf(factory.getOWLObjectSomeValuesFrom(
@@ -421,200 +432,192 @@ public class RelevantCounterExamplesTest {
 				owlClass("http://relevantOntologyExample#Elephant"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(mammalOntology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(mammalOntology);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(mammalOntology, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 		Set<Element> flatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(mammalOntology);
-		refiner.refine(flatRelGenerator, flatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(flatModel, flatRelGenerator);
+		rr.refine();
 
 		flatModel.forEach(System.out::println);
-		// TODO add a test for the full canonical model
-//		assertEquals(25, model.generateCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		assertEquals(29, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(5, flatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
-	public void test8() throws OWLOntologyCreationException {
+	public void test8() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantA#A"),
 				owlClass("http://relevantA#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantA);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantA);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantA, conclusion);
-		RelevantCounterExample rel = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator rel = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = rel.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantA);
-		refiner.refine(rel, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, rel);
+		rr.refine();
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(10, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(6, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void test8Flat() throws OWLOntologyCreationException {
+	public void test8Flat() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantA#A"),
 				owlClass("http://relevantA#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantA);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantA);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantA, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 		Set<Element> typeFlatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantA);
-		refiner.refine(flatRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, flatRelGenerator);
+		rr.refine();
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(10, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(6, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
-	public void test9() throws OWLOntologyCreationException {
+	public void test9() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantB#A"),
 				owlClass("http://relevantB#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantB);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantB);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantB, conclusion);
-		RelevantCounterExample rel = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator rel = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = rel.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantB);
-		refiner.refine(rel, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, rel);
+		rr.refine();
 
 		typeDiffModel.forEach(System.out::println);
 
 		assertEquals(11, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(5, typeDiffModel.size());
+		assertEquals(4, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void test9Flat() throws OWLOntologyCreationException {
+	public void test9Flat() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantB#A"),
 				owlClass("http://relevantB#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantB);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantB);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantB, conclusion);
-		RelevantCounterExample rel = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator rel = new FlatDiffRelevantGenerator(model);
 		Set<Element> typeFlatModel = rel.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantB);
-		refiner.refine(rel, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, rel);
+		rr.refine();
 
 		typeFlatModel.forEach(System.out::println);
 
 		assertEquals(11, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(5, typeFlatModel.size());
+		assertEquals(4, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("checked after loop tracker, 10.06")
 	@Test
-	public void test10() throws OWLOntologyCreationException {
+	public void test10() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantC#A"),
 				owlClass("http://relevantC#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantC);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantC);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantC, conclusion);
-		RelevantCounterExample difRelGenerator = new DiffRelevantGenerator(model);
-		Set<Element> typeDiffModel = difRelGenerator.generate();
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
+		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantC);
-		refiner.refine(difRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(17, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(6, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void test10Flat() throws OWLOntologyCreationException {
+	public void test10Flat() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantC#A"),
 				owlClass("http://relevantC#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantC);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantC);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantC, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 		Set<Element> typeFlatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantC);
-		refiner.refine(flatRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, flatRelGenerator);
+		rr.refine();
 
-		typeFlatModel.forEach(x -> System.out.println(x));
+		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(17, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(6, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("Passed after adapting type extender on 13.06")
 	@Test
-	public void test11() throws OWLOntologyCreationException {
+	public void test11() throws OWLOntologyCreationException, ModelGenerationException {
 		System.out.println("test11");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantD#A"),
 				owlClass("http://relevantD#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantD);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantD);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantD, conclusion);
 		// model.generateFullRelevantCanonicalModel().getFinalizedModelElements().forEach(System.out::println);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantD);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
 		typeDiffModel.forEach(System.out::println);
 
@@ -623,59 +626,60 @@ public class RelevantCounterExamplesTest {
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("Passed after adapting type extender on 13.06")
 	@Test
-	public void test12() throws OWLOntologyCreationException {
+	public void test12() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantE#A"),
 				owlClass("http://relevantE#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantE);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantE);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantE, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantE);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(6, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(8, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(3, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("Passed after adapting type extender on 13.06")
 	@Test
-	public void testIndependantCycle() throws OWLOntologyCreationException {
+	public void testIndependentCycle() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantCycle2#M"),
 				owlClass("http://relevantCycle2#Z"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantCycle2);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantCycle2);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantCycle2, conclusion);
-		AlphaRelevantGenerator aRelgenerator = new AlphaRelevantGenerator(model);
-		BetaRelevantGenerator bRelgenerator = new BetaRelevantGenerator(model);
-		DiffRelevantGenerator diffRelgenerator = new DiffRelevantGenerator(model);
+		AlphaRelevantGenerator aRelGenerator = new AlphaRelevantGenerator(model);
+		BetaRelevantGenerator bRelGenerator = new BetaRelevantGenerator(model);
+		DiffRelevantGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 
-		Set<Element> typeAModel = aRelgenerator.generate();
-		Set<Element> typeBModel = bRelgenerator.generate();
-		Set<Element> typeDiffModel = diffRelgenerator.generate();
+		Set<Element> typeAModel = aRelGenerator.generate();
+		Set<Element> typeBModel = bRelGenerator.generate();
+		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		assertEquals(11, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-//		model.generateFullRelevantCanonicalModel().getFinalizedModelElements().forEach(System.out::println);
-		ModelRefiner refiner = new ModelRefiner(relevantCycle2);
-		refiner.refine(diffRelgenerator, typeDiffModel, ModelType.Diff);
-		refiner.refine(bRelgenerator, typeBModel, ModelType.Beta);
-		refiner.refine(aRelgenerator, typeAModel, ModelType.Alpha);
+		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+
+		RedundancyRefiner rrA = new RedundancyRefiner(typeAModel, aRelGenerator);
+		RedundancyRefiner rrB = new RedundancyRefiner(typeBModel, bRelGenerator);
+		RedundancyRefiner rrD = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+
+		rrA.refine();
+		rrB.refine();
+		rrD.refine();
 
 		assertEquals(5, typeDiffModel.size());
 		System.out.println("Diff");
@@ -689,42 +693,46 @@ public class RelevantCounterExamplesTest {
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("Passed after adapting type extender on 13.06")
 	@Test
-	public void testIndependantCycle2() throws OWLOntologyCreationException {
-		System.out.println("---testIndependantCycle2----");
+	public void testIndependentCycle2() throws OWLOntologyCreationException, ModelGenerationException {
+		System.out.println("---testIndependentCycle2----");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantCycle2#M"),
 				owlClass("http://relevantCycle2#Z"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantCycle3);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantCycle3);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantCycle3, conclusion);
 		ELKModelGenerator modelB = new ELKModelGenerator(relevantCycle3, conclusion);
 		ELKModelGenerator modelD = new ELKModelGenerator(relevantCycle3, conclusion);
-		AlphaRelevantGenerator aRelgenerator = new AlphaRelevantGenerator(model);
-		BetaRelevantGenerator bRelgenerator = new BetaRelevantGenerator(modelB);
-		DiffRelevantGenerator diffRelgenerator = new DiffRelevantGenerator(modelD);
+		AlphaRelevantGenerator aRelGenerator = new AlphaRelevantGenerator(model);
+		BetaRelevantGenerator bRelGenerator = new BetaRelevantGenerator(modelB);
+		DiffRelevantGenerator diffRelGenerator = new DiffRelevantGenerator(modelD);
 
-		assertEquals(10, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-		ModelRefiner refiner = new ModelRefiner(relevantCycle3);
+		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 
-		Set<Element> typeAModel = aRelgenerator.generate();
-		refiner.refine(aRelgenerator, typeAModel, ModelType.Alpha);
+		Set<Element> typeAModel = aRelGenerator.generate();
+		RedundancyRefiner rrA = new RedundancyRefiner(typeAModel, aRelGenerator);
+		rrA.refine();
+
 		System.out.println("Type A");
 		typeAModel.forEach(System.out::println);
 		assertEquals(3, typeAModel.size());
 
-		Set<Element> typeBModel = bRelgenerator.generate();
-		refiner.refine(bRelgenerator, typeBModel, ModelType.Beta);
+		Set<Element> typeBModel = bRelGenerator.generate();
+		RedundancyRefiner rrB = new RedundancyRefiner(typeBModel, bRelGenerator);
+		rrB.refine();
+
 		System.out.println("Type B");
 		typeBModel.forEach(System.out::println);
 		assertEquals(7, typeBModel.size());
 
-		Set<Element> typeDiffModel = diffRelgenerator.generate();
-		refiner.refine(diffRelgenerator, typeDiffModel, ModelType.Diff);
+		Set<Element> typeDiffModel = diffRelGenerator.generate();
+		RedundancyRefiner rrDiff = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rrDiff.refine();
+
 		System.out.println("Diff");
 		typeDiffModel.forEach(System.out::println);
 		assertEquals(5, typeDiffModel.size());
@@ -732,93 +740,89 @@ public class RelevantCounterExamplesTest {
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("Passed after adapting type extender on 13.06")
 	@Test
-	public void testCycle() throws OWLOntologyCreationException {
+	public void testCycle() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantCycle#M"),
 				owlClass("http://relevantCycle#Z"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantCycle);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantCycle);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantCycle, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantCycle);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(10, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 //		model.generateFullRelevantCanonicalModel().getFinalizedModelElements().forEach(System.out::println);
 		assertEquals(4, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void testCycleFlat() throws OWLOntologyCreationException {
+	public void testCycleFlat() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantCycle#M"),
 				owlClass("http://relevantCycle#Z"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantCycle);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantCycle);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantCycle, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 
 		Set<Element> typeFlatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantCycle);
-		refiner.refine(flatRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, flatRelGenerator);
+		rr.refine();
 
-		typeFlatModel.forEach(x -> System.out.println(x));
+		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(10, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(4, typeFlatModel.size());
 		assertEquals(2, typeFlatModel.stream().filter(x -> x.equals(model.getMapper().getLHSRepresentativeElement()))
 				.collect(Collectors.toList()).get(0).getRelations().size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("Passed after adapting type extender on 13.06")
 	@Test
-	public void testCycle2() throws OWLOntologyCreationException {
+	public void testCycle2() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantCycle#MM"),
 				owlClass("http://relevantCycle#ZZ"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantCycle);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantCycle);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantCycle, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantCycle);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(9, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(5, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void testCycle2Flat() throws OWLOntologyCreationException {
+	public void testCycle2Flat() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantCycle#MM"),
 				owlClass("http://relevantCycle#ZZ"));
@@ -829,49 +833,47 @@ public class RelevantCounterExamplesTest {
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantCycle, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 
 		Set<Element> typeFlatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantCycle);
-		refiner.refine(flatRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, flatRelGenerator);
+		rr.refine();
 
-		typeFlatModel.forEach(x -> System.out.println(x));
+		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(9, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(5, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void test13() throws OWLOntologyCreationException {
+	public void test13() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantE#A"),
 				owlClass("http://relevantE#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantE);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantE);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantE, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 		Set<Element> typeFlatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantE);
-		refiner.refine(flatRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, flatRelGenerator);
+		rr.refine();
 
-		typeFlatModel.forEach(x -> System.out.println(x));
+		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(6, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(8, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(3, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("Fixed on 13.06")
 	@Test
-	public void testNotLoop() throws OWLOntologyCreationException {
+	public void testNotLoop() throws OWLOntologyCreationException, ModelGenerationException {
 		System.out.println("Not loop");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://notLoop#A"),
 				owlClass("http://notLoop#D"));
@@ -882,126 +884,121 @@ public class RelevantCounterExamplesTest {
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(notLoop, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 		Set<Element> typeFlatModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(notLoop);
-		refiner.refine(diffRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, diffRelGenerator);
+		rr.refine();
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(6, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(9, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(3, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void test13Flat() throws OWLOntologyCreationException {
+	public void test13Flat() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://relevantE#A"),
 				owlClass("http://relevantE#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantE);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantE);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantE, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 		Set<Element> typeFlatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantE);
-		refiner.refine(flatRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, flatRelGenerator);
+		rr.refine();
 
-		typeFlatModel.forEach(x -> System.out.println(x));
+		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(6, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(8, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(3, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed 14.06")
 	@Test
-	public void testCoreDiff() throws OWLOntologyCreationException {
+	public void testCoreDiff() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://coreTest#A"),
 				owlClass("http://coreTest#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(coreTest);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(coreTest);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(coreTest, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(coreTest);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(6, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void testCoreFlat() throws OWLOntologyCreationException {
+	public void testCoreFlat() throws OWLOntologyCreationException, ModelGenerationException {
 		System.out.println("coreFlat");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://coreTest#A"),
 				owlClass("http://coreTest#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(coreTest);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(coreTest);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(coreTest, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 		Set<Element> typeFlatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(coreTest);
-		refiner.refine(flatRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, flatRelGenerator);
+		rr.refine();
 
-		typeFlatModel.forEach(x -> System.out.println(x));
+		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(5, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void testRedundancyDiff() throws OWLOntologyCreationException {
+	public void testRedundancyDiff() throws OWLOntologyCreationException, ModelGenerationException {
 		System.out.println("RedundancyDiff");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://redundancyTest1#A"),
 				owlClass("http://redundancyTest1#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(redundancyTest1);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(redundancyTest1);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(redundancyTest1, conclusion);
-		RelevantCounterExample rel = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator rel = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = rel.generate();
 
-		ModelRefiner refiner = new ModelRefiner(redundancyTest1);
-		refiner.refine(rel, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, rel);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(21, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(10, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
-	// @Ignore("passed on 14.06")
 	@Test
-	public void testRedundancyFlat() throws OWLOntologyCreationException {
+	public void testRedundancyFlat() throws OWLOntologyCreationException, ModelGenerationException {
 		System.out.println("RedundancyDiff");
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://redundancyTest1#A"),
 				owlClass("http://redundancyTest1#B"));
@@ -1012,64 +1009,64 @@ public class RelevantCounterExamplesTest {
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(redundancyTest1, conclusion);
-		RelevantCounterExample flatRelGenerator = new FlatDiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator flatRelGenerator = new FlatDiffRelevantGenerator(model);
 		Set<Element> typeFlatModel = flatRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(redundancyTest1);
-		refiner.refine(flatRelGenerator, typeFlatModel, ModelType.FlatDiff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeFlatModel, flatRelGenerator);
+		rr.refine();
 
-		typeFlatModel.forEach(x -> System.out.println(x));
+		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(21, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(10, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
 	@Test
-	public void testSquare1() throws OWLOntologyCreationException {
+	public void testSquare1() throws OWLOntologyCreationException, ModelGenerationException {
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://square1#A"),
 				owlClass("http://square1#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(square1);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(square1);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		ELKModelGenerator model = new ELKModelGenerator(square1, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(square1);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(6, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(8, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(4, typeDiffModel.size());
 
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 
 	@Test
-	public void testSquare2() throws OWLOntologyCreationException {
+	public void testSquare2() throws OWLOntologyCreationException, ModelGenerationException {
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(owlClass("http://square2#A"),
 				owlClass("http://square2#B"));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(square2);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(square2);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		ELKModelGenerator model = new ELKModelGenerator(square2, conclusion);
-		RelevantCounterExample diffRelGenerator = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator diffRelGenerator = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		ModelRefiner refiner = new ModelRefiner(square2);
-		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(7, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(11, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(2, typeDiffModel.size());
 
 		System.out.println("_-_-_-_-_-_-_-_-_-_");

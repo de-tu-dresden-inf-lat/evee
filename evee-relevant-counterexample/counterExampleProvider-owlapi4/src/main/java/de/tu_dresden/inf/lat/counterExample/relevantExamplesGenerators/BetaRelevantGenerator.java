@@ -20,7 +20,7 @@ import de.tu_dresden.inf.lat.model.tools.GeneralTools;
  *         Generate type-b relevant counter example extracted from the canonical
  *         model
  */
-public class BetaRelevantGenerator extends RelevantCounterExample {
+public class BetaRelevantGenerator extends RelevantCounterExampleGenerator {
 	private final Logger logger = Logger.getLogger(BetaRelevantGenerator.class);
 
 	public BetaRelevantGenerator(ELKModelGenerator elkCounterModelGenerator) throws OWLOntologyCreationException {
@@ -46,15 +46,6 @@ public class BetaRelevantGenerator extends RelevantCounterExample {
 		while (!tmp.isEmpty()) {
 			tmp = addSuccessorsOfAll(tmp, typeBModel);
 		}
-
-//		System.out.println("lhs -> " + this.model.getMapper().getAliasLHS() + ", its element -> "
-//				+ this.model.getMapper().getLHSRepresentativeElement().getName());
-//
-//		System.out.println("rhs -> " + this.model.getMapper().getAliasRHS() + ", its element -> "
-//				+ this.model.getMapper().getRHSRepresentativeElement().getName());
-//
-//		System.out.println("Beta coarse");
-//		typeBModel.forEach(System.out::println);
 
 		cleanReverseEdges(typeBModel);
 

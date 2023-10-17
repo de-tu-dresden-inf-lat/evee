@@ -584,6 +584,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.filterWarningLabel.setText("");
         this.loadingUI.resetLoadingUI();
         this.loadingUI.activeLoadingUI();
+        this.logger.debug("loading UI is activated");
         INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
         explainer.setOntology(this.getOWLModelManager().getActiveOntology());
         explainer.setSignature(this.signatureSelectionUI.getPermittedVocabulary());

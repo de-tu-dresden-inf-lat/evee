@@ -1,37 +1,37 @@
 package de.tu_dresden.inf.lat.evee.smallmodelgenerator;
 
-
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
-import de.tu_dresden.inf.lat.evee.smallmodelgenerator.ELNormaliser;
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
+/**
+ * ELSmallModelGenerator is a class responsible for generating small models for the Description Logic EL
+ * ontologies and can perform subsumption checks. To reduce the number of individual names in the model,
+ * the generator uses the existing individual names when creating successors for individual names belonging to existential restrictions.
+ * This class ignores axioms more expressive than those supported by EL
+ */
 public class ELSmallModelGenerator implements IOWLModelGenerator {
-    public Map<OWLNamedIndividual, Set<OWLClassExpression>> map;
-    public OWLOntology ont;
+    private Map<OWLNamedIndividual, Set<OWLClassExpression>> map;
+    private OWLOntology ont;
     public int curName;
     public Set<OWLAxiom> TBoxAxioms;
-    public Set<OWLAxiom> ABoxAxioms;
-    public boolean bigModel;
+    private boolean canonicalModel;
     private final OWLDataFactory df;
     private boolean consistent;
     private OWLReasoner res;
-    private boolean makeChange;
-    private boolean T1makeChange;
+    private boolean makesChange;
+    private boolean SubsumptionRulemakesChange;
     private final OWLReasonerFactory rf;
-    private final OWLClassExpression B;
-    private final OWLNamedIndividual a;
+    private final OWLClassExpression targetConcept;
+    private final OWLNamedIndividual rootInd;
     private boolean subsumed;
     private final OWLOntologyManager man;
-    private Map<String, List<OWLClass>> indClassMapData;
     private int numRemoved;
     private final Set<OWLIndividualAxiom> model;
 
@@ -40,17 +40,16 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
         this.rf = new ReasonerFactory();
         this.man = OWLManager.createOWLOntologyManager();
         this.df = man.getOWLDataFactory();
-        this.a = df.getOWLNamedIndividual(IRI.create("root-Ind"));
-        this.B = df.getOWLClass(IRI.create("FreshClass"));
+        this.rootInd = df.getOWLNamedIndividual(IRI.create("root-Ind"));
+        this.targetConcept = df.getOWLClass(IRI.create("FreshClass"));
         model = new HashSet<>();
 
     }
-
-    public boolean getSubsumed() {
+    public boolean isSubsumed() {
         return subsumed;
     }
 
-    public boolean getConsistent() {
+    public boolean isConsistent() {
         return consistent;
     }
 
@@ -69,7 +68,13 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
             e1.printStackTrace();
         }
         this.ont = ontology;
+    }
 
+    @Override
+    public Set<IRI> getMarkedIndividuals() {
+        Set<IRI> markedInds = new HashSet<>();
+        markedInds.add(rootInd.getIRI());
+        return markedInds;
     }
 
     @Override
@@ -87,7 +92,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     private void reset() {
         this.consistent = true;
         this.curName = 0;
-        this.makeChange = true;
+        this.makesChange = true;
         this.subsumed = false;
         this.map = new HashMap<>();
     }
@@ -95,9 +100,9 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
 
     public void checkSubsumption(OWLClassExpression C, OWLClassExpression D, boolean bigModel) {
         this.reset();
-        this.bigModel = bigModel;
-        OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(C, a);
-        OWLSubClassOfAxiom axiom2 = df.getOWLSubClassOfAxiom(D, B);
+        this.canonicalModel = bigModel;
+        OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(C, rootInd);
+        OWLSubClassOfAxiom axiom2 = df.getOWLSubClassOfAxiom(D, targetConcept);
         this.ont = null;
         try {
             ont = man.createOntology(this.TBoxAxioms);
@@ -109,7 +114,6 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
 
         ELNormaliser normaliser = new ELNormaliser();
         normaliser.setOntology(this.ont);
-
         try {
             this.ont = normaliser.normalise();
         } catch (OWLOntologyCreationException e) {// TODO Auto-generated catch block
@@ -123,25 +127,22 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
     private void getModel() {
-        while (this.makeChange) {
-            this.makeChange = false;
-            this.A1();
-            this.A2();
-            this.T1();
-            boolean buf = this.makeChange;
-            while (this.makeChange) {
-                this.makeChange = false;
-                this.A2();
-                this.T1();
+        while (makesChange) {
+            makesChange = false;
+            applyConjunctionRule();
+            applyAddExRestrictionRule();
+            applySubsumptionRule();
+            boolean buf = makesChange;
+            while (makesChange) {
+                makesChange = false;
+                applyAddExRestrictionRule();
+                applySubsumptionRule();
             }
-            makeChange = buf;
-            if (!this.consistent) {
+            makesChange = buf;
+            if (!consistent ||subsumed ) {
                 break;
             }
-            if (this.subsumed) {
-                break;
-            }
-            A3();
+            applyUnrollExRestrictionRule();
         }
         map.entrySet().stream().forEach(e ->
                 e.getValue().stream()
@@ -162,7 +163,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
 
         if (!hasSuccessor) {
             Set<OWLAxiom> toAdd = new HashSet<>();
-            if (!this.bigModel) {
+            if (!this.canonicalModel) {
                 for (OWLNamedIndividual ind : this.ont.getIndividualsInSignature()) {
                     OWLAxiom clAs = this.df.getOWLClassAssertionAxiom(obj.getFiller(), ind);
                     OWLAxiom prAs = this.df.getOWLObjectPropertyAssertionAxiom(obj.getProperty(), passedInd, ind);
@@ -174,25 +175,19 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                     }
                     this.man.addAxioms(ont, toAdd);
                     this.res.flush();
-                    if (res.isConsistent() && !res.isEntailed(df.getOWLClassAssertionAxiom(B, a))) {
-
+                    if (res.isConsistent() && !res.isEntailed(df.getOWLClassAssertionAxiom(targetConcept, rootInd))) {
                         hasSuccessor = true;
                         break;
                     } else {
-
                         man.removeAxioms(ont, toAdd);
                         toAdd.removeAll(toAdd);
                     }
                 }
             }
             if (!hasSuccessor) {
-
                 OWLNamedIndividual a = df.getOWLNamedIndividual(IRI.create("Ind-" + curName));
-
                 man.addAxiom(this.ont, df.getOWLObjectPropertyAssertionAxiom(obj.getProperty(), passedInd, a));
                 man.addAxiom(this.ont, df.getOWLClassAssertionAxiom(obj.getFiller(), a));
-
-
                 curName = curName + 1;
                 hasSuccessor = true;
             }
@@ -202,15 +197,15 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
         return hasSuccessor;
     }
 
-    private void A3() {
-        this.makeChange = map.entrySet().stream()
+    private void applyUnrollExRestrictionRule() {
+        this.makesChange = map.entrySet().stream()
                 .anyMatch(entry -> entry.getValue().stream()
                         .filter(expr -> expr.getClassExpressionType() == ClassExpressionType.OBJECT_SOME_VALUES_FROM)
                         .anyMatch(expr -> findSuccessor(expr, entry.getKey()))
                 );
     }
 
-    private void A2() {
+    private void applyAddExRestrictionRule() {
         ont.getAxioms(AxiomType.OBJECT_PROPERTY_ASSERTION)
                 .forEach(ax -> {
                     Set<OWLClassExpression> toAdd = new HashSet<>();
@@ -224,7 +219,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                 });
     }
 
-    private void A1() {
+    private void applyConjunctionRule() {
         ont.getAxioms(AxiomType.CLASS_ASSERTION).forEach(ax -> {
             map.merge((OWLNamedIndividual) ax.getIndividual(), ax.getClassExpression().asConjunctSet(), (a, b) -> {
                 a.addAll(b);
@@ -233,10 +228,10 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
         });
     }
 
-    private void T1() {
-        T1makeChange = true;
-        while (T1makeChange) {
-            T1makeChange = false;
+    private void applySubsumptionRule() {
+        SubsumptionRulemakesChange = true;
+        while (SubsumptionRulemakesChange) {
+            SubsumptionRulemakesChange = false;
             ont.getAxioms(AxiomType.SUBCLASS_OF)
                     .forEach(ax -> {
                         map.entrySet().stream()
@@ -247,16 +242,13 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                                     if (ax.getSuperClass().isBottomEntity()) {
                                         consistent = false;
                                     }
-                                    if (entry.getKey().equals(a) && ax.getSuperClass().equals(B)) {
+                                    if (entry.getKey().equals(rootInd) && ax.getSuperClass().equals(targetConcept)) {
                                         subsumed = true;
                                     }
-
-                                    T1makeChange = true;
-                                    makeChange = true;
+                                    SubsumptionRulemakesChange = true;
+                                    makesChange = true;
                                 });
                     });
         }
     }
-
-
 }

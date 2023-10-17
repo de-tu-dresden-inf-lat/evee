@@ -23,6 +23,9 @@ public class LetheAbductionSolver
         extends AbstractAbductionSolver<DLStatement>
         implements Supplier<Set<OWLAxiom>> {
 
+    private final static boolean FILTER_REDUNDANT_HYPOTHESES=true;
+    private Set<Set<OWLAxiom>> previousHypotheses;
+
     private int maxLevel;
     private int currentResultAdapterIndex;
     private boolean computationSuccessful;
@@ -153,6 +156,10 @@ public class LetheAbductionSolver
                 }
             }
             else{
+                if(FILTER_REDUNDANT_HYPOTHESES && redundant(result))
+                    return get();
+
+                previousHypotheses.add(result);
                 return result;
             }
         }
@@ -161,7 +168,13 @@ public class LetheAbductionSolver
                      // (in case it is not exceptional to not have an explanation)
     }
 
+    private boolean redundant(Set<OWLAxiom> hypothesis) {
+        //return previousHypotheses.stream().anyMatch(hypothesis::containsAll);
+        return previousHypotheses.stream().anyMatch(x -> x.stream().allMatch(y -> hypothesis.stream().anyMatch(y::equals)));
+    }
+
     protected Stream<Set<OWLAxiom>> explanationComputationCompleted(DLStatement hypotheses){
+        previousHypotheses=new HashSet<>();
         if (((DisjunctiveDLStatement) hypotheses).statements().size() == 0){
             this.logger.debug("No result found for input parameters");
             this.explanationComputationFailed("No result found, please adjust the vocabulary");
@@ -216,6 +229,7 @@ public class LetheAbductionSolver
 
     @Override
     public List<Set<OWLAxiom>> createHypothesesListFromStream(){
+        // TODO Patrick: is this used? I didn't observe this behavior
         List<Set<OWLAxiom>> hypotheses = super.createHypothesesListFromStream();
         hypotheses.sort(resultComparator);
         return hypotheses;

@@ -6,6 +6,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      ontologyIRI="http://relevantC">
+    <Prefix name="" IRI="http://relevantC#"/>
     <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
     <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
     <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
@@ -15,16 +16,16 @@
         <Class IRI="#A"/>
     </Declaration>
     <Declaration>
-        <Class IRI="#A1"/>
-    </Declaration>
-    <Declaration>
-        <Class IRI="#A2"/>
-    </Declaration>
-    <Declaration>
         <Class IRI="#B"/>
     </Declaration>
     <Declaration>
         <Class IRI="#C"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Concept1"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Concept2"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="http://relevantOntologyExample#r"/>
@@ -40,16 +41,9 @@
                 <Class IRI="#C"/>
                 <ObjectSomeValuesFrom>
                     <ObjectProperty IRI="http://relevantOntologyExample#r"/>
-                    <Class IRI="#A1"/>
+                    <Class IRI="#Concept1"/>
                 </ObjectSomeValuesFrom>
             </ObjectIntersectionOf>
-        </ObjectSomeValuesFrom>
-    </SubClassOf>
-    <SubClassOf>
-        <Class IRI="#A1"/>
-        <ObjectSomeValuesFrom>
-            <ObjectProperty IRI="http://relevantOntologyExample#s"/>
-            <Class abbreviatedIRI="owl:Thing"/>
         </ObjectSomeValuesFrom>
     </SubClassOf>
     <SubClassOf>
@@ -60,9 +54,16 @@
                 <Class IRI="#C"/>
                 <ObjectSomeValuesFrom>
                     <ObjectProperty IRI="http://relevantOntologyExample#r"/>
-                    <Class IRI="#A2"/>
+                    <Class IRI="#Concept2"/>
                 </ObjectSomeValuesFrom>
             </ObjectIntersectionOf>
+        </ObjectSomeValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Concept1"/>
+        <ObjectSomeValuesFrom>
+            <ObjectProperty IRI="http://relevantOntologyExample#s"/>
+            <Class abbreviatedIRI="owl:Thing"/>
         </ObjectSomeValuesFrom>
     </SubClassOf>
     <SubObjectPropertyOf>

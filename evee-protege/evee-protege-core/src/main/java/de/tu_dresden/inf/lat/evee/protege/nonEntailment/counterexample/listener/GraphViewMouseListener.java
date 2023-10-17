@@ -1,58 +1,62 @@
-package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
+package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.listener;
 
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.EdgeLabelPositioner;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphModelControlPanel;
 import org.apache.log4j.Logger;
 import org.graphstream.ui.geom.Point2;
 import org.graphstream.ui.geom.Point3;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.graphicGraph.GraphicNode;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.swing_viewer.util.DefaultMouseManager;
 import org.graphstream.ui.view.View;
-import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.camera.Camera;
 import org.graphstream.ui.view.util.InteractiveElement;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
-import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
-public class MouseManager extends DefaultMouseManager implements MouseWheelListener {
+public class GraphViewMouseListener extends DefaultMouseManager implements MouseWheelListener {
     private long curTime;
 
-    private DefaultListModel<OWLClass> classListModel;
-    private Map<String, List<OWLClass>> classMap;
-    private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(InteractiveElement.NODE);
-    private final Logger logger = Logger.getLogger(MouseManager.class);
+    private Map<String, List<OWLClass>> individualClassMap;
+    private Map<String[],List<OWLObjectProperty>> objectPropertyMap;
+    private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(
+            InteractiveElement.NODE);
+    private final Logger logger = Logger.getLogger(GraphViewMouseListener.class);
     private String previousNodeID ="";
     private Sprite selectionSprite;
-
+    private boolean elementMoving = false;
     private Camera camera;
     private MouseEvent last;
-    private Viewer viewer;
+    private GraphicNode curNode = null;
     private boolean isFirstClick;
-    public MouseManager(Map<String, List<OWLClass>> classMap,
-                        DefaultListModel<OWLClass> classListModel,
-                        Viewer viewer) {
-        this.viewer = viewer;
-        this.classMap = classMap;
-        this.classListModel = classListModel;
+    private IGraphModelControlPanel controlPanel;
+
+    public GraphViewMouseListener(Map<String, List<OWLClass>> classMap,
+                                  Map<String[],List<OWLObjectProperty>> objectPropertyMap) {
+
+        this.individualClassMap = classMap;
+        this.objectPropertyMap = objectPropertyMap;
         this.isFirstClick = true;
+
+
     }
     @Override
     public void init(GraphicGraph graph, View view) {
-        logger.debug("init method is started");
+        logger.info("init method of mouse manager is started");
         this.view = view;
         this.graph = graph;
         this.camera = view.getCamera();
-
-        this.createSelectionSprite();
         view.addListener("Mouse", this);
         view.addListener("MouseMotion", this);
-
+        this.createSelectionSprite();
     }
     @Override
     public void release() {
@@ -63,10 +67,14 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     @Override
     public void mousePressed(MouseEvent event) {
         curElement = view.findGraphicElementAt(interactiveEliments,event.getX(), event.getY());
+
+
         curTime = System.currentTimeMillis();
-//        logger.debug("mouse is pressed");
+        if (curElement != null) {
+                elementMoving= true;
+                curNode = (GraphicNode) graph.getNode(curElement.getId());
+        }
         if(isFirstClick) {
-            viewer.disableAutoLayout();
             this.isFirstClick = false;
         }
     }
@@ -77,34 +85,31 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
         last = null;
         if (curElement != null) {
             if(System.currentTimeMillis()-curTime <300) {
+                logger.info( curElement.getId() +" is clicked");
+
                 selectNewNode(curElement.getId());
             }
             curElement = null;
-
+            curNode = null;
+            elementMoving = false;
         }
 
     }
     @Override
     public void mouseDragged(MouseEvent event) {
-        if (curElement != null) {
-            elementMoving(curElement, event);
-        } else {
-            if(last!=null) {
+        if(elementMoving) {
+            double oldPositionX = curNode.getX();
 
-                Point3 viewCenterGu = camera.getViewCenter();
-                Point3 viewCenterPx=camera.transformGuToPx(viewCenterGu.x,viewCenterGu.y,0);
-                int xdelta=event.getX()-last.getX();//determine direction
-                int ydelta=event.getY()-last.getY();//determine direction
-                logger.debug("dx:"+xdelta);
-                logger.debug("dy:"+xdelta);
-                viewCenterPx.x-=xdelta;
-                viewCenterPx.y-=ydelta;
-                Point3 newViewCenterGu =camera.transformPxToGu(viewCenterPx.x,viewCenterPx.y);
-                camera.setViewCenter(newViewCenterGu.x,newViewCenterGu.y, 0);
-            }
-            last = event;
-            logger.debug("new last: "+last.getX()+", "+last.getY());
+            elementMoving(curElement, event);
+            double newPositionX = curNode.getX();
+            EdgeLabelPositioner.positionLabelsOnNodeMove(curNode,
+                    oldPositionX,
+                    newPositionX);
+//
+        } else {
+            cameraMoving(event);
         }
+
     }
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -125,13 +130,9 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
     }
     public void selectNewNode(String nodeID) {
         logger.debug("button is released");
-        if (classMap.containsKey(nodeID)) {
-
-            List<OWLClass> classList = classMap.get(nodeID);
-            classListModel.removeAllElements();
-            for (OWLClass cl : classList) {
-                classListModel.addElement(cl);
-            }
+        if (individualClassMap.containsKey(nodeID)) {
+            List<OWLClass> selection = individualClassMap.get(nodeID);
+            controlPanel.refreshSelectedClasses(selection);
             if(previousNodeID.isEmpty()) {
                 selectionSprite.setAttribute("ui.style","stroke-color:#000000;");
             }
@@ -141,7 +142,9 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
             logger.debug("node is selected");
         }
     }
-
+    public void setNodeSelectionEventSink(IGraphModelControlPanel controlPanel) {
+        this.controlPanel = controlPanel;
+    }
 
     private void createSelectionSprite() {
         SpriteManager sman = new SpriteManager(graph);
@@ -153,5 +156,23 @@ public class MouseManager extends DefaultMouseManager implements MouseWheelListe
         selectionSprite.setAttribute("ui.style","stroke-mode:plain;");
         selectionSprite.setAttribute("ui.style","size:30px;");
         selectionSprite.setPosition(0,0,0);
+    }
+
+    private void cameraMoving(MouseEvent event) {
+        if(last!=null) {
+
+            Point3 viewCenterGu = camera.getViewCenter();
+            Point3 viewCenterPx=camera.transformGuToPx(viewCenterGu.x,viewCenterGu.y,0);
+            int xdelta=event.getX()-last.getX();//determine direction
+            int ydelta=event.getY()-last.getY();//determine direction
+            logger.debug("dx:"+xdelta);
+            logger.debug("dy:"+xdelta);
+            viewCenterPx.x-=xdelta;
+            viewCenterPx.y-=ydelta;
+            Point3 newViewCenterGu =camera.transformPxToGu(viewCenterPx.x,viewCenterPx.y);
+            camera.setViewCenter(newViewCenterGu.x,newViewCenterGu.y, 0);
+        }
+        last = event;
+        logger.debug("new last: "+last.getX()+", "+last.getY());
     }
 }
