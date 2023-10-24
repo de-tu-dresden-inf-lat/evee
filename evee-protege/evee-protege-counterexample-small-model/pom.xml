@@ -60,7 +60,7 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-small-model-generator-owlapi4</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
