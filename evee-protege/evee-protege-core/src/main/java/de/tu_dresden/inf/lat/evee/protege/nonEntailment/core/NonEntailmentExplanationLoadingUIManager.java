@@ -328,14 +328,14 @@ public class NonEntailmentExplanationLoadingUIManager implements
 
 
     public void activeLoadingUI(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             this.computationRunning = true;
             this.showLoadingScreen();
-        });
+//        });
     }
 
     public void resetLoadingUI(){
-        SwingUtilities.invokeLater(() -> {
+//        SwingUtilities.invokeLater(() -> {
             this.computationRunning = false;
             this.disposeLoadingScreen();
             this.initLoadingScreen();
@@ -343,7 +343,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
             this.disposeCancellationScreen();
             this.initCancellationScreen();
             this.resetCancellationScreen();
-        });
+//        });
     }
 
 }

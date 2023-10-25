@@ -12,15 +12,19 @@ import java.util.Vector;
 public class NonEntailmentGeneralPreferencesUI extends OWLPreferencesPanel {
 
     private JComboBox<VocabularyTab> defaultTabComboBox;
-    private JCheckBox showFilterWarningChecKBox;
+    private JCheckBox showFilterWarningCheckBox;
+    private JComboBox<String> vocabularyLayoutComboBox;
     private final NonEntailmentGeneralPreferencesManager preferencesManager;
     private static final String COMBO_BOX_LABEL = "Automatically add new entities to vocabulary:";
     private static final String COMBO_BOX_TOOL_TIP = "Select the vocabulary tab to which new entities should be added.";
     private static final String FILTER_WARNING_LABEL = "Show Filter Warning Popup:";
     private static final String FILTER_WARNING_TOOL_TIP = "Shows a Popup Warning Message if the ontology was filtered before computation";
+    private static final String VOCABULARY_TAB_LAYOUT_LABEL = "Vocabulary tab layout:";
+    private static final String VOCABULARY_TAB_LAYOUT_TIP = "Determines the layout of the permitted and forbidden vocabulary tab";
+
 
     public NonEntailmentGeneralPreferencesUI(){
-        this.preferencesManager = new NonEntailmentGeneralPreferencesManager();
+        this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
     }
 
     @Override
@@ -29,7 +33,9 @@ public class NonEntailmentGeneralPreferencesUI extends OWLPreferencesPanel {
                 (VocabularyTab) Objects.requireNonNull(
                         this.defaultTabComboBox.getSelectedItem()));
         this.preferencesManager.saveShowFilterWarningMessage(
-                this.showFilterWarningChecKBox.isSelected());
+                this.showFilterWarningCheckBox.isSelected());
+        this.preferencesManager.saveSignatureComponentLayout(
+                (String) this.vocabularyLayoutComboBox.getSelectedItem());
     }
 
     @Override
@@ -48,11 +54,18 @@ public class NonEntailmentGeneralPreferencesUI extends OWLPreferencesPanel {
             this.defaultTabComboBox.setToolTipText(COMBO_BOX_TOOL_TIP);
             holderPanel.addGroupComponent(this.defaultTabComboBox);
             holderPanel.addGroup(FILTER_WARNING_LABEL);
-            this.showFilterWarningChecKBox = new JCheckBox();
-            this.showFilterWarningChecKBox.setSelected(
+            this.showFilterWarningCheckBox = new JCheckBox();
+            this.showFilterWarningCheckBox.setSelected(
                     this.preferencesManager.loadShowFilterWarningMessage());
-            this.showFilterWarningChecKBox.setToolTipText(FILTER_WARNING_TOOL_TIP);
-            holderPanel.addGroupComponent(this.showFilterWarningChecKBox);
+            this.showFilterWarningCheckBox.setToolTipText(FILTER_WARNING_TOOL_TIP);
+            holderPanel.addGroupComponent(this.showFilterWarningCheckBox);
+            Vector<String> vocabularyLayouts = new Vector<>(this.preferencesManager.getLayoutStrings());
+            this.vocabularyLayoutComboBox = new JComboBox<>(vocabularyLayouts);
+            this.vocabularyLayoutComboBox.setToolTipText(VOCABULARY_TAB_LAYOUT_TIP);
+            this.vocabularyLayoutComboBox.setSelectedItem(
+                    this.preferencesManager.loadSignatureComponentLayout());
+            holderPanel.addGroup(VOCABULARY_TAB_LAYOUT_LABEL);
+            holderPanel.addGroupComponent(this.vocabularyLayoutComboBox);
         });
     }
 

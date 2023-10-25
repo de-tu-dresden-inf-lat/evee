@@ -12,6 +12,10 @@ public enum ExplanationEventType {
 
     RESULT_RESET,
 
-    WARNING
+    WARNING,
+
+    DISPOSE_LOADING_SCREEN,
+
+    SHOW_LOADING_SCREEN
 
 }

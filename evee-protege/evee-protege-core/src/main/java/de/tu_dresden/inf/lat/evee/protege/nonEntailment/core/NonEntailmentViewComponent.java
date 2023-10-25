@@ -1,15 +1,16 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLNonEntailmentExplainer;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPlugin;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.PreferencesChangeListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEventType;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.protege.editor.core.ProtegeManager;
@@ -51,10 +52,11 @@ import static org.junit.Assert.assertNotNull;
 
 public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         implements ActionListener,
+        PreferencesChangeListener,
         IExplanationLoadingUIListener,
         IExplanationGenerationListener<
                 ExplanationEvent<
-                        INonEntailmentExplanationService<?>>>, ItemListener {
+                        INonEntailmentExplanationService<?>>> {
 
     private final NonEntailmentExplainerManager nonEntailmentExplainerManager;
     private final NonEntailmentGeneralPreferencesManager preferencesManager;
@@ -107,7 +109,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //    Constructor, Init, Dispose:
     public NonEntailmentViewComponent(){
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
-        this.preferencesManager = new NonEntailmentGeneralPreferencesManager();
+        this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
+        this.preferencesManager.registerPreferencesChangeListener(this);
         this.changeListener = new ViewComponentOntologyChangeListener();
         this.loadingUI = new NonEntailmentExplanationLoadingUIManager(DEFAULT_UI_TITLE);
         this.loadingUI.registerLoadingUIListener(this);
@@ -138,7 +141,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.createGeneralSettingsComponent();
         this.nonEntailmentExplainerManager.setExplanationService(
                 (String) this.serviceNamesComboBox.getSelectedItem());
-        this.createSignatureManagementComponent();
+        this.resetSignatureSelectionComponent();
         this.createMissingEntailmentManagementComponent();
         this.resetMainComponent();
         this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
@@ -166,6 +169,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //        Methods to create and reset main UI:
     private void resetMainComponent(){
         this.logger.debug("Resetting entire view component");
+        this.resetSignatureSelectionComponent();
         this.resetSignatureAndMissingEntailmentComponent();
         this.resetExplanationServiceComponent();
         this.resetHorizontalSplitPane();
@@ -198,6 +202,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         }
         this.signatureAndMissingEntailmentTabbedPane = new JTabbedPane();
         this.signatureAndMissingEntailmentTabbedPane.addTab("Missing Entailment", this.missingEntailmentManagementPanel);
+        this.resetSignatureSelectionComponent();
         this.signatureAndMissingEntailmentTabbedPane.addTab("Vocabulary", this.signatureManagementPanel);
         this.signatureAndMissingEntailmentTabbedPane.setSelectedIndex(idx);
         JPanel signatureAndMissingEntailmentTabbedPaneHolderPanel = new JPanel();
@@ -292,34 +297,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         repaintComponents();
     }
 
-    private void createSignatureManagementComponent(){
-        JComponent ontologySignatureTabbedComponent = this.signatureSelectionUI.getOntologySignatureTabbedComponent();
-        this.signatureManagementPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-//        general:
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = this.STANDARD_INSETS;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.gridx = 0;
-//        specific for given signature tabbed pane:
-        constraints.gridy= 0;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.4;
-        this.signatureManagementPanel.add(ontologySignatureTabbedComponent, constraints);
-        JComponent signatureSelectionToolPanel = this.signatureSelectionUI.getSignatureSelectionButtonPanel();
-//        specific for signature selected buttons:
-        constraints.gridy = 1;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        this.signatureManagementPanel.add(signatureSelectionToolPanel, constraints);
-        JComponent selectedVocabularyComponent = this.signatureSelectionUI.getSelectedVocabularyPanel();
-//        specific for selected signature pane:
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.6;
-        this.signatureManagementPanel.add(selectedVocabularyComponent, constraints);
+    private void resetSignatureSelectionComponent(){
+        this.signatureManagementPanel = this.signatureSelectionUI.getSignatureManagementComponent();
     }
 
     private void createMissingEntailmentManagementComponent(){
@@ -555,6 +534,33 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                         this.resetResultComponent();
                     });
                     break;
+                case SHOW_LOADING_SCREEN:
+                        this.logger.debug("TEST: EVENT received show loading screen");
+                        this.filterWarningLabel.setText("");
+                        SwingUtilities.invokeLater(() -> {
+                            this.loadingUI.resetLoadingUI();
+                            this.loadingUI.activeLoadingUI();
+                        });
+                        this.logger.debug("loading UI is activated");
+                        INonEntailmentExplanationService<?> explainer =
+                                this.nonEntailmentExplainerManager.getCurrentExplainer();
+                        NonEntailmentExplanationProgressTracker progressTracker =
+                                new NonEntailmentExplanationProgressTracker();
+                        progressTracker.registerLoadingUIListener(this.loadingUI);
+                        explainer.addProgressTracker(progressTracker);
+                    break;
+                case DISPOSE_LOADING_SCREEN:
+                    SwingUtilities.invokeLater(() -> {
+                        this.logger.debug("TEST: EVENT received dispose loading screen");
+                        this.disposeLoadingScreen();
+                        if (currentExplaier.ignoresPartsOfOntology()){
+                            this.filterWarningLabel.setText(FILTER_WARNING);
+                            if (this.preferencesManager.loadShowFilterWarningMessage()){
+                                this.showFilterPopupWarning();
+                            }
+                        }
+                    });
+                    break;
             }
         } else{
             this.logger.debug("EventSource is NOT the current explainer, event ignored");
@@ -574,16 +580,25 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     @Override
-    public void itemStateChanged(ItemEvent e) {
-        this.preferencesManager.saveShowFilterWarningMessage(false);
+    public void handlePreferenceChange(GeneralPreferencesChangeEventType eventType) {
+        SwingUtilities.invokeLater(() -> {
+            switch (eventType){
+                case LAYOUT_CHANGE:
+                    this.resetMainComponent();
+                    this.repaintComponents();
+                    break;
+            }
+        });
     }
 
 //    Event-Handling related methods:
     private void computeExplanation(){
         this.logger.debug("Computation of explanation requested");
         this.filterWarningLabel.setText("");
-        this.loadingUI.resetLoadingUI();
-        this.loadingUI.activeLoadingUI();
+        SwingUtilities.invokeLater(() -> {
+            this.loadingUI.resetLoadingUI();
+            this.loadingUI.activeLoadingUI();
+        });
         this.logger.debug("loading UI is activated");
         INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
         explainer.setOntology(this.getOWLModelManager().getActiveOntology());
@@ -761,7 +776,12 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         filterWarningLabel.setHorizontalTextPosition(JLabel.CENTER);
         filterWarningLabel.setVerticalTextPosition(JLabel.CENTER);
         JCheckBox filterWarningCheckBox = new JCheckBox("Don't show this message again", false);
-        filterWarningCheckBox.addItemListener(this);
+        filterWarningCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                preferencesManager.saveShowFilterWarningMessage(false);
+            }
+        });
         JButton filterWarningButton = new JButton("OK");
         filterWarningButton.addActionListener(e -> filterWarningDialog.dispose());
         filterWarningCheckBox.setHorizontalAlignment(JCheckBox.CENTER);
@@ -782,7 +802,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         }
     }
 
-//    Ontology-Change Listeners:
+    //    Ontology-Change Listeners:
     private class ViewComponentOntologyChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {
 
         @Override
