@@ -65,7 +65,8 @@ public class GraphStyleSheets {
                                              String nodeLabelColor,
                                              String rootNodeColor) {
 
-        return " edge {" +
+        return
+                "edge {" +
 //                "fill-color:" +edgeColor+
                 "text-alignment: along;" +
 //                "text-offset: -25, -25;" +
@@ -97,7 +98,7 @@ public class GraphStyleSheets {
 
                 "node.root {" +
                 "fill-color:"+rootNodeColor +
-                "}"
+                "}" + "graph { padding: 20000px;  }"
 //                +
 //        "sprite.edge {" +
 //                "sprite-orientation:projection;"+

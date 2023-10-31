@@ -39,7 +39,8 @@ abstract public class AbstractCounterexampleGenerationService
     protected IOWLCounterexampleGenerator counterexampleGenerator;
     protected OWLOntologyManager man;
     private final Logger logger = Logger.getLogger(AbstractCounterexampleGenerationService.class);
-    private IProgressTracker progressTracker;
+    protected IProgressTracker progressTracker;
+    protected boolean computationSuccessful = false;
 
     public AbstractCounterexampleGenerationService() {
         this.observation = new HashSet<>();
@@ -129,12 +130,13 @@ abstract public class AbstractCounterexampleGenerationService
     @Override
     public void cancel() {
         logger.info("cancellation of computation is called");
-        this.worker.cancel(true);
+        computationSuccessful = true;
+        worker.cancel(true);
     }
 
     private class InteractiveModelGenerationSwingWorker extends SwingWorker<Void, Void> {
 
-        private boolean computationSuccessful = false;
+
         private INonEntailmentExplanationService<OWLIndividualAxiom> service;
         public InteractiveModelGenerationSwingWorker(INonEntailmentExplanationService<OWLIndividualAxiom> service) {
            this.service = service;
@@ -146,15 +148,19 @@ abstract public class AbstractCounterexampleGenerationService
             try {
                 IGraphViewService graphViewGenerator = new GraphViewGenerator(GraphStyleSheets.PROTEGE,2000);
                 OWLSubClassOfAxiom observationAxiom = (OWLSubClassOfAxiom) observation.stream().findFirst().get();
-                interactiveGraphModel = new InteractiveGraphModel<>(counterexampleGenerator,
+                interactiveGraphModel = new InteractiveGraphModel(counterexampleGenerator,
                         graphViewGenerator,
                         workingCopy,
                         observationAxiom,
                         owlEditorKit);
                 computationSuccessful = true;
             } catch (Exception e) {
-                logger.error("model generation error",e);
-                errorMessage = "model generation error";
+                if(computationSuccessful) {
+                    logger.info("counterexample generation is canceled");
+                } else {
+                    logger.error("model generation error",e);
+                    errorMessage = "model generation error";
+                }
             }
             return null;
         }

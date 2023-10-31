@@ -26,7 +26,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     private boolean consistent;
     private OWLReasoner res;
     private boolean makesChange;
-    private boolean SubsumptionRulemakesChange;
+    private boolean SubsumptionRuleMakesChange;
     private final OWLReasonerFactory rf;
     private final OWLClassExpression targetConcept;
     private final OWLNamedIndividual rootInd;
@@ -37,6 +37,18 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
 
 
     public ELSmallModelGenerator() {
+        this.rf = new ReasonerFactory();
+        this.man = OWLManager.createOWLOntologyManager();
+        this.df = man.getOWLDataFactory();
+        this.rootInd = df.getOWLNamedIndividual(IRI.create("root-Ind"));
+        this.targetConcept = df.getOWLClass(IRI.create("FreshClass"));
+        model = new HashSet<>();
+
+    }
+
+
+    public ELSmallModelGenerator(boolean canonicalModel) {
+        this.canonicalModel = canonicalModel;
         this.rf = new ReasonerFactory();
         this.man = OWLManager.createOWLOntologyManager();
         this.df = man.getOWLDataFactory();
@@ -229,9 +241,9 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
     private void applySubsumptionRule() {
-        SubsumptionRulemakesChange = true;
-        while (SubsumptionRulemakesChange) {
-            SubsumptionRulemakesChange = false;
+        SubsumptionRuleMakesChange = true;
+        while (SubsumptionRuleMakesChange) {
+            SubsumptionRuleMakesChange = false;
             ont.getAxioms(AxiomType.SUBCLASS_OF)
                     .forEach(ax -> {
                         map.entrySet().stream()
@@ -245,7 +257,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                                     if (entry.getKey().equals(rootInd) && ax.getSuperClass().equals(targetConcept)) {
                                         subsumed = true;
                                     }
-                                    SubsumptionRulemakesChange = true;
+                                    SubsumptionRuleMakesChange = true;
                                     makesChange = true;
                                 });
                     });

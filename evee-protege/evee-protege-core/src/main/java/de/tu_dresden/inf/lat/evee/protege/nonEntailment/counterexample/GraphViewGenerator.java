@@ -221,6 +221,7 @@ public class GraphViewGenerator implements IGraphViewService {
                 Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         graphModelViewer.enableAutoLayout();
         View view = graphModelViewer.addDefaultView(false);
+
         GraphModelView graphView = new GraphModelView(view,graphViewMouseListener);
         return graphView;
     }

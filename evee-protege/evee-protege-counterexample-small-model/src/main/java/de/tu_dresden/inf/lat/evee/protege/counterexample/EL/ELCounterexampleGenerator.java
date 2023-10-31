@@ -30,8 +30,16 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     private final OWLDataFactory df;
     private final OWLOntologyManager man;
     private Collection<OWLEntity> signature;
+    private boolean cannonical = false;
 
     public ELCounterexampleGenerator() {
+        this.observation = new HashSet<>();
+        this.man = OWLManager.createOWLOntologyManager();
+        this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+    }
+
+    public ELCounterexampleGenerator(boolean cannonical) {
+        this.cannonical = cannonical;
         this.observation = new HashSet<>();
         this.man = OWLManager.createOWLOntologyManager();
         this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
@@ -105,7 +113,7 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
             progressTracker.setMessage("Generating counterexample");
             progressTracker.increment();
         }
-        IOWLModelGenerator modelGenerator = new ELSmallModelGenerator();
+        IOWLModelGenerator modelGenerator = new ELSmallModelGenerator(cannonical);
         modelGenerator.setOntology(workingCopy);
         Set<OWLIndividualAxiom> model = modelGenerator.generateModel();
         model = this.filterAxioms(model);
