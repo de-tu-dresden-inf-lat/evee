@@ -10,7 +10,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>evee-protege-counterexample-ELKRelevant</artifactId>
+    <artifactId>evee-protege-counterexample-EL</artifactId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -57,15 +57,9 @@
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>counterExampleProvider-owlapi4</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-protege-core</artifactId>
+            <artifactId>evee-small-model-generator-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -95,19 +89,15 @@
                             org.protege.editor.owl.*;version="4.3",
                             org.protege.editor.core.*;version="4.3",
                             de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
+                            scala.swing.*;resolution:=optional,
                             de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.*,
-                            org.apache.*;resolution:=optional,
-                            org.liveontologies.owlapi.*;resolution:=optional,
-                            org.checkerframework.*;resolution:=optional,
-                            sun.misc.*;resolution:=optional,
+
                             *
                         </Import-Package>
                         <Private-Package>
-                            de.tu_dresden.inf.lat.counterExample.*,
-                            de.tu_dresden.inf.lat.model.*,
-                            de.tu_dresden.inf.lat.exceptions.*,
-                            org.semanticweb.elk.*,
-                            com.github.jsonldjava.*,
+                            de.tu_dresden.inf.lat.evee.smallmodelgenerator.*,
+                            javax.xml.stream.*,
+                            org.miv.*
                         </Private-Package>
                     </instructions>
                 </configuration>

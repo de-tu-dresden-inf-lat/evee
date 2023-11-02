@@ -41,7 +41,7 @@
         <module>evee-protege-elimination-proofs-lethe</module>
         <module>evee-protege-lethe-proof-extractor</module>
         <module>evee-protege-elk-proof-extractor</module>
-        <module>evee-protege-counterexample-small-model</module>
+        <module>evee-protege-counterexample-EL</module>
         <module>evee-protege-abduction-lethe</module>
         <module>evee-protege-abduction-capi</module>
         <module>evee-protege-counterexample-ELKRelevant</module>

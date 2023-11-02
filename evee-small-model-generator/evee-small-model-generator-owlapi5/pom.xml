@@ -1,16 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
-        <artifactId>evee-protege</artifactId>
+        <artifactId>evee-small-model-generator</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>evee-protege-counterexample-ELKRelevant</artifactId>
+    <artifactId>evee-small-model-generator-owlapi5</artifactId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -33,7 +30,7 @@
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-distribution</artifactId>
-            <version>4.5.20</version>
+            <version>5.5.0</version>
         </dependency>
         <dependency>
             <groupId>edu.stanford.protege</groupId>
@@ -52,23 +49,6 @@
             <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-protege-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>counterExampleProvider-owlapi4</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-protege-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
 
     </dependencies>
 
@@ -91,24 +71,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
-                        <Import-Package>
-                            org.protege.editor.owl.*;version="4.3",
-                            org.protege.editor.core.*;version="4.3",
-                            de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
-                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.*,
-                            org.apache.*;resolution:=optional,
-                            org.liveontologies.owlapi.*;resolution:=optional,
-                            org.checkerframework.*;resolution:=optional,
-                            sun.misc.*;resolution:=optional,
-                            *
-                        </Import-Package>
-                        <Private-Package>
-                            de.tu_dresden.inf.lat.counterExample.*,
-                            de.tu_dresden.inf.lat.model.*,
-                            de.tu_dresden.inf.lat.exceptions.*,
-                            org.semanticweb.elk.*,
-                            com.github.jsonldjava.*,
-                        </Private-Package>
                     </instructions>
                 </configuration>
                 <executions>
