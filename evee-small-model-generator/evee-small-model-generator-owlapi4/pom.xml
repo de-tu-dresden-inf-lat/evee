@@ -32,11 +32,7 @@
             <artifactId>owlapi-distribution</artifactId>
             <version>4.5.20</version>
         </dependency>
-        <dependency>
-            <groupId>edu.stanford.protege</groupId>
-            <artifactId>protege-editor-owl</artifactId>
-            <version>5.5.0</version>
-        </dependency>
+
         <!--        logging related-->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -49,19 +45,8 @@
             <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-protege-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
 
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.graphstream</groupId>-->
-        <!--            <artifactId>gs-ui</artifactId>-->
-        <!--            <version>1.3</version>-->
-        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -83,18 +68,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
-                        <Import-Package>
-                            org.protege.editor.owl.*;version="4.3",
-                            org.protege.editor.core.*;version="4.3",
-                            de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
-                            scala.swing.*;resolution:=optional,
-                            *
-                        </Import-Package>
-                        <Private-Package>
-
-                            javax.xml.stream.*,
-
-                        </Private-Package>
+                  
                     </instructions>
                 </configuration>
                 <executions>
