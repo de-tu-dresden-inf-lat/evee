@@ -1,6 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverResultButtonEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverResultButtonEventListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.AbductionSolverResultButtonEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ResultButtonEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
@@ -9,6 +11,7 @@ import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.ui.explanation.ExplanationDialog;
 import org.protege.editor.owl.ui.explanation.ExplanationManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +22,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.Vector;
 
-public class SingleResultPanel extends JPanel {
+public class SingleResultPanel extends JPanel implements ISignatureModificationEventGenerator {
 
     private IAbductionSolverResultButtonEventListener resultButtonListener;
     private JButton addButton, addAndProveButton, deleteButton;
@@ -39,24 +40,30 @@ public class SingleResultPanel extends JPanel {
     protected static final String DELETE_FROM_ONTO_COMMAND = "DELETE_FROM_ONTO";
     protected static final String DELETE_FROM_ONTO_NAME = "Delete from Ontology";
     protected static final String DELETE_FROM_ONTO_TOOLTIP = "Delete the axioms of this result from the ontology";
+    protected static final String FORBID_SIGNATURE_COMMAND = "FORBID_SIGNATURE";
+    protected static final String FORBID_SIGNATURE_NAME = "Forbid signature";
+    protected static final String FORBID_SIGNATURE_TOOLTIP = "Adds the signature of this explanation ";
     private HypothesisFrameList hypothesisFrameList = null;
-
+    private final Set<OWLEntity> resultSignature;
+    private ISignatureModificationEventListener signatureModificationEventListener;
     private final Logger logger = LoggerFactory.getLogger(SingleResultPanel.class);
 
     public SingleResultPanel(OWLEditorKit owlEditorKit, OWLOntology ontology,
                              Set<OWLAxiom> missingEntailment, Set<OWLAxiom> result,
-                             int hypothesisIndex) {
+                             int hypothesisIndex, ISignatureModificationEventListener listener) {
         super(new BorderLayout());
         this.logger.debug("Creating single result panel");
         this.owlEditorKit = owlEditorKit;
         this.openedDialogPanels = new ArrayList<>();
+        this.resultSignature = new HashSet<>();
+        result.forEach(axiom -> resultSignature.addAll(axiom.getSignature()));
         this.createUI(ontology, missingEntailment,
-                result, hypothesisIndex);
+                result, hypothesisIndex, listener);
         this.logger.debug("Single result panel created");
     }
 
     private void createUI(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
-                          Set<OWLAxiom> result, int hypothesisIndex){
+                          Set<OWLAxiom> result, int hypothesisIndex, ISignatureModificationEventListener signatureModificationEventListener){
         this.setLayout(new BorderLayout());
         this.setBorder(new CompoundBorder(
                 new EmptyBorder(5, 5, 5, 5),
@@ -94,7 +101,8 @@ public class SingleResultPanel extends JPanel {
 //        hypothesis
         String label = "Hypothesis " + (hypothesisIndex+1);
         HypothesisFrame frame = new HypothesisFrame(this.owlEditorKit, label);
-        this.hypothesisFrameList = new HypothesisFrameList(this.owlEditorKit, frame);
+        this.hypothesisFrameList = new HypothesisFrameList(this.owlEditorKit, frame, this.resultSignature,
+                signatureModificationEventListener);
         IgnoreSelectionModel selectionModel = new IgnoreSelectionModel();
         this.hypothesisFrameList.setSelectionModel(selectionModel);
         JPanel frameListHolderPanel = new JPanel(new BorderLayout());
@@ -121,6 +129,16 @@ public class SingleResultPanel extends JPanel {
             panel.dispose();
         }
         this.openedDialogPanels.clear();
+    }
+
+    @Override
+    public void registerSignatureModificationEventListener(ISignatureModificationEventListener listener) {
+        this.signatureModificationEventListener = listener;
+    }
+
+    @Override
+    public Set<OWLEntity> getAdditionalSignatureNames() {
+        return this.resultSignature;
     }
 
     private class EditOntologyButtonListener implements ActionListener {

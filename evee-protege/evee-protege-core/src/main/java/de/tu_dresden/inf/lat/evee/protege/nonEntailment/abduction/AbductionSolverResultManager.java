@@ -1,16 +1,15 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverOntologyChangeEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverResultButtonEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverOntologyChangeEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverResultButtonEventListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,12 +19,17 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class AbductionSolverResultManager implements IAbductionSolverResultButtonEventListener {
+public class AbductionSolverResultManager implements
+        IAbductionSolverResultButtonEventListener,
+        ISignatureModificationEventListener,
+        ISignatureModificationEventGenerator {
 
     private OWLEditorKit owlEditorKit;
     private JPanel resultHolderPanel;
     private JPanel resultScrollingPanel;
     private boolean ignoreOntologyChangeEvent = false;
+    private final Set<OWLEntity> additionalSignatureNames;
+    private ISignatureModificationEventListener signatureModificationEventListener;
     private int hypothesisIndex;
     private final List<SingleResultPanel> singleResultPanels;
     private final IAbductionSolverOntologyChangeEventListener abductionSolverOntologyChangeEventListener;
@@ -42,6 +46,7 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
         this.ontologyChangeListener = new OntologyChangeListener();
         this.abductionSolverOntologyChangeEventListener = ontologyChangeEventListener;
         this.abductionSolverResultButtonEventListener = resultButtonEventListener;
+        this.additionalSignatureNames = new HashSet<>();
     }
 
     public void setup(OWLEditorKit owlEditorKit){
@@ -99,7 +104,8 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
         hypotheses.forEach(result -> {
             SingleResultPanel singleResultPanel = new SingleResultPanel(
                     this.owlEditorKit,ontology,
-                    missingEntailment, result, hypothesisIndex);
+                    missingEntailment, result, hypothesisIndex, this);
+            singleResultPanel.registerSignatureModificationEventListener(this);
             singleResultPanel.registerListener(this);
             this.singleResultPanels.add(singleResultPanel);
             this.resultScrollingPanel.add(singleResultPanel);
@@ -143,6 +149,25 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
                                 ResultButtonEventType.DELETE));
                 break;
         }
+    }
+
+    @Override
+    public void handleSignatureModificationEvent(SignatureModificationEvent event) {
+        ISignatureModificationEventGenerator source = event.getSource();
+        this.additionalSignatureNames.clear();
+        this.additionalSignatureNames.addAll(source.getAdditionalSignatureNames());
+        this.signatureModificationEventListener.handleSignatureModificationEvent(
+                new SignatureModificationEvent(this));
+    }
+
+    @Override
+    public void registerSignatureModificationEventListener(ISignatureModificationEventListener listener) {
+        this.signatureModificationEventListener = listener;
+    }
+
+    @Override
+    public Set<OWLEntity> getAdditionalSignatureNames() {
+        return this.additionalSignatureNames;
     }
 
     private class OntologyChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {

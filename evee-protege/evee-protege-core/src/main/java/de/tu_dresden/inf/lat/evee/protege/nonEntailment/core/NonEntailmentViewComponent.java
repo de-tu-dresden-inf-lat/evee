@@ -6,11 +6,9 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailme
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.PreferencesChangeListener;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEvent;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEventType;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.protege.editor.core.ProtegeManager;
@@ -54,6 +52,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         implements ActionListener,
         PreferencesChangeListener,
         IExplanationLoadingUIListener,
+        ISignatureModificationEventListener,
         IExplanationGenerationListener<
                 ExplanationEvent<
                         INonEntailmentExplanationService<?>>> {
@@ -131,6 +130,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 service.setup(this.getOWLEditorKit());
                 service.initialise();
                 service.registerListener(this);
+                service.registerSignatureModificationEventListener(this);
                 this.nonEntailmentExplainerManager.registerNonEntailmentExplanationService(service, plugin.getName());
             }
             catch (Exception e){
@@ -535,7 +535,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                     });
                     break;
                 case SHOW_LOADING_SCREEN:
-                        this.logger.debug("TEST: EVENT received show loading screen");
                         this.filterWarningLabel.setText("");
                         SwingUtilities.invokeLater(() -> {
                             this.loadingUI.resetLoadingUI();
@@ -551,7 +550,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                     break;
                 case DISPOSE_LOADING_SCREEN:
                     SwingUtilities.invokeLater(() -> {
-                        this.logger.debug("TEST: EVENT received dispose loading screen");
                         this.disposeLoadingScreen();
                         if (currentExplaier.ignoresPartsOfOntology()){
                             this.filterWarningLabel.setText(FILTER_WARNING);
@@ -589,6 +587,12 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                     break;
             }
         });
+    }
+
+    @Override
+    public void handleSignatureModificationEvent(SignatureModificationEvent event) {
+        Set<OWLEntity> additionalSignatureNames = event.getSource().getAdditionalSignatureNames();
+        this.signatureSelectionUI.addNamesToSignature(additionalSignatureNames);
     }
 
 //    Event-Handling related methods:

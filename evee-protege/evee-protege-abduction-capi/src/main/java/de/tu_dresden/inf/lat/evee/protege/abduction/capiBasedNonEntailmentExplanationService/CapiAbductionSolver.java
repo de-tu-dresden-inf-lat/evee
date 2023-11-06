@@ -1,10 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService;
 
-//import ch.qos.logback.classic.spi.ILoggingEvent;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.SignatureModificationEvent;
 import de.tu_dresden.lat.capi.experiments.AbductionProblem;
 import de.tu_dresden.lat.capi.implicateMatching.*;
 import de.tu_dresden.lat.capi.ontologyTools.ELFilter;

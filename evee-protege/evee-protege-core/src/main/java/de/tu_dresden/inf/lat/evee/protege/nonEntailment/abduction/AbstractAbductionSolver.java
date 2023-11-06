@@ -2,8 +2,10 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverOntologyChangeEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverResultButtonEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverOntologyChangeEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverResultButtonEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
@@ -26,6 +28,8 @@ abstract public class AbstractAbductionSolver<Result>
         IOWLAbductionSolver,
         IAbductionSolverOntologyChangeEventListener,
         IAbductionSolverResultButtonEventListener,
+        ISignatureModificationEventListener,
+        ISignatureModificationEventGenerator,
         IExplanationGenerationListener<
                 ExplanationEvent<
                         IExplanationGenerator<
@@ -48,6 +52,8 @@ abstract public class AbstractAbductionSolver<Result>
     private IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     private final Map<OWLOntology, AbductionCache<Result>> cachedResults;
     private AbductionCache<Result> savedCache = null;
+    private final Set<OWLEntity> additionalSignatureElements;
+    private ISignatureModificationEventListener signatureModificationEventListener;
     protected static final String SETTINGS_LABEL = "Maximal number of hypotheses:";
     protected static final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
 
@@ -58,6 +64,8 @@ abstract public class AbstractAbductionSolver<Result>
         this.cancelled = false;
         this.cachedResults = new HashMap<>();
         this.resultManager = new AbductionSolverResultManager(this, this);
+        this.resultManager.registerSignatureModificationEventListener(this);
+        this.additionalSignatureElements = new HashSet<>();
         this.createSettingsComponent();
         this.logger.debug("AbstractAbductionSolver created successfully.");
     }
@@ -404,4 +412,23 @@ abstract public class AbstractAbductionSolver<Result>
     public void cancel() {
         this.cancelled = true;
     }
+
+    @Override
+    public void handleSignatureModificationEvent(SignatureModificationEvent event) {
+        this.additionalSignatureElements.clear();
+        event.getSource().getAdditionalSignatureNames()
+                .stream().filter(name -> this.activeOntology.getSignature().contains(name))
+                .forEach(this.additionalSignatureElements::add);
+        this.signatureModificationEventListener.handleSignatureModificationEvent(
+                new SignatureModificationEvent(this));
+    }
+
+    public void registerSignatureModificationEventListener(ISignatureModificationEventListener listener){
+        this.signatureModificationEventListener = listener;
+    }
+
+    public Set<OWLEntity> getAdditionalSignatureNames(){
+        return this.additionalSignatureElements;
+    }
+
 }

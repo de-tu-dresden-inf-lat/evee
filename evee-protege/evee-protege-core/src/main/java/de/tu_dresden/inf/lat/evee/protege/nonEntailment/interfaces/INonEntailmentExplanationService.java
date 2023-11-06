@@ -7,11 +7,14 @@ import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import org.protege.editor.core.plugin.ProtegePluginInstance;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.awt.*;
+import java.util.Set;
 
 public interface INonEntailmentExplanationService<T extends OWLAxiom> extends
         ProtegePluginInstance, IExplanationGenerator<Component>,
+        ISignatureModificationEventGenerator,
         IOWLNonEntailmentExplainer<T> {
 
     void setup(OWLEditorKit editorKit);
@@ -35,5 +38,4 @@ public interface INonEntailmentExplanationService<T extends OWLAxiom> extends
     String getSupportsExplanationMessage();
 
     String getFilterWarningMessage();
-
 }

@@ -221,6 +221,10 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.standardLayoutForbiddenVocabularyListModel.dispose();
         this.alternativeLayoutPermittedClassesListModel.dispose();
         this.alternativeLayoutForbiddenClassesListModel.dispose();
+        this.alternativeLayoutPermittedPropertiesListModel.dispose();
+        this.alternativeLayoutForbiddenPropertiesListModel.dispose();
+        this.alternativeLayoutPermittedIndividualsListModel.dispose();
+        this.alternativeLayoutForbiddenIndividualsListModel.dispose();
         modelManager.removeListener(this.SignatureModelManagerListener);
         modelManager.removeOntologyChangeListener(this.SignatureOntologyChangeListener);
 
@@ -960,6 +964,30 @@ private void loadSignatureAction(){
             });
             this.clearVocabularySelection();
             this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
+        });
+    }
+
+    public void addNamesToSignature(Set<OWLEntity> newNames){
+        newNames.forEach(name -> {
+            if (name instanceof OWLClass){
+                OWLClass newClassName = (OWLClass) name;
+                this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newClassName);
+                this.standardLayoutPermittedVocabularyListModel.removeElement(newClassName);
+                this.alternativeLayoutForbiddenClassesListModel.checkAndAddElement(newClassName);
+                this.alternativeLayoutPermittedClassesListModel.removeElement(newClassName);
+            } else if (name instanceof OWLObjectProperty){
+                OWLObjectProperty newPropertyName = (OWLObjectProperty) name;
+                this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newPropertyName);
+                this.standardLayoutPermittedVocabularyListModel.removeElement(newPropertyName);
+                this.alternativeLayoutForbiddenPropertiesListModel.checkAndAddElement(newPropertyName);
+                this.alternativeLayoutPermittedPropertiesListModel.removeElement(newPropertyName);
+            } else if (name instanceof OWLNamedIndividual){
+                OWLNamedIndividual newIndividualName = (OWLNamedIndividual) name;
+                this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newIndividualName);
+                this.standardLayoutPermittedVocabularyListModel.removeElement(newIndividualName);
+                this.alternativeLayoutForbiddenIndividualsListModel.checkAndAddElement(newIndividualName);
+                this.alternativeLayoutPermittedIndividualsListModel.removeElement(newIndividualName);
+            }
         });
     }
 
