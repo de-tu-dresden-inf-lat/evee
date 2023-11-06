@@ -21,7 +21,7 @@ import java.util.Set;
 public class InteractiveGraphModel implements IInteractiveComponent, ICounterexampleGenerationEventListener {
     private final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
     private final OWLOntology ontology;
-    private final IOWLModelGenerator modelGenerator;
+    private final IOWLCounterexampleGenerator modelGenerator;
     private final GraphModelComponent graphModelComponent;
     private final Logger logger = Logger.getLogger(InteractiveGraphModel.class);
     private final IGraphModelControlPanel controlPanel;
@@ -45,7 +45,7 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
      * @throws SubsumptionHoldsException An exception thrown if subsumption holds.
      */
 
-    public InteractiveGraphModel(IOWLModelGenerator modelGenerator,
+    public InteractiveGraphModel(IOWLCounterexampleGenerator modelGenerator,
                                  IGraphViewService graphViewService,
                                  OWLOntology ontology,
                                  OWLSubClassOfAxiom observation,
