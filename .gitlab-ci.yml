@@ -4,8 +4,6 @@ linux-build-job:
     - linux
   script:
     - echo "Compiling evee via command 'mvn clean install'"
-    - cd lat-scala-dl-tools
-    - mvn clean install
-    - cd ..
+    - git submodule update --init --recursive
     - mvn clean install
 
