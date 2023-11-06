@@ -4,5 +4,6 @@ linux-build-job:
     - linux
   script:
     - echo "Compiling evee via command 'mvn clean install'"
+    - dir
     - mvn clean install
 
