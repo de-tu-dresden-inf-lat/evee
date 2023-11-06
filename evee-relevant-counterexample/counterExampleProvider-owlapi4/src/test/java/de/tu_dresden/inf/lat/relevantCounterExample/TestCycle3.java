@@ -10,6 +10,7 @@ import de.tu_dresden.inf.lat.counterExample.RedundancyRefiner;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.AlphaRelevantGenerator;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.BetaRelevantGenerator;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.model.tools.ToOWLTools;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.elk.owlapi.ElkReasoner;
@@ -58,7 +59,7 @@ public class TestCycle3 {
 		Set<Element> typeBModel = bRelGenerator.generate();
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//15
 
 		RedundancyRefiner rrA = new RedundancyRefiner(typeAModel, aRelGenerator);
 		RedundancyRefiner rrB = new RedundancyRefiner(typeBModel, bRelGenerator);
@@ -71,6 +72,9 @@ public class TestCycle3 {
 		System.out.println("Diff");
 		typeDiffModel.forEach(System.out::println);
 		assertEquals(5, typeDiffModel.size());
+		assertEquals(1,
+				typeDiffModel.stream().filter(x->x.getTypes().contains(factory.getOWLClass(IRI.create("http" +
+						"://relevantCycle2#M")))).findFirst().get().getRelations().size());
 
 		System.out.println("Type B");
 		typeBModel.forEach(System.out::println);

@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
-import de.tu_dresden.inf.lat.counterExample.RefinerMapper;
+import de.tu_dresden.inf.lat.counterExample.data.Tracker;
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -67,15 +67,11 @@ public class DiffRelevantGenerator extends RelevantCounterExampleGenerator {
 		reachableFromBoth.retainAll(reachableFromA);
 
 		Set<EntryPair<Relation, Relation>> processed = new HashSet<>();
-		Map<Element, Set<Element>> typesNeededCollector = new HashMap<>();
-		Map<Element, Set<Boolean>> typesImpliedTracker = new HashMap<>();
-		Map<Relation, Set<Boolean>> relationExistsTracker = new HashMap<>();
 
-		filterTypes(finalizedLHSElement, finalizedRHSElement, typeDiffModel, reachableFromBoth, typesNeededCollector,
-				typesImpliedTracker, relationExistsTracker, processed);
+		Tracker tracker = new Tracker();
+		filterTypes(finalizedLHSElement, finalizedRHSElement, typeDiffModel, reachableFromBoth, tracker, processed);
 
-		removeRelationsAndModifyTypes(typeDiffModel, typesNeededCollector, typesImpliedTracker, relationExistsTracker
-				, reachableFromBoth);
+		removeRelationsAndModifyTypes(typeDiffModel, tracker, reachableFromBoth);
 
 		Instant finish = Instant.now();
 		logger.info("Total " + GeneralTools.getDuration(start, finish));
@@ -85,57 +81,41 @@ public class DiffRelevantGenerator extends RelevantCounterExampleGenerator {
 		return typeDiffModel;
 	}
 
-	private void removeRelationsAndModifyTypes(Set<Element> typeDiffModel,
-											   Map<Element, Set<Element>> typesNeededCollector,
-											   Map<Element, Set<Boolean>> typesImpliedTracker,
-											   Map<Relation, Set<Boolean>> relationExistsTracker,
+	private void removeRelationsAndModifyTypes(Set<Element> typeDiffModel, Tracker tracker,
 											   Set<Element> reachableFromBoth) {
-		for(Relation r : relationExistsTracker.keySet()){
+		for(Relation r : tracker.getRelationExists().keySet()){
 			if(reachableFromBoth.contains(r.getElement1()))
 				continue;
-			if(!evaluateFound(r, relationExistsTracker)){
+			if(!tracker.checkRelationJustified(r)){
 				getElementFrom(r.getElement1(), typeDiffModel).removeRelation(r);
 			}else {
-				if (!evaluateFound(r.getElement2(), typesImpliedTracker)){
+				//change this from types implied to relation implied
+				if (!tracker.getImpliedRelations().contains(r))/*(!tracker.checkTypesImplied(r.getElement2()))*/{
 					if(!reachableFromBoth.contains(r.getElement2())) {
 						// In case the collected types are a subset of the types of element2 of the current edge, this
 						// means element1 is connected to each of the elements that resulted in the collected types
-						Set<OWLClassExpression> types = typesNeededCollector.getOrDefault(r.getElement2(),
-								Collections.emptySet()).stream()
-								.map(Element::getTypes)
-								.flatMap(Collection::stream)
-								.collect(Collectors.toSet());
+						Set<OWLClassExpression> types = tracker.getTypesToKeep(r.getElement2());
 
-						if(r.getElement2().getTypes().containsAll(types) &&
-								connectsToAll(r, typesNeededCollector.getOrDefault(r.getElement2(),
-										Collections.emptySet())))
+						if(types.size()>1 && getElementFrom(r.getElement2(), typeDiffModel).getTypes().containsAll(types))
 							getElementFrom(r.getElement1(), typeDiffModel).removeRelation(r);
+
 						else
 							getElementFrom(r.getElement2(), typeDiffModel).getTypes().retainAll(types);
+					}
+					else{
+						if (getElementFrom(r.getElement1(), typeDiffModel).getRelations().stream().filter(x->!x.equals(r) &&
+								x.getRoleName().equals(r.getRoleName()) &&
+								getElementFrom(x.getElement2(),typeDiffModel).getTypes().size()>1).count()>=1)
+
+							getElementFrom(r.getElement1(), typeDiffModel).removeRelation(r);
 					}
 				}
 			}
 		}
 	}
 
-	private boolean connectsToAll(Relation r, Set<Element> possibleDestinations) {
-		for(Element e: possibleDestinations){
-			if (r.getElement1().getRelations().stream().noneMatch(
-					x-> x.isForward() &&
-					x.getRoleName().equals(r.getRoleName()) &&
-					x.getElement2().equals(e)))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
 	private void filterTypes(Element left, Element right, Set<Element> modelTmp, Set<Element> reachableFromBoth,
-							 Map<Element, Set<Element>> typesNeededCollector,
-							 Map<Element, Set<Boolean>> typesImpliedTracker,
-							 Map<Relation, Set<Boolean>> relationExistsTracker,
-							 Set<EntryPair<Relation, Relation>> processed){
+							 Tracker tracker, Set<EntryPair<Relation, Relation>> processed){
 
 		Set<Relation> candidates;
 		EntryPair<Relation, Relation> processedEntry;
@@ -150,18 +130,20 @@ public class DiffRelevantGenerator extends RelevantCounterExampleGenerator {
 					.collect(Collectors.toSet());
 
 			if (candidates.isEmpty()) {
-				RefinerMapper.addToMap(rLeft, false, relationExistsTracker);
+				tracker.addToRelationExists(rLeft, false);
 			}
 			else{
-				RefinerMapper.addToMap(rLeft, true, relationExistsTracker);
+				tracker.addToRelationExists(rLeft, true);
 
 				boolean isImplied = candidates.stream().anyMatch(rRight -> checkImplication(rLeft, rRight, modelTmp));
-				if(isImplied)
-					RefinerMapper.addToMap(rLeft.getElement2(), true, typesImpliedTracker);
+				if(isImplied) {
+					tracker.addToImpliedRelations(rLeft);
+					tracker.addToTypesImplied(rLeft.getElement2(), true);
+				}
 				else {
-					RefinerMapper.addToMap(rLeft.getElement2(), false, typesImpliedTracker);
+					tracker.addToTypesImplied(rLeft.getElement2(), false);
 					candidates.stream().map(Relation::getElement2).forEach(e->
-							RefinerMapper.addToMap(rLeft.getElement2(), e,	typesNeededCollector)
+							tracker.addToTypesNeededCollector(rLeft.getElement2(),e)
 					);
 				}
 
@@ -174,8 +156,7 @@ public class DiffRelevantGenerator extends RelevantCounterExampleGenerator {
 					processed.add(processedEntry);
 
 					filterTypes(getElementFrom(rLeft.getElement2(), modelTmp), getElementFrom(candidate.getElement2()
-							, modelTmp), modelTmp, reachableFromBoth, typesNeededCollector, typesImpliedTracker,relationExistsTracker,
-							processed);
+							, modelTmp), modelTmp, reachableFromBoth, tracker, processed);
 				}
 			}
 		}

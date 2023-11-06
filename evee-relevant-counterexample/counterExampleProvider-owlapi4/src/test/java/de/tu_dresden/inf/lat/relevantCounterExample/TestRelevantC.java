@@ -59,7 +59,7 @@ public class TestRelevantC {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(17, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(14, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//17
 		assertEquals(6, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}

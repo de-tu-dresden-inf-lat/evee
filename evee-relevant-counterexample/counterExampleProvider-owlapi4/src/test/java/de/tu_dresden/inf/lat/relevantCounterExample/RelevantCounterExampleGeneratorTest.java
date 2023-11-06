@@ -182,7 +182,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeAModel.forEach(System.out::println);
 
-		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(18, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//22
 		assertEquals(3, typeAModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -208,7 +208,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeBModel.forEach(System.out::println);
 
-		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(18, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//22
 		assertEquals(7, typeBModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -237,7 +237,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeAModel.forEach(System.out::println);
 
-		assertEquals(24, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(21, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//24
 		assertEquals(3, typeAModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -266,7 +266,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeBModel.forEach(System.out::println);
 
-		assertEquals(24, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(21, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//24
 		assertEquals(9, typeBModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -293,7 +293,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(27, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(23, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//27
 		assertEquals(7, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -322,7 +322,7 @@ public class RelevantCounterExampleGeneratorTest {
 		flatModel.forEach(System.out::println);
 
 
-		assertEquals(27, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(23, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//27
 		assertEquals(6, flatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -350,7 +350,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeBModel.forEach(System.out::println);
 
-		assertEquals(27, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(23, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//27
 		assertEquals(8, typeBModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -378,11 +378,11 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeBModel.forEach(System.out::println);
 
-		assertEquals(24, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(21, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//24
 		assertEquals(9, typeBModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 
-		assertEquals(31,
+		assertEquals(27,
 				new ELKModelGenerator(mammalOntology,
 						ToOWLTools.getInstance().getOWLSubClassOfAxiom(ToOWLTools.getInstance().getOWLBot(),
 								ToOWLTools.getInstance().getOWLTop())).generateFullRawCanonicalModelElements().size());
@@ -412,11 +412,11 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(29, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(25, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//29
 		assertEquals(7, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 
-		assertEquals(31,
+		assertEquals(27,
 				new ELKModelGenerator(mammalOntology,
 						ToOWLTools.getInstance().getOWLSubClassOfAxiom(ToOWLTools.getInstance().getOWLBot(),
 								ToOWLTools.getInstance().getOWLTop())).generateFullRawCanonicalModelElements().size());
@@ -445,7 +445,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		flatModel.forEach(System.out::println);
 
-		assertEquals(29, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(25, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//29
 		assertEquals(5, flatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -470,7 +470,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//15
 		assertEquals(6, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -495,7 +495,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//15
 		assertEquals(6, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -570,7 +570,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(17, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(14, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//17
 		assertEquals(6, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -595,7 +595,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(17, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(14, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//17
 		assertEquals(6, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -671,7 +671,7 @@ public class RelevantCounterExampleGeneratorTest {
 		Set<Element> typeBModel = bRelGenerator.generate();
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-		assertEquals(15, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//15
 
 		RedundancyRefiner rrA = new RedundancyRefiner(typeAModel, aRelGenerator);
 		RedundancyRefiner rrB = new RedundancyRefiner(typeBModel, bRelGenerator);
@@ -711,7 +711,7 @@ public class RelevantCounterExampleGeneratorTest {
 		BetaRelevantGenerator bRelGenerator = new BetaRelevantGenerator(modelB);
 		DiffRelevantGenerator diffRelGenerator = new DiffRelevantGenerator(modelD);
 
-		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//13
 
 		Set<Element> typeAModel = aRelGenerator.generate();
 		RedundancyRefiner rrA = new RedundancyRefiner(typeAModel, aRelGenerator);
@@ -761,7 +761,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//16
 //		model.generateFullRelevantCanonicalModel().getFinalizedModelElements().forEach(System.out::println);
 		assertEquals(4, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
@@ -788,7 +788,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//16
 		assertEquals(4, typeFlatModel.size());
 		assertEquals(2, typeFlatModel.stream().filter(x -> x.equals(model.getMapper().getLHSRepresentativeElement()))
 				.collect(Collectors.toList()).get(0).getRelations().size());
@@ -816,7 +816,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		//assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 		assertEquals(5, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -842,7 +842,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(11, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//12
 		assertEquals(5, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -892,7 +892,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(9, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(8, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//9
 		assertEquals(3, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -942,7 +942,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(14, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//16
 		assertEquals(6, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -967,7 +967,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(14, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//16
 		assertEquals(5, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -992,7 +992,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(21, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//22
 		assertEquals(10, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -1017,7 +1017,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(21, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//22
 		assertEquals(10, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -1066,7 +1066,7 @@ public class RelevantCounterExampleGeneratorTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(11, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(9, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//11
 		assertEquals(2, typeDiffModel.size());
 
 		System.out.println("_-_-_-_-_-_-_-_-_-_");

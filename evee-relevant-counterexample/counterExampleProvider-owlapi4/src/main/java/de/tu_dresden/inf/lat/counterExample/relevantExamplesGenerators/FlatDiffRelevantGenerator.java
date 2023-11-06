@@ -49,7 +49,7 @@ public class FlatDiffRelevantGenerator extends DiffRelevantGenerator {
 				typeFlatModel);
 
 		Map<Relation, Set<Boolean>> edgeFoundMap = new HashMap<>();
-		Set<EntryPair<Element, Element>> processedPairsOfElements = new HashSet<EntryPair<Element, Element>>();
+		Set<EntryPair<Element, Element>> processedPairsOfElements = new HashSet<>();
 
 		Set<Element> reachableFromA = Sets.newHashSet(getElementFrom(finalizedLHSElement, typeFlatModel));
 		Set<Element> reachableFromB = Sets.newHashSet(getElementFrom(finalizedRHSElement, typeFlatModel));

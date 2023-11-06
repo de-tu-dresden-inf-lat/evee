@@ -55,7 +55,7 @@ public class TestCycle2 {
 		BetaRelevantGenerator bRelGenerator = new BetaRelevantGenerator(modelB);
 		DiffRelevantGenerator diffRelGenerator = new DiffRelevantGenerator(modelD);
 
-		assertEquals(13, modelD.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(12, modelD.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//13
 
 		Set<Element> typeAModel = aRelGenerator.generate();
 

@@ -64,13 +64,6 @@ public class RefinerMapperTest {
         System.out.println("s, initial sim");
         print(s, rm.getSim());
 
-//        System.out.println("r, initial prevSim");
-//        print(r, rm.getPrevSim());
-
-//        System.out.println("s, initial prevSim");
-//        print(s, rm.getPrevSim());
-
-//        Assert.assertEquals(rm.getPrevSim().get(r), rm.getPrevSim().get(s));
         Assert.assertEquals(rm.getSim().get(r).keySet(), rm.getSim().get(s).keySet());
 
         System.out.println("r, post");
