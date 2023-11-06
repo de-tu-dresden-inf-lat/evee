@@ -89,7 +89,7 @@ public class TestSquare {
 		System.out.println("---");
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(11, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(9, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//11
 		assertEquals(2, typeDiffModel.size());
 
 		System.out.println("_-_-_-_-_-_-_-_-_-_");

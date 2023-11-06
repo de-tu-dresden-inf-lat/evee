@@ -292,11 +292,8 @@ public class ELKModelGenerator {
 	}
 
 	/**
-	 * Return a mapper of Qualified existential restrictions to new concept names.
-	 * For every map entry, create and add an equivalence axiom to the ontology
-	 * 
-	 * @param subConcepts
-	 * @return RestrictionMapper
+	 * Update the restriction and conjunction mappers. For every map entry, create and add an equivalence axiom to
+	 * the ontology
 	 */
 	private void createMappersAndAxioms(Set<OWLClassExpression> subConcepts) {
 
@@ -309,7 +306,6 @@ public class ELKModelGenerator {
 
 			OWLClass cls;
 			OWLEquivalentClassesAxiom newAxiom = null;
-			Set<OWLEquivalentClassesAxiom> moreAxioms = new HashSet<>();
 
 			if (concept instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom qer = (OWLObjectSomeValuesFrom) concept;
@@ -319,19 +315,6 @@ public class ELKModelGenerator {
 					resMapper.addEntry(cls, qer);
 
 					newAxiom = owlTools.getOWLEquivalenceAxiom(cls, qer);
-					for (OWLClassExpression owlClassExpression : qer.getFiller().asConjunctSet()) {
-
-						OWLObjectSomeValuesFrom subQER =
-								(OWLObjectSomeValuesFrom) owlTools.getOWLExistentialRestriction(qer.getProperty(),	owlClassExpression);
-
-						if (!resMapper.getRestriction2Class().containsKey(subQER)) {
-							cls = generator.getNextConceptName();
-							resMapper.addEntry(cls, subQER);
-						}else
-							cls = resMapper.getRestriction2Class().get(subQER);
-
-						moreAxioms.add(owlTools.getOWLEquivalenceAxiom(cls, subQER));
-					}
 				}
 			} else if (concept instanceof OWLObjectIntersectionOf) {
 				OWLObjectIntersectionOf conjunction = (OWLObjectIntersectionOf) concept;
@@ -344,7 +327,6 @@ public class ELKModelGenerator {
 				}
 			}
 			addAxiom(newAxiom);
-			moreAxioms.forEach(this::addAxiom);
 		});
 	}
 

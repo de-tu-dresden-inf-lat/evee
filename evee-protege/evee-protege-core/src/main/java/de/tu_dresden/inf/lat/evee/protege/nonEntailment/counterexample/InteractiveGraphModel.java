@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * The `InteractiveGraphModel` class represents a model of an ontology that is interactive, meaning it can be displayed to the user, and the user can interact with it. This class is used for ontology analysis as well as visualizing counterexamples.
  */
-public class InteractiveGraphModel< T extends IGraphView> implements IInteractiveComponent, ICounterexampleGenerationEventListener {
+public class InteractiveGraphModel implements IInteractiveComponent, ICounterexampleGenerationEventListener {
     private final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
     private final OWLOntology ontology;
     private final IOWLModelGenerator modelGenerator;

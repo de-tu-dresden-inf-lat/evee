@@ -18,6 +18,7 @@
 
     <modules>
         <module>evee-small-model-generator-owlapi4</module>
+        <module>evee-small-model-generator-owlapi5</module>
     </modules>
 
 

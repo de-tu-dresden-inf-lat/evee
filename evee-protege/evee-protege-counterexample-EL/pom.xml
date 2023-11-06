@@ -10,7 +10,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>evee-protege-counterexample-small-model</artifactId>
+    <artifactId>evee-protege-counterexample-EL</artifactId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -96,7 +96,6 @@
                         </Import-Package>
                         <Private-Package>
                             de.tu_dresden.inf.lat.evee.smallmodelgenerator.*,
-                            org.graphstream.*,
                             javax.xml.stream.*,
                             org.miv.*
                         </Private-Package>

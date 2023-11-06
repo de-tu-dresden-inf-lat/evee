@@ -58,7 +58,7 @@ public class RedundancyTest {
 
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(22, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(21, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//22
 		assertEquals(10, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}

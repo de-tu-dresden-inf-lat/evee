@@ -121,7 +121,7 @@ public class ELKCounterModelTest {
 		assertEquals(2, typeAModel.size());
 
 		model = new ELKModelGenerator(pizzaOntology);
-		assertEquals(164, model.generateFullRawCanonicalModelElements().size());
+		assertEquals(162, model.generateFullRawCanonicalModelElements().size());//164
 
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}

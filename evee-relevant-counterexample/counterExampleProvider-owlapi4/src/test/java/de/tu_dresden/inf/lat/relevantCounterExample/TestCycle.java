@@ -61,16 +61,13 @@ public class TestCycle {
 
 		Set<Element> typeDiffModel = diffRelGenerator.generate();
 
-//		ModelRefiner refiner = new ModelRefiner(relevantCycle);
-//		refiner.refine(diffRelGenerator, typeDiffModel, ModelType.Diff);
 		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, diffRelGenerator);
 		rr.refine();
 
 		System.out.println("Diff model");
 		typeDiffModel.forEach(System.out::println);
 
-		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-//		model.generateFullRelevantCanonicalModel().getFinalizedModelElements().forEach(System.out::println);
+		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//16
 		assertEquals(4, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -91,16 +88,13 @@ public class TestCycle {
 
 		Set<Element> typeAlphaModel = alphaRelGenerator.generate();
 
-//		ModelRefiner refiner = new ModelRefiner(simple);
-//		refiner.refine(alphaRelGenerator, typeAlphaModel, ModelType.Alpha);
 		RedundancyRefiner rr = new RedundancyRefiner(typeAlphaModel, alphaRelGenerator);
 		rr.refine();
 
 
 		typeAlphaModel.forEach(System.out::println);
 
-		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-//		model.generateFullRelevantCanonicalModel().getFinalizedModelElements().forEach(System.out::println);
+		assertEquals(12, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//13
 		assertEquals(3, typeAlphaModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -122,15 +116,12 @@ public class TestCycle {
 
 		Set<Element> typeAlphaModel = alphaRelGenerator.generate();
 
-//		ModelRefiner refiner = new ModelRefiner(simple2);
-//		refiner.refine(alphaRelGenerator, typeAlphaModel, ModelType.Alpha);
 		RedundancyRefiner rr = new RedundancyRefiner(typeAlphaModel, alphaRelGenerator);
 		rr.refine();
 
 		typeAlphaModel.forEach(System.out::println);
 
-		assertEquals(16, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-//		model.generateFullRelevantCanonicalModel().getFinalizedModelElements().forEach(System.out::println);
+		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//16
 		assertEquals(4, typeAlphaModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
@@ -148,6 +139,8 @@ public class TestCycle {
 
 		model = new ELKModelGenerator(testCM, conclusion);
 		model.generateFullRelevantCanonicalModel().getFinalizedModelElements().forEach(System.out::println);
+
+		assertEquals(13, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
 
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}

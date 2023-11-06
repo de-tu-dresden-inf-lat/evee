@@ -68,8 +68,9 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     @Override
     public Set<OWLIndividualAxiom> generateModel() {
         try {
-//            progressTracker.setMessage("Generating counterexample");
-//            progressTracker.increment();
+            setProgressTrackerMessage("Generating counterexample");
+            incrementProgressTracker();
+
             OWLSubClassOfAxiom subClsOf;
             OWLAxiom axiom = this.observation.iterator().next();
             if (axiom instanceof OWLSubClassOfAxiom)
@@ -91,8 +92,9 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             RelevantCounterExampleGenerator generator = getRelevantGenerator(type, elkModelGenerator);
 
             Set<Element> model = generator.generate();
-//            progressTracker.setMessage("Filtering the generated counterexample.");
-//            progressTracker.increment();
+
+            setProgressTrackerMessage("Filtering the generated counterexample.");
+            incrementProgressTracker();
 
             markedIndividuals = new HashSet<>();
             markedIndividuals.add(IRI.create(ELEMENT_PREFIX + elkModelGenerator.getMapper().getLHSRepresentativeElement().getName()));
@@ -133,6 +135,16 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
         } catch (ModelGenerationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void incrementProgressTracker() {
+        if (this.progressTracker != null)
+            this.progressTracker.increment();
+    }
+
+    private void setProgressTrackerMessage(String msg) {
+        if (this.progressTracker != null)
+            this.progressTracker.setMessage(msg);
     }
 
     /**

@@ -60,7 +60,7 @@ public class NotLoopTest {
 
 		typeFlatModel.forEach(System.out::println);
 
-		assertEquals(9, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
+		assertEquals(8, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());//9
 		assertEquals(3, typeFlatModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}

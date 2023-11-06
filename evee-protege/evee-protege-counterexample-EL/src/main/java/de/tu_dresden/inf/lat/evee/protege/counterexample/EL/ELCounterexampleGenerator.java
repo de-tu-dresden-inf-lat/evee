@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.counterexample.EL;
 
+import com.google.common.collect.Sets;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.smallmodelgenerator.*;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
@@ -18,42 +19,43 @@ import java.util.stream.Stream;
 public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
 
     private final Logger logger = LoggerFactory.getLogger(ELCounterexampleGenerator.class);
-//    boolean subsumed;
+    private final IRI ROOT_IRI = IRI.create("root-Ind");
     private OWLClassExpression subClassExpr;
     private IProgressTracker progressTracker;
     private OWLClassExpression superClassExpr;
-//    private int removedAxioms = 0;
     private OWLOntology activeOntology;
     private OWLOntology workingCopy;
-    private final IRI root = IRI.create("root-Ind");
-    private Set<OWLAxiom> observation;
-    private final OWLDataFactory df;
-    private final OWLOntologyManager man;
-    private Collection<OWLEntity> signature;
 
-    public ELCounterexampleGenerator() {
-        this.observation = new HashSet<>();
-        this.man = OWLManager.createOWLOntologyManager();
-        this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+    private Set<OWLAxiom> observation= new HashSet<>();
+    private final OWLDataFactory df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
+    private final OWLNamedIndividual rootInd = df.getOWLNamedIndividual(ROOT_IRI);
+    private final OWLClass freshClass = df.getOWLClass(IRI.create("FreshClass"));
+    private final OWLOntologyManager man =OWLManager.createOWLOntologyManager();
+    private Collection<OWLEntity> signature;
+    private boolean treeModel = false;
+    private OWLClassAssertionAxiom rootInSubClass;
+    private OWLSubClassOfAxiom superClassInTarget;
+
+    public ELCounterexampleGenerator() {}
+
+    public ELCounterexampleGenerator(boolean treeModel) {
+        this.treeModel = treeModel;
     }
 
     private OWLOntology getWorkingCopy() throws ModelGenerationException {
-        OWLNamedIndividual rootInd = df.getOWLNamedIndividual(root);
-        OWLClass freshClass = df.getOWLClass(IRI.create("FreshClass"));
-        OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(subClassExpr, rootInd);
-        OWLSubClassOfAxiom axiom2 = df.getOWLSubClassOfAxiom(superClassExpr, freshClass);
+
         Set<OWLAxiom> TBoxAxioms = activeOntology.getTBoxAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
         OWLOntology workingCopy = null;
         ELNormaliser normaliser = new ELNormaliser();
         try {
             workingCopy = man.createOntology(TBoxAxioms);
-            man.addAxiom(workingCopy, axiom2);
+            man.addAxiom(workingCopy, superClassInTarget);
             normaliser.setOntology(workingCopy);
             workingCopy = normaliser.normalise();
         } catch (OWLOntologyCreationException e) {
             throw new ModelGenerationException("Working Copy cannot be created");
         }
-        man.addAxiom(workingCopy, axiom1);
+        man.addAxiom(workingCopy, rootInSubClass);
 //        this.removedAxioms = normaliser.getNumRemoved();
         return workingCopy;
     }
@@ -99,15 +101,25 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
         OWLAxiom observation = this.observation.iterator().next();
         subClassExpr = ((OWLSubClassOfAxiom) observation).getSubClass();
         superClassExpr = ((OWLSubClassOfAxiom) observation).getSuperClass();
+        rootInSubClass = df.getOWLClassAssertionAxiom(subClassExpr, rootInd);
+        superClassInTarget = df.getOWLSubClassOfAxiom(superClassExpr, freshClass);
+
         checkClassExpressions();
+        logger.debug("provided observation is checked");
+
         workingCopy = getWorkingCopy();
+        logger.debug("working copy is created");
+
         if(progressTracker != null) {
             progressTracker.setMessage("Generating counterexample");
             progressTracker.increment();
         }
-        IOWLModelGenerator modelGenerator = new ELSmallModelGenerator();
+        Set<OWLIndividualAxiom> avoidedEnt = new HashSet<>();
+        avoidedEnt.add(df.getOWLClassAssertionAxiom(freshClass, rootInd));
+        IOWLModelGenerator modelGenerator = new ELSmallModelGenerator(treeModel,avoidedEnt);
         modelGenerator.setOntology(workingCopy);
         Set<OWLIndividualAxiom> model = modelGenerator.generateModel();
+        logger.info("model is generated");
         model = this.filterAxioms(model);
         return model;
     }
@@ -115,6 +127,7 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     @Override
     public void setObservation(Set<OWLAxiom> axioms) {
         this.observation = axioms;
+
     }
 
     @Override
@@ -146,7 +159,7 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     @Override
     public Set<IRI> getMarkedIndividuals() {
         Set<IRI> markedIndividuals = new HashSet<>();
-        markedIndividuals.add(root);
+        markedIndividuals.add(ROOT_IRI);
         return markedIndividuals;
     }
 
