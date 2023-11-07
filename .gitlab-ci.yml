@@ -1,7 +1,8 @@
-linux-test-job:
-  stage: test
+linux-build-job:
+  stage: build
   tags:
     - linux
   script:
-    - yum list "*jdk*"
-    
+    - echo "Compiling evee via command 'mvn clean install'"
+    - git submodule update --init --recursive
+    - mvn clean install
