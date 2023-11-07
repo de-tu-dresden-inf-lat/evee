@@ -15,6 +15,6 @@ linux-test-job:
     - git clone https://github.com/protegeproject/protege.git
     - cd protege
     - git checkout v5.5.0
-    - mvn clean package -Dskiptests=true
+    - mvn clean package -DskipTests=true
     - cd protege-desktop/target/protege-5.5.0-platform-independent/Protege5.5.0
     - dir
