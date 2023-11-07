@@ -12,7 +12,5 @@ linux-test-job:
   tags:
     - linux
   script:
-    cd ~/.Protege/logs
-    rm -r protege.log
-    cd ~/Downloads/Protege-5.5.0
-    ./run.sh
+    - cd ~/Downloads/Protege-5.5.0
+    - ./run.sh
