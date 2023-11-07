@@ -3,11 +3,5 @@ linux-test-job:
   tags:
     - linux
   script:
-    - mkdir ProtegeApplication
-    - cd ProtegeApplication
-    - git clone https://github.com/protegeproject/protege.git
-    - cd protege
-    - git checkout v5.5.0
-    - mvn clean package -DskipTests=true
-    - cd protege-desktop/target/protege-5.5.0-platform-independent/Protege-5.5.0
-    - ./run.sh
+    - yum list "*jdk*"
+    
