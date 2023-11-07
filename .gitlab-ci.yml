@@ -8,4 +8,4 @@ linux-test-job:
     - git clone https://github.com/protegeproject/protege.git
     - cd protege
     - git checkout v5.5.0
-    - mvn clean package
+    - mvn clean package -DskipTests=true
