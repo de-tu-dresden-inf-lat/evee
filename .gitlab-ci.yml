@@ -1,0 +1,8 @@
+linux-build-job:
+  stage: build
+  tags:
+    - linux
+  script:
+    - echo "Compiling evee via command 'mvn clean install'"
+    - git submodule update --init --recursive
+    - mvn clean install
