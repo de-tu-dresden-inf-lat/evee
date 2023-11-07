@@ -9,3 +9,5 @@ linux-test-job:
     - cd protege
     - git checkout v5.5.0
     - mvn clean package -DskipTests=true
+    - cd protege-desktop/target/protege-5.5.0-platform-independent
+    - ./run.sh
