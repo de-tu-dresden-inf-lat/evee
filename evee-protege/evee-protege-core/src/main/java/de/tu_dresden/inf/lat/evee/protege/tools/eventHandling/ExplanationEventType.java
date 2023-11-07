@@ -14,8 +14,6 @@ public enum ExplanationEventType {
 
     WARNING,
 
-    DISPOSE_LOADING_SCREEN,
-
     SHOW_LOADING_SCREEN
 
 }
