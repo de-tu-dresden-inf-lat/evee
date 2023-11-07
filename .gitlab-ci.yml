@@ -6,3 +6,14 @@ linux-build-job:
     - echo "Compiling evee via command 'mvn clean install'"
     - git submodule update --init --recursive
     - mvn clean install
+
+linux-test-job:
+  stage: test
+  tags:
+    - linux
+  script:
+    - git clone https://github.com/protegeproject/protege.git
+    - cd protege
+    - git checkout v5.5.0
+    - cd protege-desktop/target/protege-5.5.0-platform-independent/Protege5.5.0
+    - dir
