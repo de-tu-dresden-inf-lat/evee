@@ -34,6 +34,9 @@ public class MinimalProofExtractor<S> {
 				.collect(Collectors.toList())) {
 			// tautologies and TBox axioms have minimal proof size 1
 			// (we assume that all TBox axioms are derived by an inference without premises)
+
+			// TODO: distinguish between TBox axioms (use leafValue) and tautologies derived from an inference with no premises (use edgeValue)
+			// take smaller value if both cases apply
 			S ax = inf.getConclusion();
 			currentBestProofValues.put(ax, measure.leafValue(ax));
 			currentBestInferences.put(ax, inf);
