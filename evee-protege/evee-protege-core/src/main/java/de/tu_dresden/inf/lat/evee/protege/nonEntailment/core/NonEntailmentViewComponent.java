@@ -548,17 +548,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                         progressTracker.registerLoadingUIListener(this.loadingUI);
                         explainer.addProgressTracker(progressTracker);
                     break;
-                case DISPOSE_LOADING_SCREEN:
-                    SwingUtilities.invokeLater(() -> {
-                        this.disposeLoadingScreen();
-                        if (currentExplaier.ignoresPartsOfOntology()){
-                            this.filterWarningLabel.setText(FILTER_WARNING);
-                            if (this.preferencesManager.loadShowFilterWarningMessage()){
-                                this.showFilterPopupWarning();
-                            }
-                        }
-                    });
-                    break;
             }
         } else{
             this.logger.debug("EventSource is NOT the current explainer, event ignored");
