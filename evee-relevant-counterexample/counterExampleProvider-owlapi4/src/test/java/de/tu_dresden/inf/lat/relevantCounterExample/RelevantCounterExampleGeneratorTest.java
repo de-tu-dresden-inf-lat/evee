@@ -119,14 +119,19 @@ public class RelevantCounterExampleGeneratorTest {
 	public void test000() throws OWLOntologyCreationException {
 
 		OWLOntology modOntology = Segmenter.getSegmentAsOntology(testModule, owlClass("http://testModule#A"),
-				IRI.create(""));
+				IRI.create("http://S#"));
 
 		Set<OWLAxiom> remainder = Sets.difference(testModule.getAxioms(), modOntology.getAxioms());
 		assertEquals(7, modOntology.getAxiomCount());
 		assertEquals(2, remainder.size());
 
-		OWLOntology modOntology2 = Segmenter.getSegmentAsOntology(testModule, factory.getOWLNothing(), IRI.create(""));
+		OWLOntology modOntology2 = Segmenter.getSegmentAsOntology(testModule, factory.getOWLNothing(), IRI.create("http://S#"));
 		assertEquals(modOntology2.getAxiomCount(), testModule.getAxiomCount());
+
+		OWLOntology modOntology3 = Segmenter.getStarModule(testModule, Sets.newHashSet(owlClass("http://testModule#A")),
+				IRI.create("http://S#"));
+
+		assertNotSame(modOntology, modOntology3);
 	}
 
 	@Test

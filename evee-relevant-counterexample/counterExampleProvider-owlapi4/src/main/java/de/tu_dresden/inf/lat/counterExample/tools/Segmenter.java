@@ -31,7 +31,7 @@ public class Segmenter {
 	public static Set<OWLAxiom> getSegment(OWLOntology ontology, Set<OWLEntity> concept) {
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(ontology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		SyntacticLocalityModuleExtractor extractor = new SyntacticLocalityModuleExtractor(
 				OWLManager.createOWLOntologyManager(), ontology, type);
 
@@ -42,7 +42,7 @@ public class Segmenter {
 			throws OWLOntologyCreationException {
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(ontology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		SyntacticLocalityModuleExtractor extractor = new SyntacticLocalityModuleExtractor(
 				OWLManager.createOWLOntologyManager(), ontology, ModuleType.STAR);
 		return extractor.extractAsOntology(concept, iri, 0, 0, reasoner);
@@ -52,7 +52,7 @@ public class Segmenter {
 			throws OWLOntologyCreationException {
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(ontology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		SyntacticLocalityModuleExtractor extractor = new SyntacticLocalityModuleExtractor(
 				OWLManager.createOWLOntologyManager(), ontology, type);
 		return extractor.extractAsOntology(concept, iri, superConcepts, subConcepts, reasoner);
@@ -61,7 +61,7 @@ public class Segmenter {
 	public static Set<OWLAxiom> getSegment(OWLOntology ontology, OWLEntity concept) {
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(ontology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		SyntacticLocalityModuleExtractor extractor = new SyntacticLocalityModuleExtractor(
 				OWLManager.createOWLOntologyManager(), ontology, type);
 		return extractor.extract(Collections.singleton(concept), superConcepts, subConcepts, reasoner);
@@ -71,7 +71,7 @@ public class Segmenter {
 			throws OWLOntologyCreationException {
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(ontology);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(ontology);
 		SyntacticLocalityModuleExtractor extractor = new SyntacticLocalityModuleExtractor(
 				OWLManager.createOWLOntologyManager(), ontology, type);
 		return extractor.extractAsOntology(Collections.singleton(concept), iri, superConcepts, subConcepts, reasoner);
