@@ -7,7 +7,13 @@ Information on how to install Evee and use it as a library in your own projects 
 For questions or feedback, you can contact Stefan Borgwardt ([stefan.borgwardt@tu-dresden.de](mailto:stefan.borgwardt@tu-dresden.de)) or Patrick Koopmann ([p.k.koopmann@vu.nl](mailto:p.k.koopmann@vu.nl)).
 
 ## About Evee
-Evee was developed at the [Chair of Automata Theory at TU Dresden](https://tu-dresden.de/ing/informatik/thi/lat "https://tu-dresden.de/ing/informatik/thi/lat"). Version 0.1 is described in the paper
+Evee was developed at the [Chair of Automata Theory at TU Dresden](https://tu-dresden.de/ing/informatik/thi/lat "https://tu-dresden.de/ing/informatik/thi/lat").
+
+Version 0.2 introduces explanations for missing DL entailments, and is described in the paper
+
+C. Alrabbaa, S. Borgwardt, T. Friese, P. Koopmann, M. Kotlov: **Why not? Explaining missing entailments with Evee**, in: O. Kutz, C. Lutz, A. Ozaki (Eds.), Proceedings of the 36th International Workshop on Description Logics (DL), volume 3513 of CEUR Workshop Proceedings, CEUR-WS.org, 2023. https://ceur-ws.org/Vol-3515/paper-1.pdf.
+
+Version 0.1 supports various methods for generating proofs of DL entailments, and is described in the paper
 
 C. Alrabbaa, S. Borgwardt, T. Friese, P. Koopmann, J. Méndez, A. Popovic: **On the eve of true explainability for OWL ontologies: Description logic proofs with Evee and Evonne**, in: O. Arieli, M. Homola, J. C. Jung, M. Mugnier (Eds.), Proceedings of the 35th International Workshop on Description Logics (DL), volume 3263 of CEUR Workshop Proceedings, CEUR-WS.org, 2022. https://ceur-ws.org/Vol-3263/paper-2.pdf.
 
@@ -16,17 +22,15 @@ C. Alrabbaa, S. Borgwardt, T. Friese, P. Koopmann, J. Méndez, A. Popovic: **On
 ## Using the Evee plugins
 1. Install [Protégé](https://protege.stanford.edu/ "https://protege.stanford.edu/"). Evee was developed for and tested with Protégé version 5.5.0.
 2. Install both the [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin and the [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi.
-4. Copy the .jar files from the directory "release" of this repository to the directory "plugins" of your local Protégé installation.
-
-Note that the Evee plugins require the OWL Reasoner [HermiT](http://www.hermit-reasoner.com/index.html "http://www.hermit-reasoner.com/index.html"), which is already included as a plugin in Protégé version 5.5.0.
-
-The Connection-Minimal Abduction solver utilizing [CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/") requires the installation of [SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover").
-For Linux and macOS, please refer to [CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/") for further information on how to install SPASS.
-For Windows, please refer to [SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover/download "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover/download").
+3. Copy the .jar files from the directory "release" of this repository to the directory "plugins" of your local Protégé installation.
+4. (Optional) Install [SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover"), which is required for the Connection-Minimal Abduction solver utilizing [CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/").
+For Linux and macOS, please refer to [the web page of CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/") for further information on how to install SPASS.
+For Windows, please refer to [the web page of SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover/download "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover/download").
 On Windows, the Connection-Minimal Abduction solver was developed and tested with SPASS 3.5.
-When using the Connection-Minimal Abduction solver for the first time, you will be asked to enter the path to the SPASS executable.
-For Linux and macOS, this refers to the file named *SPASS*.
-For Windows, this refers to the file *SPASS.exe*.
+When using the Connection-Minimal Abduction solver for the first time, you will be asked to enter the path to the SPASS executable, i.e. the file named *SPASS* or *SPASS.exe*.
+
+Some of the Evee plugins require the OWL Reasoner [HermiT](http://www.hermit-reasoner.com/index.html "http://www.hermit-reasoner.com/index.html"), which is already included as a plugin in Protégé.
+
 
 ## Compiling and using Evee
 
