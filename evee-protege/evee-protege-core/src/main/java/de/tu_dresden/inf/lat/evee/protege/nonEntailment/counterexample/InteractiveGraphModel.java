@@ -2,12 +2,16 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.SubsumptionHoldsException;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.ControlPanel;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.GraphModelComponent;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.MappingUtils;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.ReasoningUtils;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.*;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import org.apache.log4j.Logger;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -15,7 +19,10 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 
 import javax.swing.*;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * The `InteractiveGraphModel` class represents a model of an ontology that is interactive, meaning it can be displayed to the user, and the user can interact with it. This class is used for ontology analysis as well as visualizing counterexamples.
  */
@@ -32,6 +39,7 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
     private final IGraphViewService graphViewService;
     private boolean requiersSubsumptionCheck = true;
     private  IGraphView graphView;
+    private IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     private int currentLabelsNum = DEFAULT_LABELS_NUM;
     private Set<OWLIndividualAxiom> model;
     /**
@@ -50,9 +58,12 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
                                  IGraphViewService graphViewService,
                                  OWLOntology ontology,
                                  OWLSubClassOfAxiom observation,
-                                 OWLEditorKit owlEditorKit) throws ModelGenerationException, SubsumptionHoldsException {
+                                 OWLEditorKit owlEditorKit,
+                                 IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener)
+            throws ModelGenerationException, SubsumptionHoldsException {
         this.owlEditorKit = owlEditorKit;
         this.ontology = ontology;
+        this.viewComponentListener = viewComponentListener;
         if(observation == null) {
             this.requiersSubsumptionCheck = false;
         } else {
@@ -61,6 +72,7 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
         this.modelGenerator = modelGenerator;
         this.graphViewService = graphViewService;
         computeModel();
+        logger.debug("model: "+ this.model);
         this.controlPanel = new ControlPanel(owlEditorKit);
         this.controlPanel.addCounterexampleGenerationEventListener(this);
         this.graphView = graphViewService.computeView(model,
@@ -93,10 +105,14 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
         SwingWorker modelRecomputeWorker = new SwingWorker() {
             @Override
             protected Void doInBackground() throws Exception {
-                recomputeModel(additionalAxioms);
-                recomputeGraphView();
-                graphModelComponent.update(graphView);
-                graphViewService.doPostProcessing();
+                try {
+                    recomputeModel(additionalAxioms);
+                    recomputeGraphView();
+                    graphModelComponent.update(graphView);
+                    graphViewService.doPostProcessing();
+                } catch (ModelGenerationException | InconsistentOntologyException e) {
+                    JOptionPane.showMessageDialog(new JPanel(), "Adding Disjointnesses causes the following problem: "+e.getMessage(), "Error", 0);
+                }
                 return null;
             }
         };
@@ -104,6 +120,7 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
     }
     @Override
     public void onDisjointnessesAddedToOntology(IGraphModelControlPanel source) {
+        logger.debug("additional axioms to add: " +source.getAdditionalAxioms());
         man.addAxioms(ontology,source.getAdditionalAxioms());
         man.addAxioms(owlEditorKit.getModelManager().getActiveOntology(), source.getAdditionalAxioms());
     }
@@ -124,15 +141,17 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
 
     private void recomputeModel(Set<OWLAxiom> additionalAxioms)
             throws ModelGenerationException, InconsistentOntologyException {
-        man.addAxioms(ontology, additionalAxioms);
+
+        Set<OWLSubClassOfAxiom> subClassOfAxioms = MappingUtils.disjToSubclassOfAx(additionalAxioms);
+        man.addAxioms(ontology, subClassOfAxioms);
         try {
             if(!ReasoningUtils.isConsistent(ontology, observation)) {
                 throw new InconsistentOntologyException();
             }
             model = modelGenerator.generateModel();
-            man.removeAxioms(ontology, additionalAxioms);
+            man.removeAxioms(ontology, subClassOfAxioms);
         } catch ( InconsistentOntologyException | ModelGenerationException e) {
-            man.removeAxioms(ontology, additionalAxioms);
+            man.removeAxioms(ontology, subClassOfAxioms);
             throw  e;
         }
         logger.info("Model is recomputed");
@@ -160,4 +179,7 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
         postprocessingWorker.execute();
         return graphModelComponent;
     }
+
+
+
 }

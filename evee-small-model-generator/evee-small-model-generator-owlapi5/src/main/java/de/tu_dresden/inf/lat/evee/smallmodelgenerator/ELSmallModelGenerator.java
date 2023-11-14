@@ -21,24 +21,22 @@ import java.util.stream.Collectors;
  */
 public class ELSmallModelGenerator implements IOWLModelGenerator {
     private final Logger logger = LoggerFactory.getLogger(ELSmallModelGenerator.class);
+    private final OWLReasonerFactory rf= new ReasonerFactory();
+    private final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+    private final OWLDataFactory df= man.getOWLDataFactory();
+    private Set<OWLIndividualAxiom> model = new HashSet<>();
+    private Set<OWLIndividualAxiom> avoidedEntailments = new HashSet<>();
     private Map<OWLNamedIndividual, Set<OWLClassExpression>> indClassExprMap;
+    private boolean avoidedEntHolds;
     private OWLOntology ont;
     public int indNum;
     private boolean treeModel;
-    private final OWLDataFactory df;
+    private int maxDepth = 10;
+    private Map<OWLNamedIndividual, Integer> depthMap = new HashMap<>();
     private boolean consistent;
     private OWLReasoner res;
     private boolean makesChange;
     private boolean SubsumptionRuleMakesChange;
-    private final OWLReasonerFactory rf;
-
-    private boolean avoidedEntHolds;
-    private final OWLOntologyManager man;
-
-    private final Set<OWLIndividualAxiom> model;
-
-    private Set<OWLIndividualAxiom> avoidedEntailments = new HashSet<>();
-
 
     public void avoidEntailment(OWLIndividualAxiom entailment) {
         avoidedEntailments.add(entailment);
@@ -48,27 +46,25 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
         return avoidedEntailments;
     }
 
-
     public ELSmallModelGenerator(boolean treeModel) {
         this.treeModel = treeModel;
-        this.rf = new ReasonerFactory();
-        this.man = OWLManager.createOWLOntologyManager();
-        this.df = man.getOWLDataFactory();
-//        this.rootInd = df.getOWLNamedIndividual(IRI.create("root-Ind"));
-//        this.targetConcept = df.getOWLClass(IRI.create("FreshClass"));
-        model = new HashSet<>();
+
     }
 
     public ELSmallModelGenerator(boolean treeModel, Set<OWLIndividualAxiom> avoidedEntailments) {
         this.avoidedEntailments = avoidedEntailments;
         this.treeModel = treeModel;
-        this.rf = new ReasonerFactory();
-        this.man = OWLManager.createOWLOntologyManager();
-        this.df = man.getOWLDataFactory();
-//        this.rootInd = df.getOWLNamedIndividual(IRI.create("root-Ind"));
-//        this.targetConcept = df.getOWLClass(IRI.create("FreshClass"));
-        model = new HashSet<>();
     }
+
+    public ELSmallModelGenerator(boolean treeModel,
+                                 Set<OWLIndividualAxiom> avoidedEntailments,
+                                 int maxDepth) {
+        this.maxDepth = maxDepth;
+        this.avoidedEntailments = avoidedEntailments;
+        this.treeModel = treeModel;
+    }
+
+
     public boolean isAvoidedEntHolds() {
         return avoidedEntHolds;
     }
@@ -78,9 +74,6 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
 
-//    public int getNumRemoved() {
-//        return numRemoved;
-//    }
 
     public void setOntology(OWLOntology ont) {
         Set<OWLAxiom> Axioms = ont.getAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
@@ -91,6 +84,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
             e1.printStackTrace();
         }
         this.ont = ontology;
+        initializeDepthMap();
     }
 
 
@@ -106,6 +100,11 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
         }
     }
 
+    @Override
+    public Set<IRI> getMarkedIndividuals() {
+        return new HashSet<>();
+    }
+
     private void reset() {
         this.consistent = true;
         this.indNum = 0;
@@ -113,37 +112,6 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
         this.avoidedEntHolds = false;
         this.indClassExprMap = new HashMap<>();
     }
-
-
-//    public void checkSubsumption(OWLClassExpression subClass,
-//                                 OWLClassExpression superClass,
-//                                 boolean treeModel) {
-//        this.reset();
-//        this.treeModel = treeModel;
-//        OWLClassAssertionAxiom axiom1 = df.getOWLClassAssertionAxiom(subClass, rootInd);
-//        OWLSubClassOfAxiom axiom2 = df.getOWLSubClassOfAxiom(superClass, targetConcept);
-//        this.ont = null;
-//        try {
-//            ont = man.createOntology(this.TBoxAxioms);
-//        } catch (OWLOntologyCreationException e1) {
-//            // TODO Auto-generated catch block
-//            e1.printStackTrace();
-//        }
-//        man.addAxiom(this.ont, axiom2);
-//
-//        ELNormaliser normaliser = new ELNormaliser();
-//        normaliser.setOntology(this.ont);
-//        try {
-//            this.ont = normaliser.normalise();
-//        } catch (OWLOntologyCreationException e) {// TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        man.addAxiom(ont, axiom1);
-//        this.numRemoved = normaliser.getNumRemoved();
-//        this.res = rf.createReasoner(ont);
-//        this.getModel();
-//
-//    }
 
     private void getModel() {
         while (makesChange) {
@@ -175,6 +143,11 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
     private boolean findSuccessor(OWLClassExpression expr, OWLNamedIndividual passedInd) {
+
+        if(depthMap.get(passedInd)>= maxDepth) {
+            return false;
+        }
+        int curDepth = depthMap.get(passedInd);
         OWLObjectSomeValuesFrom obj = (OWLObjectSomeValuesFrom) expr;
         boolean hasSuccessor = this.ont.getObjectPropertyAssertionAxioms(passedInd).stream()
                 .filter(ax -> ax.getProperty().equals(obj.getProperty()))
@@ -214,6 +187,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
             }
             if (!hasSuccessor) {
                 OWLNamedIndividual a = df.getOWLNamedIndividual(IRI.create("Ind-" + indNum));
+                depthMap.put(a, curDepth+1);
                 man.addAxiom(this.ont, df.getOWLObjectPropertyAssertionAxiom(obj.getProperty(), passedInd, a));
                 man.addAxiom(this.ont, df.getOWLClassAssertionAxiom(obj.getFiller(), a));
                 indNum = indNum + 1;
@@ -271,7 +245,6 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                                     if (ax.getSuperClass().isBottomEntity()) {
                                         consistent = false;
                                     }
-
 //                                    if (entry.getKey().equals(rootInd) && ax.getSuperClass().equals(targetConcept)) {
 //                                        avoidedEntHolds = true;
 //                                    }
@@ -281,4 +254,8 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                     });
         }
     }
+    private void initializeDepthMap() {
+        ont.getIndividualsInSignature().forEach(ind -> depthMap.put(ind,0));
+    }
+
 }

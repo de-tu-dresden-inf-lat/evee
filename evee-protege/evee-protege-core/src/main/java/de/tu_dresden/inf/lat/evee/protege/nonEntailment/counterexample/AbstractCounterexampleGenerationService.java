@@ -152,8 +152,11 @@ abstract public class AbstractCounterexampleGenerationService
                         graphViewGenerator,
                         workingCopy,
                         observationAxiom,
-                        owlEditorKit);
+                        owlEditorKit,
+                        viewComponentListener
+                        );
                 computationSuccessful = true;
+
             } catch (Exception e) {
                 if(computationSuccessful) {
                     logger.info("counterexample generation is canceled");
