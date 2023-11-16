@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -34,6 +35,9 @@ public class LetheAbductionSolver
     private IProgressTracker progressTracker;
     private final OWLAbducer abducer;
     private final List<DLStatementAdapter> hypothesesAdapterList;
+    private TimerThread timerThread;
+    private static final String TIMER_ELAPSED_MESSAGE =
+            "The computation is taking some time. Consider changing the forbidden vocabulary to reduce wait time.";
     private String errorMessage;
     private static final String ALREADY_ENTAILED_WARNING = "Specified axioms are already entailed.";
 
@@ -49,6 +53,7 @@ public class LetheAbductionSolver
         this.computationSuccessful = false;
         this.computationRunning = false;
         this.canceled = false;
+        this.timerThread = null;
         this.errorMessage = "";
         this.logger.debug("LetheAbductionSolver created successfully");
     }
@@ -84,7 +89,10 @@ public class LetheAbductionSolver
                 this.abducer.setBackgroundOntology(this.activeOntology);
                 this.abducer.setAbducibles(this.vocabulary);
                 this.computationRunning = true;
+                this.timerThread = new TimerThread();
+                this.timerThread.start();
                 result = this.abducer.abduce(this.missingEntailment);
+                this.timerThread = null;
                 this.computationRunning = false;
                 this.logger.debug("Computation completed");
                 return this.explanationComputationCompleted(result);
@@ -212,6 +220,9 @@ public class LetheAbductionSolver
         if (this.computationRunning){
             this.logger.debug("Cancelling computation");
             this.canceled = true;
+            if (this.timerThread != null){
+                this.timerThread.cancel();
+            }
             this.abducer.cancel();
         }
         super.cancel();
@@ -254,5 +265,38 @@ public class LetheAbductionSolver
                 return r1.compareTo(r2);
         }
     };
+
+    private class TimerThread extends Thread{
+
+        private int counter;
+        private final AtomicBoolean cancelled;
+
+        public TimerThread(){
+            this.counter = 0;
+            this.cancelled = new AtomicBoolean(false);
+        }
+
+        public void cancel(){
+            this.cancelled.set(true);
+        }
+
+        @Override
+        public void run(){
+            while (counter < 10){
+                if (this.cancelled.get()){
+                    break;
+                }
+                try{
+                    Thread.sleep(1000);
+                } catch (InterruptedException e){
+                    Thread.currentThread().interrupt();
+                    logger.debug("TimerThread interrupted: ", e);
+                }
+                counter += 1;
+            }
+            progressTracker.setMessage(TIMER_ELAPSED_MESSAGE);
+        }
+
+    }
 
 }
