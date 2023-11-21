@@ -1,8 +1,13 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExplanationService;
 
+import com.kitfox.svg.A;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionCache;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
+import org.protege.editor.owl.OWLEditorKit;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.man.cs.lethe.abduction.OWLAbducer;
@@ -36,6 +41,10 @@ public class LetheAbductionSolver
     private final OWLAbducer abducer;
     private final List<DLStatementAdapter> hypothesesAdapterList;
     private TimerThread timerThread;
+    private final Map<OWLOntology, AbductionCache<AtomicBoolean>> cachedFilterWarnings;
+    private boolean filtered;
+    private AbductionCache<AtomicBoolean> savedFilterCache = null;
+    private OWLEditorKit owlEditorKit;
     private static final String TIMER_ELAPSED_MESSAGE =
             "The computation is taking some time. Consider changing the forbidden vocabulary to reduce wait time.";
     private String errorMessage;
@@ -55,7 +64,15 @@ public class LetheAbductionSolver
         this.canceled = false;
         this.timerThread = null;
         this.errorMessage = "";
+        this.cachedFilterWarnings = new HashMap<>();
+        this.filtered = false;
         this.logger.debug("LetheAbductionSolver created successfully");
+    }
+
+    @Override
+    public void setup(OWLEditorKit editorKit){
+        super.setup(editorKit);
+        this.owlEditorKit = editorKit;
     }
 
     @Override
@@ -77,12 +94,14 @@ public class LetheAbductionSolver
     public Stream<Set<OWLAxiom>> generateExplanations() {
         this.logger.debug("Generating Explanations");
         DLStatement result;
+        AtomicBoolean filtered = new AtomicBoolean();
         this.canceled = false;
         if (this.checkResultInCache()){
             this.logger.debug("Cached result found, re-displaying cached result");
             result = this.loadResultFromCache();
-            return this.explanationComputationCompleted(result);
-//            return Stream.generate(this);
+            filtered.set(this.cachedFilterWarnings.get(this.activeOntology).
+                    getResult(this.missingEntailment, this.vocabulary).get());
+            return this.explanationComputationCompleted(result, filtered);
         } else{
             this.logger.debug("No cached result found, trying to compute new explanation");
             try{
@@ -92,11 +111,11 @@ public class LetheAbductionSolver
                 this.timerThread = new TimerThread();
                 this.timerThread.start();
                 result = this.abducer.abduce(this.missingEntailment);
+                filtered.set(this.abducer.getUnsupportedAxiomsEncountered());
                 this.timerThread = null;
                 this.computationRunning = false;
                 this.logger.debug("Computation completed");
-                return this.explanationComputationCompleted(result);
-//                return Stream.generate(this);
+                return this.explanationComputationCompleted(result, filtered);
             }
             catch (ObservationEntailedException oe){
                 this.logger.error("Exception caught during abduction: ", oe);
@@ -127,7 +146,7 @@ public class LetheAbductionSolver
 
     @Override
     public boolean ignoresPartsOfOntology() {
-        return true;
+        return this.filtered;
     }
 
     @Override
@@ -181,7 +200,7 @@ public class LetheAbductionSolver
         return previousHypotheses.stream().anyMatch(x -> x.stream().allMatch(y -> hypothesis.stream().anyMatch(y::equals)));
     }
 
-    protected Stream<Set<OWLAxiom>> explanationComputationCompleted(DLStatement hypotheses){
+    private Stream<Set<OWLAxiom>> explanationComputationCompleted(DLStatement hypotheses, AtomicBoolean filtered){
         previousHypotheses=new HashSet<>();
         if (((DisjunctiveDLStatement) hypotheses).statements().size() == 0){
             this.logger.debug("No result found for input parameters");
@@ -196,6 +215,10 @@ public class LetheAbductionSolver
         else {
             this.logger.debug("Computation was not cancelled and returned some non-empty hypotheses, preparing to show result");
             this.saveResultToCache(hypotheses);
+            this.cachedFilterWarnings.get(this.activeOntology).
+                    putResult(this.missingEntailment, this.vocabulary, filtered);
+            this.logger.debug("Filter-information saved to cached result");
+            this.filtered = filtered.get();
             this.computationSuccessful = true;
             this.setActiveOntologyEditedExternally(false);
             this.maxLevel = 0;
@@ -236,6 +259,49 @@ public class LetheAbductionSolver
     @Override
     public String getErrorMessage() {
         return this.errorMessage;
+    }
+
+    @Override
+    public void setOntology(OWLOntology ontology){
+        super.setOntology(ontology);
+        if (this.cachedFilterWarnings.get(ontology) == null){
+            this.logger.debug("No cached filter warnings for ontology detected, creating new cache");
+            this.cachedFilterWarnings.put(ontology, new AbductionCache<>());
+        }
+    }
+
+    @Override
+    protected void saveCache(){
+        super.saveCache();
+        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+        this.logger.debug("Saving cached filter warning for ontology " + ontology.getOntologyID().
+                getOntologyIRI().or(IRI.create("")));
+        this.savedFilterCache = this.cachedFilterWarnings.get(ontology);
+    }
+
+    @Override
+    protected void reinstateCache(){
+        super.reinstateCache();
+        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+        this.logger.debug("Reinstating cached filter warning for ontology " + ontology.getOntologyID().
+                getOntologyIRI().or(IRI.create("")));
+        this.cachedFilterWarnings.put(ontology, this.savedFilterCache);
+    }
+
+    @Override
+    protected void resetSavedCache(){
+        super.resetSavedCache();
+        this.logger.debug("Saved filter cache reset");
+        this.savedFilterCache = null;
+    }
+
+    @Override
+    protected void resetCache(){
+        super.resetCache();
+        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+        this.logger.debug("Resetting cached filter warning for ontology " + ontology.getOntologyID()
+                .getOntologyIRI().or(IRI.create("")));
+        this.cachedFilterWarnings.put(ontology, new AbductionCache<>());
     }
 
     @Override

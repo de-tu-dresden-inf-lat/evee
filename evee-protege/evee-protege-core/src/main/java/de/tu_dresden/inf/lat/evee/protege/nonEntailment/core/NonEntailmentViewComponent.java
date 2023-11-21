@@ -81,8 +81,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JLabel computeMessageLabel;
     private JLabel filterWarningLabel;
     protected NonEntailmentExplanationLoadingUIManager loadingUI;
-//    todo: FILTER_WARNING is placeholder message, improve!
-    private static final String FILTER_WARNING = "Note: Some axioms of this ontology were ignored by this service!";
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
     private static final String COMPUTE_NAME = "Generate Explanation";
     private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected vocabulary and missing entailment";
@@ -467,6 +465,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             JComboBox comboBox = (JComboBox) e.getSource();
             String serviceName = (String) comboBox.getSelectedItem();
             this.nonEntailmentExplainerManager.setExplanationService(serviceName);
+            this.filterWarningLabel.setText("");
             this.resetResultComponent();
             this.checkComputeButtonAndWarningLabelStatus();
         }
@@ -507,7 +506,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                         this.disposeLoadingScreen();
                         this.showResult(event.getSource().getResult());
                         if (currentExplaier.ignoresPartsOfOntology()){
-                            this.filterWarningLabel.setText(FILTER_WARNING);
+                            this.filterWarningLabel.setText(currentExplaier.getFilterWarningMessage());
                             if (this.preferencesManager.loadShowFilterWarningMessage()){
                                 this.showFilterPopupWarning();
                             }
@@ -765,7 +764,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         filterWarningDialog.setTitle("Warning");
         filterWarningDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
         JPanel filterWarningPanel = new JPanel(new GridLayout(3, 1, 5, 5));
-        JLabel filterWarningLabel = new JLabel(FILTER_WARNING, SwingConstants.CENTER);
+        INonEntailmentExplanationService<?> currentExplainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
+        JLabel filterWarningLabel = new JLabel(currentExplainer.getFilterWarningMessage(), SwingConstants.CENTER);
         filterWarningLabel.setHorizontalTextPosition(JLabel.CENTER);
         filterWarningLabel.setVerticalTextPosition(JLabel.CENTER);
         JCheckBox filterWarningCheckBox = new JCheckBox("Don't show this message again", false);
@@ -829,6 +829,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //            addHolderPanel();
 //            repaintComponents();
             checkComputeButtonAndWarningLabelStatus();
+            filterWarningLabel.setText("");
         }
     }
 
