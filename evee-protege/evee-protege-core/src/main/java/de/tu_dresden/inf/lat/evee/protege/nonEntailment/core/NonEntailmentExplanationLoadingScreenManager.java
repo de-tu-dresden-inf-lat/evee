@@ -1,8 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIEventGenerator;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEvent;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingScreenEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingScreenEventListener;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingScreenEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 
-public class NonEntailmentExplanationLoadingUIManager implements
-        IExplanationLoadingUIListener, IExplanationLoadingUIEventGenerator {
+public class NonEntailmentExplanationLoadingScreenManager implements
+        IExplanationLoadingScreenEventListener, IExplanationLoadingScreenEventGenerator {
 
     protected String uiTitle;
     private OWLEditorKit owlEditorKit;
@@ -22,7 +22,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
     protected static final String DEFAULT_MESSAGE = "Generating Explanations";
     protected static final String DEFAULT_CANCELLATION_MESSAGE = "Cancelling generation, please wait";
 
-    private IExplanationLoadingUIListener viewComponentListener;
+    private IExplanationLoadingScreenEventListener viewComponentListener;
     private JDialog loadingScreen;
     private JDialog cancellationScreen;
     private boolean loadingScreenDisposed = true;
@@ -32,13 +32,13 @@ public class NonEntailmentExplanationLoadingUIManager implements
     private static final String CANCEL_BUTTON_NAME = "Cancel";
 
 
-    private final Logger logger = LoggerFactory.getLogger(NonEntailmentExplanationLoadingUIManager.class);
+    private final Logger logger = LoggerFactory.getLogger(NonEntailmentExplanationLoadingScreenManager.class);
 
-    public NonEntailmentExplanationLoadingUIManager(String uiTitle){
-        new NonEntailmentExplanationLoadingUIManager(uiTitle, false);
+    public NonEntailmentExplanationLoadingScreenManager(String uiTitle){
+        new NonEntailmentExplanationLoadingScreenManager(uiTitle, false);
     }
 
-    public NonEntailmentExplanationLoadingUIManager(String uiTitle, boolean paintProgressBarString){
+    public NonEntailmentExplanationLoadingScreenManager(String uiTitle, boolean paintProgressBarString){
         this.logger.debug("Creating NonEntailmentExplanationLoadingUIManager");
         this.uiTitle = uiTitle;
         this.paintProgressBarString = paintProgressBarString;
@@ -75,7 +75,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
     }
 
     @Override
-    public void registerLoadingUIListener(IExplanationLoadingUIListener listener) {
+    public void registerLoadingUIListener(IExplanationLoadingScreenEventListener listener) {
         this.viewComponentListener = listener;
     }
 
@@ -163,7 +163,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
     }
 
     @Override
-    public void handleUIEvent(ExplanationLoadingUIEvent event) {
+    public void handleUIEvent(ExplanationLoadingScreenEvent event) {
         SwingUtilities.invokeLater(() -> {
             if (event == null){
                 logger.debug("event is null");
@@ -268,7 +268,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
         SwingUtilities.invokeLater(() -> {
             this.logger.debug("Loading dialog closed by user interaction");
             this.viewComponentListener.handleUIEvent(
-                    ExplanationLoadingUIEvent.createCancellationEvent());
+                    ExplanationLoadingScreenEvent.createCancellationEvent());
             this.disposeLoadingScreen();
             this.initCancellationScreen();
             this.resetCancellationScreen();

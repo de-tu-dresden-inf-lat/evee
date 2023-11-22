@@ -4,10 +4,10 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListe
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPlugin;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingScreenEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.PreferencesChangeListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.apache.commons.io.FilenameUtils;
@@ -50,8 +50,8 @@ import static org.junit.Assert.assertNotNull;
 
 public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         implements ActionListener,
-        PreferencesChangeListener,
-        IExplanationLoadingUIListener,
+        IPreferencesChangeListener,
+        IExplanationLoadingScreenEventListener,
         ISignatureModificationEventListener,
         IExplanationGenerationListener<
                 ExplanationEvent<
@@ -80,12 +80,12 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JComboBox<String> serviceNamesComboBox;
     private JLabel computeMessageLabel;
     private JLabel filterWarningLabel;
-    protected NonEntailmentExplanationLoadingUIManager loadingUI;
+    protected NonEntailmentExplanationLoadingScreenManager loadingUI;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
     private static final String COMPUTE_NAME = "Generate Explanation";
     private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected vocabulary and missing entailment";
     private static final String ADD_MISSING_ENTAILMENT_COMMAND = "ADD_MISSING_ENTAILMENT";
-    private static final String ADD_MISSING_ENTAILMLENT_NAME = "Add";
+    private static final String ADD_MISSING_ENTAILMENT_NAME = "Add";
     private static final String ADD_MISSING_ENTAILMENT_TOOLTIP = "Add axioms to missing entailment";
     private static final String DELETE_MISSING_ENTAILMENT_COMMAND = "DELETE_MISSING_ENTAILMENT";
     private static final String DELETE_MISSING_ENTAILMENT_NAME = "Delete";
@@ -109,7 +109,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
         this.preferencesManager.registerPreferencesChangeListener(this);
         this.changeListener = new ViewComponentOntologyChangeListener();
-        this.loadingUI = new NonEntailmentExplanationLoadingUIManager(DEFAULT_UI_TITLE);
+        this.loadingUI = new NonEntailmentExplanationLoadingScreenManager(DEFAULT_UI_TITLE);
         this.loadingUI.registerLoadingUIListener(this);
         this.logger.debug("Object NonEntailmentViewComponent created");
     }
@@ -353,7 +353,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         JPanel firstButtonRowPanel = new JPanel();
         firstButtonRowPanel.setLayout(new BoxLayout(firstButtonRowPanel, BoxLayout.LINE_AXIS));
         JButton addMissingEntailmentButton = UIUtilities.createNamedButton(ADD_MISSING_ENTAILMENT_COMMAND,
-                ADD_MISSING_ENTAILMLENT_NAME, ADD_MISSING_ENTAILMENT_TOOLTIP, this);
+                ADD_MISSING_ENTAILMENT_NAME, ADD_MISSING_ENTAILMENT_TOOLTIP, this);
         firstButtonRowPanel.add(addMissingEntailmentButton);
         firstButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         JButton deleteMissingEntailmentButton = UIUtilities.createNamedButton(DELETE_MISSING_ENTAILMENT_COMMAND,
@@ -364,18 +364,20 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 RESET_MISSING_ENTAILMENT_NAME, RESET_MISSING_ENTAILMENT_TOOLTIP, this);
         firstButtonRowPanel.add(resetMissingEntailmentButton);
         buttonHolderPanel.add(firstButtonRowPanel);
-        buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        JPanel secondButtonRowPanel = new JPanel();
-        secondButtonRowPanel.setLayout(new BoxLayout(secondButtonRowPanel, BoxLayout.LINE_AXIS));
-        JButton loadMissingEntailmentButton = UIUtilities.createNamedButton(LOAD_MISSING_ENTAILMENT_COMMAND,
-                LOAD_MISSING_ENTAILMENT_BUTTON_NAME, LOAD_MISSING_ENTAILMENT_TOOLTIP, this);
-        secondButtonRowPanel.add(loadMissingEntailmentButton);
-        secondButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        JButton saveMissingEntailmentButton = UIUtilities.createNamedButton(SAVE_MISSING_ENTAILMENT_COMMAND,
-                SAVE_MISSING_ENTAILMENT_BUTTON_NAME, SAVE_MISSING_ENTAILMENT_TOOLTIP, this);
-        secondButtonRowPanel.add(saveMissingEntailmentButton);
-        buttonHolderPanel.add(secondButtonRowPanel);
-        buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
+        if (! this.preferencesManager.loadUseSimpleMode()){
+            buttonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            JPanel secondButtonRowPanel = new JPanel();
+            secondButtonRowPanel.setLayout(new BoxLayout(secondButtonRowPanel, BoxLayout.LINE_AXIS));
+            JButton loadMissingEntailmentButton = UIUtilities.createNamedButton(LOAD_MISSING_ENTAILMENT_COMMAND,
+                    LOAD_MISSING_ENTAILMENT_BUTTON_NAME, LOAD_MISSING_ENTAILMENT_TOOLTIP, this);
+            secondButtonRowPanel.add(loadMissingEntailmentButton);
+            secondButtonRowPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+            JButton saveMissingEntailmentButton = UIUtilities.createNamedButton(SAVE_MISSING_ENTAILMENT_COMMAND,
+                    SAVE_MISSING_ENTAILMENT_BUTTON_NAME, SAVE_MISSING_ENTAILMENT_TOOLTIP, this);
+            secondButtonRowPanel.add(saveMissingEntailmentButton);
+            buttonHolderPanel.add(secondButtonRowPanel);
+            buttonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
+        }
         return buttonHolderPanel;
     }
 
@@ -554,7 +556,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     @Override
-    public void handleUIEvent(ExplanationLoadingUIEvent event) {
+    public void handleUIEvent(ExplanationLoadingScreenEvent event) {
         if (event.getType().equals(
                 ExplanationLoadingUIEventType
                         .EXPLANATION_GENERATION_CANCELLED)){
@@ -572,6 +574,12 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 case LAYOUT_CHANGE:
                     this.resetMainComponent();
                     this.repaintComponents();
+                    break;
+                case SIMPLE_MODE_CHANGE:
+                    this.signatureSelectionUI.resetVocabularyManagementPanel();
+                    this.resetSignatureSelectionComponent();
+                    this.createMissingEntailmentManagementComponent();
+                    this.resetMainComponent();
                     break;
             }
         });
