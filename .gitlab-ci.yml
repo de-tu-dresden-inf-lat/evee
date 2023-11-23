@@ -7,6 +7,5 @@ linux-build-job:
     - git submodule update --init --recursive
     #- mvn help:effective-settings
     #- mvn help:effective-pom -Dverbose
-    #- mvn help:effective-settings -s settings.xml
+    - mvn help:effective-settings -s settings.xml
     #- mvn help:effective-pom -Dverbose -s settings.xml
-    - mvn clean install -s settings.xml
