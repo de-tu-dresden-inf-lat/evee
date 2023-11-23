@@ -4,8 +4,9 @@ linux-build-job:
     - letheTest
   script:
     - echo "Compiling evee via command 'mvn clean install'"
-    - mvn dependency:purge-local-repository
+    # first step always needs to be updating lat-scala-dl-tools submodule
     - git submodule update --init --recursive
+    - mvn dependency:purge-local-repository
     - mvn clean install
     #- mvn help:effective-pom -s settings.xml
     #- mvn help:effective-settings
