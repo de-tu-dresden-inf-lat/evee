@@ -1,12 +1,12 @@
 linux-build-job:
-  cache: []
   stage: build
   tags:
     - letheTest
   script:
     - echo "Compiling evee via command 'mvn clean install'"
+    - mvn dependency:purge-local-repository
     - git submodule update --init --recursive
-    - mvn clean install -P !complete,letheUpdateTest
+    - mvn clean install
     #- mvn help:effective-pom -s settings.xml
     #- mvn help:effective-settings
     #- mvn help:effective-pom -Dverbose
