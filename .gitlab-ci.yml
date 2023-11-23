@@ -3,8 +3,9 @@ linux-build-job:
   tags:
     - letheTest
   script:
-    - jar xvf /lib/de/tu-dresden/inf/lat/lethe-abduction-owlapi4_2.12/0.8-SNAPSHOT/lethe-abduction-owlapi4_2.12-0.8-SNAPSHOT.jar uk/ac/
-    - man/cs/lethe/abduction/OWLAbducer.class
+    - dir
+    - cd lib/de/tu-dresden/inf/lat/lethe-abduction-owlapi4_2.12/0.8-SNAPSHOT/
+    - jar xvf lethe-abduction-owlapi4_2.12-0.8-SNAPSHOT.jar uk/ac/man/cs/lethe/abduction/OWLAbducer.class
     - cd uk/ac/man/cs/lethe/abduction
     # test if the approach is working
     - javap -verbose OWLAbducer.class | grep checkCanceled()
