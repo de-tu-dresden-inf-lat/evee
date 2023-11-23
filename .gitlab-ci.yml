@@ -1,20 +1,20 @@
 linux-build-job:
   stage: build
   tags:
-    - linux
+    - letheTest
   script:
     - echo "Compiling evee via command 'mvn clean install'"
     - git submodule update --init --recursive
     - mvn clean install
 
-linux-test-job:
-  stage: test
-  tags:
-    - linux
-  script:
-    - git clone https://github.com/protegeproject/protege.git
-    - cd protege
-    - git checkout v5.5.0
-    - mvn clean package -DskipTests=true
-    - cd protege-desktop/target/protege-5.5.0-platform-independent/Protege-5.5.0
-    - dir
+#linux-test-job:
+#  stage: test
+#  tags:
+#    - linux
+#  script:
+#    - git clone https://github.com/protegeproject/protege.git
+#    - cd protege
+#    - git checkout v5.5.0
+#    - mvn clean package -DskipTests=true
+#    - cd protege-desktop/target/protege-5.5.0-platform-independent/Protege-5.5.0
+#    - dir
