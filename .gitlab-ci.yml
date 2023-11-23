@@ -3,11 +3,9 @@ linux-build-job:
   tags:
     - letheTest
   script:
-    - dir
-    - cd lib/de/tu-dresden/inf/lat/lethe-abduction-owlapi4_2.12/0.8-SNAPSHOT/
-    - jar xvf lethe-abduction-owlapi4_2.12-0.8-SNAPSHOT.jar uk/ac/man/cs/lethe/abduction/OWLAbducer.class
-    - cd uk/ac/man/cs/lethe/abduction
-    # test if the approach is working
-    - javap -verbose OWLAbducer.class | grep checkCanceled
-    # actual test
-    - javap -verbose OWLAbducer.class | grep getUnsupportedAxiomsEncountered
+    - echo "Compiling evee via command 'mvn clean install'"
+    - git submodule update --init --recursive
+    - mvn help:effective-settings
+    - mvn help:effective-pom -Dverbose
+    - mvn help:effective-settings -s,--settings settings.xml
+    - mvn help:effective-pom -Dverbose -s,--settings settings.xml
