@@ -7,6 +7,12 @@
             <id>evee</id>
             <repositories>
                 <repository>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
                     <id>eveeLocalRepository</id>
                     <name>EVEE local repository</name>
                     <url>file:${project.basedir}\lib</url>
