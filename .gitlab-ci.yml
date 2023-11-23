@@ -5,5 +5,4 @@ linux-build-job:
   script:
     - echo "Compiling evee via command 'mvn clean install'"
     - git submodule update --init --recursive
-    - mvn dependency:purge-local-repository
     - mvn clean install
