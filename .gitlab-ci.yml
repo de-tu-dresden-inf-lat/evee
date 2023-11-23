@@ -6,7 +6,7 @@ linux-build-job:
     - echo "Compiling evee via command 'mvn clean install'"
     # first step always needs to be updating lat-scala-dl-tools submodule
     - git submodule update --init --recursive
-    - mvn dependency:purge-local-repository
+    - mvn dependency:purge-local-repository -DreResolve=false -DactTransitively=false
     - mvn clean install
     #- mvn help:effective-pom -s settings.xml
     #- mvn help:effective-settings
