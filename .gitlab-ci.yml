@@ -5,7 +5,7 @@ linux-build-job:
   script:
     - echo "Compiling evee via command 'mvn clean install'"
     - git submodule update --init --recursive
-    - mvn clean install -s settings.xml
+    - mvn clean install -e -s settings.xml
     #- mvn help:effective-settings
     #- mvn help:effective-pom -Dverbose
     # - mvn help:effective-settings -s settings.xml
