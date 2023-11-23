@@ -25,6 +25,9 @@
             <id>EveeLocalMavenRepository</id>
             <name>EveeLocalMavenRepository</name>
             <url>file:${project.basedir}/../../lib</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
