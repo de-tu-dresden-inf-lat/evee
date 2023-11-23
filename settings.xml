@@ -9,7 +9,7 @@
                 <repository>
                     <id>eveeLocalRepository</id>
                     <name>EVEE local repository</name>
-                    <url>file:${project.basedir}/lib</url>
+                    <url>file:${project.basedir}\lib</url>
                 </repository>
             </repositories>
         </profile>
