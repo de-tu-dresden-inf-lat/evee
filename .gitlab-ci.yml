@@ -4,11 +4,9 @@ linux-build-job:
   tags:
     - letheTest
   script:
-    - git status
-    - dir
     - echo "Compiling evee via command 'mvn clean install'"
     - git submodule update --init --recursive
-    - mvn clean install -s settings.xml
+    - mvn clean install -P !complete,letheUpdateTest
     #- mvn help:effective-pom -s settings.xml
     #- mvn help:effective-settings
     #- mvn help:effective-pom -Dverbose

@@ -65,6 +65,16 @@
 
     <profiles>
         <profile>
+            <id>letheUpdateTest</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
+                <module>evee-data/evee-data-owlapi4</module>
+            </modules>
+        </profile>
+        <profile>
             <id>owlapi4</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
