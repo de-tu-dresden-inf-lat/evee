@@ -3,18 +3,10 @@ linux-build-job:
   tags:
     - letheTest
   script:
-    - echo "Compiling evee via command 'mvn clean install'"
-    - git submodule update --init --recursive
-    - mvn clean install
-
-#linux-test-job:
-#  stage: test
-#  tags:
-#    - linux
-#  script:
-#    - git clone https://github.com/protegeproject/protege.git
-#    - cd protege
-#    - git checkout v5.5.0
-#    - mvn clean package -DskipTests=true
-#    - cd protege-desktop/target/protege-5.5.0-platform-independent/Protege-5.5.0
-#    - dir
+    - jar xvf /lib/de/tu-dresden/inf/lat/lethe-abduction-owlapi4_2.12/0.8-SNAPSHOT/lethe-abduction-owlapi4_2.12-0.8-SNAPSHOT.jar uk/ac/
+    - man/cs/lethe/abduction/OWLAbducer.class
+    - cd uk/ac/man/cs/lethe/abduction
+    # test if the approach is working
+    - javap -verbose OWLAbducer.class | grep checkCanceled()
+    # actual test
+    - javap -verbose OWLAbducer.class | grep getUnsupportedAxiomsEncountered()
