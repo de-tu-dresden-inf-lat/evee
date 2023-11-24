@@ -13,11 +13,14 @@ Each of these ontologies contains a number of "mistakes", which can be:
 
 Your goal is to fix these mistakes based on the comments of the following classes:
 1. For the pizza ontology, see the subclasses of NamedPizza
-2. For the animal ontology, see the subclasses of Animal
+2. For the animal ontology, see the subclasses of Animal being specific animals
 3. For the lecture ontology, see the subclasses of SpecificLecture
 
 By "comment", we mean the comment annotation that can be found on the top in the description of the class.
 If a comment lists a class that *has not been derived by the reasoner* (HermiT), then this is a mistake that should be fixed.
+In the animal ontology comments are not lists of classes but descriptions of animals written in natural language. 
+Any properties, habitats, belongings to classes present in the ontology indicated in the comment but not derived by the reasoner are considered a mistake.
+
 
 # Rules
 
@@ -26,7 +29,7 @@ Instead, you should add more complex class expressions in an appropriate way, or
 When adding new class expressions as subclass or equivalent class under a the given class *A* in question (that is, not on another class), you have to follow the following restrictions:
 
 1. For subclasses of NamedPizza, class expressions should only refer to the specific toppings of that pizza.
-2. For subclasses of Animal, class expressions should only refer to sub classes of Body and Habitat.
+2. For subclasses of Animal, class expressions should only refer to subclasses of BodyPart (e.g. hasBodyPart some CircularMuscles).
 3. In the lecture ontology, you should only use subclasses of Location, Professor, TeachingElement or TopicComplexity.
 
 Of course, definitions can also use object properties and should also fit the intended meaning of the class.

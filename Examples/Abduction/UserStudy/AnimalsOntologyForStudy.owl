@@ -82,7 +82,7 @@
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>Bats are the only mammals that can fly. Instead of arms or hands, they have wings. The wings have a bone structure similar to the human hand. Between the bones are flaps of skin.</rdfs:comment>
+        <rdfs:comment>Bats are the only mammals that can fly. Instead of arms or hands, they have wings.</rdfs:comment>
     </owl:Class>
     
 
@@ -90,6 +90,14 @@
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Beak -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Beak">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bell -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bell">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
     </owl:Class>
     
@@ -152,6 +160,14 @@
     
 
 
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CircularMuscles -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CircularMuscles">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ColdClimate -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ColdClimate">
@@ -188,7 +204,7 @@
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>Eels are ray-finned fish belonging to the order Anguilliformes. The body covering of an eel is typically scaleless. Eels are characterized by their elongated, wormlike bodies.</rdfs:comment>
+        <rdfs:comment>Eels are ray-finned fish. The body covering of an eel is typically scaleless. Eels are characterized by their elongated, wormlike bodies.</rdfs:comment>
     </owl:Class>
     
 
@@ -272,7 +288,13 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Jellyfish">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
-        <rdfs:comment>Jellyfish are pelagic animals they live in the open seas from tropical to Artic waters and, although they can propel themselves with rhythmic motions of their umbrella, they are basically at the mercy of the currents of the sea.</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bell"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Jellyfish are pelagic animals they live in the open seas from tropical to Artic waters. As they swim, jellyfish make a pocket of high-pressure water under their bell, which serves as a kind of wall to push off to help them swim.</rdfs:comment>
     </owl:Class>
     
 
@@ -288,6 +310,14 @@
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Legs -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Legs">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
     </owl:Class>
     
@@ -364,7 +394,7 @@
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#SubcutaneousFat"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>The walrus is a large pinniped marine mammal with discontinuous distribution about the North Pole in the Arctic Ocean and subarctic seas of the Northern Hemisphere. Walruses have wrinkled brown and pink skin, long, coarse whiskers, flat flippers, and lots of blubber on their bodies to keep them warm in the cold Arctic water.</rdfs:comment>
+        <rdfs:comment>The walrus is a large marine mammal with discontinuous distribution about the North Pole in the Arctic Ocean and subarctic seas of the Northern Hemisphere. Walruses have lots of blubber on their bodies to keep them warm in the cold Arctic water.</rdfs:comment>
     </owl:Class>
     
 
@@ -405,7 +435,13 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Worm">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
-        <rdfs:comment>Worms are many different distantly related bilateral animals that typically have a long cylindrical tube-like body, no limbs, no arms, no legs and no eyes. A worm moves using circular and longitudinal muscles, as well as bristles called setae.</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Worms are many different distantly related bilateral animals that typically have a long cylindrical tube-like body, no limbs, no arms, no legs and no eyes. A worm moves using circular and longitudinal muscles.</rdfs:comment>
     </owl:Class>
     
 
@@ -458,6 +494,24 @@
         <owl:intersectionOf rdf:parseType="Collection">
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CircularMuscles"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanMove"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers"/>
             </owl:Restriction>
             <owl:Restriction>
@@ -499,16 +553,6 @@
         <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fins"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Restriction>
-    <owl:Restriction>
-        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fins"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim"/>
             </owl:Restriction>
@@ -521,6 +565,16 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanGo"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Restriction>
+    <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Restriction>
