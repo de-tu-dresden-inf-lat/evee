@@ -81,6 +81,9 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
             ElkReasoner reasoner = reasonerFactory.createReasoner(this.ontology);
 
+            if(reasoner.isEntailed(subClsOf))
+                throw new ModelGenerationException("Axiom is already entailed!");
+
             //in case the super class is unsatisfiable, the model type reverts to alpha
             if(!reasoner.isSatisfiable(subClsOf.getSuperClass())){
                 modelTypeReverted = type != ModelType.Alpha;
