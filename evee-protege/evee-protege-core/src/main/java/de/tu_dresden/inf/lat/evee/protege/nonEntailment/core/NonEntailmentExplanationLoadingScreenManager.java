@@ -1,8 +1,8 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIEventGenerator;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEvent;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingScreenEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingScreenEventListener;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingScreenEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 
-public class NonEntailmentExplanationLoadingUIManager implements
-        IExplanationLoadingUIListener, IExplanationLoadingUIEventGenerator {
+public class NonEntailmentExplanationLoadingScreenManager implements
+        IExplanationLoadingScreenEventListener, IExplanationLoadingScreenEventGenerator {
 
     protected String uiTitle;
     private OWLEditorKit owlEditorKit;
@@ -22,7 +22,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
     protected static final String DEFAULT_MESSAGE = "Generating Explanations";
     protected static final String DEFAULT_CANCELLATION_MESSAGE = "Cancelling generation, please wait";
 
-    private IExplanationLoadingUIListener viewComponentListener;
+    private IExplanationLoadingScreenEventListener viewComponentListener;
     private JDialog loadingScreen;
     private JDialog cancellationScreen;
     private boolean loadingScreenDisposed = true;
@@ -32,13 +32,13 @@ public class NonEntailmentExplanationLoadingUIManager implements
     private static final String CANCEL_BUTTON_NAME = "Cancel";
 
 
-    private final Logger logger = LoggerFactory.getLogger(NonEntailmentExplanationLoadingUIManager.class);
+    private final Logger logger = LoggerFactory.getLogger(NonEntailmentExplanationLoadingScreenManager.class);
 
-    public NonEntailmentExplanationLoadingUIManager(String uiTitle){
-        new NonEntailmentExplanationLoadingUIManager(uiTitle, false);
+    public NonEntailmentExplanationLoadingScreenManager(String uiTitle){
+        new NonEntailmentExplanationLoadingScreenManager(uiTitle, false);
     }
 
-    public NonEntailmentExplanationLoadingUIManager(String uiTitle, boolean paintProgressBarString){
+    public NonEntailmentExplanationLoadingScreenManager(String uiTitle, boolean paintProgressBarString){
         this.logger.debug("Creating NonEntailmentExplanationLoadingUIManager");
         this.uiTitle = uiTitle;
         this.paintProgressBarString = paintProgressBarString;
@@ -75,7 +75,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
     }
 
     @Override
-    public void registerLoadingUIListener(IExplanationLoadingUIListener listener) {
+    public void registerLoadingUIListener(IExplanationLoadingScreenEventListener listener) {
         this.viewComponentListener = listener;
     }
 
@@ -104,20 +104,19 @@ public class NonEntailmentExplanationLoadingUIManager implements
                 3,1, 5, 5));
         this.loadingScreenProgressLabel =
                 UIUtilities.createProgressUILabel(DEFAULT_MESSAGE);
-        holderPanel.add(this.loadingScreenProgressLabel, BorderLayout.CENTER);
+        this.loadingScreenProgressLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        holderPanel.add(this.loadingScreenProgressLabel);
         this.loadingScreenProgressBar = new JProgressBar(0, 100);
         this.loadingScreenProgressBar.setIndeterminate(true);
         holderPanel.add(this.loadingScreenProgressBar);
         JButton cancelButton = UIUtilities.createNamedButton(
                 null, CANCEL_BUTTON_NAME, null,
-                e -> {
-                    this.cancelGeneration();
-                });
+                e -> this.cancelGeneration());
         holderPanel.add(cancelButton);
         this.loadingScreen.getContentPane().add(holderPanel);
-        this.loadingScreen.pack();
         this.loadingScreen.setVisible(false);
-        this.loadingScreen.setSize(600, 150);
+        this.loadingScreen.setMinimumSize(new Dimension(600, 150));
+        this.loadingScreen.pack();
         this.loadingScreen.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
                 ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace())));
         this.loadingScreen.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
@@ -155,8 +154,8 @@ public class NonEntailmentExplanationLoadingUIManager implements
         cancelPanel.add(cancellationScreenProgressLabel, BorderLayout.CENTER);
         cancelPanel.add(cancellationScreenProgressBar);
         this.cancellationScreen.getContentPane().add(cancelPanel);
+        this.cancellationScreen.setPreferredSize(new Dimension(600, 100));
         this.cancellationScreen.pack();
-        this.cancellationScreen.setSize(600, 100);
         this.cancellationScreen.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
                 ProtegeManager.getInstance().getFrame(
                         this.owlEditorKit.getWorkspace())));
@@ -164,7 +163,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
     }
 
     @Override
-    public void handleUIEvent(ExplanationLoadingUIEvent event) {
+    public void handleUIEvent(ExplanationLoadingScreenEvent event) {
         SwingUtilities.invokeLater(() -> {
             if (event == null){
                 logger.debug("event is null");
@@ -199,6 +198,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
             this.loadingScreenProgressBar.setIndeterminate(false);
             this.loadingScreenProgressBar.setMaximum(maximum);
             this.loadingScreenProgressBar.setString("0 / " + maximum);
+            this.repaintLoadingScreen();
         }
         if (this.paintProgressBarString){
             this.logger.debug("Loading Screen Progress Bar String activated");
@@ -225,7 +225,17 @@ public class NonEntailmentExplanationLoadingUIManager implements
         } else {
             this.logger.debug("Updating loading screen message with: {}", message);
             this.loadingScreenProgressLabel.setText(message);
+            this.repaintLoadingScreen();
         }
+    }
+
+    private void repaintLoadingScreen(){
+        this.loadingScreen.pack();
+        this.loadingScreen.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
+                ProtegeManager.getInstance().getFrame(
+                        this.owlEditorKit.getWorkspace())));
+        this.loadingScreen.revalidate();
+        this.loadingScreen.repaint();
     }
 
     protected void updateLoadingProgress(int progress){
@@ -258,7 +268,7 @@ public class NonEntailmentExplanationLoadingUIManager implements
         SwingUtilities.invokeLater(() -> {
             this.logger.debug("Loading dialog closed by user interaction");
             this.viewComponentListener.handleUIEvent(
-                    ExplanationLoadingUIEvent.createCancellationEvent());
+                    ExplanationLoadingScreenEvent.createCancellationEvent());
             this.disposeLoadingScreen();
             this.initCancellationScreen();
             this.resetCancellationScreen();

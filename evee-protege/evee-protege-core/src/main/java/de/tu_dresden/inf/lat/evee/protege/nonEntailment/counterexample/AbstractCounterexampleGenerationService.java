@@ -3,7 +3,6 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListe
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLNonEntailmentExplainer;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.GraphModelView;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.GraphStyleSheets;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphViewService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
@@ -29,7 +28,7 @@ abstract public class AbstractCounterexampleGenerationService
 
     protected String supportsExplanationMessage;
     protected OWLEditorKit owlEditorKit;
-    protected SwingWorker worker;
+    protected SwingWorker<Void,Void> worker;
     protected String errorMessage;
     protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     protected Set<OWLAxiom> observation;
@@ -76,7 +75,7 @@ abstract public class AbstractCounterexampleGenerationService
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException(e);
         }
-        ((IOWLNonEntailmentExplainer) counterexampleGenerator).setOntology(workingCopy);
+        ((IOWLNonEntailmentExplainer<OWLIndividualAxiom>) counterexampleGenerator).setOntology(workingCopy);
     }
     @Override
     public void setObservation(Set<OWLAxiom> owlAxioms) {
@@ -125,7 +124,7 @@ abstract public class AbstractCounterexampleGenerationService
     @Override
     public void addProgressTracker(IProgressTracker tracker) {
         this.progressTracker = tracker;
-    };
+    }
 
     @Override
     public void cancel() {
@@ -137,12 +136,12 @@ abstract public class AbstractCounterexampleGenerationService
     private class InteractiveModelGenerationSwingWorker extends SwingWorker<Void, Void> {
 
 
-        private INonEntailmentExplanationService<OWLIndividualAxiom> service;
+        private final INonEntailmentExplanationService<OWLIndividualAxiom> service;
         public InteractiveModelGenerationSwingWorker(INonEntailmentExplanationService<OWLIndividualAxiom> service) {
            this.service = service;
         }
         @Override
-        protected Void doInBackground() throws Exception {
+        protected Void doInBackground() {
             computationSuccessful = false;
 
             try {
@@ -152,14 +151,17 @@ abstract public class AbstractCounterexampleGenerationService
                         graphViewGenerator,
                         workingCopy,
                         observationAxiom,
-                        owlEditorKit);
+                        owlEditorKit,
+                        viewComponentListener
+                        );
                 computationSuccessful = true;
+
             } catch (Exception e) {
-                if(computationSuccessful) {
-                    logger.info("counterexample generation is canceled");
+                if (computationSuccessful) {
+                    logger.info("Counterexample generation is canceled");
                 } else {
-                    logger.error("model generation error",e);
-                    errorMessage = "model generation error";
+                    logger.error("Model generation error", e);
+                    errorMessage = "Model generation error:\n" + e.getMessage();
                 }
             }
             return null;

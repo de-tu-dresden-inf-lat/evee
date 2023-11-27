@@ -3,7 +3,7 @@
   <groupId>de.tu-dresden.inf.lat</groupId>
   <artifactId>lethe-abduction-owlapi4_2.12</artifactId>
   <versioning>
-    <lastUpdated>20230730144043</lastUpdated>
+    <lastUpdated>20231120163412</lastUpdated>
     <snapshot>
       <localCopy>true</localCopy>
     </snapshot>
@@ -11,12 +11,12 @@
       <snapshotVersion>
         <extension>jar</extension>
         <value>0.8-SNAPSHOT</value>
-        <updated>20230730144043</updated>
+        <updated>20231120163412</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
         <value>0.8-SNAPSHOT</value>
-        <updated>20230730144043</updated>
+        <updated>20231120163412</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>

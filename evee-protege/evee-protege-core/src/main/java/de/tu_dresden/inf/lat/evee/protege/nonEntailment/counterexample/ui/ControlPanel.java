@@ -36,13 +36,12 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
     private final int BIG_SPACE = 30;
     private final int SMALL_SPACE = 20;
     private final DefaultListModel<OWLClass> classListModel = new DefaultListModel();
-    private final DefaultListModel<OWLAxiom> axiomListModel = new DefaultListModel();
+    private final DefaultListModel<OWLAxiom> disjAxiomsListModel = new DefaultListModel();
     private final Logger logger = Logger.getLogger(ControlPanel.class);
     private final OWLDataFactory df = OWLManager.getOWLDataFactory();
     private int currentlabelsNum = 2;
     private JList classList;
-    private JList disjAxiomList;
-    private Set<OWLAxiom> additionalAxioms;
+    private JList disjAxiomsList;
     private OWLEditorKit owlEditorKit;
     private ControlPanelEventListener controlPanelEventListener;
     private ICounterexampleGenerationEventListener counterexampleGenerationEventListener;
@@ -51,8 +50,7 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         this.controlPanelEventListener = new ControlPanelEventListener();
         this.owlEditorKit = owlEditorKit;
         this.createClassList();
-        this.createAxiomList();
-        this.additionalAxioms = new HashSet<>();
+        this.createDisjAxiomsList();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setAlignmentX(0.5F);
         this.setBorder(new EmptyBorder(new Insets(15, 15, 15, 15)));
@@ -84,7 +82,9 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
 
     @Override
     public Set<OWLAxiom> getAdditionalAxioms() {
-        return additionalAxioms;
+        return Arrays.stream(disjAxiomsListModel.toArray())
+                .map(ax -> (OWLAxiom) ax)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -112,7 +112,7 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         axiomListBorder.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
                 DISJ_LIST));
-        JScrollPane scrollable = new JScrollPane(this.disjAxiomList);
+        JScrollPane scrollable = new JScrollPane(this.disjAxiomsList);
         scrollable.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollable.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         axiomListBorder.add(scrollable);
@@ -209,10 +209,10 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         this.classList.setCellRenderer(new OWLCellRenderer(this.owlEditorKit));
     }
 
-    private void createAxiomList() {
-        this.disjAxiomList = new JList(this.axiomListModel);
-        this.disjAxiomList.setSelectionMode(2);
-        this.disjAxiomList.setCellRenderer(new OWLCellRenderer(this.owlEditorKit));
+    private void createDisjAxiomsList() {
+        this.disjAxiomsList = new JList(this.disjAxiomsListModel);
+        this.disjAxiomsList.setSelectionMode(2);
+        this.disjAxiomsList.setCellRenderer(new OWLCellRenderer(this.owlEditorKit));
     }
 
 
@@ -245,16 +245,6 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
 
     }
     private void recomputeModel() {
-        additionalAxioms  = Arrays.stream(axiomListModel.toArray())
-                .map(ax -> (OWLDisjointClassesAxiom) ax)
-                .flatMap(ax -> ax.asPairwiseAxioms().stream()
-                        .map(pax -> {
-                            OWLClassExpression first = pax.getClassExpressionsAsList().get(0);
-                            OWLClassExpression second = pax.getClassExpressionsAsList().get(1);
-                            return df.getOWLSubClassOfAxiom(df.getOWLObjectIntersectionOf(first, second), df.getOWLNothing());
-                        })
-                )
-                .collect(Collectors.toSet());
         counterexampleGenerationEventListener.onModelRecomputed(this);
     }
     private void refreshModel() {
@@ -266,7 +256,7 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         if (classList.getSelectedValues().length < 2) {
             JOptionPane.showMessageDialog(new JPanel(), "Please select at least 2 classes", "Error", 0);
         } else {
-            axiomListModel.addElement(
+            disjAxiomsListModel.addElement(
                     df.getOWLDisjointClassesAxiom(Arrays.stream(classList.getSelectedValues())
                             .map(ax -> (OWLClassExpression) ax)
                             .collect(Collectors.toSet())));
@@ -275,13 +265,12 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
 
     private void addAxiomsToOntology() {
         counterexampleGenerationEventListener.onDisjointnessesAddedToOntology(this);
-        axiomListModel.removeAllElements();
+        disjAxiomsListModel.removeAllElements();
 
     }
     private void removeDisjointnesses() {
-        Arrays.stream(disjAxiomList.getSelectedValues()).map((ax) -> (OWLAxiom) ax).forEach((ax) -> {
-            axiomListModel.removeElement(ax);
-            additionalAxioms.remove(ax);
+        Arrays.stream(disjAxiomsList.getSelectedValues()).map((ax) -> (OWLAxiom) ax).forEach((ax) -> {
+            disjAxiomsListModel.removeElement(ax);
         });
     }
 

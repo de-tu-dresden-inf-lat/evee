@@ -4,7 +4,7 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.listener.
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.GraphModelView;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.GraphStyleSheets;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.EdgeLabelPositioner;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.ModelMapper;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.MappingUtils;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.OWLObjectCollectionSorter;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphViewService;
 import org.apache.log4j.Logger;
@@ -208,8 +208,10 @@ public class GraphViewGenerator implements IGraphViewService {
                                       Set<IRI> markedIndividuals,
                                       int labelsNum) {
         OWLObjectCollectionSorter sorter = new OWLObjectCollectionSorter(ontology);
-        individualsToClassesMap = sorter.sortOWLObjectMap(ModelMapper.toIndividualsToClassesMap(model));
-        pairsToObjectPropertiesMap = sorter.sortOWLObjectMap(ModelMapper.toPairsToObjectPropertiesMap(model));
+        individualsToClassesMap = sorter.sortOWLObjectMap(MappingUtils.toIndividualsToClassesMap(model));
+        pairsToObjectPropertiesMap = sorter.sortOWLObjectMap(MappingUtils.toPairsToObjectPropertiesMap(model));
+        logger.debug(individualsToClassesMap);
+
         generateGraphModel(individualsToClassesMap,
                 pairsToObjectPropertiesMap,
                 ontology,

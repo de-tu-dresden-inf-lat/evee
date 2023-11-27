@@ -100,6 +100,7 @@
                             org.liveontologies.owlapi.*;resolution:=optional,
                             org.checkerframework.*;resolution:=optional,
                             sun.misc.*;resolution:=optional,
+                            org.openrdf.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>

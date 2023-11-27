@@ -1,13 +1,13 @@
 package de.tu_dresden.inf.lat.evee.protege.tools.eventHandling;
 
-public class ExplanationLoadingUIEvent {
+public class ExplanationLoadingScreenEvent {
 
     private final ExplanationLoadingUIEventType eventType;
     private final String message;
     private final int progressValue;
     private final int progressMaximum;
 
-    public ExplanationLoadingUIEvent(
+    public ExplanationLoadingScreenEvent(
             ExplanationLoadingUIEventType type,
             String message,
             int progressValue,
@@ -38,38 +38,38 @@ public class ExplanationLoadingUIEvent {
         return this.progressMaximum;
     }
 
-    public static ExplanationLoadingUIEvent createGeneralEvent(
+    public static ExplanationLoadingScreenEvent createGeneralEvent(
             ExplanationLoadingUIEventType type){
-        return new ExplanationLoadingUIEvent(type,
+        return new ExplanationLoadingScreenEvent(type,
                 "", 0, 0);
     }
 
-    public static ExplanationLoadingUIEvent createUpdateLoadingMessageEvent(String message){
-        return new ExplanationLoadingUIEvent(
+    public static ExplanationLoadingScreenEvent createUpdateLoadingMessageEvent(String message){
+        return new ExplanationLoadingScreenEvent(
                 ExplanationLoadingUIEventType.UPDATE_LOADING_MESSAGE,
                 message, 0, 0);
     }
 
-    public static ExplanationLoadingUIEvent createSetMaxProgressEvent(int maxProgress){
-        return new ExplanationLoadingUIEvent(
+    public static ExplanationLoadingScreenEvent createSetMaxProgressEvent(int maxProgress){
+        return new ExplanationLoadingScreenEvent(
                 ExplanationLoadingUIEventType.UPDATE_LOADING_MAXIMUM,
                 "", 0, maxProgress);
     }
 
-    public static ExplanationLoadingUIEvent createSetCurrentProgressEvent(int currentProgress){
-        return new ExplanationLoadingUIEvent(
+    public static ExplanationLoadingScreenEvent createSetCurrentProgressEvent(int currentProgress){
+        return new ExplanationLoadingScreenEvent(
                 ExplanationLoadingUIEventType.UPDATE_LOADING_PROGRESS,
                 "", currentProgress, 0);
     }
 
-    public static ExplanationLoadingUIEvent createDoneEvent(int progressMaximum){
-        return new ExplanationLoadingUIEvent(
+    public static ExplanationLoadingScreenEvent createDoneEvent(int progressMaximum){
+        return new ExplanationLoadingScreenEvent(
                 ExplanationLoadingUIEventType.EXPLANATION_GENERATION_FINISHED,
                 "", progressMaximum, 0);
     }
 
-    public static ExplanationLoadingUIEvent createCancellationEvent(){
-        return new ExplanationLoadingUIEvent(
+    public static ExplanationLoadingScreenEvent createCancellationEvent(){
+        return new ExplanationLoadingScreenEvent(
                 ExplanationLoadingUIEventType.EXPLANATION_GENERATION_CANCELLED,
                 "", 0, 0);
     }

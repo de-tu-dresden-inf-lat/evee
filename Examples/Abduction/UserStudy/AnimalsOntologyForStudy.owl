@@ -1,0 +1,605 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#"
+     xml:base="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bat -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bat">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wings"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Bats are the only mammals that can fly. Instead of arms or hands, they have wings.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Beak -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Beak">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bell -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bell">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bird -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bird">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <rdfs:comment>Birds are vertebrate animals adapted for flight. Many can also run, jump, swim, and dive. One of the most distinctive features of birds is their beak, or bill, which serves as a versatile tool. Feathers are a defining characteristic of birds, serving various functions. Wings are the key to avian flight. Birds possess modified forelimbs, which, when combined with their powerful breast muscles, enable them to take to the skies.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanFly -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanFly">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanMove"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanGo -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanGo">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanMove"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanMove -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanMove">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanMove"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Carnivorous -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Carnivorous">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CircularMuscles -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CircularMuscles">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ColdClimate -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ColdClimate">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Eel -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Eel">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fins"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Eels are ray-finned fish. The body covering of an eel is typically scaleless. Eels are characterized by their elongated, wormlike bodies.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fins -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fins">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fish -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fish">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fins"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Scales"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Fish, as a diverse group of aquatic vertebrates, exhibit a wide range of anatomical structures and adaptations that enable them to thrive in aquatic environments. Fins are essential for fish locomotion and stability. They include dorsal, anal, pelvic, and pectoral fins, each serving distinct roles. Scales cover the external surface of most fish and provide protection from environmental factors and predators.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Gills -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Gills">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Herbivorous -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Herbivorous">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Jellyfish -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Jellyfish">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bell"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Jellyfish are pelagic animals they live in the open seas from tropical to Artic waters. As they swim, jellyfish make a pocket of high-pressure water under their bell, which serves as a kind of wall to push off to help them swim.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Land -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Land">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Legs -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Legs">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Pinguin -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Pinguin">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Beak"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Penguins are seabirds in the family Spheniscidae. They use their wings to swim underwater, but they cannot fly in the air.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Scales -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Scales">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Static -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Static">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#SubcutaneousFat -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#SubcutaneousFat">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ThickWool -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ThickWool">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Walrus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Walrus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#SubcutaneousFat"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>The walrus is a large marine mammal with discontinuous distribution about the North Pole in the Arctic Ocean and subarctic seas of the Northern Hemisphere. Walruses have lots of blubber on their bodies to keep them warm in the cold Arctic water.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#WarmClimate -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#WarmClimate">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wings -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wings">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wool -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wool">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Worm -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Worm">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Worms are many different distantly related bilateral animals that typically have a long cylindrical tube-like body, no limbs, no arms, no legs and no eyes. A worm moves using circular and longitudinal muscles.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#nemo -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#nemo">
+        <rdf:type rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fish"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Beak"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wings"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bird"/>
+    </owl:Class>
+    <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CircularMuscles"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanMove"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wings"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanFly"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#SubcutaneousFat"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ThickWool"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ColdClimate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fins"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Restriction>
+    <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Legs"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanGo"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Restriction>
+    <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Restriction>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ColdClimate"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Land"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#WarmClimate"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

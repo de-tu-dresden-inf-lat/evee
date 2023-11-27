@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.VocabularyTab;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.PreferencesChangeListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import org.protege.editor.core.prefs.Preferences;
 import org.protege.editor.core.prefs.PreferencesManager;
@@ -19,9 +19,10 @@ public class NonEntailmentGeneralPreferencesManager {
     private static final String DEFAULT_TAB = "DEFAULT_TAB";
     private static final String SHOW_FILTER_WARNING = "SHOW_FILTER_WARNING";
     private static final String SIGNATURE_COMPONENT_LAYOUT = "SIGNATURE_COMPONENT_LAYOUT";
+    private static final String SIMPLE_MODE = "SIMPLE_MODE";
     public static final String STANDARD_LAYOUT = "Standard";
     public static final String ALTERNATIVE_LAYOUT_LISTS = "Alternative";
-    private static final List<PreferencesChangeListener> changeListeners = new ArrayList<>();
+    private static final List<IPreferencesChangeListener> changeListeners = new ArrayList<>();
     private static NonEntailmentGeneralPreferencesManager preferencesManager = null;
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentGeneralPreferencesManager.class);
@@ -29,11 +30,11 @@ public class NonEntailmentGeneralPreferencesManager {
     public NonEntailmentGeneralPreferencesManager(){
     }
 
-    public void registerPreferencesChangeListener(PreferencesChangeListener changeListener){
+    public void registerPreferencesChangeListener(IPreferencesChangeListener changeListener){
         changeListeners.add(changeListener);
     }
 
-    public void removePreferenceChangeListener(PreferencesChangeListener changeListener){
+    public void removePreferenceChangeListener(IPreferencesChangeListener changeListener){
         changeListeners.remove(changeListener);
     }
 
@@ -82,7 +83,7 @@ public class NonEntailmentGeneralPreferencesManager {
         Preferences preferences = this.getProtegePreferences();
         preferences.putString(SIGNATURE_COMPONENT_LAYOUT, newLayout);
         this.logger.debug("Saved layout information: {}", newLayout);
-        this.updateListeners();
+        this.informListenersOfLayoutChange();
     }
 
     public Vector<String> getLayoutStrings(){
@@ -92,9 +93,30 @@ public class NonEntailmentGeneralPreferencesManager {
         return  layouts;
     }
 
-    private void updateListeners(){
-        for (PreferencesChangeListener changeListener : changeListeners){
+    public boolean loadUseSimpleMode(){
+        Preferences preferences = this.getProtegePreferences();
+        boolean useSimpleMode = preferences.getBoolean(SIMPLE_MODE, true);
+        this.logger.debug("Loaded use simple mode information: {}", useSimpleMode);
+        return useSimpleMode;
+    }
+
+    public void saveUseSimpleMode(Boolean useSimpleMode){
+        Preferences preferences = this.getProtegePreferences();
+        preferences.putBoolean(SIMPLE_MODE, useSimpleMode);
+        this.logger.debug("Saved use simple mode information: {}", useSimpleMode);
+        this.informListenersOfSimpleModeChange();
+    }
+
+
+    private void informListenersOfLayoutChange(){
+        for (IPreferencesChangeListener changeListener : changeListeners){
             changeListener.handlePreferenceChange(GeneralPreferencesChangeEventType.LAYOUT_CHANGE);
+        }
+    }
+
+    private void informListenersOfSimpleModeChange(){
+        for (IPreferencesChangeListener changeListener : changeListeners){
+            changeListener.handlePreferenceChange(GeneralPreferencesChangeEventType.SIMPLE_MODE_CHANGE);
         }
     }
 

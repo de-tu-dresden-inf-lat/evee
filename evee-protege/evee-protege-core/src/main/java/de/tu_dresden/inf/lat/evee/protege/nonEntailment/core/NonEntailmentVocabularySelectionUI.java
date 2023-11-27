@@ -1,8 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.IO.LoadingAbortedException;
 import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ui.util.ComponentFactory;
@@ -354,16 +356,18 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         buttonList.add(addMissingEntailmentSignatureButton);
         JPanel thirdButtonRowPanel = this.createButtonPanelFromList(buttonList);
         this.standardLayoutButtonHolderPanel.add(thirdButtonRowPanel);
-        this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        buttonList.clear();
-        JButton loadSignatureButton = UIUtilities.createNamedButton(STANDARD_LOAD_SIGNATURE_COMMAND,
-                LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
-        buttonList.add(loadSignatureButton);
-        JButton saveSignatureButton = UIUtilities.createNamedButton(STANDARD_SAVE_SIGNATURE_COMMAND,
-                SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
-        buttonList.add(saveSignatureButton);
-        JPanel fourthButtonRowPanel = this.createButtonPanelFromList(buttonList);
-        this.standardLayoutButtonHolderPanel.add(fourthButtonRowPanel);
+        if (! this.preferencesManager.loadUseSimpleMode()){
+            this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            buttonList.clear();
+            JButton loadSignatureButton = UIUtilities.createNamedButton(STANDARD_LOAD_SIGNATURE_COMMAND,
+                    LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
+            buttonList.add(loadSignatureButton);
+            JButton saveSignatureButton = UIUtilities.createNamedButton(STANDARD_SAVE_SIGNATURE_COMMAND,
+                    SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
+            buttonList.add(saveSignatureButton);
+            JPanel fourthButtonRowPanel = this.createButtonPanelFromList(buttonList);
+            this.standardLayoutButtonHolderPanel.add(fourthButtonRowPanel);
+        }
     }
 
     private JPanel createButtonPanelFromList(List<JButton> buttons){
@@ -554,16 +558,18 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         buttonList.add(addMissingEntailmentSignatureButton);
         JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList);
         this.alternativeLayoutBottomButtonHolderPanel.add(firstButtonRowPanel);
-        this.alternativeLayoutBottomButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        buttonList.clear();
-        JButton loadSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_LOAD_SIGNATURE_COMMAND,
-                LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
-        buttonList.add(loadSignatureButton);
-        JButton saveSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_SAVE_SIGNATURE_COMMAND,
-                SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
-        buttonList.add(saveSignatureButton);
-        JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList);
-        this.alternativeLayoutBottomButtonHolderPanel.add(secondButtonRowPanel);
+        if (! this.preferencesManager.loadUseSimpleMode()){
+            this.alternativeLayoutBottomButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            buttonList.clear();
+            JButton loadSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_LOAD_SIGNATURE_COMMAND,
+                    LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
+            buttonList.add(loadSignatureButton);
+            JButton saveSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_SAVE_SIGNATURE_COMMAND,
+                    SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
+            buttonList.add(saveSignatureButton);
+            JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList);
+            this.alternativeLayoutBottomButtonHolderPanel.add(secondButtonRowPanel);
+        }
     }
 
     private void createAlternativeVocabularyManagementPanel(){
@@ -989,6 +995,13 @@ private void loadSignatureAction(){
                 this.alternativeLayoutPermittedIndividualsListModel.removeElement(newIndividualName);
             }
         });
+    }
+
+    public void resetVocabularyManagementPanel() {
+        this.createStandardLayoutButtonHolderPanel();
+        this.createStandardVocabularyManagementPanel();
+        this.createAlternativeLayoutBottomButtonPanel();
+        this.createAlternativeVocabularyManagementPanel();
     }
 
     private class SignatureOWLModelChangeListener implements OWLModelManagerListener {

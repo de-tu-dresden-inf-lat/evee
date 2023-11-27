@@ -10,7 +10,6 @@ import java.util.Set;
 
 public interface IOWLModelGenerator {
     void setOntology(OWLOntology ontology);
-
-
     Set<OWLIndividualAxiom> generateModel() throws ModelGenerationException;
+    Set<IRI> getMarkedIndividuals();
 }

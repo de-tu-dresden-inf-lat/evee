@@ -299,14 +299,14 @@ abstract public class AbstractAbductionSolver<Result>
         this.activeOntologyChanged = changed;
     }
 
-    private void saveCache(){
+    protected void saveCache(){
         OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
         this.logger.debug("Saving cache for ontology " + ontology.getOntologyID().getOntologyIRI()
                 .or(IRI.create("")));
-        this.savedCache = cachedResults.get(ontology);
+        this.savedCache = this.cachedResults.get(ontology);
     }
 
-    private void reinstateCache(){
+    protected void reinstateCache(){
         OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
         this.logger.debug("Reinstating saved cache for ontology " + ontology.getOntologyID().getOntologyIRI()
                 .or(IRI.create("")));
@@ -321,11 +321,11 @@ abstract public class AbstractAbductionSolver<Result>
         this.cachedResults.put(ontology, newCache);
     }
 
-    protected void resetCompleteCache(){
-        this.logger.debug("Resetting complete cache");
-        this.cachedResults.clear();
-        this.resetCache();
-    }
+//    protected void resetCompleteCache(){
+//        this.logger.debug("Resetting complete cache");
+//        this.cachedResults.clear();
+//        this.resetCache();
+//    }
 
     public void handleEvent(AbductionSolverOntologyChangeEvent event){
         switch (event.getType()){
