@@ -5,6 +5,7 @@ import de.tu_dresden.inf.lat.counterExample.RedundancyRefiner;
 import de.tu_dresden.inf.lat.counterExample.data.ModelType;
 import de.tu_dresden.inf.lat.counterExample.tools.OntologyFilter;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.SubsumptionHoldsException;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.model.data.Element;
@@ -82,7 +83,7 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             ElkReasoner reasoner = reasonerFactory.createReasoner(this.ontology);
 
             if(reasoner.isEntailed(subClsOf))
-                throw new ModelGenerationException("Axiom is already entailed!");
+                throw new SubsumptionHoldsException("Axiom is already entailed!");
 
             //in case the super class is unsatisfiable, the model type reverts to alpha
             if(!reasoner.isSatisfiable(subClsOf.getSuperClass())){
@@ -136,6 +137,8 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             ex.printStackTrace();
             return null;
         } catch (ModelGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (SubsumptionHoldsException e) {
             throw new RuntimeException(e);
         }
     }
