@@ -13,6 +13,15 @@ Version 0.2 introduces explanations for missing DL entailments, and is described
 
 C. Alrabbaa, S. Borgwardt, T. Friese, P. Koopmann, M. Kotlov: **Why not? Explaining missing entailments with Evee**, in: O. Kutz, C. Lutz, A. Ozaki (Eds.), Proceedings of the 36th International Workshop on Description Logics (DL), volume 3513 of CEUR Workshop Proceedings, CEUR-WS.org, 2023. https://ceur-ws.org/Vol-3515/paper-1.pdf.
 
+<div style="display: flex;">
+  <a href="https://github.com/de-tu-dresden-inf-lat/evee/assets/98273877/bbd03678-1394-41de-8904-24231a47531c">
+    <img src="https://github.com/de-tu-dresden-inf-lat/evee/assets/98273877/bbd03678-1394-41de-8904-24231a47531c" alt="AbductionLetheResult" width="50%" height="50%">
+  </a>
+  <a href="https://github.com/de-tu-dresden-inf-lat/evee/assets/98273877/d8089df4-8da0-4b63-ba7f-02d9254e23a7">
+    <img src="https://github.com/de-tu-dresden-inf-lat/evee/assets/98273877/d8089df4-8da0-4b63-ba7f-02d9254e23a7" alt="small-model-spicy-american-flat" width="49%" height="50%">
+  </a>
+</div>
+
 Version 0.1 supports various methods for generating proofs of DL entailments, and is described in the paper
 
 C. Alrabbaa, S. Borgwardt, T. Friese, P. Koopmann, J. Méndez, A. Popovic: **On the eve of true explainability for OWL ontologies: Description logic proofs with Evee and Evonne**, in: O. Arieli, M. Homola, J. C. Jung, M. Mugnier (Eds.), Proceedings of the 35th International Workshop on Description Logics (DL), volume 3263 of CEUR Workshop Proceedings, CEUR-WS.org, 2022. https://ceur-ws.org/Vol-3263/paper-2.pdf.
