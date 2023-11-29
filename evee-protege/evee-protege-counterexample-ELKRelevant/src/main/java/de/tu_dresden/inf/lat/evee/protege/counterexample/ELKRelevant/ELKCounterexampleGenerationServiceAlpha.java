@@ -26,10 +26,6 @@ public class ELKCounterexampleGenerationServiceAlpha extends AbstractCounterexam
 
     }
 
-    @Override
-    public Set<OWLEntity> getAdditionalSignatureNames() {
-        return Collections.emptySet();
-    }
 }
 
 

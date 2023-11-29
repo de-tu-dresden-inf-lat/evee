@@ -7,6 +7,7 @@ import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
@@ -977,16 +978,20 @@ private void loadSignatureAction(){
         newNames.forEach(name -> {
             if (name instanceof OWLClass){
                 OWLClass newClassName = (OWLClass) name;
-                this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newClassName);
-                this.standardLayoutPermittedVocabularyListModel.removeElement(newClassName);
-                this.alternativeLayoutForbiddenClassesListModel.checkAndAddElement(newClassName);
-                this.alternativeLayoutPermittedClassesListModel.removeElement(newClassName);
+                if (! newClassName.isBottomEntity() && ! newClassName.isTopEntity()){
+                    this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newClassName);
+                    this.standardLayoutPermittedVocabularyListModel.removeElement(newClassName);
+                    this.alternativeLayoutForbiddenClassesListModel.checkAndAddElement(newClassName);
+                    this.alternativeLayoutPermittedClassesListModel.removeElement(newClassName);
+                }
             } else if (name instanceof OWLObjectProperty){
                 OWLObjectProperty newPropertyName = (OWLObjectProperty) name;
-                this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newPropertyName);
-                this.standardLayoutPermittedVocabularyListModel.removeElement(newPropertyName);
-                this.alternativeLayoutForbiddenPropertiesListModel.checkAndAddElement(newPropertyName);
-                this.alternativeLayoutPermittedPropertiesListModel.removeElement(newPropertyName);
+                if (! newPropertyName.isBottomEntity() && ! newPropertyName.isTopEntity()){
+                    this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newPropertyName);
+                    this.standardLayoutPermittedVocabularyListModel.removeElement(newPropertyName);
+                    this.alternativeLayoutForbiddenPropertiesListModel.checkAndAddElement(newPropertyName);
+                    this.alternativeLayoutPermittedPropertiesListModel.removeElement(newPropertyName);
+                }
             } else if (name instanceof OWLNamedIndividual){
                 OWLNamedIndividual newIndividualName = (OWLNamedIndividual) name;
                 this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newIndividualName);

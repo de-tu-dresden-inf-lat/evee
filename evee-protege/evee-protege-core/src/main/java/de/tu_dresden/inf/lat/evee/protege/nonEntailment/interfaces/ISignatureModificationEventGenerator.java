@@ -8,6 +8,4 @@ public interface ISignatureModificationEventGenerator {
 
     void registerSignatureModificationEventListener(ISignatureModificationEventListener listener);
 
-    Set<OWLEntity> getAdditionalSignatureNames();
-
 }

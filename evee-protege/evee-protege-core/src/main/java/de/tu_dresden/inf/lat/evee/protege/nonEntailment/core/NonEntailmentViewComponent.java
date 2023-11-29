@@ -38,6 +38,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -249,8 +251,17 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 this.signatureAndMissingEntailmentComponent,
                 this.nonEntailmentExplanationServiceComponent);
+
+//        this.horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+//                new PropertyChangeListener() {
+//            @Override
+//            public void propertyChange(PropertyChangeEvent evt) {
+//                logger.debug("TEST_MESSAGE: received a propertyChangeEvent for movement of divider");
+//                nonEntailmentExplanationServiceComponent.revalidate();
+//                nonEntailmentExplanationServiceComponent.repaint();
+//            }
+//        });
         this.horizontalSplitPane.setDividerLocation(0.3);
-//        this.horizontalSplitPane.setBorder(BorderFactory.createLineBorder(Color.RED));
     }
 
     private void resetHolderPanel(){
@@ -587,7 +598,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     @Override
     public void handleSignatureModificationEvent(SignatureModificationEvent event) {
-        Set<OWLEntity> additionalSignatureNames = event.getSource().getAdditionalSignatureNames();
+        Set<OWLEntity> additionalSignatureNames = event.getAdditionalSignatureNames();
         this.signatureSelectionUI.addNamesToSignature(additionalSignatureNames);
     }
 
