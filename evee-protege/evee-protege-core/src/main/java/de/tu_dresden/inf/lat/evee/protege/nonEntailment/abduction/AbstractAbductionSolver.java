@@ -40,8 +40,6 @@ abstract public class AbstractAbductionSolver<Result>
     protected Set<OWLEntity> lastUsedVocabulary = null;
     protected OWLOntology activeOntology = null;
     private Iterator<Set<OWLAxiom>> resultStreamIterator = null;
-    protected JPanel settingsHolderPanel;
-    private JSpinner abductionNumberSpinner;
     private OWLEditorKit owlEditorKit;
     private final AbductionSolverResultManager resultManager;
     private boolean cancelled;
@@ -52,8 +50,7 @@ abstract public class AbstractAbductionSolver<Result>
     private final Map<OWLOntology, AbductionCache<Result>> cachedResults;
 //    private AbductionCache<Result> savedCache = null;
     private ISignatureModificationEventListener signatureModificationEventListener;
-    protected static final String SETTINGS_LABEL = "Maximal number of hypotheses:";
-    protected static final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
+    private final AbductionGeneralPreferencesManager preferencesManager;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractAbductionSolver.class);
 
@@ -65,30 +62,8 @@ abstract public class AbstractAbductionSolver<Result>
         this.resultManager.registerOntologyChangeEventListener(this);
 //        this.resultManager.registerSingleResultPanelEventListener(this);
         this.resultManager.registerSignatureModificationEventListener(this);
-        this.createSettingsComponent();
+        this.preferencesManager = new AbductionGeneralPreferencesManager();
         this.logger.debug("AbstractAbductionSolver created successfully.");
-    }
-
-    private void createSettingsComponent(){
-        this.settingsHolderPanel = new JPanel();
-        this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
-        JPanel spinnerHelperPanel = new JPanel();
-        spinnerHelperPanel.setLayout(new BoxLayout(spinnerHelperPanel, BoxLayout.LINE_AXIS));
-        JLabel label = UIUtilities.createLabel(SETTINGS_LABEL);
-        spinnerHelperPanel.add(label);
-        spinnerHelperPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 1, null, 1);
-        this.abductionNumberSpinner = new JSpinner(spinnerModel);
-        this.abductionNumberSpinner.setToolTipText(SETTINGS_SPINNER_TOOLTIP);
-        this.abductionNumberSpinner.setMaximumSize(new Dimension(500, this.abductionNumberSpinner.getPreferredSize().height));
-        spinnerHelperPanel.add(this.abductionNumberSpinner);
-        spinnerHelperPanel.add(Box.createGlue());
-        this.settingsHolderPanel.add(spinnerHelperPanel);
-//        this.settingsHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.settingsHolderPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(), "Settings:"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
     }
 
     /**
@@ -187,7 +162,7 @@ abstract public class AbstractAbductionSolver<Result>
 
     @Override
     public Component getSettingsComponent() {
-        return this.settingsHolderPanel;
+        return null;
     }
 
     @Override
@@ -385,7 +360,7 @@ abstract public class AbstractAbductionSolver<Result>
     }
 
     protected List<Set<OWLAxiom>> createHypothesesListFromStream(){
-        int resultNumber = (int) this.abductionNumberSpinner.getValue();
+        int resultNumber = this.preferencesManager.loadMaximumHypothesisNumber();
         this.logger.debug("Trying to show {} results of abduction generation process", resultNumber);
         List<Set<OWLAxiom>> hypotheses = new ArrayList<>();
         int idx = 0;

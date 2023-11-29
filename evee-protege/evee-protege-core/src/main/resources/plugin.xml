@@ -44,6 +44,12 @@
         <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesUI"/>
     </extension>
 
+    <extension id="AbductionSolverGeneralPreferences"
+               point="de.tu_dresden.inf.lat.evee.nonEntailment_preferences">
+        <label value="General - Abduction"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionGeneralPreferencesUI"/>
+    </extension>
+
 <!--    <extension id="NonEntailmentViewComponent"-->
 <!--               point="xmlDocuments.NonEntailmentDefaultTab.xml">-->
 <!--        <label value="Example View Component"/>-->

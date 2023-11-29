@@ -551,15 +551,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutBottomButtonHolderPanel.setLayout(
                 new BoxLayout(this.alternativeLayoutBottomButtonHolderPanel, BoxLayout.PAGE_AXIS));
         this.alternativeLayoutBottomButtonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
-        ArrayList<JButton> buttonList = new ArrayList<>();
-        JButton addMissingEntailmentSignatureButton =
-                UIUtilities.createNamedButton(ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
-                        ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
-                        ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
-        buttonList.add(addMissingEntailmentSignatureButton);
-        JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList);
-        this.alternativeLayoutBottomButtonHolderPanel.add(firstButtonRowPanel);
         if (! this.preferencesManager.loadUseSimpleMode()){
+            ArrayList<JButton> buttonList = new ArrayList<>();
+            JButton addMissingEntailmentSignatureButton =
+                    UIUtilities.createNamedButton(
+                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
+                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
+                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
+            buttonList.add(addMissingEntailmentSignatureButton);
+            JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList);
+            this.alternativeLayoutBottomButtonHolderPanel.add(firstButtonRowPanel);
             this.alternativeLayoutBottomButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             buttonList.clear();
             JButton loadSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_LOAD_SIGNATURE_COMMAND,

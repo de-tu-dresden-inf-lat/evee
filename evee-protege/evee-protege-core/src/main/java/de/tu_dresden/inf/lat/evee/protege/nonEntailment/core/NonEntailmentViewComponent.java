@@ -579,9 +579,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     @Override
-    public void handlePreferenceChange(GeneralPreferencesChangeEventType eventType) {
+    public void handlePreferenceChange(GeneralPreferencesChangeEvent event) {
         SwingUtilities.invokeLater(() -> {
-            switch (eventType){
+            switch (event.getType()){
                 case LAYOUT_CHANGE:
                     this.resetMainComponent();
                     this.repaintComponents();
