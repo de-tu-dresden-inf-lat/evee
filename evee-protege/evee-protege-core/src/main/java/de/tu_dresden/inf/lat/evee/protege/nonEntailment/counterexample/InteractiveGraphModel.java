@@ -111,7 +111,7 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
                     graphModelComponent.update(graphView);
                     graphViewService.doPostProcessing();
                 } catch (ModelGenerationException | InconsistentOntologyException e) {
-                    JOptionPane.showMessageDialog(new JPanel(), "Adding Disjointnesses causes the following problem: "+e.getMessage(), "Error", 0);
+                    JOptionPane.showMessageDialog(new JPanel(), "Adding disjointnesses causes the following problem: "+e.getMessage(), "Error", 0);
                 }
                 return null;
             }

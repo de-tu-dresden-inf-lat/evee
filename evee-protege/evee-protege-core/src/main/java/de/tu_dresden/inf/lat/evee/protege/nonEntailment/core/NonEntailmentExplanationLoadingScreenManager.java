@@ -114,11 +114,11 @@ public class NonEntailmentExplanationLoadingScreenManager implements
                 e -> this.cancelGeneration());
         holderPanel.add(cancelButton);
         this.loadingScreen.getContentPane().add(holderPanel);
-        this.loadingScreen.setVisible(false);
-        this.loadingScreen.setMinimumSize(new Dimension(600, 150));
         this.loadingScreen.pack();
-        this.loadingScreen.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace())));
+        this.loadingScreen.setMinimumSize(new Dimension(600, 150));
+        this.loadingScreen.setVisible(false);
+        this.loadingScreen.setLocationRelativeTo(
+                ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace()));
         this.loadingScreen.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         this.loadingScreen.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -154,11 +154,11 @@ public class NonEntailmentExplanationLoadingScreenManager implements
         cancelPanel.add(cancellationScreenProgressLabel, BorderLayout.CENTER);
         cancelPanel.add(cancellationScreenProgressBar);
         this.cancellationScreen.getContentPane().add(cancelPanel);
-        this.cancellationScreen.setPreferredSize(new Dimension(600, 100));
         this.cancellationScreen.pack();
-        this.cancellationScreen.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                ProtegeManager.getInstance().getFrame(
-                        this.owlEditorKit.getWorkspace())));
+        this.cancellationScreen.setVisible(false);
+        this.cancellationScreen.setSize(600, 100);
+        this.cancellationScreen.setLocationRelativeTo(
+                ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace()));
         this.logger.debug("Resetting cancellation screen completed");
     }
 

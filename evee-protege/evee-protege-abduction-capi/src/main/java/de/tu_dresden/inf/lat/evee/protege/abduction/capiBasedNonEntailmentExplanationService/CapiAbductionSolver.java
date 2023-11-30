@@ -550,8 +550,9 @@ public class CapiAbductionSolver
             JDialog warningDialog = warningPane.createDialog(ProtegeManager.getInstance().getFrame(
                     this.owlEditorKit.getWorkspace()), "Warning");
             warningDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            warningDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace())));
+            warningDialog.pack();
+            warningDialog.setLocationRelativeTo(
+                    ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace()));
             warningDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             warningDialog.addWindowListener(new java.awt.event.WindowAdapter(){
                 @Override
@@ -560,8 +561,8 @@ public class CapiAbductionSolver
                         windowEvent.getWindow().dispose();
                         JFileChooser fileChooser = new JFileChooser();
                         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                        int result = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(
-                                ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
+                        int result = fileChooser.showOpenDialog(
+                                ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace()));
                         if (result == JFileChooser.APPROVE_OPTION){
                             File file = fileChooser.getSelectedFile();
                             preferencesManager.saveSpassPath(file.getPath());

@@ -803,8 +803,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         filterWarningDialog.getContentPane().add(filterWarningPanel);
         filterWarningDialog.pack();
 //        filterWarningDialog.setSize(600, 150);
-        filterWarningDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace())));
+        filterWarningDialog.setLocationRelativeTo(
+                ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace()));
         filterWarningDialog.setVisible(true);
     }
 

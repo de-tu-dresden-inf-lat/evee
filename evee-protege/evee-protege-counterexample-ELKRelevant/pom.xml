@@ -49,23 +49,12 @@
         <!--        evee-related-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-data-owlapi4</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>counterExampleProvider-owlapi4</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 

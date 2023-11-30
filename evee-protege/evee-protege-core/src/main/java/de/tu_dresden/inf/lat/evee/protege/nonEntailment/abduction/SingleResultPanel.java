@@ -178,8 +178,9 @@ public class SingleResultPanel extends JPanel
             JDialog msgDialog = msgPane.createDialog(ProtegeManager.getInstance().getFrame(
                     owlEditorKit.getWorkspace()), "Added to ontology");
             msgDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            msgDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
+            msgDialog.pack();
+            msgDialog.setLocationRelativeTo(
+                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace()));
             msgDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             msgDialog.setVisible(true);
         }
