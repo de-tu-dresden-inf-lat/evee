@@ -3,12 +3,16 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListe
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLNonEntailmentExplainer;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.GraphStyleSheets;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphViewService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IInteractiveComponent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import org.apache.log4j.Logger;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -24,7 +28,8 @@ import java.util.stream.Stream;
 import static org.semanticweb.owlapi.model.parameters.OntologyCopy.DEEP;
 
 abstract public class AbstractCounterexampleGenerationService
-        implements INonEntailmentExplanationService<OWLIndividualAxiom> {
+        implements INonEntailmentExplanationService<OWLIndividualAxiom>,
+        IPreferencesChangeListener {
 
     protected String supportsExplanationMessage;
     protected OWLEditorKit owlEditorKit;
@@ -34,18 +39,22 @@ abstract public class AbstractCounterexampleGenerationService
     protected Set<OWLAxiom> observation;
     protected OWLOntology activeOntology;
     protected OWLOntology workingCopy;
+    protected boolean simpleMode;
     protected IInteractiveComponent interactiveGraphModel;
     protected IOWLCounterexampleGenerator counterexampleGenerator;
     protected OWLOntologyManager man;
     private final Logger logger = Logger.getLogger(AbstractCounterexampleGenerationService.class);
     protected IProgressTracker progressTracker;
     protected boolean computationSuccessful = false;
+    protected final NonEntailmentGeneralPreferencesManager preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
 
     public AbstractCounterexampleGenerationService() {
         this.observation = new HashSet<>();
         this.errorMessage = "";
         this.supportsExplanationMessage = "Please enter some observation containing a single OWLSubClassOfAxiom";
         this.man = OWLManager.createOWLOntologyManager();
+        this.preferencesManager.registerPreferencesChangeListener(this);
+        this.simpleMode = preferencesManager.loadUseSimpleMode();
     }
 
     public void computeExplanation() {
@@ -76,6 +85,13 @@ abstract public class AbstractCounterexampleGenerationService
             throw new RuntimeException(e);
         }
         ((IOWLNonEntailmentExplainer<OWLIndividualAxiom>) counterexampleGenerator).setOntology(workingCopy);
+    }
+    @Override
+    public void handlePreferenceChange(GeneralPreferencesChangeEvent event) {
+        if(event.isType(GeneralPreferencesChangeEventType.SIMPLE_MODE_CHANGE)) {
+            simpleMode = preferencesManager.loadUseSimpleMode();
+        }
+
     }
     @Override
     public void setObservation(Set<OWLAxiom> owlAxioms) {
@@ -123,6 +139,7 @@ abstract public class AbstractCounterexampleGenerationService
     }
     @Override
     public void addProgressTracker(IProgressTracker tracker) {
+        this.counterexampleGenerator.addProgressTracker(tracker);
         this.progressTracker = tracker;
     }
 
@@ -152,7 +169,8 @@ abstract public class AbstractCounterexampleGenerationService
                         workingCopy,
                         observationAxiom,
                         owlEditorKit,
-                        viewComponentListener
+                        viewComponentListener,
+                        simpleMode
                         );
                 computationSuccessful = true;
 

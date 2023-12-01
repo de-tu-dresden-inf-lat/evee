@@ -1,6 +1,8 @@
 package de.tu_dresden.inf.lat.evee.smallmodelgenerator;
 
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IHasProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
  * the generator uses the existing individual names when creating successors for individual names belonging to existential restrictions.
  * This class ignores axioms more expressive than those supported by EL
  */
-public class ELSmallModelGenerator implements IOWLModelGenerator {
+public class ELSmallModelGenerator implements IOWLModelGenerator, IHasProgressTracker {
     private final Logger logger = LoggerFactory.getLogger(ELSmallModelGenerator.class);
     private final OWLReasonerFactory rf= new ReasonerFactory();
     private final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -37,6 +39,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     private OWLReasoner res;
     private boolean makesChange;
     private boolean SubsumptionRuleMakesChange;
+    private IProgressTracker progressTracker;
 
     public void avoidEntailment(OWLIndividualAxiom entailment) {
         avoidedEntailments.add(entailment);
@@ -58,6 +61,14 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
 
     public ELSmallModelGenerator(boolean treeModel,
                                  Set<OWLIndividualAxiom> avoidedEntailments,
+                                 IProgressTracker progressTracker) {
+        this.avoidedEntailments = avoidedEntailments;
+        this.treeModel = treeModel;
+        this.progressTracker = progressTracker;
+    }
+
+    public ELSmallModelGenerator(boolean treeModel,
+                                 Set<OWLIndividualAxiom> avoidedEntailments,
                                  int maxDepth) {
         this.maxDepth = maxDepth;
         this.avoidedEntailments = avoidedEntailments;
@@ -74,7 +85,7 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
     }
 
 
-
+    @Override
     public void setOntology(OWLOntology ont) {
         Set<OWLAxiom> Axioms = ont.getAxioms(Imports.INCLUDED).stream().collect(Collectors.toSet());
         OWLOntology ontology = null;
@@ -112,8 +123,16 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
         this.avoidedEntHolds = false;
         this.indClassExprMap = new HashMap<>();
     }
+    @Override
+    public void addProgressTracker(IProgressTracker tracker) {
+        this.progressTracker = tracker;
+    }
 
     private void getModel() {
+        if(progressTracker != null) {
+            progressTracker.setMessage("Generating model");
+            progressTracker.setMax(countNumberOfSteps());
+        }
         while (makesChange) {
             makesChange = false;
             applyConjunctionRule();
@@ -124,6 +143,9 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                 makesChange = false;
                 applyAddExRestrictionRule();
                 applySubsumptionRule();
+                if (progressTracker!= null) {
+                    progressTracker.increment();
+                }
             }
             makesChange = buf;
             if (!consistent || avoidedEntHolds) {
@@ -253,6 +275,11 @@ public class ELSmallModelGenerator implements IOWLModelGenerator {
                                 });
                     });
         }
+    }
+
+    private long countNumberOfSteps() {
+        return ont.getAxioms().stream().filter(ax -> ax.isOfType(AxiomType.SUBCLASS_OF))
+                .count()/100;
     }
     private void initializeDepthMap() {
         ont.getIndividualsInSignature().forEach(ind -> depthMap.put(ind,0));

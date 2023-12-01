@@ -3,15 +3,18 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.SubsumptionHoldsException;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLModelGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.ControlPanel;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.GraphModelComponent;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.SimpleControlPanel;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.MappingUtils;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.ReasoningUtils;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.*;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import org.apache.log4j.Logger;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -26,7 +29,8 @@ import java.util.stream.Collectors;
 /**
  * The `InteractiveGraphModel` class represents a model of an ontology that is interactive, meaning it can be displayed to the user, and the user can interact with it. This class is used for ontology analysis as well as visualizing counterexamples.
  */
-public class InteractiveGraphModel implements IInteractiveComponent, ICounterexampleGenerationEventListener {
+public class InteractiveGraphModel implements IInteractiveComponent,
+        ICounterexampleGenerationEventListener, IExplanationGenerator<Void> {
     private final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
     private final OWLOntology ontology;
     private final IOWLCounterexampleGenerator modelGenerator;
@@ -59,7 +63,8 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
                                  OWLOntology ontology,
                                  OWLSubClassOfAxiom observation,
                                  OWLEditorKit owlEditorKit,
-                                 IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener)
+                                 IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener,
+                                 boolean simpleMode)
             throws ModelGenerationException, SubsumptionHoldsException {
         this.owlEditorKit = owlEditorKit;
         this.ontology = ontology;
@@ -73,7 +78,11 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
         this.graphViewService = graphViewService;
         computeModel();
         logger.debug("model: "+ this.model);
-        this.controlPanel = new ControlPanel(owlEditorKit);
+        if(simpleMode) {
+            this.controlPanel = new SimpleControlPanel(owlEditorKit);
+        } else {
+            this.controlPanel = new ControlPanel(owlEditorKit);
+        }
         this.controlPanel.addCounterexampleGenerationEventListener(this);
         this.graphView = graphViewService.computeView(model,
                 ontology,
@@ -103,9 +112,11 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
         Set<OWLAxiom> additionalAxioms = source.getAdditionalAxioms();
         currentLabelsNum = source.getCurrentLabelsNum();
         SwingWorker modelRecomputeWorker = new SwingWorker() {
+
             @Override
-            protected Void doInBackground() throws Exception {
+            protected Void doInBackground(){
                 try {
+
                     recomputeModel(additionalAxioms);
                     recomputeGraphView();
                     graphModelComponent.update(graphView);
@@ -181,5 +192,13 @@ public class InteractiveGraphModel implements IInteractiveComponent, ICounterexa
     }
 
 
+    @Override
+    public Void getResult() {
+        return null;
+    }
 
+    @Override
+    public String getErrorMessage() {
+        return null;
+    }
 }
