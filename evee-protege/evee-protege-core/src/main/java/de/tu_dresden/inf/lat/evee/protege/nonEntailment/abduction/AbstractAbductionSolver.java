@@ -166,7 +166,8 @@ abstract public class AbstractAbductionSolver<Result>
     }
 
     @Override
-    public void registerListener(IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
+    public void registerListener(
+            IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
         this.viewComponentListener = listener;
     }
 

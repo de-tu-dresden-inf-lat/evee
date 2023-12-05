@@ -33,13 +33,13 @@ public class SingleResultPanel extends JPanel
     private IAbductionSolverSingleResultPanelEventListener singleResultPanelEventListener;
     private final OWLEditorKit owlEditorKit;
     protected static final String ADD_TO_ONTO_COMMAND = "ADD_TO_ONTO";
-    protected static final String ADD_TO_ONTO_NAME = "Add to Ontology";
+    protected static final String ADD_TO_ONTO_NAME = "Add to ontology";
     protected static final String ADD_TO_ONTO_TOOLTIP = "Adds the axioms of this result to the ontology";
     protected static final String EXPLAIN_COMMAND = "EXPLAIN";
     protected static final String EXPLAIN_NAME = "Explain";
     protected static final String EXPLAIN_TOOLTIP = "Show an explanation for the missing entailment";
     protected static final String FORBID_SIGNATURE_COMMAND = "FORBID_SIGNATURE";
-    protected static final String FORBID_SIGNATURE_NAME = "Forbid signature";
+    protected static final String FORBID_SIGNATURE_NAME = "Forbid vocabulary";
     protected static final String FORBID_SIGNATURE_TOOLTIP = "Adds the signature of this explanation ";
     private HypothesisFrameList hypothesisFrameList = null;
     private ISignatureModificationEventListener resultManagerSignatureModificationEventListener;
@@ -270,17 +270,6 @@ public class SingleResultPanel extends JPanel
         }
 
         private void forbidSignature(){
-            int idx = hypothesisIndex + 1;
-            String msgString = "Signature of hypothesis " + idx +
-                    " has been added to forbidden signature.";
-            JOptionPane msgPane = new JOptionPane(msgString, JOptionPane.INFORMATION_MESSAGE);
-            JDialog msgDialog = msgPane.createDialog(ProtegeManager.getInstance().getFrame(
-                    owlEditorKit.getWorkspace()), "Added to ontology");
-            msgDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            msgDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
-            msgDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            msgDialog.setVisible(true);
             this.signatureModificationEventListener.handleSignatureModificationEvent(
                     new SignatureModificationEvent(this.resultSignature));
         }

@@ -84,7 +84,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JLabel filterWarningLabel;
     protected NonEntailmentExplanationLoadingScreenManager loadingUI;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
-    private static final String COMPUTE_NAME = "Generate Explanation";
+    private static final String COMPUTE_NAME = "Generate explanation";
     private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected vocabulary and missing entailment";
     private static final String ADD_MISSING_ENTAILMENT_COMMAND = "ADD_MISSING_ENTAILMENT";
     private static final String ADD_MISSING_ENTAILMENT_NAME = "Add";
@@ -201,7 +201,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             idx = this.signatureAndMissingEntailmentTabbedPane.getSelectedIndex();
         }
         this.signatureAndMissingEntailmentTabbedPane = new JTabbedPane();
-        this.signatureAndMissingEntailmentTabbedPane.addTab("Missing Entailment", this.missingEntailmentManagementPanel);
+        this.signatureAndMissingEntailmentTabbedPane.addTab("Missing entailment", this.missingEntailmentManagementPanel);
         this.resetSignatureSelectionComponent();
         this.signatureAndMissingEntailmentTabbedPane.addTab("Vocabulary", this.signatureManagementPanel);
         this.signatureAndMissingEntailmentTabbedPane.setSelectedIndex(idx);
@@ -353,7 +353,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         missingEntailmentEditorPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Enter Missing Entailment:"),
+                        "Enter missing entailment:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         return missingEntailmentEditorPanel;
     }
@@ -599,6 +599,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     @Override
     public void handleSignatureModificationEvent(SignatureModificationEvent event) {
         Set<OWLEntity> additionalSignatureNames = event.getAdditionalSignatureNames();
+        this.signatureAndMissingEntailmentTabbedPane.setSelectedIndex(1);
         this.signatureSelectionUI.addNamesToSignature(additionalSignatureNames);
     }
 

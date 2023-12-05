@@ -391,9 +391,9 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.standardLayoutForbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         this.standardLayoutVocabularyTabbedPane = new JTabbedPane();
 //        this.vocabularyTabbedPane.setPreferredSize(new Dimension(400, 400));
-        this.standardLayoutVocabularyTabbedPane.addTab("Permitted Vocabulary",
+        this.standardLayoutVocabularyTabbedPane.addTab("Permitted vocabulary",
                 ComponentFactory.createScrollPane(this.standardLayoutPermittedVocabularyList));
-        this.standardLayoutVocabularyTabbedPane.addTab("Forbidden Vocabulary",
+        this.standardLayoutVocabularyTabbedPane.addTab("Forbidden vocabulary",
                 ComponentFactory.createScrollPane(this.standardLayoutForbiddenVocabularyList));
         this.standardLayoutVocabularyTabbedPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
@@ -1001,6 +1001,10 @@ private void loadSignatureAction(){
                 this.alternativeLayoutPermittedIndividualsListModel.removeElement(newIndividualName);
             }
         });
+        if (this.preferencesManager.loadSignatureComponentLayout().equals(
+                NonEntailmentGeneralPreferencesManager.STANDARD_LAYOUT)){
+            this.standardLayoutVocabularyTabbedPane.setSelectedIndex(1);
+        }
     }
 
     public void resetVocabularyManagementPanel() {
@@ -1019,7 +1023,8 @@ private void loadSignatureAction(){
         @Override
         public void handleChange(OWLModelManagerChangeEvent changeEvent) {
             SwingUtilities.invokeLater(() -> {
-                if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) || changeEvent.isType(EventType.ONTOLOGY_RELOADED)){
+                if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
+                        changeEvent.isType(EventType.ONTOLOGY_RELOADED)){
 //                    ontology signature component:
                     standardLayoutOntologyIndividualsListModel.removeAll();
                     standardLayoutOntologyIndividualsListModel.addElements(
