@@ -139,11 +139,11 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         }
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.createGeneralSettingsComponent();
-        this.nonEntailmentExplainerManager.setExplanationService(
-                (String) this.serviceNamesComboBox.getSelectedItem());
         this.resetSignatureSelectionComponent();
         this.createMissingEntailmentManagementComponent();
         this.resetMainComponent();
+        this.nonEntailmentExplainerManager.setExplanationService(
+                (String) this.serviceNamesComboBox.getSelectedItem());
         this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
         this.checkComputeButtonAndWarningLabelStatus();
@@ -481,6 +481,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             this.filterWarningLabel.setText("");
             this.resetResultComponent();
             this.checkComputeButtonAndWarningLabelStatus();
+            this.signatureSelectionUI.resetSelectedSignature();
         }
         else{
             switch (e.getActionCommand()){
@@ -489,15 +490,19 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                     break;
                 case ADD_MISSING_ENTAILMENT_COMMAND:
                     this.addMissingEntailment();
+                    this.signatureSelectionUI.resetSelectedSignature();
                     break;
                 case DELETE_MISSING_ENTAILMENT_COMMAND:
                     this.deleteMissingEntailment();
+                    this.signatureSelectionUI.resetSelectedSignature();
                     break;
                 case RESET_MISSING_ENTAILMENT_COMMAND:
                     this.resetMissingEntailment();
+                    this.signatureSelectionUI.resetSelectedSignature();
                     break;
                 case LOAD_MISSING_ENTAILMENT_COMMAND:
                     this.loadMissingEntailment();
+                    this.signatureSelectionUI.resetSelectedSignature();
                     break;
                 case SAVE_MISSING_ENTAILMENT_COMMAND:
                     this.saveMissingEntailment();

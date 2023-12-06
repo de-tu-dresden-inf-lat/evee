@@ -1014,6 +1014,10 @@ private void loadSignatureAction(){
         this.createAlternativeVocabularyManagementPanel();
     }
 
+    public void resetSelectedSignature(){
+        this.resetVocabularyListModels();
+    }
+
     private class SignatureOWLModelChangeListener implements OWLModelManagerListener {
 
         private SignatureOWLModelChangeListener(){
