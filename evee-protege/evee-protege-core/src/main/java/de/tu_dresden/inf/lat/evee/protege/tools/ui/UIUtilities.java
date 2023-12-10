@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.tools.ui;
 
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +58,12 @@ public class UIUtilities {
         button.setActionCommand(actionCommand);
         button.setToolTipText(tooltip);
         button.addActionListener(listener);
-        Icon icon = new ImageIcon(url);
-        button.setIcon(icon);
+        ImageIcon icon = new ImageIcon(url);
+        OWLRendererPreferences preferences = OWLRendererPreferences.getInstance();
+//        negative number used to keep aspect ratio
+        Image image = icon.getImage().getScaledInstance(-1,
+                (int) (preferences.getFontSize() * 1.5), Image.SCALE_SMOOTH);
+        button.setIcon(new ImageIcon(image));
         return button;
     }
 

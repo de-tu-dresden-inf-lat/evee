@@ -46,7 +46,7 @@
 
     <extension id="AbductionSolverGeneralPreferences"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_preferences">
-        <label value="General - Abduction"/>
+        <label value="Abduction (General)"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionGeneralPreferencesUI"/>
     </extension>
 
