@@ -267,6 +267,29 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private void resetHolderPanel(){
         this.logger.debug("Resetting main holder panel");
         this.holderPanel = new JPanel(new GridBagLayout());
+//        for resizing of arrow-buttons on change of font via Protégé preferences
+        this.holderPanel.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                holderPanel.revalidate();
+                holderPanel.repaint();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent ignored) {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent ignored) {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent ignored) {
+
+            }
+        });
         GridBagConstraints constraints = new GridBagConstraints();
 //        general constraints:
         constraints.insets = this.STANDARD_INSETS;
