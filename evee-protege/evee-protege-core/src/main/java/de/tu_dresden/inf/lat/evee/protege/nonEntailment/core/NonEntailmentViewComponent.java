@@ -251,16 +251,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 this.signatureAndMissingEntailmentComponent,
                 this.nonEntailmentExplanationServiceComponent);
-
-//        this.horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
-//                new PropertyChangeListener() {
-//            @Override
-//            public void propertyChange(PropertyChangeEvent evt) {
-//                logger.debug("TEST_MESSAGE: received a propertyChangeEvent for movement of divider");
-//                nonEntailmentExplanationServiceComponent.revalidate();
-//                nonEntailmentExplanationServiceComponent.repaint();
-//            }
-//        });
         this.horizontalSplitPane.setDividerLocation(0.3);
     }
 

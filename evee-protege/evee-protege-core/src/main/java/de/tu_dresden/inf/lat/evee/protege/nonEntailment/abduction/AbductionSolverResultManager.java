@@ -7,6 +7,7 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAb
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
+import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
@@ -30,6 +31,7 @@ public class AbductionSolverResultManager implements
     private OWLEditorKit owlEditorKit;
     private JPanel resultHolderPanel;
     private JPanel resultScrollingPanel;
+    private JScrollPane resultScrollPane;
     private boolean ignoreOntologyChangeEvent = false;
     private ISignatureModificationEventListener signatureModificationEventListener;
     private int hypothesisIndex;
@@ -83,9 +85,8 @@ public class AbductionSolverResultManager implements
         this.resultHolderPanel = new JPanel(new BorderLayout());
         this.resultScrollingPanel = new JPanel();
         this.resultScrollingPanel.setLayout(new BoxLayout(this.resultScrollingPanel, BoxLayout.PAGE_AXIS));
-        JScrollPane resultScrollPane = new JScrollPane();
-        resultScrollPane.setViewportView(this.resultScrollingPanel);
-        this.resultHolderPanel.add(resultScrollPane);
+        this.resultScrollPane = ComponentFactory.createScrollPane(this.resultScrollingPanel);
+        this.resultHolderPanel.add(this.resultScrollPane, BorderLayout.CENTER);
         this.resultHolderPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
