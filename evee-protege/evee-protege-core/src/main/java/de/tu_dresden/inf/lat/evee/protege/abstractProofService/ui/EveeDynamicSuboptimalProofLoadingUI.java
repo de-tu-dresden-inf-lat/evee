@@ -45,8 +45,8 @@ public class EveeDynamicSuboptimalProofLoadingUI extends EveeDynamicProofLoading
             subOptimalProofMessageDialog.getContentPane().add(subOptimalProofMessagePanel);
             subOptimalProofMessageDialog.pack();
             subOptimalProofMessageDialog.setSize(600, 150);
-            subOptimalProofMessageDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                            ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
+            subOptimalProofMessageDialog.setLocationRelativeTo(
+                            ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
             subOptimalProofMessageDialog.setVisible(true);
         });
     }

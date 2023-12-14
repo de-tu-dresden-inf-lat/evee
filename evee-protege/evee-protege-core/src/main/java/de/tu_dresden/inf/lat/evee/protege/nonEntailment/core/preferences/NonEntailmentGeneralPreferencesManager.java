@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.VocabularyTab;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import org.protege.editor.core.prefs.Preferences;
 import org.protege.editor.core.prefs.PreferencesManager;
@@ -110,13 +111,15 @@ public class NonEntailmentGeneralPreferencesManager {
 
     private void informListenersOfLayoutChange(){
         for (IPreferencesChangeListener changeListener : changeListeners){
-            changeListener.handlePreferenceChange(GeneralPreferencesChangeEventType.LAYOUT_CHANGE);
+            changeListener.handlePreferenceChange(
+                    new GeneralPreferencesChangeEvent(GeneralPreferencesChangeEventType.LAYOUT_CHANGE));
         }
     }
 
     private void informListenersOfSimpleModeChange(){
         for (IPreferencesChangeListener changeListener : changeListeners){
-            changeListener.handlePreferenceChange(GeneralPreferencesChangeEventType.SIMPLE_MODE_CHANGE);
+            changeListener.handlePreferenceChange(
+                    new GeneralPreferencesChangeEvent(GeneralPreferencesChangeEventType.SIMPLE_MODE_CHANGE));
         }
     }
 

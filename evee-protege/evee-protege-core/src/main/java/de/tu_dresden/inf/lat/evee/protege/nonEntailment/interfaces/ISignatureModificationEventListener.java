@@ -4,6 +4,6 @@ import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.SignatureModificat
 
 public interface ISignatureModificationEventListener {
 
-    void handleSignatureModificationEvent (SignatureModificationEvent event);
+    void handleSignatureModificationEvent(SignatureModificationEvent event);
 
 }

@@ -4,13 +4,13 @@
 
     <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.EL.ELCounterexampleGenerationServiceSmallModel"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
-        <name value="Small Model Counterexample"/>
+        <name value="Small Counterexample"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.EL.ELCounterexampleGenerationServiceSmallModel"/>
     </extension>
 
     <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.EL.ELCounterexampleGenerationServiceTreeModel"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
-        <name value="Tree Model Counterexample"/>
+        <name value="Tree-shaped Counterexample"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.EL.ELCounterexampleGenerationServiceTreeModel"/>
     </extension>
 

@@ -57,7 +57,9 @@ public class NonEntailmentExplainerManager {
                 this.serviceMap.get(serviceName).dispose();
                 this.logger.debug("Service disposed: {}", serviceName);
             } catch (Exception ex) {
-                String msgString = "The following error occurred when disposing the Non-Entailment Explanation service '" + serviceName + "': ";
+                String msgString =
+                        "The following error occurred when disposing the Non-Entailment Explanation service '" +
+                                serviceName + "': ";
                 this.logger.error(msgString, ex);
             }
         }

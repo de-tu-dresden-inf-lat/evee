@@ -270,39 +270,39 @@ public class LetheAbductionSolver
         }
     }
 
-    @Override
-    protected void saveCache(){
-        super.saveCache();
-        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-        this.logger.debug("Saving cached filter warning for ontology " + ontology.getOntologyID().
-                getOntologyIRI().or(IRI.create("")));
-        this.savedFilterCache = this.cachedFilterWarnings.get(ontology);
-    }
+//    @Override
+//    protected void saveCache(){
+//        super.saveCache();
+//        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+//        this.logger.debug("Saving cached filter warning for ontology " + ontology.getOntologyID().
+//                getOntologyIRI().or(IRI.create("")));
+//        this.savedFilterCache = this.cachedFilterWarnings.get(ontology);
+//    }
 
-    @Override
-    protected void reinstateCache(){
-        super.reinstateCache();
-        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-        this.logger.debug("Reinstating cached filter warning for ontology " + ontology.getOntologyID().
-                getOntologyIRI().or(IRI.create("")));
-        this.cachedFilterWarnings.put(ontology, this.savedFilterCache);
-    }
+//    @Override
+//    protected void reinstateCache(){
+//        super.reinstateCache();
+//        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+//        this.logger.debug("Reinstating cached filter warning for ontology " + ontology.getOntologyID().
+//                getOntologyIRI().or(IRI.create("")));
+//        this.cachedFilterWarnings.put(ontology, this.savedFilterCache);
+//    }
 
-    @Override
-    protected void resetSavedCache(){
-        super.resetSavedCache();
-        this.logger.debug("Saved filter cache reset");
-        this.savedFilterCache = null;
-    }
+//    @Override
+//    protected void resetSavedCache(){
+//        super.resetSavedCache();
+//        this.logger.debug("Saved filter cache reset");
+//        this.savedFilterCache = null;
+//    }
 
-    @Override
-    protected void resetCache(){
-        super.resetCache();
-        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-        this.logger.debug("Resetting cached filter warning for ontology " + ontology.getOntologyID()
-                .getOntologyIRI().or(IRI.create("")));
-        this.cachedFilterWarnings.put(ontology, new AbductionCache<>());
-    }
+//    @Override
+//    protected void resetCache(){
+//        super.resetCache();
+//        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+//        this.logger.debug("Resetting cached filter warning for ontology " + ontology.getOntologyID()
+//                .getOntologyIRI().or(IRI.create("")));
+//        this.cachedFilterWarnings.put(ontology, new AbductionCache<>());
+//    }
 
     @Override
     public List<Set<OWLAxiom>> createHypothesesListFromStream(){

@@ -14,13 +14,8 @@ import java.util.Set;
 
 public class HypothesisFrameList extends OWLFrameList<Set<OWLAxiom>> {
 
-    public HypothesisFrameList(OWLEditorKit editorKit, OWLFrame<Set<OWLAxiom>> frame,
-                               Set<OWLEntity> resultSignature, ISignatureModificationEventListener listener) {
+    public HypothesisFrameList(OWLEditorKit editorKit, OWLFrame<Set<OWLAxiom>> frame) {
         super(editorKit, frame);
-        AddToForbiddenVocabularyPopupMenuAction<Set<OWLAxiom>> menuAction =
-                new AddToForbiddenVocabularyPopupMenuAction<>(resultSignature);
-        menuAction.registerSignatureModificationEventListener(listener);
-        this.addToPopupMenu(menuAction);
     }
 
     @Override

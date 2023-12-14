@@ -38,6 +38,8 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -82,7 +84,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JLabel filterWarningLabel;
     protected NonEntailmentExplanationLoadingScreenManager loadingUI;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
-    private static final String COMPUTE_NAME = "Generate Explanation";
+    private static final String COMPUTE_NAME = "Generate explanation";
     private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected vocabulary and missing entailment";
     private static final String ADD_MISSING_ENTAILMENT_COMMAND = "ADD_MISSING_ENTAILMENT";
     private static final String ADD_MISSING_ENTAILMENT_NAME = "Add";
@@ -137,11 +139,11 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         }
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.createGeneralSettingsComponent();
-        this.nonEntailmentExplainerManager.setExplanationService(
-                (String) this.serviceNamesComboBox.getSelectedItem());
         this.resetSignatureSelectionComponent();
         this.createMissingEntailmentManagementComponent();
         this.resetMainComponent();
+        this.nonEntailmentExplainerManager.setExplanationService(
+                (String) this.serviceNamesComboBox.getSelectedItem());
         this.getOWLEditorKit().getOWLModelManager().addListener(this.changeListener);
         this.getOWLEditorKit().getOWLModelManager().addOntologyChangeListener(this.changeListener);
         this.checkComputeButtonAndWarningLabelStatus();
@@ -199,7 +201,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             idx = this.signatureAndMissingEntailmentTabbedPane.getSelectedIndex();
         }
         this.signatureAndMissingEntailmentTabbedPane = new JTabbedPane();
-        this.signatureAndMissingEntailmentTabbedPane.addTab("Missing Entailment", this.missingEntailmentManagementPanel);
+        this.signatureAndMissingEntailmentTabbedPane.addTab("Missing entailment", this.missingEntailmentManagementPanel);
         this.resetSignatureSelectionComponent();
         this.signatureAndMissingEntailmentTabbedPane.addTab("Vocabulary", this.signatureManagementPanel);
         this.signatureAndMissingEntailmentTabbedPane.setSelectedIndex(idx);
@@ -250,12 +252,34 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 this.signatureAndMissingEntailmentComponent,
                 this.nonEntailmentExplanationServiceComponent);
         this.horizontalSplitPane.setDividerLocation(0.3);
-//        this.horizontalSplitPane.setBorder(BorderFactory.createLineBorder(Color.RED));
     }
 
     private void resetHolderPanel(){
         this.logger.debug("Resetting main holder panel");
         this.holderPanel = new JPanel(new GridBagLayout());
+//        for resizing of arrow-buttons on change of font via Protégé preferences
+        this.holderPanel.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                holderPanel.revalidate();
+                holderPanel.repaint();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent ignored) {
+
+            }
+
+            @Override
+            public void componentShown(ComponentEvent ignored) {
+
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent ignored) {
+
+            }
+        });
         GridBagConstraints constraints = new GridBagConstraints();
 //        general constraints:
         constraints.insets = this.STANDARD_INSETS;
@@ -342,7 +366,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         missingEntailmentEditorPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Enter Missing Entailment:"),
+                        "Enter missing entailment:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         return missingEntailmentEditorPanel;
     }
@@ -470,6 +494,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             this.filterWarningLabel.setText("");
             this.resetResultComponent();
             this.checkComputeButtonAndWarningLabelStatus();
+            this.signatureSelectionUI.resetSelectedSignature();
         }
         else{
             switch (e.getActionCommand()){
@@ -478,15 +503,19 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                     break;
                 case ADD_MISSING_ENTAILMENT_COMMAND:
                     this.addMissingEntailment();
+                    this.signatureSelectionUI.resetSelectedSignature();
                     break;
                 case DELETE_MISSING_ENTAILMENT_COMMAND:
                     this.deleteMissingEntailment();
+                    this.signatureSelectionUI.resetSelectedSignature();
                     break;
                 case RESET_MISSING_ENTAILMENT_COMMAND:
                     this.resetMissingEntailment();
+                    this.signatureSelectionUI.resetSelectedSignature();
                     break;
                 case LOAD_MISSING_ENTAILMENT_COMMAND:
                     this.loadMissingEntailment();
+                    this.signatureSelectionUI.resetSelectedSignature();
                     break;
                 case SAVE_MISSING_ENTAILMENT_COMMAND:
                     this.saveMissingEntailment();
@@ -568,9 +597,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     @Override
-    public void handlePreferenceChange(GeneralPreferencesChangeEventType eventType) {
+    public void handlePreferenceChange(GeneralPreferencesChangeEvent event) {
         SwingUtilities.invokeLater(() -> {
-            switch (eventType){
+            switch (event.getType()){
                 case LAYOUT_CHANGE:
                     this.resetMainComponent();
                     this.repaintComponents();
@@ -587,7 +616,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     @Override
     public void handleSignatureModificationEvent(SignatureModificationEvent event) {
-        Set<OWLEntity> additionalSignatureNames = event.getSource().getAdditionalSignatureNames();
+        Set<OWLEntity> additionalSignatureNames = event.getAdditionalSignatureNames();
+        this.signatureAndMissingEntailmentTabbedPane.setSelectedIndex(1);
         this.signatureSelectionUI.addNamesToSignature(additionalSignatureNames);
     }
 
@@ -792,8 +822,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         filterWarningDialog.getContentPane().add(filterWarningPanel);
         filterWarningDialog.pack();
 //        filterWarningDialog.setSize(600, 150);
-        filterWarningDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace())));
+        filterWarningDialog.setLocationRelativeTo(
+                ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace()));
         filterWarningDialog.setVisible(true);
     }
 

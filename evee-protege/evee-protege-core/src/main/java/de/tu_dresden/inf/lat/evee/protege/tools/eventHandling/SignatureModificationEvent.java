@@ -1,17 +1,19 @@
 package de.tu_dresden.inf.lat.evee.protege.tools.eventHandling;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventGenerator;
+import org.semanticweb.owlapi.model.OWLEntity;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SignatureModificationEvent {
 
-    private final ISignatureModificationEventGenerator source;
+    private final Set<OWLEntity> additionalSignatureNames;
 
-    public SignatureModificationEvent(ISignatureModificationEventGenerator source){
-        this.source = source;
+    public SignatureModificationEvent(Set<OWLEntity> additionalSignatureNames){
+        this.additionalSignatureNames = new HashSet<>(additionalSignatureNames);
     }
 
-    public ISignatureModificationEventGenerator getSource(){
-        return this.source;
+    public Set<OWLEntity> getAdditionalSignatureNames(){
+        return this.additionalSignatureNames;
     }
 
 }

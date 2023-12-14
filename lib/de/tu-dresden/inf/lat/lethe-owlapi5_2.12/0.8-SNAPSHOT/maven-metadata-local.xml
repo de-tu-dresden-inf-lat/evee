@@ -3,7 +3,7 @@
   <groupId>de.tu-dresden.inf.lat</groupId>
   <artifactId>lethe-owlapi5_2.12</artifactId>
   <versioning>
-    <lastUpdated>20230715170832</lastUpdated>
+    <lastUpdated>20231205175128</lastUpdated>
     <snapshot>
       <localCopy>true</localCopy>
     </snapshot>
@@ -11,12 +11,12 @@
       <snapshotVersion>
         <extension>jar</extension>
         <value>0.8-SNAPSHOT</value>
-        <updated>20230715170832</updated>
+        <updated>20231205175128</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
         <value>0.8-SNAPSHOT</value>
-        <updated>20230715170832</updated>
+        <updated>20231205175128</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>

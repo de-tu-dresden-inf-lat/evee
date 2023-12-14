@@ -2,9 +2,11 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverResultButtonEventListener;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.AbductionSolverResultButtonEvent;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ResultButtonEventType;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventListener;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.AbductionSolverSingleResultPanelEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.SingleResultPanelEventType;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.SignatureModificationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
@@ -23,47 +25,40 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.List;
 
-public class SingleResultPanel extends JPanel implements ISignatureModificationEventGenerator {
+public class SingleResultPanel extends JPanel
+        implements ISignatureModificationEventListener, ISignatureModificationEventGenerator,
+        IAbductionSolverSingleResultPanelEventGenerator {
 
-    private IAbductionSolverResultButtonEventListener resultButtonListener;
-    private JButton addButton, addAndProveButton, deleteButton;
+    private IAbductionSolverSingleResultPanelEventListener singleResultPanelEventListener;
     private final OWLEditorKit owlEditorKit;
-    private final List<ExplanationDialogPanel> openedDialogPanels;
     protected static final String ADD_TO_ONTO_COMMAND = "ADD_TO_ONTO";
-    protected static final String ADD_TO_ONTO_NAME = "Add to Ontology";
+    protected static final String ADD_TO_ONTO_NAME = "Add to ontology";
     protected static final String ADD_TO_ONTO_TOOLTIP = "Adds the axioms of this result to the ontology";
-    protected static final String ADD_TO_ONTO_AND_PROVE_COMMAND = "ADD_AND_PROVE";
-    protected static final String ADD_TO_ONTO_AND_PROVE_NAME = "Add to Ontology and prove";
-    protected static final String ADD_TO_ONTO_AND_PROVE_TOOLTIP = "Add the axioms of this result to the ontology and show a prove for the missing entailment";
-    protected static final String DELETE_FROM_ONTO_COMMAND = "DELETE_FROM_ONTO";
-    protected static final String DELETE_FROM_ONTO_NAME = "Delete from Ontology";
-    protected static final String DELETE_FROM_ONTO_TOOLTIP = "Delete the axioms of this result from the ontology";
+    protected static final String EXPLAIN_COMMAND = "EXPLAIN";
+    protected static final String EXPLAIN_NAME = "Explain";
+    protected static final String EXPLAIN_TOOLTIP = "Show an explanation for the missing entailment";
     protected static final String FORBID_SIGNATURE_COMMAND = "FORBID_SIGNATURE";
-    protected static final String FORBID_SIGNATURE_NAME = "Forbid signature";
+    protected static final String FORBID_SIGNATURE_NAME = "Forbid vocabulary";
     protected static final String FORBID_SIGNATURE_TOOLTIP = "Adds the signature of this explanation ";
     private HypothesisFrameList hypothesisFrameList = null;
-    private final Set<OWLEntity> resultSignature;
-    private ISignatureModificationEventListener signatureModificationEventListener;
+    private ISignatureModificationEventListener resultManagerSignatureModificationEventListener;
+    private SingleResultPanelButtonEventHandler singleResultPanelButtonEventHandler;
     private final Logger logger = LoggerFactory.getLogger(SingleResultPanel.class);
 
     public SingleResultPanel(OWLEditorKit owlEditorKit, OWLOntology ontology,
                              Set<OWLAxiom> missingEntailment, Set<OWLAxiom> result,
-                             int hypothesisIndex, ISignatureModificationEventListener listener) {
+                             int hypothesisIndex) {
         super(new BorderLayout());
         this.logger.debug("Creating single result panel");
         this.owlEditorKit = owlEditorKit;
-        this.openedDialogPanels = new ArrayList<>();
-        this.resultSignature = new HashSet<>();
-        result.forEach(axiom -> resultSignature.addAll(axiom.getSignature()));
         this.createUI(ontology, missingEntailment,
-                result, hypothesisIndex, listener);
+                result, hypothesisIndex);
         this.logger.debug("Single result panel created");
     }
 
     private void createUI(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
-                          Set<OWLAxiom> result, int hypothesisIndex, ISignatureModificationEventListener signatureModificationEventListener){
+                          Set<OWLAxiom> result, int hypothesisIndex){
         this.setLayout(new BorderLayout());
         this.setBorder(new CompoundBorder(
                 new EmptyBorder(5, 5, 5, 5),
@@ -72,37 +67,30 @@ public class SingleResultPanel extends JPanel implements ISignatureModificationE
 //        label and buttons at top
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
-//        JLabel label = new JLabel("Hypothesis " + (hypothesisIndex+1));
-//        buttonPanel.add(label);
         buttonPanel.add(Box.createHorizontalGlue());
-        this.addButton = UIUtilities.createNamedButton(
+        this.singleResultPanelButtonEventHandler =
+                new SingleResultPanelButtonEventHandler(
+                        ontology, missingEntailment, result, hypothesisIndex);
+        this.singleResultPanelButtonEventHandler.registerSignatureModificationEventListener(this);
+        JButton explainButton = UIUtilities.createNamedButton(
+                EXPLAIN_COMMAND, EXPLAIN_NAME, EXPLAIN_TOOLTIP,
+                this.singleResultPanelButtonEventHandler);
+        buttonPanel.add(explainButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(30, 0)));
+        JButton forbidSignatureButton = UIUtilities.createNamedButton(
+                FORBID_SIGNATURE_COMMAND, FORBID_SIGNATURE_NAME, FORBID_SIGNATURE_TOOLTIP,
+                this.singleResultPanelButtonEventHandler);
+        buttonPanel.add(forbidSignatureButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(30, 0)));
+        JButton addButton = UIUtilities.createNamedButton(
                 ADD_TO_ONTO_COMMAND, ADD_TO_ONTO_NAME, ADD_TO_ONTO_TOOLTIP,
-                new EditOntologyButtonListener(
-                ontology, missingEntailment,
-                        result, hypothesisIndex));
-        buttonPanel.add(this.addButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        EditOntologyButtonListener addAndProveListener = new EditOntologyButtonListener(
-                ontology, missingEntailment,
-                result, hypothesisIndex);
-        this.addAndProveButton = UIUtilities.createNamedButton(
-                ADD_TO_ONTO_AND_PROVE_COMMAND, ADD_TO_ONTO_AND_PROVE_NAME,
-                ADD_TO_ONTO_AND_PROVE_TOOLTIP, addAndProveListener);
-        buttonPanel.add(this.addAndProveButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        this.deleteButton = UIUtilities.createNamedButton(
-                DELETE_FROM_ONTO_COMMAND, DELETE_FROM_ONTO_NAME,
-                DELETE_FROM_ONTO_TOOLTIP, new EditOntologyButtonListener(
-                        ontology, missingEntailment,
-                        result, hypothesisIndex));
-        this.deleteButton.setEnabled(false);
-        buttonPanel.add(this.deleteButton);
+                this.singleResultPanelButtonEventHandler);
+        buttonPanel.add(addButton);
         this.add(buttonPanel, BorderLayout.PAGE_START);
 //        hypothesis
         String label = "Hypothesis " + (hypothesisIndex+1);
         HypothesisFrame frame = new HypothesisFrame(this.owlEditorKit, label);
-        this.hypothesisFrameList = new HypothesisFrameList(this.owlEditorKit, frame, this.resultSignature,
-                signatureModificationEventListener);
+        this.hypothesisFrameList = new HypothesisFrameList(this.owlEditorKit, frame);
         IgnoreSelectionModel selectionModel = new IgnoreSelectionModel();
         this.hypothesisFrameList.setSelectionModel(selectionModel);
         JPanel frameListHolderPanel = new JPanel(new BorderLayout());
@@ -110,51 +98,55 @@ public class SingleResultPanel extends JPanel implements ISignatureModificationE
         frame.setRootObject(result);
         JScrollPane singleResultScrollPane = new JScrollPane(frameListHolderPanel);
         this.add(singleResultScrollPane, BorderLayout.CENTER);
+//        bugfix for scrollbar appearing when horizontal divider moved to the right
+        this.hypothesisFrameList.setPreferredSize(new Dimension(0, 0));
     }
 
-    public void registerListener(IAbductionSolverResultButtonEventListener listener){
-        this.resultButtonListener = listener;
-    }
-
-    public void setAddButtonStatus(boolean newStatus){
-        this.addButton.setEnabled(newStatus);
-        this.addAndProveButton.setEnabled(newStatus);
-    }
 
     public void dispose(){
         if (this.hypothesisFrameList != null){
             this.hypothesisFrameList.dispose();
         }
-        for (ExplanationDialogPanel panel : this.openedDialogPanels){
-            panel.dispose();
+        if (this.singleResultPanelButtonEventHandler != null){
+            this.singleResultPanelButtonEventHandler.dispose();
         }
-        this.openedDialogPanels.clear();
     }
+
+    @Override
+    public void registerSingleResultPanelEventListener(IAbductionSolverSingleResultPanelEventListener listener){
+        this.singleResultPanelEventListener = listener;
+    }
+
 
     @Override
     public void registerSignatureModificationEventListener(ISignatureModificationEventListener listener) {
-        this.signatureModificationEventListener = listener;
+        this.resultManagerSignatureModificationEventListener = listener;
     }
 
     @Override
-    public Set<OWLEntity> getAdditionalSignatureNames() {
-        return this.resultSignature;
+    public void handleSignatureModificationEvent(SignatureModificationEvent event) {
+        this.resultManagerSignatureModificationEventListener.handleSignatureModificationEvent(event);
     }
 
-    private class EditOntologyButtonListener implements ActionListener {
+
+    private class SingleResultPanelButtonEventHandler implements ActionListener, ISignatureModificationEventGenerator {
 
         private final OWLOntology ontology;
         private final Set<OWLAxiom> missingEntailment;
-        private final Set<OWLAxiom> hypothesis;
+        private final Set<OWLAxiom> result;
         private final int hypothesisIndex;
+        private final Set<OWLEntity> resultSignature;
         private ExplanationDialogPanel explanationDialogPanel;
-        private final Logger logger = LoggerFactory.getLogger(EditOntologyButtonListener.class);
+        private ISignatureModificationEventListener signatureModificationEventListener;
+        private final Logger logger = LoggerFactory.getLogger(SingleResultPanelButtonEventHandler.class);
 
-        private EditOntologyButtonListener(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
-                                           Set<OWLAxiom> hypothesis, int index){
+        private SingleResultPanelButtonEventHandler(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
+                                                    Set<OWLAxiom> result, int index){
             this.ontology = ontology;
             this.missingEntailment = missingEntailment;
-            this.hypothesis = hypothesis;
+            this.result = result;
+            this.resultSignature = new HashSet<>();
+            result.forEach(axiom -> resultSignature.addAll(axiom.getSignature()));
             this.hypothesisIndex = index;
         }
 
@@ -162,25 +154,19 @@ public class SingleResultPanel extends JPanel implements ISignatureModificationE
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand()){
                 case ADD_TO_ONTO_COMMAND:
-                    deleteButton.setEnabled(true);
-                    resultButtonListener.handleEvent(
-                            new AbductionSolverResultButtonEvent(
-                                    ResultButtonEventType.ADD));
+                    singleResultPanelEventListener.handleEvent(
+                            new AbductionSolverSingleResultPanelEvent(
+                                    SingleResultPanelEventType.ADD));
                     this.addToOntology();
                     break;
-                case ADD_TO_ONTO_AND_PROVE_COMMAND:
-                    deleteButton.setEnabled(true);
-                    resultButtonListener.handleEvent(
-                            new AbductionSolverResultButtonEvent(
-                                    ResultButtonEventType.ADD_AND_PROVE));
-                    this.addAndProve();
+                case EXPLAIN_COMMAND:
+                    singleResultPanelEventListener.handleEvent(
+                            new AbductionSolverSingleResultPanelEvent(
+                                    SingleResultPanelEventType.EXPLAIN));
+                    this.explain();
                     break;
-                case DELETE_FROM_ONTO_COMMAND:
-                    deleteButton.setEnabled(false);
-                    resultButtonListener.handleEvent(
-                            new AbductionSolverResultButtonEvent(
-                                    ResultButtonEventType.DELETE));
-                    this.deleteFromOntology();
+                case FORBID_SIGNATURE_COMMAND:
+                    this.forbidSignature();
                     break;
             }
         }
@@ -188,34 +174,35 @@ public class SingleResultPanel extends JPanel implements ISignatureModificationE
         private void addToOntology(){
             this.logger.debug("Adding axioms of hypothesis {} to ontology", this.hypothesisIndex+1);
             this.add();
-            String msgString = "Added " + this.hypothesis.size() + " axioms of hypothesis "
+            String msgString = "Added " + this.result.size() + " axioms of hypothesis "
                     + (this.hypothesisIndex+1) + " to the ontology.";
             JOptionPane msgPane = new JOptionPane(msgString, JOptionPane.INFORMATION_MESSAGE);
             JDialog msgDialog = msgPane.createDialog(ProtegeManager.getInstance().getFrame(
                     owlEditorKit.getWorkspace()), "Added to ontology");
             msgDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            msgDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
+            msgDialog.pack();
+            msgDialog.setLocationRelativeTo(
+                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace()));
             msgDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             msgDialog.setVisible(true);
         }
 
-        private void addAndProve(){
+        private void explain(){
             this.logger.debug("Adding axioms of hypothesis {} to ontology and showing proof for missing entailment",
                     this.hypothesisIndex+1);
             this.add();
-            this.showProveDialog();
+            this.showExplanationDialog();
         }
 
         private void add(){
             this.logger.debug("The following axioms have been added:");
-            for (OWLAxiom axiom : this.hypothesis){
+            for (OWLAxiom axiom : this.result){
                 this.logger.debug(axiom.toString());
             }
-            this.ontology.getOWLOntologyManager().addAxioms(this.ontology, this.hypothesis);
+            this.ontology.getOWLOntologyManager().addAxioms(this.ontology, this.result);
         }
 
-        private void showProveDialog(){
+        private void showExplanationDialog(){
             JComboBox<OWLAxiom> missingEntailmentComboBox = new JComboBox<>(
                     new Vector<>(this.missingEntailment));
             missingEntailmentComboBox.setSelectedIndex(0);
@@ -223,7 +210,6 @@ public class SingleResultPanel extends JPanel implements ISignatureModificationE
                     owlEditorKit.getOWLModelManager().getExplanationManager(),
                     (OWLAxiom) missingEntailmentComboBox.getSelectedItem());
             missingEntailmentComboBox.addActionListener(this.explanationDialogPanel);
-            openedDialogPanels.add(explanationDialogPanel);
             JPanel explanationHolderPanel = new JPanel();
             this.explanationDialogPanel.refreshPanel();
             explanationHolderPanel.setLayout(new BoxLayout(
@@ -246,52 +232,50 @@ public class SingleResultPanel extends JPanel implements ISignatureModificationE
             dialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    openedDialogPanels.remove(explanationDialogPanel);
                     explanationDialogPanel.dispose();
                     explanationDialogPanel = null;
+                    singleResultPanelEventListener.handleEvent(
+                            new AbductionSolverSingleResultPanelEvent(
+                                    SingleResultPanelEventType.EXPLANATION_DIALOG_CLOSED));
+                    ontology.getOWLOntologyManager().removeAxioms(ontology, result);
                 }
             });
             dialog.addComponentListener(new ComponentAdapter() {
                 @Override
                 public void componentHidden(ComponentEvent e) {
-                    openedDialogPanels.remove(explanationDialogPanel);
                     explanationDialogPanel.dispose();
                     explanationDialogPanel = null;
+                    singleResultPanelEventListener.handleEvent(
+                            new AbductionSolverSingleResultPanelEvent(
+                                    SingleResultPanelEventType.EXPLANATION_DIALOG_CLOSED));
+                    ontology.getOWLOntologyManager().removeAxioms(ontology, result);
                 }
             });
-            dialog.setModalityType(Dialog.ModalityType.MODELESS);
+            dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             dialog.setResizable(true);
             dialog.pack();
             dialog.setVisible(true);
         }
 
-        private void deleteFromOntology(){
-            this.logger.debug("Deleting axioms of hypothesis {} from ontology", this.hypothesisIndex+1);
-            this.logger.debug("The following axioms have been deleted:");
-            for (OWLAxiom axiom : this.hypothesis){
-                this.logger.debug(axiom.toString());
-            }
-            this.ontology.getOWLOntologyManager().removeAxioms(this.ontology, this.hypothesis);
-            String msgString = "Removed " + this.hypothesis.size() + " axioms of hypothesis "
-                    + (this.hypothesisIndex+1) + " from the ontology.";
-            JOptionPane msgPane = new JOptionPane(msgString, JOptionPane.INFORMATION_MESSAGE);
-            JDialog msgDialog = msgPane.createDialog(ProtegeManager.getInstance().getFrame(
-                    owlEditorKit.getWorkspace()), "Removed from ontology");
-            msgDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            msgDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
-            msgDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            msgDialog.setVisible(true);
+        @Override
+        public void registerSignatureModificationEventListener(ISignatureModificationEventListener listener) {
+            this.signatureModificationEventListener = listener;
         }
 
-//        public void dispose(){
-//            this.logger.debug("Disposing");
-//            if (this.explanationDialogPanel != null){
-//                this.explanationDialogPanel.dispose();
-//                this.explanationDialogPanel = null;
-//            }
-//            this.logger.debug("Disposed");
-//        }
+        public void dispose(){
+            this.logger.debug("Disposing abduction result explanation dialog");
+            if (this.explanationDialogPanel != null){
+                this.explanationDialogPanel.dispose();
+                this.explanationDialogPanel = null;
+            }
+            this.logger.debug("Abduction result explanation dialog disposed");
+        }
+
+        private void forbidSignature(){
+            this.signatureModificationEventListener.handleSignatureModificationEvent(
+                    new SignatureModificationEvent(this.resultSignature));
+        }
+
     }
 
     private class ExplanationDialogPanel extends JPanel implements ActionListener{

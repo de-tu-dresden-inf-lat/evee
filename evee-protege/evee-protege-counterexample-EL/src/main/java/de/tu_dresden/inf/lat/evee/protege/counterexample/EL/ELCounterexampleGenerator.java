@@ -25,7 +25,6 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     private OWLClassExpression superClassExpr;
     private OWLOntology activeOntology;
     private OWLOntology workingCopy;
-
     private Set<OWLAxiom> observation= new HashSet<>();
     private final OWLDataFactory df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
     private final OWLNamedIndividual rootInd = df.getOWLNamedIndividual(ROOT_IRI);
@@ -110,13 +109,12 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
         workingCopy = getWorkingCopy();
         logger.debug("working copy is created");
 
-        if(progressTracker != null) {
-            progressTracker.setMessage("Generating counterexample");
-            progressTracker.increment();
-        }
+//        if(progressTracker != null) {
+//            progressTracker.setMessage("Generating counterexample");
+//        }
         Set<OWLIndividualAxiom> avoidedEnt = new HashSet<>();
         avoidedEnt.add(df.getOWLClassAssertionAxiom(freshClass, rootInd));
-        IOWLModelGenerator modelGenerator = new ELSmallModelGenerator(treeModel,avoidedEnt);
+        IOWLModelGenerator modelGenerator = new ELSmallModelGenerator(treeModel,avoidedEnt,progressTracker);
         modelGenerator.setOntology(workingCopy);
         Set<OWLIndividualAxiom> model = modelGenerator.generateModel();
         logger.info("model is generated");

@@ -7,6 +7,7 @@ import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
@@ -390,9 +391,9 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.standardLayoutForbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         this.standardLayoutVocabularyTabbedPane = new JTabbedPane();
 //        this.vocabularyTabbedPane.setPreferredSize(new Dimension(400, 400));
-        this.standardLayoutVocabularyTabbedPane.addTab("Permitted Vocabulary",
+        this.standardLayoutVocabularyTabbedPane.addTab("Permitted vocabulary",
                 ComponentFactory.createScrollPane(this.standardLayoutPermittedVocabularyList));
-        this.standardLayoutVocabularyTabbedPane.addTab("Forbidden Vocabulary",
+        this.standardLayoutVocabularyTabbedPane.addTab("Forbidden vocabulary",
                 ComponentFactory.createScrollPane(this.standardLayoutForbiddenVocabularyList));
         this.standardLayoutVocabularyTabbedPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
@@ -550,15 +551,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutBottomButtonHolderPanel.setLayout(
                 new BoxLayout(this.alternativeLayoutBottomButtonHolderPanel, BoxLayout.PAGE_AXIS));
         this.alternativeLayoutBottomButtonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
-        ArrayList<JButton> buttonList = new ArrayList<>();
-        JButton addMissingEntailmentSignatureButton =
-                UIUtilities.createNamedButton(ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
-                        ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
-                        ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
-        buttonList.add(addMissingEntailmentSignatureButton);
-        JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList);
-        this.alternativeLayoutBottomButtonHolderPanel.add(firstButtonRowPanel);
         if (! this.preferencesManager.loadUseSimpleMode()){
+            ArrayList<JButton> buttonList = new ArrayList<>();
+            JButton addMissingEntailmentSignatureButton =
+                    UIUtilities.createNamedButton(
+                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
+                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
+                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
+            buttonList.add(addMissingEntailmentSignatureButton);
+            JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList);
+            this.alternativeLayoutBottomButtonHolderPanel.add(firstButtonRowPanel);
             this.alternativeLayoutBottomButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             buttonList.clear();
             JButton loadSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_LOAD_SIGNATURE_COMMAND,
@@ -977,16 +979,20 @@ private void loadSignatureAction(){
         newNames.forEach(name -> {
             if (name instanceof OWLClass){
                 OWLClass newClassName = (OWLClass) name;
-                this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newClassName);
-                this.standardLayoutPermittedVocabularyListModel.removeElement(newClassName);
-                this.alternativeLayoutForbiddenClassesListModel.checkAndAddElement(newClassName);
-                this.alternativeLayoutPermittedClassesListModel.removeElement(newClassName);
+                if (! newClassName.isBottomEntity() && ! newClassName.isTopEntity()){
+                    this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newClassName);
+                    this.standardLayoutPermittedVocabularyListModel.removeElement(newClassName);
+                    this.alternativeLayoutForbiddenClassesListModel.checkAndAddElement(newClassName);
+                    this.alternativeLayoutPermittedClassesListModel.removeElement(newClassName);
+                }
             } else if (name instanceof OWLObjectProperty){
                 OWLObjectProperty newPropertyName = (OWLObjectProperty) name;
-                this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newPropertyName);
-                this.standardLayoutPermittedVocabularyListModel.removeElement(newPropertyName);
-                this.alternativeLayoutForbiddenPropertiesListModel.checkAndAddElement(newPropertyName);
-                this.alternativeLayoutPermittedPropertiesListModel.removeElement(newPropertyName);
+                if (! newPropertyName.isBottomEntity() && ! newPropertyName.isTopEntity()){
+                    this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newPropertyName);
+                    this.standardLayoutPermittedVocabularyListModel.removeElement(newPropertyName);
+                    this.alternativeLayoutForbiddenPropertiesListModel.checkAndAddElement(newPropertyName);
+                    this.alternativeLayoutPermittedPropertiesListModel.removeElement(newPropertyName);
+                }
             } else if (name instanceof OWLNamedIndividual){
                 OWLNamedIndividual newIndividualName = (OWLNamedIndividual) name;
                 this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newIndividualName);
@@ -995,6 +1001,10 @@ private void loadSignatureAction(){
                 this.alternativeLayoutPermittedIndividualsListModel.removeElement(newIndividualName);
             }
         });
+        if (this.preferencesManager.loadSignatureComponentLayout().equals(
+                NonEntailmentGeneralPreferencesManager.STANDARD_LAYOUT)){
+            this.standardLayoutVocabularyTabbedPane.setSelectedIndex(1);
+        }
     }
 
     public void resetVocabularyManagementPanel() {
@@ -1002,6 +1012,10 @@ private void loadSignatureAction(){
         this.createStandardVocabularyManagementPanel();
         this.createAlternativeLayoutBottomButtonPanel();
         this.createAlternativeVocabularyManagementPanel();
+    }
+
+    public void resetSelectedSignature(){
+        this.resetVocabularyListModels();
     }
 
     private class SignatureOWLModelChangeListener implements OWLModelManagerListener {
@@ -1013,7 +1027,8 @@ private void loadSignatureAction(){
         @Override
         public void handleChange(OWLModelManagerChangeEvent changeEvent) {
             SwingUtilities.invokeLater(() -> {
-                if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) || changeEvent.isType(EventType.ONTOLOGY_RELOADED)){
+                if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
+                        changeEvent.isType(EventType.ONTOLOGY_RELOADED)){
 //                    ontology signature component:
                     standardLayoutOntologyIndividualsListModel.removeAll();
                     standardLayoutOntologyIndividualsListModel.addElements(

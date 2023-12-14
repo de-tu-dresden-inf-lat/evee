@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
     private final String DISJ_LIST = "Disjointnesses:";
-    private final String CLASS_LIST = "Classes of selected element:";
+    final String CLASS_LIST = "Classes of selected element:";
     private final String NUM_SLIDER = "Number of displayed classes:";
     private final String RECOMPUTE= "Recompute example";
     private final String REFRESH= "Refresh example";
@@ -33,17 +33,17 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
     private final int LABELS_MIN = 0;
     private final int LABELS_MAX = 10;
     private final int LABELS_INIT = 2;
-    private final int BIG_SPACE = 30;
-    private final int SMALL_SPACE = 20;
+    final int BIG_SPACE = 30;
+    final int SMALL_SPACE = 20;
     private final DefaultListModel<OWLClass> classListModel = new DefaultListModel();
     private final DefaultListModel<OWLAxiom> disjAxiomsListModel = new DefaultListModel();
     private final Logger logger = Logger.getLogger(ControlPanel.class);
     private final OWLDataFactory df = OWLManager.getOWLDataFactory();
     private int currentlabelsNum = 2;
-    private JList classList;
+    JList classList;
     private JList disjAxiomsList;
-    private OWLEditorKit owlEditorKit;
-    private ControlPanelEventListener controlPanelEventListener;
+    OWLEditorKit owlEditorKit;
+    ControlPanelEventListener controlPanelEventListener;
     private ICounterexampleGenerationEventListener counterexampleGenerationEventListener;
 
     public ControlPanel(OWLEditorKit owlEditorKit) {
@@ -64,6 +64,25 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         this.add(Box.createRigidArea(new Dimension(0, BIG_SPACE)));
         this.add(getAxiomListPanel());
     }
+
+//    public ControlPanel() {
+//        this.controlPanelEventListener = new ControlPanelEventListener();
+//
+//        this.createClassList();
+//        this.createDisjAxiomsList();
+//        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+//        this.setAlignmentX(0.5F);
+//        this.setBorder(new EmptyBorder(new Insets(15, 15, 15, 15)));
+//        this.setMaximumSize(new Dimension(200,  2000));
+//        this.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
+//        this.add(getLabelNumSliderPanel());
+//        this.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
+//        this.add(getRefreshButton());
+//        this.add(Box.createRigidArea(new Dimension(0, BIG_SPACE)));
+//        this.add(getClassListPanel());
+//        this.add(Box.createRigidArea(new Dimension(0, BIG_SPACE)));
+//        this.add(getAxiomListPanel());
+//    }
 
     @Override
     public void addCounterexampleGenerationEventListener(ICounterexampleGenerationEventListener listener) {
@@ -160,7 +179,7 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         return removeAxiomsButton;
     }
 
-    private JButton getRefreshButton() {
+    JButton getRefreshButton() {
         JButton refreshButton = new JButton(REFRESH);
         refreshButton.addActionListener(controlPanelEventListener);
         refreshButton.setAlignmentX(0.5F);
@@ -203,7 +222,7 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         labelNumSliderPanel.add(labelNumSlider);
         return labelNumSliderPanel;
     }
-    private void createClassList() {
+    void createClassList() {
         this.classList = new JList(this.classListModel);
         this.classList.setSelectionMode(2);
         this.classList.setCellRenderer(new OWLCellRenderer(this.owlEditorKit));
@@ -216,7 +235,9 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
     }
 
 
-    private class ControlPanelEventListener
+
+
+    class ControlPanelEventListener
             implements ActionListener, ChangeListener {
         @Override
         public void stateChanged(ChangeEvent e) {

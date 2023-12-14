@@ -7,7 +7,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology">
-        <rdfs:comment>An ontology modeling lectures at a university.
+        <rdfs:comment>An ontology for modeling lectures at a university.
 
 This ontology was created as part of a user study for the project EVEE (https://github.com/de-tu-dresden-inf-lat/evee) at TU Dresden.</rdfs:comment>
     </owl:Ontology>
@@ -22,6 +22,16 @@ This ontology was created as part of a user study for the project EVEE (https://
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasEquipment -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasEquipment">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Location"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LocationEquipment"/>
+    </owl:ObjectProperty>
     
 
 
@@ -45,12 +55,32 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Topic"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopicComplexity -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopicComplexity">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
         <rdfs:domain rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TopicComplexity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Location"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#WheelchairAccessibilityRating"/>
     </owl:ObjectProperty>
     
 
@@ -120,11 +150,6 @@ This ontology was created as part of a user study for the project EVEE (https://
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
         <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BasicLecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Analysis
-- Mechanics
-- QuantumMechanics
-- VirtualReality</rdfs:comment>
     </owl:Class>
     
 
@@ -132,11 +157,17 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Algebra -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Algebra">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#RegularLectureHall"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mathematics"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -172,11 +203,11 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Low"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Basic
-- EasyToPass
-- Interesting
-- OnCampus</rdfs:comment>
+        <rdfs:comment>BasicLecture,
+EasyToPassLecture,
+InterestingLecture,
+NaturalScienceLecture,
+OnCampus</rdfs:comment>
     </owl:Class>
     
 
@@ -209,7 +240,7 @@ This ontology was created as part of a user study for the project EVEE (https://
                                         <owl:someValuesFrom>
                                             <owl:Class>
                                                 <owl:unionOf rdf:parseType="Collection">
-                                                    <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigsite"/>
+                                                    <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigSite"/>
                                                     <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BotanicalGarden"/>
                                                 </owl:unionOf>
                                             </owl:Class>
@@ -234,9 +265,6 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Archeology
-- TermRewritingSystems</rdfs:comment>
     </owl:Class>
     
 
@@ -244,11 +272,17 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Analysis -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Analysis">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MathematicalProof"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mathematics"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -269,9 +303,9 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MathematicalProof"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Advanced
-- HardToPass</rdfs:comment>
+        <rdfs:comment>AdvancedLecture,
+HardToPassLecture,
+NaturalScienceLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -285,9 +319,9 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
-    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigsite -->
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigSite -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigsite">
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigSite">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnCampusLocation"/>
     </owl:Class>
     
@@ -296,11 +330,17 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Archeology -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Archeology">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigsite"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigSite"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#History"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -315,10 +355,10 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#YoungProfessor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Ambitious
-- Interesting
-- OffCampus</rdfs:comment>
+        <rdfs:comment>AmbitiousLecture,
+InterestingLecture,
+LiberalArtsLecture,
+OffCampusLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -380,9 +420,80 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Algebra
-- DatabaseBasics</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BioPhysicsLecture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BioPhysicsLecture">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Biology"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Physics"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Biology -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Biology">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BiopolymersAndBiomaterials -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BiopolymersAndBiomaterials">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OldLectureHall"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TeachingAssistant"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Physics"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#HighlyMotivatedProfessor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>BioPhysicsLecture,
+EngagingLecture,
+OnCampusLecture</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Blackboard -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Blackboard">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#StandardEquipment"/>
     </owl:Class>
     
 
@@ -433,8 +544,6 @@ This ontology was created as part of a user study for the project EVEE (https://
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
         <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#InterestingLecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- JavaProgramming</rdfs:comment>
     </owl:Class>
     
 
@@ -450,7 +559,7 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Botany -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Botany">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -461,6 +570,12 @@ This ontology was created as part of a user study for the project EVEE (https://
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Plants"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Biology"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -487,10 +602,10 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Plants"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- HardToPass
-- Interesting
-- OffCampus</rdfs:comment>
+        <rdfs:comment>HardToPassLecture,
+InterestingLecture,
+NaturalScienceLecture
+OffCampusLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -507,6 +622,50 @@ This ontology was created as part of a user study for the project EVEE (https://
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ChemistryLab">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Laboratory"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerNetworks -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerNetworks">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TinyLectureHall"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Computers"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LazyProfessor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>InterestingLecture,
+NaturalScienceLecture,
+OnCampusLecture,
+OnlineLecture</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic"/>
     </owl:Class>
     
 
@@ -574,9 +733,6 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Mechanics
-- Optics</rdfs:comment>
     </owl:Class>
     
 
@@ -584,7 +740,7 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DatabaseBasics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DatabaseBasics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:complementOf>
@@ -594,6 +750,12 @@ This ontology was created as part of a user study for the project EVEE (https://
                     </owl:Restriction>
                 </owl:complementOf>
             </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience"/>
+            </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -613,10 +775,10 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Average"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Basic
-- EasyToPass
-- Engaging</rdfs:comment>
+        <rdfs:comment>BasicLecture,
+EasyToPassLecture,
+EngagingLecture,
+NaturalScienceLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -693,10 +855,6 @@ This ontology was created as part of a user study for the project EVEE (https://
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
         <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#HardToPassLecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Algebra
-- DatabaseBasics
-- QuantumMechanics</rdfs:comment>
     </owl:Class>
     
 
@@ -759,12 +917,105 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- DatabaseBasics
-- Mechanics
-- Optics
-- QuantumMechanics
-- TermRewritingSystems</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Genetics -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Genetics">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ModernLectureHall"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineLectureSlides"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Biology"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DemandingProfessor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#RenownedProfessor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>ModernLecture,
+NaturalScienceLecture,
+OnCampusLecture</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Geopolitics -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Geopolitics">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#GiantLectureHall"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Politics"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#EloquentProfessor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>InclusiveLecture,
+LiberalArtsLecture,
+OnCampusLecture</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#GiantLectureHall -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#GiantLectureHall">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LectureHall"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasEquipment"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MicrophoneAndSpeakers"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Good"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TinyLectureHall"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Good -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Good">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#WheelchairAccessibilityRating"/>
     </owl:Class>
     
 
@@ -839,12 +1090,6 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Analysis
-- Botany
-- Mechanics
-- VirtualReality
-- Zoology</rdfs:comment>
     </owl:Class>
     
 
@@ -874,6 +1119,39 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#History -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#History">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LiberalArtsTopic"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Politics"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#InclusiveLecture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#InclusiveLecture">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
+                        <owl:someValuesFrom>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating"/>
+                                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Good"/>
+                            </owl:Restriction>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#InterestingLecture -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#InterestingLecture">
@@ -888,7 +1166,7 @@ This ontology was created as part of a user study for the project EVEE (https://
                                 <owl:someValuesFrom>
                                     <owl:Class>
                                         <owl:unionOf rdf:parseType="Collection">
-                                            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigsite"/>
+                                            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigSite"/>
                                             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BotanicalGarden"/>
                                             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Laboratory"/>
                                             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Museum"/>
@@ -914,13 +1192,6 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Algebra
-- Archeology
-- Botany
-- QuantumMechanics
-- VirtualReality
-- Zoology</rdfs:comment>
     </owl:Class>
     
 
@@ -936,7 +1207,7 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#JavaProgramming -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#JavaProgramming">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:complementOf>
@@ -957,6 +1228,12 @@ This ontology was created as part of a user study for the project EVEE (https://
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineHomework"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -983,8 +1260,8 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineHomework"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Boring</rdfs:comment>
+        <rdfs:comment>BoringLecture,
+NaturalScienceLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -1043,9 +1320,43 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LiberalArtsLecture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LiberalArtsLecture">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LiberalArtsTopic"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceLecture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LiberalArtsTopic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LiberalArtsTopic">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Topic"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Location -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Location"/>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LocationEquipment -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LocationEquipment"/>
     
 
 
@@ -1072,8 +1383,6 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Mechanics</rdfs:comment>
     </owl:Class>
     
 
@@ -1094,6 +1403,14 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mathematics -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mathematics">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MechanicalExperiment -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MechanicalExperiment">
@@ -1105,7 +1422,7 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mechanics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mechanics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -1126,6 +1443,12 @@ This ontology was created as part of a user study for the project EVEE (https://
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Physics"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NonNativeSpeakingProfessor"/>
             </owl:Restriction>
@@ -1136,13 +1459,13 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#RenownedProfessor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Advanced
-- Dangerous
-- Engaging
-- HardToPass
-- Loud
-- OnCampus</rdfs:comment>
+        <rdfs:comment>AdvancedLecture,
+DangerousLecture,
+EngagingLecture,
+HardToPassLecture,
+LoudLecture,
+NaturalScienceLecture,
+OnCampusLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -1151,6 +1474,58 @@ This ontology was created as part of a user study for the project EVEE (https://
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MercyfulProfessor">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Professor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MicrophoneAndSpeakers -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MicrophoneAndSpeakers">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalEquipment"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Projector"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ModernLecture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ModernLecture">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
+                        <owl:someValuesFrom>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasEquipment"/>
+                                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalEquipment"/>
+                            </owl:Restriction>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DigitalLearningMaterial"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ModernLectureHall -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ModernLectureHall">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LectureHall"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasEquipment"/>
+                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalEquipment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OldLectureHall"/>
     </owl:Class>
     
 
@@ -1167,6 +1542,12 @@ This ontology was created as part of a user study for the project EVEE (https://
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Museum">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OffCampusLocation"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Good"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -1179,10 +1560,72 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceLecture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceLecture">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Topic"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NonNativeSpeakingProfessor -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NonNativeSpeakingProfessor">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#HardToUnderstandProfessor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NumericalMethods -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NumericalMethods">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#MathematicalProof"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mathematics"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#EasyToUnderstandProfessor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#YoungProfessor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>InclusiveLecture,
+NaturalScienceLecture,
+OnCampusLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -1202,10 +1645,6 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Archeology
-- Botany
-- Zoology</rdfs:comment>
     </owl:Class>
     
 
@@ -1222,6 +1661,24 @@ This ontology was created as part of a user study for the project EVEE (https://
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OldLectureHall">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LectureHall"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasEquipment"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Blackboard"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Poor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasEquipment"/>
+                <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Blackboard"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -1241,13 +1698,6 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
-        <rdfs:comment>The following lectures should be (directly) contained in this class:
-- Algebra
-- Mechanics
-- Optics
-- QuantumMechanics
-- TermRewritingSystems
-- VirtualReality</rdfs:comment>
     </owl:Class>
     
 
@@ -1264,6 +1714,33 @@ This ontology was created as part of a user study for the project EVEE (https://
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineHomework">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DigitalLearningMaterial"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineLecture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineLecture">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineHomework"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineLectureSlides"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineLiterature"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
     </owl:Class>
     
 
@@ -1295,7 +1772,7 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Optics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Optics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:complementOf>
@@ -1332,14 +1809,28 @@ This ontology was created as part of a user study for the project EVEE (https://
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Physics"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopicComplexity"/>
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Average"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Dangerous
-- Engaging
-- OnCampus</rdfs:comment>
+        <rdfs:comment>DangerousLecture,
+EngagingLecture,
+NaturalScienceLecture,
+OnCampusLecture</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Physics -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Physics">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic"/>
     </owl:Class>
     
 
@@ -1368,6 +1859,22 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Politics -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Politics">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Poor -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Poor">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#WheelchairAccessibilityRating"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Professor -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Professor">
@@ -1376,10 +1883,18 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Projector -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Projector">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalEquipment"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#QuantumMechanics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#QuantumMechanics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -1390,6 +1905,12 @@ This ontology was created as part of a user study for the project EVEE (https://
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#PhysicsExperiment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Physics"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -1424,12 +1945,12 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#High"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Advanced
-- EasyToPass
-- Engaging
-- Interesting
-- OnCampus</rdfs:comment>
+        <rdfs:comment>AdvancedLecture,
+EasyToPassLecture,
+EngagingLecture,
+InterestingLecture,
+NaturalScienceLecture,
+OnCampusLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -1467,6 +1988,15 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#StandardEquipment -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#StandardEquipment">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LocationEquipment"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalEquipment"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#StudentInteraction -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#StudentInteraction">
@@ -1489,10 +2019,27 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalEquipment -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalEquipment">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LocationEquipment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:comment>Fix with the counterexample generators.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TermRewritingSystems -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TermRewritingSystems">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -1513,14 +2060,20 @@ This ontology was created as part of a user study for the project EVEE (https://
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#taughtBy"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#RenownedProfessor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Ambitious
-- Engaging
-- OnCampus</rdfs:comment>
+        <rdfs:comment>AmbitiousLecture,
+EngagingLecture,
+NaturalScienceLecture,
+OnCampusLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -1529,7 +2082,19 @@ This ontology was created as part of a user study for the project EVEE (https://
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TinyLectureHall">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LectureHall"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Poor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Topic -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Topic"/>
     
 
 
@@ -1539,10 +2104,19 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:comment>Fix with the abduction solver.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#VirtualReality -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#VirtualReality">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -1559,6 +2133,12 @@ This ontology was created as part of a user study for the project EVEE (https://
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineLectureSlides"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -1585,12 +2165,18 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DigitalLearningMaterial"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- Advanced
-- HardToPass
-- Interesting
-- OnCampus</rdfs:comment>
+        <rdfs:comment>AdvancedLecture,
+HardToPassLecture,
+InterestingLecture,
+NaturalScienceLecture,
+OnCampusLecture</rdfs:comment>
     </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#WheelchairAccessibilityRating -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#WheelchairAccessibilityRating"/>
     
 
 
@@ -1605,7 +2191,7 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Zoology -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Zoology">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:complementOf>
@@ -1615,6 +2201,12 @@ This ontology was created as part of a user study for the project EVEE (https://
                     </owl:Restriction>
                 </owl:complementOf>
             </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTopic"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Biology"/>
+            </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -1634,10 +2226,11 @@ This ontology was created as part of a user study for the project EVEE (https://
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AnimalCarcass"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>This lecture should be:
-- HardToPass
-- Interesting
-- OffCampus</rdfs:comment>
+        <rdfs:comment>HardToPassLecture,
+InclusiveLecture,
+InterestingLecture,
+NaturalScienceLecture,
+OffCampusLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -1763,10 +2356,24 @@ This ontology was created as part of a user study for the project EVEE (https://
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Restriction>
+    <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating"/>
+        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Poor"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:complementOf>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasWheelchairAccessibilityRating"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Good"/>
+                    </owl:Restriction>
+                </owl:complementOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Restriction>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigsite"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ArcheologicalDigSite"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BotanicalGarden"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Museum"/>
         </owl:members>
@@ -1785,6 +2392,15 @@ This ontology was created as part of a user study for the project EVEE (https://
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Average"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#High"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Low"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Biology"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mathematics"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Physics"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
@@ -1819,9 +2435,12 @@ This ontology was created as part of a user study for the project EVEE (https://
         <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Lecture"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Location"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#LocationEquipment"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Professor"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TeachingElement"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Topic"/>
             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TopicComplexity"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#WheelchairAccessibilityRating"/>
         </owl:members>
     </rdf:Description>
 </rdf:RDF>

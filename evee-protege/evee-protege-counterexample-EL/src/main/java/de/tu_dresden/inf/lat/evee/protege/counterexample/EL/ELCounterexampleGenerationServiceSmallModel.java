@@ -23,8 +23,4 @@ public class ELCounterexampleGenerationServiceSmallModel extends AbstractCounter
 
     }
 
-    @Override
-    public Set<OWLEntity> getAdditionalSignatureNames() {
-        return Collections.emptySet();
-    }
 }

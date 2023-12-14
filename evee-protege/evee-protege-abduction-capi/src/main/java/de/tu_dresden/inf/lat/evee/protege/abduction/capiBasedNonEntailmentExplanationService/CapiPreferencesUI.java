@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
+import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.preferences.PreferencesLayoutPanel;
 import org.protege.editor.owl.ui.preferences.OWLPreferencesPanel;
 import org.slf4j.Logger;
