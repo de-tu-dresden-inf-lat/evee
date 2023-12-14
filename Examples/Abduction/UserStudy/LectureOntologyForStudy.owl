@@ -106,6 +106,15 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:comment>Fix with the abduction solver.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AdvancedLecture -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AdvancedLecture">
@@ -157,7 +166,7 @@ This ontology was created as part of a user study for the project EVEE (https://
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Algebra -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Algebra">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -272,7 +281,8 @@ OnCampus</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Analysis -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Analysis">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
@@ -330,7 +340,8 @@ NaturalScienceLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Archeology -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Archeology">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#CounterExampleTaskLectures"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -458,7 +469,8 @@ OffCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BiopolymersAndBiomaterials -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#BiopolymersAndBiomaterials">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#CounterExampleTaskLectures"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -559,7 +571,8 @@ OnCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Botany -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Botany">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -629,7 +642,8 @@ OffCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerNetworks -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerNetworks">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#CounterExampleTaskLectures"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -674,6 +688,15 @@ OnlineLecture</rdfs:comment>
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Computers">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DigitalLearningMaterial"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#CounterExampleTaskLectures -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#CounterExampleTaskLectures">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+        <rdfs:comment>Fix with the counterexample generators.</rdfs:comment>
     </owl:Class>
     
 
@@ -740,7 +763,8 @@ OnlineLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DatabaseBasics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DatabaseBasics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:complementOf>
@@ -924,7 +948,8 @@ NaturalScienceLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Genetics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Genetics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#CounterExampleTaskLectures"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -965,7 +990,7 @@ OnCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Geopolitics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Geopolitics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#CounterExampleTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -1207,7 +1232,7 @@ OnCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#JavaProgramming -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#JavaProgramming">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:complementOf>
@@ -1422,7 +1447,8 @@ NaturalScienceLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mechanics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mechanics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -1587,6 +1613,14 @@ OnCampusLecture</rdfs:comment>
     
 
 
+    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NoServiceTaskLectures">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NonNativeSpeakingProfessor -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NonNativeSpeakingProfessor">
@@ -1598,7 +1632,7 @@ OnCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NumericalMethods -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NumericalMethods">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#CounterExampleTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasTeachingElement"/>
@@ -1772,7 +1806,7 @@ OnCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Optics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Optics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:complementOf>
@@ -1894,7 +1928,7 @@ OnCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#QuantumMechanics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#QuantumMechanics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -2027,19 +2061,10 @@ OnCampusLecture</rdfs:comment>
     
 
 
-    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TechnicalUniversityDresdenLecture">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
-        <rdfs:comment>Fix with the counterexample generators.</rdfs:comment>
-    </owl:Class>
-    
-
-
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TermRewritingSystems -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TermRewritingSystems">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -2104,19 +2129,10 @@ OnCampusLecture</rdfs:comment>
     
 
 
-    <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#SpecificLecture"/>
-        <rdfs:comment>Fix with the abduction solver.</rdfs:comment>
-    </owl:Class>
-    
-
-
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#VirtualReality -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#VirtualReality">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#hasLocation"/>
@@ -2191,7 +2207,7 @@ OnCampusLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Zoology -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Zoology">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#UniversiyOfAmsterdamLecture"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#AbductionSolverTaskLectures"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:complementOf>
