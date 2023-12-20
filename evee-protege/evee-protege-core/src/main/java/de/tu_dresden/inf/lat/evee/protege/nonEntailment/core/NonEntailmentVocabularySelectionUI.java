@@ -518,14 +518,14 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutPermittedPropertiesList =
                 new JList<>(this.alternativeLayoutPermittedPropertiesListModel);
         this.alternativeLayoutPermittedPropertiesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Object properties:",
+        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Object properties",
                 ComponentFactory.createScrollPane(this.alternativeLayoutPermittedPropertiesList));
 //        individuals
         this.alternativeLayoutPermittedIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.alternativeLayoutPermittedIndividualsList =
                 new JList<>(this.alternativeLayoutPermittedIndividualsListModel);
         this.alternativeLayoutPermittedIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Individuals:",
+        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Individuals",
                 ComponentFactory.createScrollPane(this.alternativeLayoutPermittedIndividualsList));
     }
 
@@ -553,14 +553,14 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutForbiddenPropertiesList =
                 new JList<>(this.alternativeLayoutForbiddenPropertiesListModel);
         this.alternativeLayoutForbiddenPropertiesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Object properties:",
+        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Object properties",
                 ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenPropertiesList));
 //        individuals
         this.alternativeLayoutForbiddenIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.alternativeLayoutForbiddenIndividualsList =
                 new JList<>(this.alternativeLayoutForbiddenIndividualsListModel);
         this.alternativeLayoutForbiddenIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Individuals:",
+        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Individuals",
                 ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenIndividualsList));
     }
 

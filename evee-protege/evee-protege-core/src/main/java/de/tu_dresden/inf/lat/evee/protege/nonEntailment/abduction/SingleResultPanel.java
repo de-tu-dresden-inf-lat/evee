@@ -180,11 +180,8 @@ public class SingleResultPanel extends JPanel
             JDialog msgDialog = msgPane.createDialog(ProtegeManager.getInstance().getFrame(
                     owlEditorKit.getWorkspace()), "Added to ontology");
             msgDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            msgDialog.pack();
-            msgDialog.setLocationRelativeTo(
-                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace()));
             msgDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            msgDialog.setVisible(true);
+            UIUtilities.packAndSetWindow(msgDialog, owlEditorKit, true);
         }
 
         private void explain(){
@@ -309,8 +306,7 @@ public class SingleResultPanel extends JPanel
                     this.explanationManager, this.missingEntailment);
             this.removeAll();
             this.add(this.internalExplanationDialog);
-            this.revalidate();
-            this.repaint();
+            UIUtilities.revalidateAndRepaintComponent(this);
             this.logger.debug("Panel refreshed");
         }
 

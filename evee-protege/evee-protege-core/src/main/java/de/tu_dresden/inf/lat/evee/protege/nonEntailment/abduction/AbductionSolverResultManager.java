@@ -7,6 +7,7 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAb
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
@@ -92,8 +93,7 @@ public class AbductionSolverResultManager implements
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
                         "Hypotheses:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        this.resultHolderPanel.repaint();
-        this.resultHolderPanel.revalidate();
+        UIUtilities.revalidateAndRepaintComponent(this.resultHolderPanel);
     }
 
     protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
@@ -114,8 +114,7 @@ public class AbductionSolverResultManager implements
         this.resultHolderPanel.setPreferredSize(new Dimension(
                 (int) (screenWidth * 0.3),
                 this.resultHolderPanel.getHeight()));
-        this.resultHolderPanel.repaint();
-        this.resultHolderPanel.revalidate();
+        UIUtilities.revalidateAndRepaintComponent(this.resultHolderPanel);
     }
 
 //    methods related to SingleResultPanelEvents

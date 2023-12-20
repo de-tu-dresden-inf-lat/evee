@@ -35,14 +35,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -50,7 +46,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
-import scala.collection.immutable.Stream;
 
 import static java.lang.Math.ceil;
 import static java.util.Collections.max;
@@ -276,8 +271,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.holderPanel.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
-                holderPanel.revalidate();
-                holderPanel.repaint();
+                UIUtilities.revalidateAndRepaintComponent(holderPanel);
             }
 
             @Override
@@ -322,8 +316,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private void repaintComponents(){
-        this.repaint();
-        this.revalidate();
+        UIUtilities.revalidateAndRepaintComponent(this);
     }
 
     private void resetResultComponent(){
@@ -860,11 +853,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         filterWarningPanel.add(filterWarningCheckBox);
         filterWarningPanel.add(filterWarningButton);
         filterWarningDialog.getContentPane().add(filterWarningPanel);
-        filterWarningDialog.pack();
-//        filterWarningDialog.setSize(600, 150);
-        filterWarningDialog.setLocationRelativeTo(
-                ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace()));
-        filterWarningDialog.setVisible(true);
+        UIUtilities.packAndSetWindow(filterWarningDialog, this.getOWLEditorKit(), true);
     }
 
     private void disposeLoadingScreen(){
