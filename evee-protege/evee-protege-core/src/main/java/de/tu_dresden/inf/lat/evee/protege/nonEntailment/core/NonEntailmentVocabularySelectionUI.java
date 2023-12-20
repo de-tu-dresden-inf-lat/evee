@@ -174,6 +174,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     }
 
     private void resetVocabularyListModels(){
+        this.logger.debug("Resetting vocabulary list models for standard and alternative layout");
 //        reset standard layout models:
         this.standardLayoutPermittedVocabularyListModel.removeAll();
         this.standardLayoutForbiddenVocabularyListModel.removeAll();
@@ -203,6 +204,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutPermittedIndividualsListModel.checkAndAddElements(
                 this.owlEditorKit.getOWLModelManager().getActiveOntology().getIndividualsInSignature());
         this.clearVocabularySelection();
+        this.logger.debug("Resetting vocabulary list models for standard and alternative layout completed");
     }
 
     private Collection<OWLEntity> getCompleteOntologySignature(){
@@ -260,6 +262,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.createStandardVocabularyManagementPanel();
     }
     private void createStandardLayoutOntologySignatureTabbedPane(){
+        this.logger.debug("Creating standard layout ontology signature tabbed pane");
         JTabbedPane tabbedPane = new JTabbedPane();
 //        tabbedPane.setPreferredSize(new Dimension(400, 400));
 //        todo: highlighting keywords for classes + properties? see method "initialiseView" in Protege's "AbstractOWLEntityHierarchyViewComponent"
@@ -301,6 +304,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.standardLayoutWideComponentDimensionList.add(new Dimension(
                 upperComponentTitleWidth, upperComponentTitleHeight));
         this.standardLayoutOntologySignatureTabbedPane = tabbedPane;
+        this.logger.debug("Standard layout ontology signature tabbed pane created");
     }
 
 //    private void addBottomEntities2Trees(){
@@ -403,6 +407,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     }
 
     private void createStandardLayoutSelectedVocabularyListPane(){
+        this.logger.debug("Creating standard layout selected vocabulary tabbed pane");
         this.standardLayoutPermittedVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.standardLayoutPermittedVocabularyList = new JList<>(this.standardLayoutPermittedVocabularyListModel);
         this.standardLayoutPermittedVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
@@ -425,6 +430,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.standardLayoutWideComponentDimensionList.add(new Dimension(titleWidth, titleHeight));
         this.standardLayoutVocabularyTabbedPane.setBorder(BorderFactory.createCompoundBorder(
                 titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        this.logger.debug("Standard layout selected vocabulary tabbed pane created");
     }
 
     private void createStandardVocabularyManagementPanel(){
@@ -494,6 +500,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.addAlternativeLayoutTabbedPaneStateChangeListeners();
     }
     private void createAlternativeLayoutUpperPanel() {
+        this.logger.debug("Creating alternative layout permitted vocabulary tabbed pane");
 //        general
         this.alternativeLayoutPermittedSignatureTabbedPane = new JTabbedPane();
         TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
@@ -527,9 +534,11 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutPermittedIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Individuals",
                 ComponentFactory.createScrollPane(this.alternativeLayoutPermittedIndividualsList));
+        this.logger.debug("Alternative layout permitted vocabulary tabbed pane created");
     }
 
     private void createAlternativeLayoutLowerPanel() {
+        this.logger.debug("Creating alternative layout forbidden vocabulary tabbed pane");
 //        general
         this.alternativeLayoutForbiddenSignatureTabbedPane = new JTabbedPane();
         TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
@@ -562,6 +571,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutForbiddenIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Individuals",
                 ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenIndividualsList));
+        this.logger.debug("Alternative layout forbidden vocabulary tabbed pane created");
     }
 
     private void createAlternativeLayoutMiddleButtonPanel(){
@@ -1075,6 +1085,7 @@ private void loadSignatureAction(){
         this.createStandardLayoutComponents();
         this.standardLayoutWideComponentDimensionList.clear();
         this.createAlternativeLayoutComponents();
+        this.resetVocabularyListModels();
     }
 
     public void resetSelectedSignature(){
