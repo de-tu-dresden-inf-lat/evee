@@ -199,7 +199,6 @@ This ontology was created as part of a user study for the project EVEE (https://
                         <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Computers"/>
                             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#DigitalLearningMaterial"/>
-                            <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#StudentInteraction"/>
                             <rdf:Description rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#TeachingAssistant"/>
                         </owl:unionOf>
                     </owl:Class>
@@ -215,7 +214,6 @@ This ontology was created as part of a user study for the project EVEE (https://
         <rdfs:comment>BasicLecture,
 EasyToPassLecture,
 InterestingLecture,
-NaturalScienceLecture,
 OnCampus</rdfs:comment>
     </owl:Class>
     
@@ -314,8 +312,7 @@ OnCampus</rdfs:comment>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>AdvancedLecture,
-HardToPassLecture,
-NaturalScienceLecture</rdfs:comment>
+HardToPassLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -669,7 +666,6 @@ OffCampusLecture</rdfs:comment>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>InterestingLecture,
-NaturalScienceLecture,
 OnCampusLecture,
 OnlineLecture</rdfs:comment>
     </owl:Class>
@@ -679,7 +675,7 @@ OnlineLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerScience">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Topic"/>
     </owl:Class>
     
 
@@ -801,8 +797,7 @@ OnlineLecture</rdfs:comment>
         </rdfs:subClassOf>
         <rdfs:comment>BasicLecture,
 EasyToPassLecture,
-EngagingLecture,
-NaturalScienceLecture</rdfs:comment>
+EngagingLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -1285,8 +1280,7 @@ OnCampusLecture</rdfs:comment>
                 <owl:allValuesFrom rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineHomework"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>BoringLecture,
-NaturalScienceLecture</rdfs:comment>
+        <rdfs:comment>BoringLecture</rdfs:comment>
     </owl:Class>
     
 
@@ -1431,7 +1425,7 @@ NaturalScienceLecture</rdfs:comment>
     <!-- http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mathematics -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Mathematics">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#NaturalScienceTopic"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#Topic"/>
     </owl:Class>
     
 
@@ -1658,7 +1652,6 @@ OnCampusLecture</rdfs:comment>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>InclusiveLecture,
-NaturalScienceLecture,
 OnCampusLecture</rdfs:comment>
     </owl:Class>
     
@@ -2097,7 +2090,6 @@ OnCampusLecture</rdfs:comment>
         </rdfs:subClassOf>
         <rdfs:comment>AmbitiousLecture,
 EngagingLecture,
-NaturalScienceLecture,
 OnCampusLecture</rdfs:comment>
     </owl:Class>
     
@@ -2184,7 +2176,6 @@ OnCampusLecture</rdfs:comment>
         <rdfs:comment>AdvancedLecture,
 HardToPassLecture,
 InterestingLecture,
-NaturalScienceLecture,
 OnCampusLecture</rdfs:comment>
     </owl:Class>
     
