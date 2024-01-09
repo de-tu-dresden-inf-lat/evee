@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#"
+     xml:base="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268">
+        <rdfs:comment xml:lang="en">Small ontology for the evee user study 2023 to  illlustrate the functioning of protege and the plugins.</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#cause -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#cause"/>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#hasSymptom -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#hasSymptom">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#locatedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#locatedIn">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organ"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#mayLeadTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#mayLeadTo"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Angina -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Angina">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Symptom"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#ChestPain -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#ChestPain">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Symptom"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#CoronaVirus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#CoronaVirus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Virus"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Coronary_Artery_Disease -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Coronary_Artery_Disease">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#SpecificDisease"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#hasSymptom"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Angina"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#mayLeadTo"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#HeartAttack"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This disease should be classified as:
+- SpecificDisease
+- HeartDisease</rdfs:comment>
+        <rdfs:label xml:lang="en">Coronary Artery Disease (CAD)</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Covid -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Covid">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#SpecificDisease"/>
+        <rdfs:comment>This disease should be classified as:
+- SpecificDisease
+- InfectiousDisease</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease"/>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Heart -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Heart">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organ"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#HeartAttack -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#HeartAttack">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Symptom"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#HeartDisease -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#HeartDisease">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#locatedIn"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Heart"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#InfectiousDisease -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#InfectiousDisease">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#cause"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#PathogenicOrganism"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Kidney -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Kidney">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organ"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Liver -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Liver">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organ"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Lung -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Lung">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organ"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organ -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organ"/>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organism -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organism"/>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#PathogenicOrganism -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#PathogenicOrganism">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Organism"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#SpecificDisease -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#SpecificDisease">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Disease"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Symptom -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Symptom"/>
+    
+
+
+    <!-- http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Virus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Virus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#PathogenicOrganism"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
