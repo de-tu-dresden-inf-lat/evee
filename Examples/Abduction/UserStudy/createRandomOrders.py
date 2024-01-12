@@ -1,34 +1,45 @@
 #! /usr/bin/python
 
-import random
+import sys, random
 
-ontologies = ["Animal Ontology", "Pizza Ontology", "University Ontology"]
-studyParts = ["Fix ontology without tool support", "Fix ontology with tool support"]
+if(len(sys.argv)!=2):
+    print("Usage: ")
+    print(" give as argument the number of participants of the study")
+    print(" we will then generate configurations for that number")
+    exit()
+
+participantNumber = int(sys.argv[1])
+
+ontologies = ["animal", "pizza", "university"]
+studyParts = ["no_tool", "Fix ontology with tool support"]
 studyPartIndices = [0,1]
-studySubParts = ["Fix ontology using abduction", "Fix ontology using counter examples"]
+studySubParts = ["abduction", "counterexample"]
 
-random.shuffle(ontologies)
-random.shuffle(studyPartIndices)
-random.shuffle(studySubParts)
-
-currentOnt = 0
 
 def useOntology():
     global currentOnt
-    print("     using "+ontologies[currentOnt])
-    currentOnt+=1
-    
-def printElementsFor(studyPartIndex):
-    if(studyPartIndex==0):
-        useOntology()
-    elif(studyPartIndex==1):
-        print(" - "+studySubParts[0])
-        useOntology()
-        print(" - "+studySubParts[1])
-        useOntology()
+    currentOnt += 1
+    return ontologies[currentOnt % 3]
 
-print("Steps in this study")
-print("1. "+studyParts[studyPartIndices[0]])
-printElementsFor(studyPartIndices[0])
-print("2. "+studyParts[studyPartIndices[1]])
-printElementsFor(studyPartIndices[1])
+def elements(studyPartIndex):
+    if(studyPartIndex==0):
+        return studyParts[0]+"-"+useOntology()
+    elif(studyPartIndex==1):
+        return studySubParts[0]+"-"+useOntology()+" / "+studySubParts[1]+"-"+useOntology()
+
+def oneConfiguration():
+    global currentOnt
+    
+    random.shuffle(ontologies)
+    random.shuffle(studyPartIndices)
+    random.shuffle(studySubParts)
+    
+    currentOnt = 0
+
+    print(" / ".join([elements(part) for part in studyPartIndices]))
+
+    
+
+
+for i in range(0, participantNumber):
+    oneConfiguration()
