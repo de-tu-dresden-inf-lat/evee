@@ -29,14 +29,14 @@ NOTE: even though the missing entailments to be fixed all concern subclasses of 
     terms:contributor "Nick Drummond",
     terms:contributor "Patrick Koopmann",
     terms:contributor "Robert Stevens",
-    terms:license "Creative Commons Attribution 3.0 (CC BY 3.0)"^^xsd:string,
+    terms:license "Creative Commons Attribution 3.0 (CC BY 3.0)",
     terms:provenance "v2.0 Added new annotations to the ontology using standard/well-know annotation properties
 
 v1.5. Removed protege.owl import and references. Made ontology URI date-independent
 
 v1.4. Added Food class (used in domain/range of hasIngredient), Added several hasCountryOfOrigin restrictions on pizzas, Made hasTopping invers functional"@en,
-    rdfs:label "pizza"^^xsd:string,
-    owl:versionInfo "2.0"^^xsd:string
+    rdfs:label "pizza",
+    owl:versionInfo "2.0"
 
 AnnotationProperty: dc:description
 
@@ -75,6 +75,9 @@ AnnotationProperty: terms:provenance
 
     
 Datatype: rdf:PlainLiteral
+
+    
+Datatype: rdf:langString
 
     
 Datatype: xsd:string
@@ -149,8 +152,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#Boscaiola>
 - a WhitePizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,		
+        pizza:NamedPizza,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#SausageTopping>,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:MushroomTopping
@@ -159,13 +161,13 @@ Class: <http://www.co-ode.org/ontologies/pizza#Boscaiola>
 Class: <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>
 
     SubClassOf: 
-        pizza:NamedPizza
+        pizza:Ignore
     
     
 Class: <http://www.co-ode.org/ontologies/pizza#CategoryForModels>
 
     SubClassOf: 
-        pizza:NamedPizza
+        pizza:Ignore
     
     
 Class: <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>
@@ -174,7 +176,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>
         rdfs:comment "Pizzas in this category are for the study task where no tool is used."
     
     SubClassOf: 
-        pizza:NamedPizza
+        pizza:Ignore
     
     
 Class: <http://www.co-ode.org/ontologies/pizza#DairyFreePizza>
@@ -196,8 +198,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#Diavola>
 - a SpicyPizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-		<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,		
+        pizza:NamedPizza,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#SpianataCalabra>,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -248,8 +249,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#Istanbul>
 - a MeatyPizza"
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#Feta>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#Sucuk>,
         pizza:hasTopping some pizza:TomatoTopping
@@ -263,8 +263,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#ItalySpecial>
 - RealItalianPizza"
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some pizza:HamTopping,
         pizza:hasTopping some pizza:ParmesanTopping,
         pizza:hasTopping some pizza:RocketTopping
@@ -279,7 +278,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#Marinara>
 - a VegetarianPizza"@en
     
     SubClassOf: 
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#OliveOil>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#OreganoTopping>,
         pizza:hasTopping some pizza:GarlicTopping,
@@ -307,8 +306,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#PizzaFriarelli>
 - a WhitePizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#FriarelliTopping>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#SausageTopping>,
         pizza:hasTopping some pizza:MozzarellaTopping
@@ -402,8 +400,7 @@ Class: pizza:American
 - a MeatyPizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:PeperoniSausageTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -418,8 +415,7 @@ Class: pizza:AmericanHot
 - a SpicyPizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some pizza:JalapenoPepperTopping,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:PeperoniSausageTopping,
@@ -601,8 +597,7 @@ Class: pizza:FourSeasons
 - a CheesyPizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some pizza:AnchoviesTopping,
         pizza:hasTopping some pizza:CaperTopping,
         pizza:hasTopping some pizza:HamTopping,
@@ -630,8 +625,7 @@ Class: pizza:FruttiDiMare
 - DairyFree"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some pizza:GarlicTopping,
         pizza:hasTopping some pizza:MixedSeafoodTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -645,8 +639,7 @@ Class: pizza:Funghi
 - VegetarianPizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:MushroomTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -756,6 +749,9 @@ Class: pizza:HotSpicedBeefTopping
         pizza:hasSpiciness some pizza:Hot
     
     
+Class: pizza:Ignore
+
+    
 Class: pizza:InterestingPizza
 
     Annotations: 
@@ -797,8 +793,7 @@ Class: pizza:Margherita
 - VegetarianPizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:TomatoTopping
     
@@ -902,8 +897,7 @@ Class: pizza:Napoletana
 - a VegetarianPizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        pizza:NamedPizza,
         pizza:hasTopping some pizza:AnchoviesTopping,
         pizza:hasTopping some pizza:CaperTopping,
         pizza:hasTopping some pizza:MozzarellaTopping,
@@ -1099,7 +1093,7 @@ Class: pizza:QuattroFormaggi
 - a VegetarianPizza"@en
     
     SubClassOf: 
-        <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
+        pizza:Ignore,
         pizza:hasTopping some pizza:FourCheesesTopping,
         pizza:hasTopping only pizza:FourCheesesTopping
     
@@ -1312,7 +1306,7 @@ Class: pizza:TomatoTopping
 Class: pizza:UnclosedPizza
 
     Annotations: 
-        rdfs:comment "An unclosed Pizza cannot be inferred to be either a VegetarianPizza or a NonVegetarianPizza, because it might have other toppings."^^xsd:string,
+        rdfs:comment "An unclosed Pizza cannot be inferred to be either a VegetarianPizza or a NonVegetarianPizza, because it might have other toppings.",
         rdfs:label "PizzaAberta"@pt,
         rdfs:label "UnclosedPizza"@en,
         skos:prefLabel "Unclosed Pizza"@en
@@ -1325,7 +1319,7 @@ Class: pizza:UnclosedPizza
 Class: pizza:ValuePartition
 
     Annotations: 
-        rdfs:comment "A ValuePartition is a pattern that describes a restricted set of classes from which a property can be associated. The parent class is used in restrictions, and the covering axiom means that only members of the subclasses may be used as values. The possible subclasses cannot be extended without updating the ValuePartition class."^^xsd:string,
+        rdfs:comment "A ValuePartition is a pattern that describes a restricted set of classes from which a property can be associated. The parent class is used in restrictions, and the covering axiom means that only members of the subclasses may be used as values. The possible subclasses cannot be extended without updating the ValuePartition class.",
         rdfs:label "ValorDaParticao"@pt,
         rdfs:label "ValuePartition"@en,
         skos:prefLabel "Value Partition"@en
