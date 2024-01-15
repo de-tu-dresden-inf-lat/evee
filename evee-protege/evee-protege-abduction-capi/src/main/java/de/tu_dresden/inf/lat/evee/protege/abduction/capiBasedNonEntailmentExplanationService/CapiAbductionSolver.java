@@ -4,7 +4,7 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.SignatureModificationEvent;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import de.tu_dresden.lat.capi.experiments.AbductionProblem;
 import de.tu_dresden.lat.capi.implicateMatching.*;
 import de.tu_dresden.lat.capi.ontologyTools.ELFilter;
@@ -550,9 +550,6 @@ public class CapiAbductionSolver
             JDialog warningDialog = warningPane.createDialog(ProtegeManager.getInstance().getFrame(
                     this.owlEditorKit.getWorkspace()), "Warning");
             warningDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            warningDialog.pack();
-            warningDialog.setLocationRelativeTo(
-                    ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace()));
             warningDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             warningDialog.addWindowListener(new java.awt.event.WindowAdapter(){
                 @Override
@@ -570,7 +567,7 @@ public class CapiAbductionSolver
                     });
                 }
             });
-            warningDialog.setVisible(true);
+            UIUtilities.packAndSetWindow(warningDialog, this.owlEditorKit, true);
         });
     }
 

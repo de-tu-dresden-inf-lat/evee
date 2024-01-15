@@ -22,7 +22,7 @@
 
     <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceFlatDiff"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
-        <name value="Short Contrastive Counterexample"/>
+        <name value="Flat Contrastive Counterexample"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceFlatDiff"/>
     </extension>
 

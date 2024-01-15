@@ -76,14 +76,14 @@ public class NonEntailmentGeneralPreferencesManager {
     public String loadSignatureComponentLayout(){
         Preferences preferences = this.getProtegePreferences();
         String layout = preferences.getString(SIGNATURE_COMPONENT_LAYOUT, STANDARD_LAYOUT);
-        this.logger.debug("Loaded layout information: {}", layout);
+        this.logger.debug("Layout information retrieved from preferences: {}", layout);
         return layout;
     }
 
     public void saveSignatureComponentLayout(String newLayout){
         Preferences preferences = this.getProtegePreferences();
         preferences.putString(SIGNATURE_COMPONENT_LAYOUT, newLayout);
-        this.logger.debug("Saved layout information: {}", newLayout);
+        this.logger.debug("Layout information saved to preferences: {}", newLayout);
         this.informListenersOfLayoutChange();
     }
 

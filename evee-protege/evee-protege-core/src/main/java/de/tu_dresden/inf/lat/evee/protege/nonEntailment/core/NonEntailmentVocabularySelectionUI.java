@@ -1,13 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.IO.LoadingAbortedException;
 import de.tu_dresden.inf.lat.evee.protege.tools.IO.SignatureFileHandler;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
-import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.OWLModelManager;
@@ -26,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -35,6 +34,9 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.ceil;
+import static java.util.Collections.max;
 
 public class NonEntailmentVocabularySelectionUI implements ActionListener {
 
@@ -59,6 +61,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private JList<OWLEntity> standardLayoutForbiddenVocabularyList;
     private JPanel standardLayoutButtonHolderPanel;
     private JPanel standardVocabularyManagementPanel;
+    private final List<Dimension> standardLayoutWideComponentDimensionList;
 
 //   standard layout button elements
     private static final String STANDARD_ADD_BTN_COMMAND = "STANDARD_ADD";
@@ -96,6 +99,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private JTabbedPane alternativeLayoutPermittedSignatureTabbedPane;
     private JTabbedPane alternativeLayoutForbiddenSignatureTabbedPane;
     private JPanel alternativeVocabularyManagementPanel;
+    private final List<Dimension> alternativeLayoutWideComponentDimensionList;
 
 //   alternative layout button elements
     private static final String ALTERNATIVE_ADD_BTN_COMMAND = "ALTERNATIVE_ADD";
@@ -151,6 +155,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.owlEditorKit.getOWLModelManager().addOntologyChangeListener(
                 this.SignatureOntologyChangeListener);
         this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
+        this.standardLayoutWideComponentDimensionList = new ArrayList<>();
+        this.alternativeLayoutWideComponentDimensionList = new ArrayList<>();
 //        SwingUtilities.invokeLater(() -> {
             this.createStandardLayoutComponents();
             this.createAlternativeLayoutComponents();
@@ -168,6 +174,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     }
 
     private void resetVocabularyListModels(){
+        this.logger.debug("Resetting vocabulary list models for standard and alternative layout");
 //        reset standard layout models:
         this.standardLayoutPermittedVocabularyListModel.removeAll();
         this.standardLayoutForbiddenVocabularyListModel.removeAll();
@@ -197,6 +204,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutPermittedIndividualsListModel.checkAndAddElements(
                 this.owlEditorKit.getOWLModelManager().getActiveOntology().getIndividualsInSignature());
         this.clearVocabularySelection();
+        this.logger.debug("Resetting vocabulary list models for standard and alternative layout completed");
     }
 
     private Collection<OWLEntity> getCompleteOntologySignature(){
@@ -254,6 +262,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.createStandardVocabularyManagementPanel();
     }
     private void createStandardLayoutOntologySignatureTabbedPane(){
+        this.logger.debug("Creating standard layout ontology signature tabbed pane");
         JTabbedPane tabbedPane = new JTabbedPane();
 //        tabbedPane.setPreferredSize(new Dimension(400, 400));
 //        todo: highlighting keywords for classes + properties? see method "initialiseView" in Protege's "AbstractOWLEntityHierarchyViewComponent"
@@ -286,12 +295,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                 getActiveOntology().getIndividualsInSignature(Imports.INCLUDED);
         this.standardLayoutOntologyIndividualsListModel.addElements(individuals);
         tabbedPane.addTab("Individuals", this.standardLayoutOntologyIndividualsJList);
-        tabbedPane.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Ontology vocabulary:"),
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5),"Ontology vocabulary:");
+        tabbedPane.setBorder(BorderFactory.createCompoundBorder(titledBorder,
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        int upperComponentTitleWidth = (int) titledBorder.getMinimumSize(tabbedPane).getWidth() + 5;
+        int upperComponentTitleHeight = (int) titledBorder.getMinimumSize(tabbedPane).getHeight() + 5;
+        this.standardLayoutWideComponentDimensionList.add(new Dimension(
+                upperComponentTitleWidth, upperComponentTitleHeight));
         this.standardLayoutOntologySignatureTabbedPane = tabbedPane;
+        this.logger.debug("Standard layout ontology signature tabbed pane created");
     }
 
 //    private void addBottomEntities2Trees(){
@@ -334,7 +347,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         JButton deleteButton = UIUtilities.createIconButton(STANDARD_DEL_BTN_COMMAND, delUrl,
                 STANDARD_DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);
-        JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList);
+        JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
         this.standardLayoutButtonHolderPanel.add(firstButtonRowPanel);
         this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
@@ -346,43 +359,55 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         JButton deleteAllButton = UIUtilities.createIconButton(STANDARD_DEL_ALL_BTN_COMMAND, delAllUrl,
                 STANDARD_DEL_ALL_BTN_TOOLTIP, this);
         buttonList.add(deleteAllButton);
-        JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList);
+        JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
         this.standardLayoutButtonHolderPanel.add(secondButtonRowPanel);
-        this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
-        JButton addMissingEntailmentSignatureButton = UIUtilities.createNamedButton(
-                STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
-                STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
-                ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
-        buttonList.add(addMissingEntailmentSignatureButton);
-        JPanel thirdButtonRowPanel = this.createButtonPanelFromList(buttonList);
-        this.standardLayoutButtonHolderPanel.add(thirdButtonRowPanel);
         if (! this.preferencesManager.loadUseSimpleMode()){
+            this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            JButton addMissingEntailmentSignatureButton = UIUtilities.createNamedButton(
+                    STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
+                    STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
+                    ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
+            buttonList.add(addMissingEntailmentSignatureButton);
+            this.standardLayoutWideComponentDimensionList.add(addMissingEntailmentSignatureButton.getMinimumSize());
+            JPanel thirdButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
+            this.standardLayoutButtonHolderPanel.add(thirdButtonRowPanel);
             this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             buttonList.clear();
             JButton loadSignatureButton = UIUtilities.createNamedButton(STANDARD_LOAD_SIGNATURE_COMMAND,
                     LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
             buttonList.add(loadSignatureButton);
+            this.standardLayoutWideComponentDimensionList.add(loadSignatureButton.getMinimumSize());
             JButton saveSignatureButton = UIUtilities.createNamedButton(STANDARD_SAVE_SIGNATURE_COMMAND,
                     SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
             buttonList.add(saveSignatureButton);
-            JPanel fourthButtonRowPanel = this.createButtonPanelFromList(buttonList);
+            this.standardLayoutWideComponentDimensionList.add(saveSignatureButton.getMinimumSize());
+            JPanel fourthButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.PAGE_AXIS);
             this.standardLayoutButtonHolderPanel.add(fourthButtonRowPanel);
         }
     }
 
-    private JPanel createButtonPanelFromList(List<JButton> buttons){
+    private JPanel createButtonPanelFromList(List<JButton> buttons, int orientation){
+        if (! (orientation == BoxLayout.PAGE_AXIS || orientation == BoxLayout.LINE_AXIS)){
+            orientation = BoxLayout.LINE_AXIS;
+        }
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, orientation));
+        buttonPanel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
         buttonPanel.add(buttons.get(0));
         for (int idx = 1; idx < buttons.size(); idx++){
-            buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+            if (orientation == BoxLayout.PAGE_AXIS){
+                buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            } else {
+                buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+            }
             buttonPanel.add(buttons.get(idx));
         }
         return buttonPanel;
     }
 
     private void createStandardLayoutSelectedVocabularyListPane(){
+        this.logger.debug("Creating standard layout selected vocabulary tabbed pane");
         this.standardLayoutPermittedVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.standardLayoutPermittedVocabularyList = new JList<>(this.standardLayoutPermittedVocabularyListModel);
         this.standardLayoutPermittedVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
@@ -395,11 +420,17 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                 ComponentFactory.createScrollPane(this.standardLayoutPermittedVocabularyList));
         this.standardLayoutVocabularyTabbedPane.addTab("Forbidden vocabulary",
                 ComponentFactory.createScrollPane(this.standardLayoutForbiddenVocabularyList));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                "Vocabulary:");
+        int titleWidth = (int) titledBorder.getMinimumSize(this.standardLayoutVocabularyTabbedPane).
+                getWidth() + 5;
+        int titleHeight = (int) titledBorder.getMinimumSize(this.standardLayoutVocabularyTabbedPane).
+                getHeight() + 5;
+        this.standardLayoutWideComponentDimensionList.add(new Dimension(titleWidth, titleHeight));
         this.standardLayoutVocabularyTabbedPane.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Vocabulary:"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        this.logger.debug("Standard layout selected vocabulary tabbed pane created");
     }
 
     private void createStandardVocabularyManagementPanel(){
@@ -415,18 +446,31 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 //        specific for given signature tabbed pane:
         constraints.gridy= 0;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.4;
+        constraints.weighty = 0.99;
         this.standardVocabularyManagementPanel.add(this.standardLayoutOntologySignatureTabbedPane, constraints);
 //        specific for signature selected buttons:
         constraints.gridy = 1;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.01;
         this.standardVocabularyManagementPanel.add(this.standardLayoutButtonHolderPanel, constraints);
 //        specific for selected signature pane:
         constraints.gridy = 2;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.6;
+        constraints.weighty = 0.99;
         this.standardVocabularyManagementPanel.add(this.standardLayoutVocabularyTabbedPane, constraints);
+        this.standardVocabularyManagementPanel.setMinimumSize(new Dimension(
+//                width of each component
+                (int) ceil(max(this.standardLayoutWideComponentDimensionList.stream().map(Dimension::getWidth).
+                        collect(Collectors.toList())))
+//                        components embedded in gridBagLayout of standardVocabularyManagementPanel
+                        + this.STANDARD_INSETS.left + this.STANDARD_INSETS.right,
+//                height of each component
+                (int) ceil(max(this.standardLayoutWideComponentDimensionList.stream().map(Dimension::getHeight).
+                        collect(Collectors.toList())))
+//                        component embedded in gridBagLayout of standardVocabularyManagementPanel
+                        + this.STANDARD_INSETS.top + this.STANDARD_INSETS.bottom
+
+        ));
     }
 
 //    private void addTopAndBottomEntities2Collection(Collection<OWLEntity> collection){
@@ -456,13 +500,19 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.addAlternativeLayoutTabbedPaneStateChangeListeners();
     }
     private void createAlternativeLayoutUpperPanel() {
+        this.logger.debug("Creating alternative layout permitted vocabulary tabbed pane");
 //        general
         this.alternativeLayoutPermittedSignatureTabbedPane = new JTabbedPane();
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
+                "Permitted vocabulary:");
         this.alternativeLayoutPermittedSignatureTabbedPane.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(),
-                        "Permitted vocabulary:"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        int titleWidth = (int) titledBorder.getMinimumSize(
+                this.alternativeLayoutPermittedSignatureTabbedPane).getWidth() + 5;
+        int titleHeight = (int) titledBorder.getMinimumSize(
+                this.alternativeLayoutPermittedSignatureTabbedPane).getHeight() + 5;
+        this.alternativeLayoutWideComponentDimensionList.add(new Dimension(titleWidth,
+                titleHeight));
 //        classes
         this.alternativeLayoutPermittedClassesListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.alternativeLayoutPermittedClassesList =
@@ -475,25 +525,32 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutPermittedPropertiesList =
                 new JList<>(this.alternativeLayoutPermittedPropertiesListModel);
         this.alternativeLayoutPermittedPropertiesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Object properties:",
+        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Object properties",
                 ComponentFactory.createScrollPane(this.alternativeLayoutPermittedPropertiesList));
 //        individuals
         this.alternativeLayoutPermittedIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.alternativeLayoutPermittedIndividualsList =
                 new JList<>(this.alternativeLayoutPermittedIndividualsListModel);
         this.alternativeLayoutPermittedIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Individuals:",
+        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Individuals",
                 ComponentFactory.createScrollPane(this.alternativeLayoutPermittedIndividualsList));
+        this.logger.debug("Alternative layout permitted vocabulary tabbed pane created");
     }
 
     private void createAlternativeLayoutLowerPanel() {
+        this.logger.debug("Creating alternative layout forbidden vocabulary tabbed pane");
 //        general
         this.alternativeLayoutForbiddenSignatureTabbedPane = new JTabbedPane();
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
+                "Forbidden vocabulary:");
         this.alternativeLayoutForbiddenSignatureTabbedPane.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(),
-                        "Forbidden vocabulary:"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        int lowerComponentTitleWidth = (int) titledBorder.getMinimumSize(
+                this.alternativeLayoutForbiddenSignatureTabbedPane).getWidth();
+        int lowerComponentTitleHeight = (int) titledBorder.getMinimumSize(
+                this.alternativeLayoutForbiddenSignatureTabbedPane).getHeight();
+        this.alternativeLayoutWideComponentDimensionList.add(new Dimension(lowerComponentTitleWidth,
+                lowerComponentTitleHeight));
 //        classes
         this.alternativeLayoutForbiddenClassesListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.alternativeLayoutForbiddenClassesList = new JList<>(this.alternativeLayoutForbiddenClassesListModel);
@@ -505,15 +562,16 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.alternativeLayoutForbiddenPropertiesList =
                 new JList<>(this.alternativeLayoutForbiddenPropertiesListModel);
         this.alternativeLayoutForbiddenPropertiesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Object properties:",
+        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Object properties",
                 ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenPropertiesList));
 //        individuals
         this.alternativeLayoutForbiddenIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
         this.alternativeLayoutForbiddenIndividualsList =
                 new JList<>(this.alternativeLayoutForbiddenIndividualsListModel);
         this.alternativeLayoutForbiddenIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Individuals:",
+        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Individuals",
                 ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenIndividualsList));
+        this.logger.debug("Alternative layout forbidden vocabulary tabbed pane created");
     }
 
     private void createAlternativeLayoutMiddleButtonPanel(){
@@ -530,7 +588,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         JButton deleteButton = UIUtilities.createIconButton(ALTERNATIVE_DEL_BTN_COMMAND, delUrl,
                 ALTERNATIVE_DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);
-        JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList);
+        JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
         this.alternativeLayoutMiddleButtonHolderPanel.add(firstButtonRowPanel);
         this.alternativeLayoutMiddleButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
@@ -542,7 +600,7 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         JButton deleteAllButton = UIUtilities.createIconButton(ALTERNATIVE_DEL_ALL_BTN_COMMAND, delAllUrl,
                 ALTERNATIVE_DEL_ALL_BTN_TOOLTIP, this);
         buttonList.add(deleteAllButton);
-        JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList);
+        JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
         this.alternativeLayoutMiddleButtonHolderPanel.add(secondButtonRowPanel);
     }
 
@@ -559,17 +617,20 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
                             ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
                             ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
             buttonList.add(addMissingEntailmentSignatureButton);
-            JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList);
+            this.alternativeLayoutWideComponentDimensionList.add(addMissingEntailmentSignatureButton.getMinimumSize());
+            JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
             this.alternativeLayoutBottomButtonHolderPanel.add(firstButtonRowPanel);
             this.alternativeLayoutBottomButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             buttonList.clear();
             JButton loadSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_LOAD_SIGNATURE_COMMAND,
                     LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
             buttonList.add(loadSignatureButton);
+            this.alternativeLayoutWideComponentDimensionList.add(loadSignatureButton.getMinimumSize());
             JButton saveSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_SAVE_SIGNATURE_COMMAND,
                     SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
             buttonList.add(saveSignatureButton);
-            JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList);
+            this.alternativeLayoutWideComponentDimensionList.add(saveSignatureButton.getMinimumSize());
+            JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.PAGE_AXIS);
             this.alternativeLayoutBottomButtonHolderPanel.add(secondButtonRowPanel);
         }
     }
@@ -587,23 +648,35 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 //        specific for given signature tabbed pane:
         constraints.gridy= 0;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.4;
+        constraints.weighty = 0.99;
         this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutPermittedSignatureTabbedPane, constraints);
 //        specific for middle buttons:
         constraints.gridy = 1;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.01;
         this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutMiddleButtonHolderPanel, constraints);
 //        specific for selected signature pane:
         constraints.gridy = 2;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.6;
+        constraints.weighty = 0.99;
         this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutForbiddenSignatureTabbedPane, constraints);
 //            specific for bottom buttons:
         constraints.gridy = 3;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.01;
         this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutBottomButtonHolderPanel, constraints);
+        this.alternativeVocabularyManagementPanel.setMinimumSize(new Dimension(
+//                width of each component
+                (int) ceil(max(this.alternativeLayoutWideComponentDimensionList.stream().map(Dimension::getWidth).
+                        collect(Collectors.toList())))
+//                        components embedded in gridBagLayout of alternativeVocabularyManagementPanel
+                        + this.STANDARD_INSETS.left + this.STANDARD_INSETS.right,
+//                height of each component
+                (int) ceil(max(this.alternativeLayoutWideComponentDimensionList.stream().map(Dimension::getHeight).
+                        collect(Collectors.toList())))
+//                        components embedded in gridBagLayout of alternativeVocabularyManagementPanel
+                        + this.STANDARD_INSETS.top + this.STANDARD_INSETS.bottom
+        ));
     }
 
     private void addAlternativeLayoutTabbedPaneStateChangeListeners(){
@@ -1008,10 +1081,11 @@ private void loadSignatureAction(){
     }
 
     public void resetVocabularyManagementPanel() {
-        this.createStandardLayoutButtonHolderPanel();
-        this.createStandardVocabularyManagementPanel();
-        this.createAlternativeLayoutBottomButtonPanel();
-        this.createAlternativeVocabularyManagementPanel();
+        this.alternativeLayoutWideComponentDimensionList.clear();
+        this.createStandardLayoutComponents();
+        this.standardLayoutWideComponentDimensionList.clear();
+        this.createAlternativeLayoutComponents();
+        this.resetVocabularyListModels();
     }
 
     public void resetSelectedSignature(){

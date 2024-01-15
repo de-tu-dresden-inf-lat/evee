@@ -35,11 +35,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -48,6 +47,9 @@ import java.util.stream.Collectors;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 
+import static java.lang.Math.ceil;
+import static java.util.Collections.max;
+import static java.util.Collections.min;
 import static org.junit.Assert.assertNotNull;
 
 public class NonEntailmentViewComponent extends AbstractOWLViewComponent
@@ -83,6 +85,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JLabel computeMessageLabel;
     private JLabel filterWarningLabel;
     protected NonEntailmentExplanationLoadingScreenManager loadingUI;
+    private final List<Dimension> wideComponentDimensionList;
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
     private static final String COMPUTE_NAME = "Generate explanation";
     private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected vocabulary and missing entailment";
@@ -113,6 +116,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.changeListener = new ViewComponentOntologyChangeListener();
         this.loadingUI = new NonEntailmentExplanationLoadingScreenManager(DEFAULT_UI_TITLE);
         this.loadingUI.registerLoadingUIListener(this);
+        this.wideComponentDimensionList = new ArrayList<>();
         this.logger.debug("Object NonEntailmentViewComponent created");
     }
 
@@ -177,20 +181,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.addHolderPanel();
     }
 
-//    private void resetServiceSelectionComponent(){
-//        SwingUtilities.invokeLater(() -> {
-//            String currentExplainer = null;
-//            if (this.serviceNamesComboBox != null){
-//                currentExplainer = (String) this.serviceNamesComboBox.getSelectedItem();
-//            }
-//            this.createGeneralSettingsComponent();
-//            if (currentExplainer != null){
-//                this.serviceNamesComboBox.setSelectedItem(currentExplainer);
-//            }
-//            this.changeComputeButtonStatus();
-//        });
-//    }
-//
+
     private void resetSignatureAndMissingEntailmentComponent(){
         this.logger.debug("Resetting vocabulary and missing entailment component");
         this.signatureAndMissingEntailmentComponent = new JPanel();
@@ -201,23 +192,42 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             idx = this.signatureAndMissingEntailmentTabbedPane.getSelectedIndex();
         }
         this.signatureAndMissingEntailmentTabbedPane = new JTabbedPane();
-        this.signatureAndMissingEntailmentTabbedPane.addTab("Missing entailment", this.missingEntailmentManagementPanel);
-        this.resetSignatureSelectionComponent();
+        this.signatureAndMissingEntailmentTabbedPane.addTab("Missing entailment",
+                this.missingEntailmentManagementPanel);
         this.signatureAndMissingEntailmentTabbedPane.addTab("Vocabulary", this.signatureManagementPanel);
         this.signatureAndMissingEntailmentTabbedPane.setSelectedIndex(idx);
         JPanel signatureAndMissingEntailmentTabbedPaneHolderPanel = new JPanel();
         signatureAndMissingEntailmentTabbedPaneHolderPanel.setLayout(
                 new BoxLayout(signatureAndMissingEntailmentTabbedPaneHolderPanel, BoxLayout.PAGE_AXIS));
         signatureAndMissingEntailmentTabbedPaneHolderPanel.add(this.signatureAndMissingEntailmentTabbedPane);
-        JScrollPane signatureAndMissingEntailmentScrollPane = ComponentFactory.createScrollPane(
-                signatureAndMissingEntailmentTabbedPaneHolderPanel);
-        JPanel signatureAndMissingEntailmentScrollPaneHolderPanel = new JPanel();
-        signatureAndMissingEntailmentScrollPaneHolderPanel.setLayout(
-                new BoxLayout(signatureAndMissingEntailmentScrollPaneHolderPanel, BoxLayout.PAGE_AXIS));
-        signatureAndMissingEntailmentScrollPaneHolderPanel.add(signatureAndMissingEntailmentScrollPane);
-        this.signatureAndMissingEntailmentComponent.add(signatureAndMissingEntailmentScrollPaneHolderPanel);
+        this.signatureAndMissingEntailmentComponent.add(signatureAndMissingEntailmentTabbedPaneHolderPanel);
+        if (this.signatureManagementPanel.getMinimumSize().getWidth() >
+                this.missingEntailmentManagementPanel.getMinimumSize().getWidth()){
+            this.signatureAndMissingEntailmentComponent.setMinimumSize(new Dimension(
+//                    minimum width of component
+                    (int) this.signatureManagementPanel.getMinimumSize().getWidth()
+//                            component embedded in gridBagLayout of holderPanel
+                            + this.STANDARD_INSETS.left + this.STANDARD_INSETS.right,
+//                    minimum height of component
+                    (int) this.signatureManagementPanel.getMinimumSize().getHeight()
+//                            component embedded in gridBagLayout of holderPanel
+                            + this.STANDARD_INSETS.top + this.STANDARD_INSETS.bottom
+            ));
+        } else {
+            this.signatureAndMissingEntailmentComponent.setMinimumSize(new Dimension(
+//                    minimum width of component
+                    (int) this.missingEntailmentManagementPanel.getMinimumSize().getWidth()
+//                            component embedded in gridBagLayout of holderPanel
+                            + this.STANDARD_INSETS.left + this.STANDARD_INSETS.right,
+//                    minimum height of component
+                    (int) this.missingEntailmentManagementPanel.getMinimumSize().getHeight()
+//                            component embedded in gridBagLayout of holderPanel
+                            + this.STANDARD_INSETS.top + this.STANDARD_INSETS.bottom
+            ));
+
+        }
     }
-//
+
     private void resetExplanationServiceComponent(){
         this.logger.debug("Resetting explanation service component");
             this.nonEntailmentExplanationServiceComponent = new JPanel();
@@ -261,8 +271,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.holderPanel.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
-                holderPanel.revalidate();
-                holderPanel.repaint();
+                UIUtilities.revalidateAndRepaintComponent(holderPanel);
             }
 
             @Override
@@ -307,8 +316,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private void repaintComponents(){
-        this.repaint();
-        this.revalidate();
+        UIUtilities.revalidateAndRepaintComponent(this);
     }
 
     private void resetResultComponent(){
@@ -320,12 +328,17 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private void resetSignatureSelectionComponent(){
-        this.signatureManagementPanel = this.signatureSelectionUI.getSignatureManagementComponent();
+        JPanel nonScrollableSignatureManagementPanel = this.signatureSelectionUI.getSignatureManagementComponent();
+        JScrollPane signatureManagementScrollPane =
+                ComponentFactory.createScrollPane(nonScrollableSignatureManagementPanel);
+        this.signatureManagementPanel = new JPanel(new BorderLayout());
+        this.signatureManagementPanel.add(signatureManagementScrollPane);
+        this.signatureManagementPanel.setMinimumSize(nonScrollableSignatureManagementPanel.getMinimumSize());
     }
 
     private void createMissingEntailmentManagementComponent(){
-        this.missingEntailmentManagementPanel = new JPanel();
-        this.missingEntailmentManagementPanel.setLayout(new GridBagLayout());
+        JPanel missingEntailmentManagementInnerPanel = new JPanel();
+        missingEntailmentManagementInnerPanel.setLayout(new GridBagLayout());
         JPanel missingEntailmentTextPanel = this.createMissingEntailmentTextPanel();
         GridBagConstraints constraints = new GridBagConstraints();
 //        general constraints:
@@ -338,20 +351,37 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //        specific for editor panel:
         constraints.gridy= 0;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.4;
-        this.missingEntailmentManagementPanel.add(missingEntailmentTextPanel, constraints);
+        constraints.weighty = 0.6;
+        missingEntailmentManagementInnerPanel.add(missingEntailmentTextPanel, constraints);
         JPanel buttonPanel = this.createMissingEntailmentButtonPanel();
 //        specific for button panel:
         constraints.gridy = 1;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
-        this.missingEntailmentManagementPanel.add(buttonPanel, constraints);
+        missingEntailmentManagementInnerPanel.add(buttonPanel, constraints);
         JPanel selectedMissingEntailmentPanel = this.createSelectedMissingEntailmentPanel();
 //        specific for selected missing entailment:
         constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.6;
-        this.missingEntailmentManagementPanel.add(selectedMissingEntailmentPanel, constraints);
+        missingEntailmentManagementInnerPanel.add(selectedMissingEntailmentPanel, constraints);
+        missingEntailmentManagementInnerPanel.setMinimumSize(new Dimension(
+//                width of each component
+                (int) ceil(max(this.wideComponentDimensionList.stream().map(Dimension::getWidth).
+                        collect(Collectors.toList())))
+//                        component embedded in gridBagLayout of missingEntailmentManagementPanel
+                        + this.STANDARD_INSETS.left + this.STANDARD_INSETS.right,
+//                height of each component
+                (int) ceil(max(this.wideComponentDimensionList.stream().map(Dimension::getHeight).
+                        collect(Collectors.toList())))
+//                        component embedded in gridBagLayout of missingEntailmentManagementPanel
+                        + this.STANDARD_INSETS.top + this.STANDARD_INSETS.bottom
+        ));
+        JScrollPane signatureManagementScrollPane = ComponentFactory.createScrollPane(
+                missingEntailmentManagementInnerPanel);
+        this.missingEntailmentManagementPanel = new JPanel(new BorderLayout());
+        this.missingEntailmentManagementPanel.add(signatureManagementScrollPane);
+        this.missingEntailmentManagementPanel.setMinimumSize(missingEntailmentManagementInnerPanel.getMinimumSize());
     }
 
     private JPanel createMissingEntailmentTextPanel(){
@@ -363,11 +393,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         JScrollPane editorScrollPane = ComponentFactory.createScrollPane(this.missingEntailmentTextEditor);
 //        editorScrollPane.setPreferredSize(new Dimension(400, 400));
         missingEntailmentEditorPanel.add(editorScrollPane);
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(
+                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                "Enter missing entailment:");
         missingEntailmentEditorPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Enter missing entailment:"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        int titleWidth = (int) titledBorder.getMinimumSize(missingEntailmentEditorPanel).getWidth() + 5;
+        int titleHeight = (int) titledBorder.getMinimumSize(missingEntailmentEditorPanel).getHeight() + 5;
+        this.wideComponentDimensionList.add(new Dimension(titleWidth, titleHeight));
         return missingEntailmentEditorPanel;
     }
 
@@ -427,15 +460,16 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         renderer.setHighlightUnsatisfiableClasses(false);
         renderer.setHighlightUnsatisfiableProperties(false);
         this.selectedMissingEntailmentList.setCellRenderer(renderer);
-        JScrollPane scrollPane = new JScrollPane(this.selectedMissingEntailmentList);
-        scrollPane.getViewport().setBackground(Color.WHITE);
-//        scrollPane.setPreferredSize(new Dimension(400, 400));
+        JScrollPane scrollPane = ComponentFactory.createScrollPane(this.selectedMissingEntailmentList);
         missingEntailmentPanel.add(scrollPane);
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(
+                5, 5, 5, 5),
+                "Selected missing entailment(s):");
         missingEntailmentPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(),
-                        "Selected missing entailment:"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        int titleWidth = (int) titledBorder.getMinimumSize(missingEntailmentPanel).getWidth() + 5;
+        int titleHeight = (int) titledBorder.getMinimumSize(missingEntailmentPanel).getHeight() + 5;
+        this.wideComponentDimensionList.add(new Dimension(titleWidth, titleHeight));
         return missingEntailmentPanel;
     }
 
@@ -451,14 +485,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.computeButton = UIUtilities.createNamedButton(COMPUTE_COMMAND,
                 COMPUTE_NAME, COMPUTE_TOOLTIP, this);
         this.computeButton.setEnabled(false);
-//        JToolBar computeButtonToolBar = new JToolBar();
-//        computeButtonToolBar.setOrientation(JToolBar.HORIZONTAL);
-//        computeButtonToolBar.setFloatable(false);
-//        computeButtonToolBar.setLayout(new BoxLayout(computeButtonToolBar, BoxLayout.LINE_AXIS));
-//        computeButtonToolBar.add(this.computeButton);
         JPanel buttonAndMessagePanel = new JPanel();
         buttonAndMessagePanel.setLayout(new BoxLayout(buttonAndMessagePanel, BoxLayout.LINE_AXIS));
-//        buttonHelperPanel.add(computeButtonToolBar);
         buttonAndMessagePanel.add(this.computeButton);
         buttonAndMessagePanel.add(Box.createRigidArea(new Dimension(10, 0)));
         this.computeMessageLabel = UIUtilities.createLabel("");
@@ -601,11 +629,15 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         SwingUtilities.invokeLater(() -> {
             switch (event.getType()){
                 case LAYOUT_CHANGE:
+                    this.wideComponentDimensionList.clear();
+                    this.createGeneralSettingsComponent();
                     this.resetMainComponent();
                     this.repaintComponents();
                     break;
                 case SIMPLE_MODE_CHANGE:
                     this.signatureSelectionUI.resetVocabularyManagementPanel();
+                    this.wideComponentDimensionList.clear();
+                    this.createGeneralSettingsComponent();
                     this.resetSignatureSelectionComponent();
                     this.createMissingEntailmentManagementComponent();
                     this.resetMainComponent();
@@ -617,6 +649,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     @Override
     public void handleSignatureModificationEvent(SignatureModificationEvent event) {
         Set<OWLEntity> additionalSignatureNames = event.getAdditionalSignatureNames();
+//        if signature is changed by outside event, show signature tab as confirmation
         this.signatureAndMissingEntailmentTabbedPane.setSelectedIndex(1);
         this.signatureSelectionUI.addNamesToSignature(additionalSignatureNames);
     }
@@ -820,11 +853,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         filterWarningPanel.add(filterWarningCheckBox);
         filterWarningPanel.add(filterWarningButton);
         filterWarningDialog.getContentPane().add(filterWarningPanel);
-        filterWarningDialog.pack();
-//        filterWarningDialog.setSize(600, 150);
-        filterWarningDialog.setLocationRelativeTo(
-                ProtegeManager.getInstance().getFrame(this.getOWLEditorKit().getWorkspace()));
-        filterWarningDialog.setVisible(true);
+        UIUtilities.packAndSetWindow(filterWarningDialog, this.getOWLEditorKit(), true);
     }
 
     private void disposeLoadingScreen(){

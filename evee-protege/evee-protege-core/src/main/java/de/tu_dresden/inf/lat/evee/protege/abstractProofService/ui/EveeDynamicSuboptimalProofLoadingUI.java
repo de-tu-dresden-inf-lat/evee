@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeSuboptimalProofPreferencesManager;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.core.ProtegeManager;
 
 import javax.swing.*;
@@ -43,11 +44,8 @@ public class EveeDynamicSuboptimalProofLoadingUI extends EveeDynamicProofLoading
             subOptimalProofMessagePanel.add(subOptimalProofMessageCheckBox);
             subOptimalProofMessagePanel.add(subOptimalProofMessageButton);
             subOptimalProofMessageDialog.getContentPane().add(subOptimalProofMessagePanel);
-            subOptimalProofMessageDialog.pack();
             subOptimalProofMessageDialog.setSize(600, 150);
-            subOptimalProofMessageDialog.setLocationRelativeTo(
-                            ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace()));
-            subOptimalProofMessageDialog.setVisible(true);
+            UIUtilities.packAndSetWindow(subOptimalProofMessageDialog, this.editorKit, true);
         });
     }
 

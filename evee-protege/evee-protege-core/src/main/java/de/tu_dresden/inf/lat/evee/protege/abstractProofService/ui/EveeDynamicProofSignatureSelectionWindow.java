@@ -109,10 +109,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
             this.addSignaturePanelComponents();
             this.addMiddleButtons();
             this.addLowerInteractiveElements();
-            this.dialog.pack();
-            this.dialog.setLocationRelativeTo(
-                    ProtegeManager.getInstance().getFrame(this.getWorkspace()));
-            this.dialog.setVisible(true);
+            UIUtilities.packAndSetWindow(this.dialog, this.getOWLEditorKit(), true);
         });
     }
 
@@ -349,18 +346,6 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
             }
         });
     }
-
-//    private void showError(String message){
-//        SwingUtilities.invokeLater(() -> {
-//            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-//            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()), "Error");
-//            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-//            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-//                    ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace())));
-//            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//            errorDialog.setVisible(true);
-//        });
-//    }
 
     private void enableButtons(boolean enable){
         this.loadButton.setEnabled(enable);

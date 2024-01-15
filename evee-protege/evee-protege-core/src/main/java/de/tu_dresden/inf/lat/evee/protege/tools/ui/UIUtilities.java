@@ -116,12 +116,20 @@ public class UIUtilities {
             JDialog dialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
                     owlEditorKit.getWorkspace()), title);
             dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            dialog.pack();
-            dialog.setLocationRelativeTo(
-                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace()));
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.setVisible(true);
+            UIUtilities.packAndSetWindow(dialog, owlEditorKit, true);
         });
+    }
+
+    public static void packAndSetWindow(Window window, OWLEditorKit owlEditorKit, boolean showWindow){
+        window.pack();
+        window.setLocationRelativeTo(ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace()));
+        window.setVisible(showWindow);
+    }
+
+    public static void revalidateAndRepaintComponent(Component component){
+        component.revalidate();
+        component.repaint();
     }
 
     private static class DoubleArrowButton extends BasicArrowButton {
