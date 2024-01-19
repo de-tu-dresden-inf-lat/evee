@@ -104,7 +104,6 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment xml:lang="en">This disease should be classified as:
-- SpecificDisease
 - HeartDisease</rdfs:comment>
         <rdfs:label xml:lang="en">Coronary Artery Disease (CAD)</rdfs:label>
     </owl:Class>
@@ -116,7 +115,6 @@
     <owl:Class rdf:about="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#Covid">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/patrickk/ontologies/2024/0/untitled-ontology-268#SpecificDisease"/>
         <rdfs:comment>This disease should be classified as:
-- SpecificDisease
 - InfectiousDisease</rdfs:comment>
     </owl:Class>
     

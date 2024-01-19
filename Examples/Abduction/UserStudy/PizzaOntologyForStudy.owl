@@ -140,6 +140,12 @@ ObjectProperty: pizza:isToppingOf
         rdfs:comment "Any given instance of topping should only be added to a single pizza (no cheap half-measures on our pizzas)"@en
     
     
+Class: <http://www.co-ode.org/ontologies/pizza#AmericanStylePizza>
+
+    SubClassOf: 
+        pizza:Pizza
+    
+    
 Class: <http://www.co-ode.org/ontologies/pizza#Boscaiola>
 
     Annotations: 
@@ -150,7 +156,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#Boscaiola>
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,		
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#SausageTopping>,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:MushroomTopping
@@ -197,7 +203,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#Diavola>
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-		<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,		
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#SpianataCalabra>,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -249,7 +255,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#Istanbul>
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#Feta>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#Sucuk>,
         pizza:hasTopping some pizza:TomatoTopping
@@ -264,7 +270,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#ItalySpecial>
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some pizza:HamTopping,
         pizza:hasTopping some pizza:ParmesanTopping,
         pizza:hasTopping some pizza:RocketTopping
@@ -279,7 +285,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#Marinara>
 - a VegetarianPizza"@en
     
     SubClassOf: 
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#OliveOil>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#OreganoTopping>,
         pizza:hasTopping some pizza:GarlicTopping,
@@ -298,6 +304,15 @@ Class: <http://www.co-ode.org/ontologies/pizza#OreganoTopping>
         pizza:HerbSpiceTopping
     
     
+Class: <http://www.co-ode.org/ontologies/pizza#PanPizza>
+
+    EquivalentTo: 
+        pizza:hasBase some pizza:DeepPanBase
+    
+    SubClassOf: 
+        <http://www.co-ode.org/ontologies/pizza#AmericanStylePizza>
+    
+    
 Class: <http://www.co-ode.org/ontologies/pizza#PizzaFriarelli>
 
     Annotations: 
@@ -308,7 +323,7 @@ Class: <http://www.co-ode.org/ontologies/pizza#PizzaFriarelli>
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#FriarelliTopping>,
         pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#SausageTopping>,
         pizza:hasTopping some pizza:MozzarellaTopping
@@ -398,12 +413,13 @@ Class: pizza:American
 
     Annotations: 
         rdfs:comment "This pizza should be:
+- an AmericanStylePizza
 - a CheesyPizza
 - a MeatyPizza"@en
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:PeperoniSausageTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -413,13 +429,14 @@ Class: pizza:AmericanHot
 
     Annotations: 
         rdfs:comment "This pizza should be:
+- an AmericanStylePizza
 - a CheesyPizza
 - a MeatyPizza
 - a SpicyPizza"@en
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some pizza:JalapenoPepperTopping,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:PeperoniSausageTopping,
@@ -602,7 +619,7 @@ Class: pizza:FourSeasons
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForModels>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some pizza:AnchoviesTopping,
         pizza:hasTopping some pizza:CaperTopping,
         pizza:hasTopping some pizza:HamTopping,
@@ -631,7 +648,7 @@ Class: pizza:FruttiDiMare
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some pizza:GarlicTopping,
         pizza:hasTopping some pizza:MixedSeafoodTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -646,7 +663,7 @@ Class: pizza:Funghi
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:MushroomTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -798,7 +815,7 @@ Class: pizza:Margherita
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:TomatoTopping
     
@@ -903,7 +920,7 @@ Class: pizza:Napoletana
     
     SubClassOf: 
         <http://www.co-ode.org/ontologies/pizza#CategoryForAbduction>,
-	<http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,	
+        <http://www.co-ode.org/ontologies/pizza#CategoryForWithout>,
         pizza:hasTopping some pizza:AnchoviesTopping,
         pizza:hasTopping some pizza:CaperTopping,
         pizza:hasTopping some pizza:MozzarellaTopping,
