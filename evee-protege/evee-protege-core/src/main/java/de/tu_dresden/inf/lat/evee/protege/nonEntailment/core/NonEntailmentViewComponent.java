@@ -107,8 +107,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     protected static final String DEFAULT_UI_TITLE = "LOADING";
     private static final String MISSING_ENTAILMENT_TAB_NAME = "Missing entailment";
     private static final String MISSING_ENTAILMENT_TAB_TOOLTIP = "Enter missing entailment that should be explained";
-    private static final String VOCABULARY_TAB_NAME = "Vocabulary";
-    private static final String VOCABULARY_TAB_TOOLTIP =
+    private static final String SIGNATURE_MANAGEMENT_TAB_NAME = "Vocabulary";
+    private static final String SIGNATURE_MANAGEMENT_TAB_TOOLTIP =
             "Enter forbidden/permitted vocabulary that should be used for the explanation";
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentViewComponent.class);
@@ -199,8 +199,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.signatureAndMissingEntailmentTabbedPane = new JTabbedPane();
         this.signatureAndMissingEntailmentTabbedPane.addTab(MISSING_ENTAILMENT_TAB_NAME, null,
                 this.missingEntailmentManagementPanel, MISSING_ENTAILMENT_TAB_TOOLTIP);
-        this.signatureAndMissingEntailmentTabbedPane.addTab(VOCABULARY_TAB_NAME, null,
-                this.signatureManagementPanel, VOCABULARY_TAB_TOOLTIP);
+        this.signatureAndMissingEntailmentTabbedPane.addTab(SIGNATURE_MANAGEMENT_TAB_NAME, null,
+                this.signatureManagementPanel, SIGNATURE_MANAGEMENT_TAB_TOOLTIP);
         this.signatureAndMissingEntailmentTabbedPane.setSelectedIndex(idx);
         JPanel signatureAndMissingEntailmentTabbedPaneHolderPanel = new JPanel();
         signatureAndMissingEntailmentTabbedPaneHolderPanel.setLayout(
