@@ -4,8 +4,9 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListe
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.protege.editor.owl.model.OWLModelManager;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,8 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelle
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -36,29 +39,29 @@ public class EveeProofGenerationThread extends Thread implements IExplanationGen
 	}
 
 	public void run() {
-		this.logger.debug("Proof generation thread started");
+		this.logger.info("Proof generation thread started");
 		try {
 			if (this.proofGenerator.supportsProof(this.entailment)) {
-				this.logger.debug("Proof supported for axiom {}", this.entailment);
+				this.logger.info("Proof supported for axiom {}", this.entailment);
 				this.result = proofGenerator.getProof(this.entailment);
 				assertNotNull(this.result);
 				if (proofGenerator.successful()){
-					this.logger.debug("Proof generation completed successfully");
+					this.logger.info("Proof generation completed successfully");
 					this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
 							this, ExplanationEventType.COMPUTATION_COMPLETE));
 				}
 				else{
-					this.logger.debug("Proof generation cancelled, potentially suboptimal proof found");
+					this.logger.info("Proof generation cancelled, potentially suboptimal proof found");
 					this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
 							this, ExplanationEventType.COMPUTATION_CANCELLED));
 				}
 			} else {
-				this.logger.debug("Proof NOT supported for axiom {}", this.entailment);
+				this.logger.info("Proof NOT supported for axiom {}", this.entailment);
 				this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
 						this, ExplanationEventType.NOT_SUPPORTED));
 			}
 		} catch (ProofGenerationCancelledException e) {
-			this.logger.debug("Proof generation cancelled, no proof found: ", e);
+			this.logger.info("Proof generation cancelled, no proof found: ", e);
 			this.errorMessage = "Proof generation cancelled, no proof found";
 			this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
 					this, ExplanationEventType.ERROR));

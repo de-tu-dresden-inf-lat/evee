@@ -25,10 +25,11 @@ public class EveeDynamicProofLoadingUI {
     private AbstractEveeDynamicProofAdapter proofAdapter;
     protected OWLEditorKit editorKit;
     private final String uiTitle;
-    private final Logger logger = LoggerFactory.getLogger(EveeDynamicProofLoadingUI.class);
+    private final Logger logger;
 
     public EveeDynamicProofLoadingUI(String uiTitle){
         this.uiTitle = uiTitle;
+        this.logger = LoggerFactory.getLogger(EveeDynamicProofLoadingUI.class + " for proofService: " + uiTitle);
     }
 
     public void setProofAdapter(AbstractEveeDynamicProofAdapter proofAdapter){
@@ -81,6 +82,7 @@ public class EveeDynamicProofLoadingUI {
         if (message != null  && !this.showCancelScreen){
             SwingUtilities.invokeLater( () -> {
                 this.label.setText(message);
+                UIUtilities.packAndSetWindow(this.loadingDialog, this.editorKit, this.loadingDialog.isVisible());
             });
         }
     }
@@ -91,7 +93,7 @@ public class EveeDynamicProofLoadingUI {
                 return;
             }
             if (progress >= this.progressBar.getMaximum()){
-                this.disposeLoadingScreen();
+                this.progressBar.setValue(this.progressBar.getMaximum());
             }
             else {
                 this.progressBar.setValue(progress);
