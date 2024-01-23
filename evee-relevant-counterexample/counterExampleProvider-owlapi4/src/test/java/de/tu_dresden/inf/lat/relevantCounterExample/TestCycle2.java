@@ -9,6 +9,7 @@ import java.util.Set;
 
 import de.tu_dresden.inf.lat.counterExample.RedundancyRefiner;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.model.json.JsonMapperWriter;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.elk.owlapi.ElkReasoner;
@@ -21,7 +22,6 @@ import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.AlphaRele
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.BetaRelevantGenerator;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.DiffRelevantGenerator;
 import de.tu_dresden.inf.lat.model.data.Element;
-import de.tu_dresden.lat.model.json.JsonMapperWriter;
 
 public class TestCycle2 {
 
