@@ -162,6 +162,12 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
     }
 
     @Override
+    public Collection<OWLIndividualAxiom> getHint() {
+        //Not implemented
+        return Collections.emptySet();
+    }
+
+    @Override
     public boolean successful() {
         return true;
     }
