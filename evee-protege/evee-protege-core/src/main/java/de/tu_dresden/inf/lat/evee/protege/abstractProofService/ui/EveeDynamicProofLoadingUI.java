@@ -81,8 +81,12 @@ public class EveeDynamicProofLoadingUI {
     public void updateMessage(String message){
         if (message != null  && !this.showCancelScreen){
             SwingUtilities.invokeLater( () -> {
+                double oldPreferredDialogWidth = this.loadingDialog.getPreferredSize().getWidth();
                 this.label.setText(message);
-                UIUtilities.packAndSetWindow(this.loadingDialog, this.editorKit, this.loadingDialog.isVisible());
+                double newPreferredDialogWidth = this.loadingDialog.getPreferredSize().getWidth();
+                if (newPreferredDialogWidth > oldPreferredDialogWidth){
+                    UIUtilities.packAndSetWindow(this.loadingDialog, this.editorKit, this.loadingDialog.isVisible());
+                }
             });
         }
     }
