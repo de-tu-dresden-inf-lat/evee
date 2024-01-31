@@ -143,6 +143,12 @@ ObjectProperty: pizza:isToppingOf
         rdfs:comment "Any given instance of topping should only be added to a single pizza (no cheap half-measures on our pizzas)"@en
     
     
+Class: <http://www.co-ode.org/ontologies/pizza#AmericanStylePizza>
+
+    SubClassOf: 
+        pizza:Pizza
+    
+    
 Class: <http://www.co-ode.org/ontologies/pizza#Boscaiola>
 
     Annotations: 
@@ -241,6 +247,27 @@ Class: <http://www.co-ode.org/ontologies/pizza#FriarelliTopping>
         pizza:VegetableTopping
     
     
+Class: <http://www.co-ode.org/ontologies/pizza#GoudaTopping>
+
+    SubClassOf: 
+        pizza:CheeseTopping
+    
+    
+Class: <http://www.co-ode.org/ontologies/pizza#Hawaii>
+
+    Annotations: 
+        rdfs:comment "This pizza should be:
+- CheesyPizza
+- MeatyPizza
+- NonTraditionalPizza"
+    
+    SubClassOf: 
+        pizza:Ignore,
+        pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#GoudaTopping>,
+        pizza:hasTopping some <http://www.co-ode.org/ontologies/pizza#PineappleTopping>,
+        pizza:hasTopping some pizza:HamTopping
+    
+    
 Class: <http://www.co-ode.org/ontologies/pizza#Istanbul>
 
     Annotations: 
@@ -285,6 +312,16 @@ Class: <http://www.co-ode.org/ontologies/pizza#Marinara>
         pizza:hasTopping some pizza:TomatoTopping
     
     
+Class: <http://www.co-ode.org/ontologies/pizza#NonTraditionalPizza>
+
+    EquivalentTo: 
+        pizza:Pizza
+         and (pizza:hasTopping some pizza:FruitTopping)
+    
+    SubClassOf: 
+        pizza:Pizza
+    
+    
 Class: <http://www.co-ode.org/ontologies/pizza#OliveOil>
 
     SubClassOf: 
@@ -295,6 +332,21 @@ Class: <http://www.co-ode.org/ontologies/pizza#OreganoTopping>
 
     SubClassOf: 
         pizza:HerbSpiceTopping
+    
+    
+Class: <http://www.co-ode.org/ontologies/pizza#PanPizza>
+
+    EquivalentTo: 
+        pizza:hasBase some pizza:DeepPanBase
+    
+    SubClassOf: 
+        <http://www.co-ode.org/ontologies/pizza#AmericanStylePizza>
+    
+    
+Class: <http://www.co-ode.org/ontologies/pizza#PineappleTopping>
+
+    SubClassOf: 
+        pizza:FishTopping
     
     
 Class: <http://www.co-ode.org/ontologies/pizza#PizzaFriarelli>
@@ -396,6 +448,7 @@ Class: pizza:American
 
     Annotations: 
         rdfs:comment "This pizza should be:
+- an AmericanStylePizza
 - a CheesyPizza
 - a MeatyPizza"@en
     
@@ -410,6 +463,7 @@ Class: pizza:AmericanHot
 
     Annotations: 
         rdfs:comment "This pizza should be:
+- an AmericanStylePizza
 - a CheesyPizza
 - a MeatyPizza
 - a SpicyPizza"@en
@@ -625,7 +679,7 @@ Class: pizza:FruttiDiMare
 - DairyFree"@en
     
     SubClassOf: 
-        pizza:NamedPizza,
+        pizza:Ignore,
         pizza:hasTopping some pizza:GarlicTopping,
         pizza:hasTopping some pizza:MixedSeafoodTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -639,7 +693,7 @@ Class: pizza:Funghi
 - VegetarianPizza"@en
     
     SubClassOf: 
-        pizza:NamedPizza,
+        pizza:Ignore,
         pizza:hasTopping some pizza:MozzarellaTopping,
         pizza:hasTopping some pizza:MushroomTopping,
         pizza:hasTopping some pizza:TomatoTopping
@@ -897,7 +951,7 @@ Class: pizza:Napoletana
 - a VegetarianPizza"@en
     
     SubClassOf: 
-        pizza:NamedPizza,
+        pizza:Ignore,
         pizza:hasTopping some pizza:AnchoviesTopping,
         pizza:hasTopping some pizza:CaperTopping,
         pizza:hasTopping some pizza:MozzarellaTopping,
