@@ -32,11 +32,7 @@
             <artifactId>owlapi-distribution</artifactId>
             <version>4.5.20</version>
         </dependency>
-        <dependency>
-            <groupId>edu.stanford.protege</groupId>
-            <artifactId>protege-editor-owl</artifactId>
-            <version>5.5.0</version>
-        </dependency>
+
         <!--        logging related-->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -49,6 +45,8 @@
             <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+
     </dependencies>
 
     <build>
@@ -70,7 +68,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
-
+                  
                     </instructions>
                 </configuration>
                 <executions>

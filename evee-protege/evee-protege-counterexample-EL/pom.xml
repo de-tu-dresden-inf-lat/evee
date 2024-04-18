@@ -10,7 +10,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>evee-protege-counterexample-EL</artifactId>
+    <artifactId>evee-protege-counterexample-small-model</artifactId>
     <packaging>bundle</packaging>
 
     <properties>
@@ -61,9 +61,15 @@
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-small-model-generator-owlapi4</artifactId>
             <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
 
 
+        <!--        <dependency>-->
+<!--            <groupId>org.graphstream</groupId>-->
+<!--            <artifactId>gs-ui</artifactId>-->
+<!--            <version>1.3</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -96,6 +102,7 @@
                         </Import-Package>
                         <Private-Package>
                             de.tu_dresden.inf.lat.evee.smallmodelgenerator.*,
+                            org.graphstream.*,
                             javax.xml.stream.*,
                             org.miv.*
                         </Private-Package>
