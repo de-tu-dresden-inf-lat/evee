@@ -1,8 +1,15 @@
 package de.tu_dresden.inf.lat.relevantCounterExample;
 
 import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
+import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
+import de.tu_dresden.inf.lat.counterExample.RedundancyRefiner;
 import de.tu_dresden.inf.lat.counterExample.data.ModelType;
+import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.BetaRelevantGenerator;
+import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.DiffRelevantGenerator;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.ELKRelevantCounterexampleGenerator;
+import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.RelevantCounterExampleGenerator;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.model.data.Element;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.elk.owlapi.ElkReasoner;
@@ -19,7 +26,7 @@ import static org.junit.Assert.*;
 public class PluginRelatedTests {
     private static OWLOntologyManager manager;
     private static OWLDataFactory factory;
-    private static OWLOntology sushiOnt, pizzaOnt;
+    private static OWLOntology sushiOnt, pizzaOnt, lecturesOnt;
 
     @BeforeClass
     public static void init() throws OWLOntologyCreationException {
@@ -32,6 +39,9 @@ public class PluginRelatedTests {
         pizzaOnt =  manager.loadOntologyFromOntologyDocument(
                 Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream(
                         "ontologies/pizza.owl")));
+        lecturesOnt = manager.loadOntologyFromOntologyDocument(
+                Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream(
+                        "ontologies/study-180124/Lecture_CounterExampleTask.owl")));
     }
 
     @Test
@@ -104,11 +114,11 @@ public class PluginRelatedTests {
 
         cegDiff.setOntology(pizzaOnt);
         cegDiff.setObservation(Sets.newHashSet(conclusion));
-        cegDiff.setSignature(Collections.emptySet());
+        cegDiff.setSignature(pizzaOnt.getSignature());
 
         cegFlatDiff.setOntology(pizzaOnt);
         cegFlatDiff.setObservation(Sets.newHashSet(conclusion));
-        cegFlatDiff.setSignature(Collections.emptySet());
+        cegFlatDiff.setSignature(pizzaOnt.getSignature());
 
         cegDiff.generateModel();
         cegFlatDiff.generateModel();
@@ -118,5 +128,26 @@ public class PluginRelatedTests {
 
         assertFalse(cegDiff.isModelTypeReverted());
         assertEquals(cegDiff.isModelTypeReverted(), cegFlatDiff.isModelTypeReverted());
+
+        assertEquals(1, cegDiff.getHint().size());
+        assertEquals(1, cegFlatDiff.getHint().size());
+    }
+
+    @Test
+    public void test4() {
+
+        OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(factory.getOWLClass(IRI.create("http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#ComputerNetworks")),
+                factory.getOWLClass(IRI.create("http://www.semanticweb.org/tom_f/ontologies/2023/8/Lecture_Ontology#OnlineLecture")));
+
+        ELKRelevantCounterexampleGenerator cegBeta = new ELKRelevantCounterexampleGenerator(ModelType.Beta);
+
+        cegBeta.setOntology(lecturesOnt);
+        cegBeta.setObservation(Sets.newHashSet(conclusion));
+        cegBeta.setSignature(lecturesOnt.getSignature());
+
+        cegBeta.generateModel();
+
+        assertEquals(1, cegBeta.getHint().size());
+
     }
 }

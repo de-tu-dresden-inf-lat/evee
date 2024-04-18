@@ -33,6 +33,7 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     private Collection<OWLEntity> signature;
     private OWLOntology ontology;
     private Set<IRI> markedIndividuals;
+    private Collection<OWLIndividualAxiom> hint;
 
     private boolean modelTypeReverted = false;
     private IProgressTracker progressTracker;
@@ -109,6 +110,11 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             RedundancyRefiner rr = new RedundancyRefiner(model, generator);
             rr.refine();
 
+            if(type != ModelType.Alpha)
+                this.hint = asOWLHint(HintFinder.getHint(model,generator));
+            else
+                this.hint = new HashSet<>();
+
             Set<OWLIndividualAxiom> owlModel = new HashSet<>();
             for (Element element : model) {
                 OWLIndividual individual = owlIndividual(element.getName());
@@ -141,6 +147,35 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
         } catch (SubsumptionHoldsException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Collection<OWLIndividualAxiom> asOWLHint(Set<Element> hint) {
+        Set<OWLIndividualAxiom> owlHint = new HashSet<>();
+
+        for (Element element : hint) {
+            OWLIndividual individual = owlIndividual(element.getName());
+            for (OWLClassExpression expr : element.getTypes()) {
+                if (signature.containsAll(expr.getSignature())) {
+                    owlHint.add(factory.getOWLClassAssertionAxiom(expr, individual));
+                }
+            }
+            for (Relation relation : element.getRelations()) {
+                OWLIndividual other = owlIndividual(relation.getElement2().getName());
+                OWLObjectProperty property = relation.getRoleName();
+                if (signature.contains(property)) {
+                    if (relation.isForward()) {
+                        owlHint.add(factory.getOWLObjectPropertyAssertionAxiom(property, individual, other));
+                    }
+                }
+            }
+        }
+
+        return owlHint;
+    }
+
+    @Override
+    public Collection<OWLIndividualAxiom> getHint() {
+        return hint;
     }
 
     private void incrementProgressTracker() {
