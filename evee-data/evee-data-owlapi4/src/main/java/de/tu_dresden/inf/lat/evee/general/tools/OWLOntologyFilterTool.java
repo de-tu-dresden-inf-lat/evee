@@ -187,6 +187,52 @@ public class OWLOntologyFilterTool {
         }
     }
 
+    public static class ALCOIFilter implements IOWLOntologyFilter {
+
+        @Override
+        public List<AxiomType<? extends OWLAxiom>> getSupportedAxiomTypes() {
+            return Arrays.asList(AxiomType.SUBCLASS_OF, AxiomType.EQUIVALENT_CLASSES,
+                    AxiomType.OBJECT_PROPERTY_DOMAIN, AxiomType.OBJECT_PROPERTY_RANGE,
+                    AxiomType.DISJOINT_CLASSES, AxiomType.DISJOINT_UNION,
+                    AxiomType.SUB_OBJECT_PROPERTY, AxiomType.INVERSE_OBJECT_PROPERTIES);
+        }
+
+        @Override
+        public List<ClassExpressionType> getSupportedConceptTypes() {
+            return Arrays.asList(ClassExpressionType.OWL_CLASS, ClassExpressionType.OBJECT_INTERSECTION_OF,
+                    ClassExpressionType.OBJECT_UNION_OF, ClassExpressionType.OBJECT_COMPLEMENT_OF,
+                    ClassExpressionType.OBJECT_SOME_VALUES_FROM, ClassExpressionType.OBJECT_ALL_VALUES_FROM, ClassExpressionType.OBJECT_HAS_VALUE, ClassExpressionType.OBJECT_ONE_OF);
+        }
+
+        @Override
+        public Set<AxiomType<?>> getSupportedFromABoxTBoxRBox() {
+            return AxiomType.TBoxAndRBoxAxiomTypes;
+        }
+    }
+
+    public static class SHIFilter implements IOWLOntologyFilter {
+
+        @Override
+        public List<AxiomType<? extends OWLAxiom>> getSupportedAxiomTypes() {
+            return Arrays.asList(AxiomType.SUBCLASS_OF, AxiomType.EQUIVALENT_CLASSES,
+                    AxiomType.OBJECT_PROPERTY_DOMAIN, AxiomType.OBJECT_PROPERTY_RANGE,
+                    AxiomType.DISJOINT_CLASSES, AxiomType.DISJOINT_UNION,
+                    AxiomType.SUB_OBJECT_PROPERTY, AxiomType.INVERSE_OBJECT_PROPERTIES, AxiomType.TRANSITIVE_OBJECT_PROPERTY);
+        }
+
+        @Override
+        public List<ClassExpressionType> getSupportedConceptTypes() {
+            return Arrays.asList(ClassExpressionType.OWL_CLASS, ClassExpressionType.OBJECT_INTERSECTION_OF,
+                    ClassExpressionType.OBJECT_UNION_OF, ClassExpressionType.OBJECT_COMPLEMENT_OF,
+                    ClassExpressionType.OBJECT_SOME_VALUES_FROM, ClassExpressionType.OBJECT_ALL_VALUES_FROM);
+        }
+
+        @Override
+        public Set<AxiomType<?>> getSupportedFromABoxTBoxRBox() {
+            return AxiomType.TBoxAndRBoxAxiomTypes;
+        }
+    }
+
     public static class ALCKBFilter implements IOWLOntologyFilter {
 
         @Override

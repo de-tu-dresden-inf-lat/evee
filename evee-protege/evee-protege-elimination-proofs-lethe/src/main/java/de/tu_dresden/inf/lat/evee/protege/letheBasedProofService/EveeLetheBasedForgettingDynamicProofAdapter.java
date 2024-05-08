@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 
-import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter$;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.ForgettingBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
@@ -38,8 +37,8 @@ public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSub
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOutSeconds());
         this.innerProofGenerator = new ForgettingBasedProofGenerator(
                 LetheBasedForgetter.ALC_ABox(timeOut),
-                new OWLOntologyFilterTool.ALCHFilter(),
-//                ALCHTBoxFilter$.MODULE$,
+//                new OWLOntologyFilterTool.SHIFilter(),
+                ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps,
                 JavaConverters.asScalaSet(new HashSet<>()));
