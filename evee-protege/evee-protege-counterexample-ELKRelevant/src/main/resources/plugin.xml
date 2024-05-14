@@ -2,11 +2,11 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceAlpha"
-               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
-        <name value="Canonical Counterexample"/>
-        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceAlpha"/>
-    </extension>
+<!--    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceAlpha"-->
+<!--               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">-->
+<!--        <name value="Canonical Counterexample"/>-->
+<!--        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceAlpha"/>-->
+<!--    </extension>-->
 
     <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceBeta"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
@@ -14,17 +14,17 @@
         <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceBeta"/>
     </extension>
 
-    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceDiff"
-               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
-        <name value="Focused Contrastive Counterexample"/>
-        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceDiff"/>
-    </extension>
+<!--    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceDiff"-->
+<!--               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">-->
+<!--        <name value="Focused Contrastive Counterexample"/>-->
+<!--        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceDiff"/>-->
+<!--    </extension>-->
 
-    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceFlatDiff"
-               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
-        <name value="Flat Contrastive Counterexample"/>
-        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceFlatDiff"/>
-    </extension>
+<!--    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceFlatDiff"-->
+<!--               point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">-->
+<!--        <name value="Flat Contrastive Counterexample"/>-->
+<!--        <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.ELKRelevant.ELKCounterexampleGenerationServiceFlatDiff"/>-->
+<!--    </extension>-->
 
 
 </plugin>

@@ -19,6 +19,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.util.*;
 
 import static org.junit.Assert.assertNotNull;
@@ -152,18 +153,11 @@ public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<In
         this.proofGenerationFinished(true);
     }
 
-//    currently unused; no indicator to user is shown unless little grey triangle is clicked
-    protected void proofGenerationFailed(String errorMsg){
-        this.errorMsg = errorMsg;
-        this.uiWindow.proofGenerationFinished();
-        this.uiWindow.disposeLoadingScreen();
-        this.proofGenerationFinished(false);
-    }
-
     protected void proofGenerationError(String errorMsg){
+        this.logger.debug("Handling error: " + errorMsg);
         this.errorMsg = errorMsg;
         this.uiWindow.proofGenerationFinished();
-        this.uiWindow.showError(errorMsg);
+        SwingUtilities.invokeLater(() -> this.uiWindow.showError(errorMsg));
         this.proofGenerationFinished(false);
     }
 

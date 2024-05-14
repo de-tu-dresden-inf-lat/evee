@@ -36,7 +36,8 @@ public abstract class AbstractEveeProofService extends ProofService
 
     @Override
     public DynamicProof<Inference<? extends OWLAxiom>> getProof(OWLAxiom owlAxiom){
-        logger.debug("ProofService <{}>, method getProof called.", this.proofAdapter.getProofServiceName());
+        this.logger.info("ProofService <{}>, method getProof called with input <{}>.",
+                this.proofAdapter.getProofServiceName(), owlAxiom);
         this.proofAdapter.start(owlAxiom, getEditorKit());
         return this.proofAdapter;
     }

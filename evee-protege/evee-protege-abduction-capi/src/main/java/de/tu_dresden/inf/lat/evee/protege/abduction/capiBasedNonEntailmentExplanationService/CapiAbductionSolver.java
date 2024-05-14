@@ -202,13 +202,14 @@ public class CapiAbductionSolver
             this.sendViewComponentEvent(ExplanationEventType.ERROR);
         } else{
             try{
+                this.solutions = new ArrayList<>();
                 this.createSpassInputFiles(singleMissingEntailment);
                 this.runSpass(this.spassPath);
                 this.convertSpassOutputFile();
                 this.computationCompleted();
             } catch (OWLOntologyCreationException | IOException | OWL2SpassConverter.EmptyOntologyException |
                     OWL2SpassConverter.TranslationException | InterruptedException | OWLOntologyStorageException | NumberFormatException e) {
-                this.computationFailed("Error during computation: " + e);
+                this.computationFailed("Error during computation: " + e.getMessage());
             } finally {
                 this.cleanUpFiles();
             }
@@ -227,7 +228,13 @@ public class CapiAbductionSolver
             OWLOntology ontologyCopy = ontologyManager.createOntology();
             ontologyCopy = ontologyCopy.getOWLOntologyManager().copyOntology(
                     this.workingOntology, OntologyCopy.DEEP);
+            if (ontologyCopy.isEmpty()){
+                throw new RuntimeException("Input ontology empty"); //TODO: visibility of EmptyOntologyException // OWL2SpassConverter.EmptyOntologyException("Input ontology empty");
+            }
             ELFilter.deleteNonELAxioms(ontologyCopy);
+            if (ontologyCopy.isEmpty()){
+                throw new RuntimeException("Ontology empty after filtering for EL-axioms"); //TODO: visibility of EmptyOntologyException // OWL2SpassConverter.EmptyOntologyException("Ontology empty after filtering for EL-axioms");
+            }
             AbductionProblem abductionProblem = new AbductionProblem(ontologyCopy, missingEntailment);
             OWL2SpassConverter converter = new OWL2SpassConverter(true);
             converter.convertAbductionProblem(abductionProblem, printWriter,
@@ -259,7 +266,8 @@ public class CapiAbductionSolver
             throw e;
         } catch (OWL2SpassConverter.EmptyOntologyException e) {
             this.logger.error("Error when extracting module from ontology: ", e);
-            throw  e;
+            throw new RuntimeException(e.getMessage());//TODO OWL2SpassConverter.EmptyOntologyException(e.getMessage());
+//            throw new OWL2SpassConverter.EmptyOntologyException("Empty ontology computed during pre-processing, please change the observation.");
         } catch (OWLOntologyStorageException e) {
             this.logger.error("Error when creating temporary ontology file: ", e);
             throw e;
@@ -387,7 +395,7 @@ public class CapiAbductionSolver
                         this.logger.debug("Postprocessing terminated after semantically ordering solutions");
                     }
                 }
-                this.solutions = new ArrayList<>(generatedSolutions);
+                this.solutions.addAll(generatedSolutions);
                 if (this.solutions.size() == 0){
                     this.emptySolutionFound = true;
                 }

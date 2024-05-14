@@ -25,15 +25,51 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#canCreateStructure -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#canCreateStructure"/>
+    
+
+
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#eat -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#eat"/>
     
 
 
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasHeatDissipation -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasHeatDissipation"/>
+    
+
+
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasHeightenedSenses -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasHeightenedSenses"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasSize -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasSize"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasVisibility -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasVisibility"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#produces -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#produces"/>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#providesInsulation -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#providesInsulation"/>
     
 
 
@@ -66,33 +102,27 @@ This ontology was created as part of a user study for the project EVEE (https://
     
 
 
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AbductionSolverTaskAnimals -->
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AmbushPredator -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AbductionSolverTaskAnimals">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AmbushPredator">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Anaconda -->
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#BigEars -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Anaconda">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CounterexampleTaskAnimals"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#NoServiceTaskAnimals"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#eat"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Fangs"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>CarnivorousAnimal,
-PoisonousAnimal</rdfs:comment>
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#BigEars">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#BirdsNest -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#BirdsNest">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Structure"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Trap"/>
     </owl:Class>
     
 
@@ -112,6 +142,7 @@ PoisonousAnimal</rdfs:comment>
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#HerbivorousAnimal"/>
     </owl:Class>
     
 
@@ -125,20 +156,17 @@ PoisonousAnimal</rdfs:comment>
                     <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Warming"/>
+                        <owl:someValuesFrom>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#providesInsulation"/>
+                                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#High"/>
+                            </owl:Restriction>
+                        </owl:someValuesFrom>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CounterexampleTaskAnimals -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CounterexampleTaskAnimals">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal"/>
     </owl:Class>
     
 
@@ -151,10 +179,46 @@ PoisonousAnimal</rdfs:comment>
     
 
 
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#DomesticatedAnimal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#DomesticatedAnimal">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Fangs -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Fangs">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#FennecFox -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#FennecFox">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#BigEars"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Legs"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#WarmClimate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>GoingAnimal
+WarmClimateAnimal</rdfs:comment>
     </owl:Class>
     
 
@@ -213,11 +277,46 @@ PoisonousAnimal</rdfs:comment>
     
 
 
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#HerbivorousAnimal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#HerbivorousAnimal">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#eat"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Plant"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#High -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#High">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#ValuePartition"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Low"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Large -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Large">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Size"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Lion -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Lion">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CounterexampleTaskAnimals"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#NoServiceTaskAnimals"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
@@ -232,6 +331,30 @@ PoisonousAnimal</rdfs:comment>
         </rdfs:subClassOf>
         <rdfs:comment>CarnivorousAnimal,
 GoingAnimal</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#LongTail -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#LongTail">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Low -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Low">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#ValuePartition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Medium -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Medium">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Size"/>
     </owl:Class>
     
 
@@ -256,10 +379,10 @@ GoingAnimal</rdfs:comment>
     
 
 
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#NoServiceTaskAnimals -->
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#MurkyWater -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#NoServiceTaskAnimals">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#MurkyWater">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
     </owl:Class>
     
 
@@ -290,11 +413,17 @@ GoingAnimal</rdfs:comment>
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Owl -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Owl">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CounterexampleTaskAnimals"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Beak"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -306,6 +435,14 @@ GoingAnimal</rdfs:comment>
         <rdfs:comment>Bird,
 FlyingAnimal,
 NocturnalAnimal</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Plant -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Plant">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
     </owl:Class>
     
 
@@ -337,10 +474,80 @@ NocturnalAnimal</rdfs:comment>
     
 
 
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Regenerating -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Regenerating">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#RegenerativeAnimal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#RegenerativeAnimal">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                        <owl:someValuesFrom>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Regenerating"/>
+                            </owl:Restriction>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Salamander -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Salamander">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#LongTail"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Legs"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>GoingAnimal
+RegenerativeAnimal</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SensitiveHearing -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SensitiveHearing">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#HeightenedSenses"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Size -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Size">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Small -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Small">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Size"/>
     </owl:Class>
     
 
@@ -357,6 +564,14 @@ NocturnalAnimal</rdfs:comment>
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpiderWeb -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpiderWeb">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Structure"/>
     </owl:Class>
     
 
@@ -389,7 +604,7 @@ NocturnalAnimal</rdfs:comment>
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Stonefish -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Stonefish">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CounterexampleTaskAnimals"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#SpecificAnimal"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
@@ -404,6 +619,14 @@ NocturnalAnimal</rdfs:comment>
         </rdfs:subClassOf>
         <rdfs:comment>Fish,
 PoisonousAnimal</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Structure -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Structure">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
     </owl:Class>
     
 
@@ -427,10 +650,70 @@ PoisonousAnimal</rdfs:comment>
     
 
 
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Trap -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Trap">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Structure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#UsedByHumans -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#UsedByHumans">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#ValuePartition -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#ValuePartition">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#WarmClimateAnimal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#WarmClimateAnimal">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
+                        <owl:someValuesFrom>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasHeatDissipation"/>
+                                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#High"/>
+                            </owl:Restriction>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#WarmClimate"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Warming -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Warming">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#WellHidden -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#WellHidden">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
     </owl:Class>
     
 
@@ -447,28 +730,6 @@ PoisonousAnimal</rdfs:comment>
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Domain"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bat -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bat">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AbductionSolverTaskAnimals"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#NoServiceTaskAnimals"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wings"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>FlyingAnimal</rdfs:comment>
     </owl:Class>
     
 
@@ -559,33 +820,6 @@ PoisonousAnimal</rdfs:comment>
     
 
 
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Eel -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Eel">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AbductionSolverTaskAnimals"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Fins"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#CanSwim"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>Fish</rdfs:comment>
-    </owl:Class>
-    
-
-
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Feathers">
@@ -638,21 +872,6 @@ PoisonousAnimal</rdfs:comment>
     
 
 
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Jellyfish -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Jellyfish">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AbductionSolverTaskAnimals"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bell"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>SwimmingAnimal</rdfs:comment>
-    </owl:Class>
-    
-
-
     <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Land -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Land">
@@ -673,46 +892,6 @@ PoisonousAnimal</rdfs:comment>
 
     <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Penguin -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Penguin">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AbductionSolverTaskAnimals"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#NoServiceTaskAnimals"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Beak"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Wings"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>Bird,
-FlightlessBird</rdfs:comment>
-    </owl:Class>
-    
-
-
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#PolarBear -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#PolarBear">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CounterexampleTaskAnimals"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#NoServiceTaskAnimals"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#eat"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>CarnivorousAnimal,
-ColdClimateAnimal</rdfs:comment>
     </owl:Class>
     
 
@@ -789,22 +968,6 @@ ColdClimateAnimal</rdfs:comment>
     
 
 
-    <!-- http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Worm -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Worm">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AbductionSolverTaskAnimals"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#NoServiceTaskAnimals"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasBodyPart"/>
-                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#LongitudinalMuscles"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment>MovingAnimal</rdfs:comment>
-    </owl:Class>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -813,6 +976,55 @@ ColdClimateAnimal</rdfs:comment>
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CarnivorousAnimal"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasHabitat"/>
+                <owl:someValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#hasVisibility"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Low"/>
+                    </owl:Restriction>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#WellHidden"/>
+            </owl:Restriction>
+        </owl:intersectionOf>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AmbushPredator"/>
+    </owl:Class>
+    <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#CarnivorousAnimal"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                <owl:someValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#canCreateStructure"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Trap"/>
+                    </owl:Restriction>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </owl:intersectionOf>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#AmbushPredator"/>
+    </owl:Class>
+    <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#HerbivorousAnimal"/>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#produces"/>
+                <owl:someValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#hasProperty"/>
+                        <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#UsedByHumans"/>
+                    </owl:Restriction>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </owl:intersectionOf>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#DomesticatedAnimal"/>
+    </owl:Class>
     <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Bird"/>
@@ -944,20 +1156,33 @@ ColdClimateAnimal</rdfs:comment>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ColdClimate"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Land"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#WarmClimate"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#HeightenedSenses"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Plant"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Size"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Structure"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#ValuePartition"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Animal"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#BodyPart"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Habitat"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Property"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Large"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Medium"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/animals-ontology#Small"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Air"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#ColdClimate"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Land"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#WarmClimate"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/mikha/ontologies/2023/8/untitled-ontology-841#Water"/>
         </owl:members>
     </rdf:Description>
 </rdf:RDF>

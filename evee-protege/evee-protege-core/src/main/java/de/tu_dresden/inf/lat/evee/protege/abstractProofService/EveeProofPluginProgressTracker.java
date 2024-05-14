@@ -53,7 +53,11 @@ public class EveeProofPluginProgressTracker implements IProgressTracker {
 
     @Override
     public void done() {
-        this.uiWindow.disposeLoadingScreen();
+        if (this.maximum > Integer.MAX_VALUE){
+            this.uiWindow.updateProgress(Integer.MAX_VALUE);
+        } else{
+            this.uiWindow.updateProgress((int) this.maximum);
+        }
     }
 
     @Override
