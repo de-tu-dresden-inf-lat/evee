@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.proofs.lethe;
 
 import com.clarkparsia.owlapi.explanation.util.SilentExplanationProgressMonitor;
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
 import de.tu_dresden.inf.lat.evee.proofs.data.AbstractSimpleOWLProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
@@ -77,9 +78,13 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
 
     boolean inferTautologiesFromInput = false;
 
+    private final OWLOntologyFilterTool filterTool = new OWLOntologyFilterTool(new OWLOntologyFilterTool.ALCHFilter());
+
     @Override
     public void setOntology(OWLOntology owlOntology) {
-        ontology = ALCHTBoxFilter.filteredCopy(owlOntology, ontologyManager);
+        filterTool.setOntology(owlOntology);
+        ontology = filterTool.filterOntology();
+//        ontology = ALCHTBoxFilter.filteredCopy(owlOntology, ontologyManager);
     }
 
     public OWLOntology getOntology() {
@@ -592,7 +597,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     private OWLAxiom unsatAxiom(OWLOntology currentJustification, Set<Concept> definers, DefinerTranslatingVisitor translatingVisitor) {
         return removeDefiners(dataFactory,translatingVisitor,
                 dataFactory.getOWLSubClassOfAxiom(
-                        owlExporter.toOwl(currentJustification, new ConceptConjunction(JavaConverters.asScalaSet(definers).toSet())),
+                        owlExporter.toOwl(currentJustification, new ConceptConjunction(JavaConverters.asScalaSet(definers).<Concept>toSet())),
                         dataFactory.getOWLNothing()));
     }
 

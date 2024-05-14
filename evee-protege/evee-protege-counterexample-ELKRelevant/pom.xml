@@ -49,35 +49,15 @@
         <!--        evee-related-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-data-owlapi4</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>counterExampleProvider-owlapi4</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.github.jsonld-java</groupId>-->
-<!--            <artifactId>jsonld-java</artifactId>-->
-<!--            <version>0.13.0</version>-->
-<!--        </dependency>-->
 
-
-
-
-
-<!--        <dependency>-->
-<!--            <groupId>com.sun.net.httpserver</groupId>-->
-<!--            <artifactId>http</artifactId>-->
-<!--            <version>20070405</version>-->
-<!--        </dependency>-->
 
     </dependencies>
 
@@ -104,18 +84,12 @@
                             org.protege.editor.owl.*;version="4.3",
                             org.protege.editor.core.*;version="4.3",
                             de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
-<!--                            scala.swing.*;resolution:=optional,-->
                             de.tu_dresden.inf.lat.evee.protege.nonEntailment.service.*,
-
-<!--                            com.sun.net.httpserver.*;resolution:=optional,-->
-
                             org.apache.*;resolution:=optional,
                             org.liveontologies.owlapi.*;resolution:=optional,
                             org.checkerframework.*;resolution:=optional,
                             sun.misc.*;resolution:=optional,
-<!--                            org.ejml.*;resolution:=optional,-->
-<!--                            org.graalvm.*;resolution:=optional,-->
-<!--                            org.joda.*;resolution:=optional,-->
+                            org.openrdf.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>
@@ -124,29 +98,6 @@
                             de.tu_dresden.inf.lat.exceptions.*,
                             org.semanticweb.elk.*,
                             com.github.jsonldjava.*,
-<!--                            edu.stanford.nlp.*,-->
-<!--                            org.junit.*,-->
-<!--                            junit.*,-->
-
-<!--                            edu.stanford.nlp.simple,-->
-<!--                            edu.stanford.nlp.classify,-->
-<!--                            edu.stanford.nlp.coref.*,-->
-<!--                            edu.stanford.nlp.ie.*,-->
-
-<!--                            com.google.protobuf,-->
-<!--                            de.jollyday.*,-->
-<!--                            guru.nidi.graphviz.*,-->
-<!--                            com.eclipsesource.v8.*,-->
-<!--                            com.kitfox.svg.*,-->
-<!--                            shaded.com.google.common.*,-->
-<!--                            de.tu_dresden.inf.lat.*,-->
-<!--                            org.graphstream.*,-->
-<!--                            nu.xom.*,-->
-<!--                            javax.*,-->
-<!--                            org.hamcrest.*,-->
-<!--                            org.semanticweb.elk.*,-->
-
-<!--                            org.miv.*-->
                         </Private-Package>
                     </instructions>
                 </configuration>

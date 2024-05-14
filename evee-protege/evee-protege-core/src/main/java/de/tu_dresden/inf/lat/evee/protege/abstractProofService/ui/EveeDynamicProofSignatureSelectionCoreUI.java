@@ -58,7 +58,7 @@ public class EveeDynamicProofSignatureSelectionCoreUI extends AbstractSignatureS
         this.selectedSignaturePanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Known signature:"),
+                        "Known vocabulary:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         this.selectedSignatureJList.setCellRenderer(new OWLCellRendererSimple(owlEditorKit));
     }

@@ -5,9 +5,10 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 
-@Suite.SuiteClasses({ loopTest.class, NotLoopTest.class, RedundancyTest.class, TestCycle.class, TestCycle2.class,
-		TestRelevantA.class, TestRelevantC.class, TestRelevantD.class, TestSquare.class,
-		RelevantCounterExamplesTest.class })
+@Suite.SuiteClasses({ RefinerMapperTest.class, NotLoopTest.class, RedundancyTest.class, TestCycle.class,
+		TestCycle2.class, TestCycle3.class, PluginRelatedTests.class, ELKCounterModelTest.class,
+		TestRelevantA.class, TestRelevantB.class, TestRelevantC.class, TestRelevantD.class, TestSquare.class,
+		RelevantCounterExampleGeneratorTest.class, TrackerTest.class})
 
 public class TestSuitRelevant {
 

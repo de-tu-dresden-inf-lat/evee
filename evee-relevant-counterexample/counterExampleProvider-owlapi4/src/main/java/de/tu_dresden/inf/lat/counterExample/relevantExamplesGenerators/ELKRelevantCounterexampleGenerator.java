@@ -1,10 +1,12 @@
 package de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators;
 
 import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
-import de.tu_dresden.inf.lat.counterExample.ModelRefiner;
+import de.tu_dresden.inf.lat.counterExample.RedundancyRefiner;
 import de.tu_dresden.inf.lat.counterExample.data.ModelType;
 import de.tu_dresden.inf.lat.counterExample.tools.OntologyFilter;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.SubsumptionHoldsException;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.model.data.Element;
 import de.tu_dresden.inf.lat.model.data.Relation;
@@ -31,8 +33,10 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     private Collection<OWLEntity> signature;
     private OWLOntology ontology;
     private Set<IRI> markedIndividuals;
+    private Collection<OWLIndividualAxiom> hint;
 
     private boolean modelTypeReverted = false;
+    private IProgressTracker progressTracker;
 
     public boolean isModelTypeReverted() {
         return modelTypeReverted;
@@ -66,6 +70,9 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     @Override
     public Set<OWLIndividualAxiom> generateModel() {
         try {
+            setProgressTrackerMessage("Generating counterexample");
+            incrementProgressTracker();
+
             OWLSubClassOfAxiom subClsOf;
             OWLAxiom axiom = this.observation.iterator().next();
             if (axiom instanceof OWLSubClassOfAxiom)
@@ -76,6 +83,9 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
             ElkReasoner reasoner = reasonerFactory.createReasoner(this.ontology);
 
+            if(reasoner.isEntailed(subClsOf))
+                throw new SubsumptionHoldsException("Axiom is already entailed!");
+
             //in case the super class is unsatisfiable, the model type reverts to alpha
             if(!reasoner.isSatisfiable(subClsOf.getSuperClass())){
                 modelTypeReverted = type != ModelType.Alpha;
@@ -84,9 +94,12 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
                 modelTypeReverted = false;
 
             ELKModelGenerator elkModelGenerator = new ELKModelGenerator(ontology, subClsOf);
-            RelevantCounterExample generator = getRelevantGenerator(type, elkModelGenerator);
+            RelevantCounterExampleGenerator generator = getRelevantGenerator(type, elkModelGenerator);
 
             Set<Element> model = generator.generate();
+
+            setProgressTrackerMessage("Filtering the generated counterexample.");
+            incrementProgressTracker();
 
             markedIndividuals = new HashSet<>();
             markedIndividuals.add(IRI.create(ELEMENT_PREFIX + elkModelGenerator.getMapper().getLHSRepresentativeElement().getName()));
@@ -94,8 +107,13 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
                 markedIndividuals.add(IRI.create(ELEMENT_PREFIX + elkModelGenerator.getMapper().getRHSRepresentativeElement().getName()));
 
             //This is needed to remove normalisation concepts and other redundant elements
-            ModelRefiner refiner = new ModelRefiner(ontology);
-            refiner.refine(generator, model, type);
+            RedundancyRefiner rr = new RedundancyRefiner(model, generator);
+            rr.refine();
+
+            if(type != ModelType.Alpha)
+                this.hint = asOWLHint(HintFinder.getHint(model,generator));
+            else
+                this.hint = new HashSet<>();
 
             Set<OWLIndividualAxiom> owlModel = new HashSet<>();
             for (Element element : model) {
@@ -126,7 +144,48 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             return null;
         } catch (ModelGenerationException e) {
             throw new RuntimeException(e);
+        } catch (SubsumptionHoldsException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    private Collection<OWLIndividualAxiom> asOWLHint(Set<Element> hint) {
+        Set<OWLIndividualAxiom> owlHint = new HashSet<>();
+
+        for (Element element : hint) {
+            OWLIndividual individual = owlIndividual(element.getName());
+            for (OWLClassExpression expr : element.getTypes()) {
+                if (signature.containsAll(expr.getSignature())) {
+                    owlHint.add(factory.getOWLClassAssertionAxiom(expr, individual));
+                }
+            }
+            for (Relation relation : element.getRelations()) {
+                OWLIndividual other = owlIndividual(relation.getElement2().getName());
+                OWLObjectProperty property = relation.getRoleName();
+                if (signature.contains(property)) {
+                    if (relation.isForward()) {
+                        owlHint.add(factory.getOWLObjectPropertyAssertionAxiom(property, individual, other));
+                    }
+                }
+            }
+        }
+
+        return owlHint;
+    }
+
+    @Override
+    public Collection<OWLIndividualAxiom> getHint() {
+        return hint;
+    }
+
+    private void incrementProgressTracker() {
+        if (this.progressTracker != null)
+            this.progressTracker.increment();
+    }
+
+    private void setProgressTrackerMessage(String msg) {
+        if (this.progressTracker != null)
+            this.progressTracker.setMessage(msg);
     }
 
     /**
@@ -137,7 +196,7 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
      * @return
      * @throws OWLOntologyCreationException
      */
-    private RelevantCounterExample getRelevantGenerator(ModelType type, ELKModelGenerator elkModelGenerator)
+    private RelevantCounterExampleGenerator getRelevantGenerator(ModelType type, ELKModelGenerator elkModelGenerator)
             throws OWLOntologyCreationException {
         switch (type) {
             case Alpha: return new AlphaRelevantGenerator(elkModelGenerator);
@@ -174,5 +233,15 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
     @Override
     public boolean successful() {
         return true;
+    }
+
+    @Override
+    public void addProgressTracker(IProgressTracker tracker) {
+        this.progressTracker = tracker;
+    };
+
+    @Override
+    public boolean ignoresPartsOfOntology() {
+        return false;
     }
 }

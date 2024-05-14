@@ -1,16 +1,19 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverOntologyChangeEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverResultButtonEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverOntologyChangeEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverOntologyChangeEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
+import org.protege.editor.core.ui.util.ComponentFactory;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,28 +23,30 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class AbductionSolverResultManager implements IAbductionSolverResultButtonEventListener {
+public class AbductionSolverResultManager implements
+        IAbductionSolverSingleResultPanelEventListener,
+        ISignatureModificationEventListener,
+        ISignatureModificationEventGenerator,
+        IAbductionSolverOntologyChangeEventGenerator {
 
     private OWLEditorKit owlEditorKit;
     private JPanel resultHolderPanel;
     private JPanel resultScrollingPanel;
+    private JScrollPane resultScrollPane;
     private boolean ignoreOntologyChangeEvent = false;
+    private ISignatureModificationEventListener signatureModificationEventListener;
     private int hypothesisIndex;
     private final List<SingleResultPanel> singleResultPanels;
-    private final IAbductionSolverOntologyChangeEventListener abductionSolverOntologyChangeEventListener;
-    private final IAbductionSolverResultButtonEventListener abductionSolverResultButtonEventListener;
+    private IAbductionSolverOntologyChangeEventListener abductionSolverOntologyChangeEventListener;
     private final OntologyChangeListener ontologyChangeListener;
 
 
     private final Logger logger = LoggerFactory.getLogger(AbductionSolverResultManager.class);
 
-    public AbductionSolverResultManager(IAbductionSolverOntologyChangeEventListener ontologyChangeEventListener,
-                                        IAbductionSolverResultButtonEventListener resultButtonEventListener){
+    public AbductionSolverResultManager(){
         this.hypothesisIndex = 0;
         this.singleResultPanels = new ArrayList<>();
         this.ontologyChangeListener = new OntologyChangeListener();
-        this.abductionSolverOntologyChangeEventListener = ontologyChangeEventListener;
-        this.abductionSolverResultButtonEventListener = resultButtonEventListener;
     }
 
     public void setup(OWLEditorKit owlEditorKit){
@@ -81,16 +86,14 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
         this.resultHolderPanel = new JPanel(new BorderLayout());
         this.resultScrollingPanel = new JPanel();
         this.resultScrollingPanel.setLayout(new BoxLayout(this.resultScrollingPanel, BoxLayout.PAGE_AXIS));
-        JScrollPane resultScrollPane = new JScrollPane();
-        resultScrollPane.setViewportView(this.resultScrollingPanel);
-        this.resultHolderPanel.add(resultScrollPane);
+        this.resultScrollPane = ComponentFactory.createScrollPane(this.resultScrollingPanel);
+        this.resultHolderPanel.add(this.resultScrollPane, BorderLayout.CENTER);
         this.resultHolderPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
                         "Hypotheses:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        this.resultHolderPanel.repaint();
-        this.resultHolderPanel.revalidate();
+        UIUtilities.revalidateAndRepaintComponent(this.resultHolderPanel);
     }
 
     protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
@@ -100,45 +103,43 @@ public class AbductionSolverResultManager implements IAbductionSolverResultButto
             SingleResultPanel singleResultPanel = new SingleResultPanel(
                     this.owlEditorKit,ontology,
                     missingEntailment, result, hypothesisIndex);
-            singleResultPanel.registerListener(this);
+            singleResultPanel.registerSignatureModificationEventListener(this);
+            singleResultPanel.registerSingleResultPanelEventListener(this);
             this.singleResultPanels.add(singleResultPanel);
             this.resultScrollingPanel.add(singleResultPanel);
             this.hypothesisIndex++;
         });
-        this.resultHolderPanel.repaint();
-        this.resultHolderPanel.revalidate();
+        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+//            width *0.3 is default divider location for split pane in the main view
+        this.resultHolderPanel.setPreferredSize(new Dimension(
+                (int) (screenWidth * 0.3),
+                this.resultHolderPanel.getHeight()));
+        UIUtilities.revalidateAndRepaintComponent(this.resultHolderPanel);
     }
 
-    private void changeAddButtonStatus(boolean newStatus){
-        for (SingleResultPanel panel : this.singleResultPanels){
-            panel.setAddButtonStatus(newStatus);
-        }
+//    methods related to SingleResultPanelEvents
+    @Override
+    public void handleEvent(AbductionSolverSingleResultPanelEvent event) {
+        this.ignoreOntologyChangeEvent = true;
+    }
+
+//    SignatureModificationEvent
+    @Override
+    public void handleSignatureModificationEvent(SignatureModificationEvent event) {
+        this.signatureModificationEventListener.handleSignatureModificationEvent(event);
     }
 
     @Override
-    public void handleEvent(AbductionSolverResultButtonEvent event) {
-        this.ignoreOntologyChangeEvent = true;
-        switch (event.getType()){
-            case ADD:
-                changeAddButtonStatus(false);
-                this.abductionSolverResultButtonEventListener.handleEvent(
-                        new AbductionSolverResultButtonEvent(
-                                ResultButtonEventType.ADD));
-                break;
-            case ADD_AND_PROVE:
-                changeAddButtonStatus(false);
-                this.abductionSolverResultButtonEventListener.handleEvent(
-                        new AbductionSolverResultButtonEvent(
-                                ResultButtonEventType.ADD_AND_PROVE));
-                break;
-            case DELETE:
-                changeAddButtonStatus(true);
-                this.abductionSolverResultButtonEventListener.handleEvent(
-                        new AbductionSolverResultButtonEvent(
-                                ResultButtonEventType.DELETE));
-                break;
-        }
+    public void registerSignatureModificationEventListener(ISignatureModificationEventListener listener) {
+        this.signatureModificationEventListener = listener;
     }
+
+//    OntologyChangeEvent
+    @Override
+    public void registerOntologyChangeEventListener(IAbductionSolverOntologyChangeEventListener listener) {
+        this.abductionSolverOntologyChangeEventListener = listener;
+    }
+
 
     private class OntologyChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {
 

@@ -54,6 +54,11 @@ public class OWLObjectListModel<O extends OWLObject>
         this.fireContentsChanged(this, 0, this.owlObjects.size() -1);
     }
 
+    public void removeElement(O deletedEntity){
+        this.owlObjects.remove(deletedEntity);
+        this.fireContentsChanged(this, 0, this.owlObjects.size() -1);
+    }
+
     public void addElement(O newEntity){
         this.owlObjects.add(newEntity);
         this.sort();

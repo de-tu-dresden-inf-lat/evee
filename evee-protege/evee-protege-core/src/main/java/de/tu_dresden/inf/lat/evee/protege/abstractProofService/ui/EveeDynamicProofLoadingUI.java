@@ -58,11 +58,7 @@ public class EveeDynamicProofLoadingUI {
             this.panel.add(this.progressBar);
             this.panel.add(this.button);
             this.loadingDialog.getContentPane().add(this.panel);
-            this.loadingDialog.pack();
-            this.loadingDialog.setVisible(false);
             this.loadingDialog.setSize(600, 150);
-            this.loadingDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
             this.loadingDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             this.loadingDialog.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
@@ -71,6 +67,7 @@ public class EveeDynamicProofLoadingUI {
                     cancelGeneration();
                 };
             });
+            UIUtilities.packAndSetWindow(this.loadingDialog, this.editorKit, false);
         });
     }
 
@@ -161,11 +158,8 @@ public class EveeDynamicProofLoadingUI {
             cancelPanel.add(cancelLabel, BorderLayout.CENTER);
             cancelPanel.add(cancelProgressBar);
             this.cancelDialog.getContentPane().add(cancelPanel);
-            this.cancelDialog.pack();
             this.cancelDialog.setSize(600, 100);
-            this.cancelDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(this.editorKit.getWorkspace())));
-            this.cancelDialog.setVisible(true);
+            UIUtilities.packAndSetWindow(this.cancelDialog, this.editorKit, true);
         });
         this.proofAdapter.cancelProofGeneration();
     }

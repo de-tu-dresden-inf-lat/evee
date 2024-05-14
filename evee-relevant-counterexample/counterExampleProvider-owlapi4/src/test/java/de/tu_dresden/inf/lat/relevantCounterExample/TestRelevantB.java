@@ -3,8 +3,11 @@ package de.tu_dresden.inf.lat.relevantCounterExample;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.Objects;
 import java.util.Set;
 
+import de.tu_dresden.inf.lat.counterExample.RedundancyRefiner;
+import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.elk.owlapi.ElkReasoner;
@@ -13,10 +16,8 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
 import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
-import de.tu_dresden.inf.lat.counterExample.ModelRefiner;
-import de.tu_dresden.inf.lat.counterExample.data.ModelType;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.DiffRelevantGenerator;
-import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.RelevantCounterExample;
+import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.RelevantCounterExampleGenerator;
 import de.tu_dresden.inf.lat.model.data.Element;
 
 public class TestRelevantB {
@@ -31,32 +32,32 @@ public class TestRelevantB {
 		factory = manager.getOWLDataFactory();
 
 		relevantB = manager.loadOntologyFromOntologyDocument(
-				RelevantCounterExamplesTest.class.getClassLoader().getResourceAsStream("ontologies/relevantB.owl"));
+				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/relevantB.owl")));
 
 	}
 
 	@Test
-	public void test9() throws OWLOntologyCreationException {
+	public void test9() throws OWLOntologyCreationException, ModelGenerationException {
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(factory.getOWLClass(IRI.create("http://relevantB#A")),
 				factory.getOWLClass(IRI.create("http://relevantB#B")));
 
 		ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
-		ElkReasoner reasoner = (ElkReasoner) reasonerFactory.createReasoner(relevantB);
+		ElkReasoner reasoner = reasonerFactory.createReasoner(relevantB);
 
 		assertFalse(reasoner.isEntailed(conclusion));
 
 		model = new ELKModelGenerator(relevantB, conclusion);
-		RelevantCounterExample rel = new DiffRelevantGenerator(model);
+		RelevantCounterExampleGenerator rel = new DiffRelevantGenerator(model);
 		Set<Element> typeDiffModel = rel.generate();
 
-		ModelRefiner refiner = new ModelRefiner(relevantB);
-		refiner.refine(rel, typeDiffModel, ModelType.Diff);
+		RedundancyRefiner rr = new RedundancyRefiner(typeDiffModel, rel);
+		rr.refine();
 
-		typeDiffModel.forEach(x -> System.out.println(x));
+		typeDiffModel.forEach(System.out::println);
 
 		assertEquals(11, model.generateFullRelevantCanonicalModel().getFinalizedModelElements().size());
-		assertEquals(5, typeDiffModel.size());
+		assertEquals(4, typeDiffModel.size());
 		System.out.println("_-_-_-_-_-_-_-_-_-_");
 	}
 

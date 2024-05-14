@@ -3,6 +3,26 @@ linux-build-job:
   tags:
     - linux
   script:
-    - echo "Compiling evee via command 'mvn clean install'"
+    - echo "Compiling EVEE"
+    # first step always needs to be updating lat-scala-dl-tools submodule
+    - echo "Updating submodule lat-scala-dl-tools"
     - git submodule update --init --recursive
+    - echo "Purging local mvn dependency to remove old versions of LETHE"
+    - mvn dependency:purge-local-repository -DreResolve=false -DactTransitively=false
+    - echo "Compiling via 'mvn clean install'"
     - mvn clean install
+
+
+
+# commented out until we fix the problem with headless-mode when starting Protégé on server
+#linux-test-job:
+#  stage: test
+#  tags:
+#    - linux
+#  script:
+#    - git clone https://github.com/protegeproject/protege.git
+#    - cd protege
+#    - git checkout v5.5.0
+#    - mvn clean package -DskipTests=true
+#    - cd protege-desktop/target/protege-5.5.0-platform-independent/Protege-5.5.0
+#    - dir

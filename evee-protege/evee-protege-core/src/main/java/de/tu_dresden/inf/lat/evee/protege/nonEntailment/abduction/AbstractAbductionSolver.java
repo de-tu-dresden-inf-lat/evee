@@ -2,8 +2,10 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverOntologyChangeEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IAbductionSolverResultButtonEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverOntologyChangeEventListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
@@ -25,7 +27,8 @@ abstract public class AbstractAbductionSolver<Result>
         implements INonEntailmentExplanationService<OWLAxiom>,
         IOWLAbductionSolver,
         IAbductionSolverOntologyChangeEventListener,
-        IAbductionSolverResultButtonEventListener,
+        ISignatureModificationEventListener,
+        ISignatureModificationEventGenerator,
         IExplanationGenerationListener<
                 ExplanationEvent<
                         IExplanationGenerator<
@@ -35,10 +38,8 @@ abstract public class AbstractAbductionSolver<Result>
     protected Set<OWLAxiom> lastUsedMissingEntailment = null;
     protected Set<OWLEntity> vocabulary = null;
     protected Set<OWLEntity> lastUsedVocabulary = null;
-    protected OWLOntology ontology = null;
+    protected OWLOntology activeOntology = null;
     private Iterator<Set<OWLAxiom>> resultStreamIterator = null;
-    protected JPanel settingsHolderPanel;
-    private JSpinner abductionNumberSpinner;
     private OWLEditorKit owlEditorKit;
     private final AbductionSolverResultManager resultManager;
     private boolean cancelled;
@@ -47,9 +48,9 @@ abstract public class AbstractAbductionSolver<Result>
     private boolean activeOntologyChanged = false;
     private IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     private final Map<OWLOntology, AbductionCache<Result>> cachedResults;
-    private AbductionCache<Result> savedCache = null;
-    protected static final String SETTINGS_LABEL = "Maximal number of hypotheses:";
-    protected static final String SETTINGS_SPINNER_TOOLTIP = "Number of hypotheses to be generated in each computation step";
+//    private AbductionCache<Result> savedCache = null;
+    private ISignatureModificationEventListener signatureModificationEventListener;
+    private final AbductionGeneralPreferencesManager preferencesManager;
 
     private final Logger logger = LoggerFactory.getLogger(AbstractAbductionSolver.class);
 
@@ -57,38 +58,19 @@ abstract public class AbstractAbductionSolver<Result>
         this.logger.debug("Creating AbstractAbductionSolver");
         this.cancelled = false;
         this.cachedResults = new HashMap<>();
-        this.resultManager = new AbductionSolverResultManager(this, this);
-        this.createSettingsComponent();
+        this.resultManager = new AbductionSolverResultManager();
+        this.resultManager.registerOntologyChangeEventListener(this);
+//        this.resultManager.registerSingleResultPanelEventListener(this);
+        this.resultManager.registerSignatureModificationEventListener(this);
+        this.preferencesManager = new AbductionGeneralPreferencesManager();
         this.logger.debug("AbstractAbductionSolver created successfully.");
-    }
-
-    private void createSettingsComponent(){
-        this.settingsHolderPanel = new JPanel();
-        this.settingsHolderPanel.setLayout(new BoxLayout(settingsHolderPanel, BoxLayout.PAGE_AXIS));
-        JPanel spinnerHelperPanel = new JPanel();
-        spinnerHelperPanel.setLayout(new BoxLayout(spinnerHelperPanel, BoxLayout.LINE_AXIS));
-        JLabel label = UIUtilities.createLabel(SETTINGS_LABEL);
-        spinnerHelperPanel.add(label);
-        spinnerHelperPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 1, null, 1);
-        this.abductionNumberSpinner = new JSpinner(spinnerModel);
-        this.abductionNumberSpinner.setToolTipText(SETTINGS_SPINNER_TOOLTIP);
-        this.abductionNumberSpinner.setMaximumSize(new Dimension(500, this.abductionNumberSpinner.getPreferredSize().height));
-        spinnerHelperPanel.add(this.abductionNumberSpinner);
-        spinnerHelperPanel.add(Box.createGlue());
-        this.settingsHolderPanel.add(spinnerHelperPanel);
-//        this.settingsHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        this.settingsHolderPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createEmptyBorder(), "Settings:"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
     }
 
     /**
      * @return true iff the cache contains a result for the currently active ontology, missing entailment and vocabulary
      */
     protected boolean checkResultInCache(){
-        return this.cachedResults.get(this.ontology)
+        return this.cachedResults.get(this.activeOntology)
                 .containsResultFor(this.missingEntailment, this.vocabulary);
     }
 
@@ -97,14 +79,14 @@ abstract public class AbstractAbductionSolver<Result>
      * @param result newly computed result of abduction process that should be saved to cache
      */
     protected void saveResultToCache(Result result){
-        this.logger.debug("Trying to solve result to cache");
-        if (this.ontology == null ||
+        this.logger.debug("Trying to save result to cache");
+        if (this.activeOntology == null ||
                 this.missingEntailment == null ||
                 this.vocabulary == null){
             this.logger.debug("Cannot save result to cache");
             return;
         }
-        this.cachedResults.get(this.ontology).
+        this.cachedResults.get(this.activeOntology).
                 putResult(this.missingEntailment, this.vocabulary, result);
         this.logger.debug("Result saved to cache");
     }
@@ -115,13 +97,13 @@ abstract public class AbstractAbductionSolver<Result>
      */
     protected Result loadResultFromCache(){
         this.logger.debug("Trying to load result from cache");
-        if (! this.cachedResults.get(this.ontology).containsResultFor(
+        if (! this.cachedResults.get(this.activeOntology).containsResultFor(
                 this.missingEntailment, this.vocabulary)){
             this.logger.debug("No cached result found");
             return null;
         } else {
             this.logger.debug("Cached result loaded");
-            return this.cachedResults.get(this.ontology).getResult(
+            return this.cachedResults.get(this.activeOntology).getResult(
                     this.missingEntailment, this.vocabulary);
         }
     }
@@ -160,7 +142,7 @@ abstract public class AbstractAbductionSolver<Result>
     @Override
     public void setOntology(OWLOntology ontology) {
         this.logger.debug("Setting ontology:\n{}", ontology.getOntologyID());
-        this.ontology = ontology;
+        this.activeOntology = ontology;
         if (this.cachedResults.get(ontology) == null){
             this.logger.debug("No cache for ontology detected, creating new cache");
             this.cachedResults.put(ontology, new AbductionCache<>());
@@ -180,18 +162,19 @@ abstract public class AbstractAbductionSolver<Result>
 
     @Override
     public Component getSettingsComponent() {
-        return this.settingsHolderPanel;
+        return null;
     }
 
     @Override
-    public void registerListener(IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
+    public void registerListener(
+            IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
         this.viewComponentListener = listener;
     }
 
     @Override
     public void computeExplanation() {
         this.logger.debug("Computing explanation");
-        assertNotNull(this.ontology);
+        assertNotNull(this.activeOntology);
         assertNotNull(this.missingEntailment);
         assertNotNull(this.vocabulary);
         SwingUtilities.invokeLater(() -> {
@@ -227,7 +210,7 @@ abstract public class AbstractAbductionSolver<Result>
         this.lastUsedMissingEntailment = this.missingEntailment;
         this.lastUsedVocabulary = this.vocabulary;
         this.setActiveOntologyChanged(false);
-        this.resetSavedCache();
+//        this.resetSavedCache();
         this.resetResultComponent();
         this.resultStreamIterator = null;
         AbductionSolverThread thread = new AbductionSolverThread(
@@ -271,7 +254,6 @@ abstract public class AbstractAbductionSolver<Result>
     }
 
     protected boolean checkActiveOntologyEdited(){
-//        this.logger.debug("externally: {} - internally: {}", this.activeOntologyEditedExternally, this.activeOntologyEditedByAbductionSolver);
         return this.activeOntologyEditedExternally || this.activeOntologyEditedByAbductionSolver;
     }
 
@@ -291,19 +273,19 @@ abstract public class AbstractAbductionSolver<Result>
         this.activeOntologyChanged = changed;
     }
 
-    private void saveCache(){
-        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-        this.logger.debug("Saving cache for ontology " + ontology.getOntologyID().getOntologyIRI()
-                .or(IRI.create("")));
-        this.savedCache = cachedResults.get(ontology);
-    }
-
-    private void reinstateCache(){
-        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-        this.logger.debug("Reinstating saved cache for ontology " + ontology.getOntologyID().getOntologyIRI()
-                .or(IRI.create("")));
-        this.cachedResults.put(ontology, this.savedCache);
-    }
+//    protected void saveCache(){
+//        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+//        this.logger.debug("Saving cache for ontology " + ontology.getOntologyID().getOntologyIRI()
+//                .or(IRI.create("")));
+//        this.savedCache = this.cachedResults.get(ontology);
+//    }
+//
+//    protected void reinstateCache(){
+//        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
+//        this.logger.debug("Reinstating saved cache for ontology " + ontology.getOntologyID().getOntologyIRI()
+//                .or(IRI.create("")));
+//        this.cachedResults.put(ontology, this.savedCache);
+//    }
 
     protected void resetCache(){
         OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
@@ -311,12 +293,6 @@ abstract public class AbstractAbductionSolver<Result>
                 .or(IRI.create("")));
         AbductionCache<Result> newCache = new AbductionCache<>();
         this.cachedResults.put(ontology, newCache);
-    }
-
-    protected void resetCompleteCache(){
-        this.logger.debug("Resetting complete cache");
-        this.cachedResults.clear();
-        this.resetCache();
     }
 
     public void handleEvent(AbductionSolverOntologyChangeEvent event){
@@ -333,7 +309,7 @@ abstract public class AbstractAbductionSolver<Result>
     private void ontologyEdited(){
         this.setActiveOntologyEditedExternally(true);
         this.setActiveOntologyEditedInternally(false);
-        this.resetSavedCache();
+//        this.resetSavedCache();
         this.resetCache();
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this,ExplanationEventType.RESULT_RESET));
@@ -344,34 +320,34 @@ abstract public class AbstractAbductionSolver<Result>
         this.setActiveOntologyEditedExternally(false);
         this.setActiveOntologyEditedInternally(false);
         this.resetAbductionParameters();
-        this.resetSavedCache();
+//        this.resetSavedCache();
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this, ExplanationEventType.RESULT_RESET));
     }
 
-    public void handleEvent(AbductionSolverResultButtonEvent event){
-        switch (event.getType()){
-            case ADD:
-                this.setActiveOntologyEditedInternally(true);
-                this.saveCache();
-                this.resetCache();
-                break;
-            case ADD_AND_PROVE:
-                this.setActiveOntologyEditedInternally(true);
-                this.saveCache();
-                this.resetCache();
-                break;
-            case DELETE:
-                this.setActiveOntologyEditedInternally(false);
-                this.reinstateCache();
-                break;
-        }
-    }
+//    @Override
+//    public void handleEvent(AbductionSolverSingleResultPanelEvent event){
+//        switch (event.getType()){
+//            case ADD:
+//                this.setActiveOntologyEditedInternally(true);
+//                this.resetCache();
+//                break;
+//            case EXPLAIN:
+//                this.setActiveOntologyEditedInternally(true);
+//                this.saveCache();
+//                this.resetCache();
+//                break;
+//            case EXPLANATION_DIALOG_CLOSED:
+//                this.setActiveOntologyEditedInternally(false);
+//                this.reinstateCache();
+//                break;
+//        }
+//    }
 
-    protected void resetSavedCache(){
-        this.logger.debug("Resetting edit ontology status");
-        this.savedCache = null;
-    }
+//    protected void resetSavedCache(){
+//        this.logger.debug("Resetting edit ontology status");
+//        this.savedCache = null;
+//    }
 
     protected void resetAbductionParameters(){
         this.lastUsedMissingEntailment = null;
@@ -379,13 +355,13 @@ abstract public class AbstractAbductionSolver<Result>
     }
 
     protected void createResultComponent(){
-        this.resultManager.createResultComponent(ontology,
+        this.resultManager.createResultComponent(activeOntology,
                 this.lastUsedMissingEntailment,
                 this.createHypothesesListFromStream());
     }
 
     protected List<Set<OWLAxiom>> createHypothesesListFromStream(){
-        int resultNumber = (int) this.abductionNumberSpinner.getValue();
+        int resultNumber = this.preferencesManager.loadMaximumHypothesisNumber();
         this.logger.debug("Trying to show {} results of abduction generation process", resultNumber);
         List<Set<OWLAxiom>> hypotheses = new ArrayList<>();
         int idx = 0;
@@ -404,4 +380,19 @@ abstract public class AbstractAbductionSolver<Result>
     public void cancel() {
         this.cancelled = true;
     }
+
+    @Override
+    public void handleSignatureModificationEvent(SignatureModificationEvent event) {
+        Set<OWLEntity> additionalSignatureElements = new HashSet<>();
+        event.getAdditionalSignatureNames()
+                .stream().filter(name -> this.activeOntology.getSignature().contains(name))
+                .forEach(additionalSignatureElements::add);
+        this.signatureModificationEventListener.handleSignatureModificationEvent(
+                new SignatureModificationEvent(additionalSignatureElements));
+    }
+
+    public void registerSignatureModificationEventListener(ISignatureModificationEventListener listener){
+        this.signatureModificationEventListener = listener;
+    }
+
 }

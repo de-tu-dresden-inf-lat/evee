@@ -1,4 +1,4 @@
-package de.tu_dresden.lat.model.json;
+package de.tu_dresden.inf.lat.model.json;
 
 import java.io.File;
 import java.io.IOException;

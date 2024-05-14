@@ -1,21 +1,21 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIEventGenerator;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingUIListener;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingUIEvent;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingScreenEventGenerator;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingScreenEventListener;
+import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationLoadingScreenEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
 public class NonEntailmentExplanationProgressTracker implements IProgressTracker,
-        IExplanationLoadingUIEventGenerator {
+        IExplanationLoadingScreenEventGenerator {
 
     private String message;
     private long progress;
     private long maximum;
-    private IExplanationLoadingUIListener loadingUIListener;
+    private IExplanationLoadingScreenEventListener loadingUIListener;
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentExplanationProgressTracker.class);
 
@@ -32,8 +32,8 @@ public class NonEntailmentExplanationProgressTracker implements IProgressTracker
         SwingUtilities.invokeLater(() -> {
             this.logger.debug("Message updated: {}", message);
             this.message = message;
-            ExplanationLoadingUIEvent event =
-                    ExplanationLoadingUIEvent.createUpdateLoadingMessageEvent(
+            ExplanationLoadingScreenEvent event =
+                    ExplanationLoadingScreenEvent.createUpdateLoadingMessageEvent(
                             this.message);
             this.loadingUIListener.handleUIEvent(
                     event);
@@ -53,7 +53,7 @@ public class NonEntailmentExplanationProgressTracker implements IProgressTracker
                 uiProgress = (int) progress;
             }
             this.loadingUIListener.handleUIEvent(
-                    ExplanationLoadingUIEvent.createSetCurrentProgressEvent(
+                    ExplanationLoadingScreenEvent.createSetCurrentProgressEvent(
                             uiProgress));
         });
 
@@ -61,7 +61,7 @@ public class NonEntailmentExplanationProgressTracker implements IProgressTracker
 
     @Override
     public void registerLoadingUIListener(
-            IExplanationLoadingUIListener listener) {
+            IExplanationLoadingScreenEventListener listener) {
         this.loadingUIListener = listener;
     }
 
@@ -83,7 +83,7 @@ public class NonEntailmentExplanationProgressTracker implements IProgressTracker
                 uiMaximum = (int) max;
             }
             this.loadingUIListener.handleUIEvent(
-                    ExplanationLoadingUIEvent.createSetMaxProgressEvent(
+                    ExplanationLoadingScreenEvent.createSetMaxProgressEvent(
                             uiMaximum));
         });
 
@@ -101,7 +101,7 @@ public class NonEntailmentExplanationProgressTracker implements IProgressTracker
                 uiProgress = (int) this.progress;
             }
             this.loadingUIListener.handleUIEvent(
-                    ExplanationLoadingUIEvent.createDoneEvent(
+                    ExplanationLoadingScreenEvent.createDoneEvent(
                             uiProgress));
         });
     }

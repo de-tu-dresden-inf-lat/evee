@@ -5,8 +5,8 @@ import de.tu_dresden.inf.lat.dltools.DLFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.dataStructures.{Forgetter, Justifier}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.tools.{SearchTreeProgressTracker, TidyForgettingBasedProofs}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.{Constants, ForgettingBasedProofGenerator}
-import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker
-import de.tu_dresden.inf.lat.evee.general.tools.ProgressTrackerCollection
+import de.tu_dresden.inf.lat.evee.general.interfaces.{IOWLOntologyFilter, IProgressTracker}
+import de.tu_dresden.inf.lat.evee.general.tools.{OWLOntologyFilterTool, ProgressTrackerCollection}
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.{SimpleOWLFormatter, SimpleOWLFormatterCl}
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException
@@ -23,7 +23,7 @@ import scala.collection.{JavaConverters, mutable}
 class MinimalSignatureAndForgettingBasedProofGenerator(_measure: IProofEvaluator[OWLAxiom],
                                                        approximateMeasure: ApproximateProofMeasure,
                                                        forgetter: Forgetter,
-                                                       filter: DLFilter,
+                                                       filter: IOWLOntologyFilter,
                                                        justifier: Justifier,
                                                        skipSteps: Boolean = true)
   extends MinimalForgettingBasedProofGenerator(
@@ -45,7 +45,8 @@ class MinimalSignatureAndForgettingBasedProofGenerator(_measure: IProofEvaluator
 class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom],
                                            approximateMeasure: ApproximateProofMeasure,
                                            forgetter: Forgetter,
-                                           filter: DLFilter,
+                                           filter: IOWLOntologyFilter,
+//                                           filter: DLFilter,
                                            justifier: Justifier,
                                            var skipSteps: Boolean = true)
   extends IProofGenerator[OWLAxiom, OWLOntology] with ISimpleProofGenerator[OWLClass, OWLAxiom, OWLOntology] {
@@ -69,6 +70,8 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
   val tidyProofs = new TidyForgettingBasedProofs(formatter)
 
   //override def setReasoner(owlReasoner: OWLReasoner): Unit = {}
+
+  private val filterTool = new OWLOntologyFilterTool(filter)
 
   private var canceled = false
 
@@ -97,7 +100,10 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
   override def setOntology(owlOntology: OWLOntology): Unit = {
     if(ontology!=null && manager.contains(ontology))
       manager.removeOntology(ontology)
-    ontology = filter.filteredCopy(owlOntology, manager)
+
+    filterTool.setOntology(owlOntology)
+    ontology = filterTool.filterOntology()
+//    ontology = filter.filteredCopy(owlOntology, manager)
 
     println("Ontology changed!")
 

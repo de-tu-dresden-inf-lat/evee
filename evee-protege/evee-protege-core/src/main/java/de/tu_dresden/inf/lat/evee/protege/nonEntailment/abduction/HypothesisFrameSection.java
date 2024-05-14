@@ -31,8 +31,8 @@ public class HypothesisFrameSection extends AbstractOWLFrameSection<Set<OWLAxiom
 
     @Override
     protected void refill(OWLOntology owlOntology) {
-        Set<OWLAxiom> hypotehsis = this.getRootObject();
-        for (OWLAxiom axiom : hypotehsis){
+        Set<OWLAxiom> hypothesis = this.getRootObject();
+        for (OWLAxiom axiom : hypothesis){
             HypothesisFrameSectionRow row = new HypothesisFrameSectionRow(this.getOWLEditorKit(),
                     this, this.getOWLEditorKit().getOWLModelManager().getActiveOntology(),
                     this.getRootObject(), axiom);

@@ -1,14 +1,11 @@
 package de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
+import de.tu_dresden.inf.lat.counterExample.data.Tracker;
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -16,13 +13,17 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
 
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
-import de.tu_dresden.inf.lat.counterExample.TypeExtender;
 import de.tu_dresden.inf.lat.model.data.Element;
 import de.tu_dresden.inf.lat.model.data.EntryPair;
 import de.tu_dresden.inf.lat.model.data.Relation;
 import de.tu_dresden.inf.lat.model.tools.GeneralTools;
 
-public class DiffRelevantGenerator extends RelevantCounterExample {
+
+/**
+ * @author Christian Alrabbaa
+ */
+
+public class DiffRelevantGenerator extends RelevantCounterExampleGenerator {
 	protected final Logger logger = Logger.getLogger(DiffRelevantGenerator.class);
 
 	public DiffRelevantGenerator(ELKModelGenerator elkCounterModelGenerator) throws OWLOntologyCreationException {
@@ -30,7 +31,6 @@ public class DiffRelevantGenerator extends RelevantCounterExample {
 	}
 
 	public Set<Element> generate() {
-		Map<Element, Set<OWLClassExpression>> elementsToRemovedTypes = new HashMap<>();
 		logger.info("Extracting diff relevant counter example for " + SimpleOWLFormatter.format(this.conclusion));
 		Instant start = Instant.now();
 
@@ -54,185 +54,24 @@ public class DiffRelevantGenerator extends RelevantCounterExample {
 		Element finalizedLHSElement = getElementFrom(lHSElement, typeDiffModel);
 		Element finalizedRHSElement = getElementFrom(rHSElement, typeDiffModel);
 
-		Map<Relation, Set<Boolean>> edgeFoundMap = new HashMap<>();
-
-		Map<Element, Set<OWLClassExpression>> typeCommonMap = new HashMap<>();
-		typeCommonMap.put(finalizedLHSElement, Sets.newHashSet(this.model.getMapper().getAliasLHS()));
-		for (OWLClassExpression t : finalizedLHSElement.getTypes()) {
-			if (rHSElement.getTypes().contains(t))
-				typeCommonMap.get(finalizedLHSElement).add(t);
-		}
-
-		Set<Element> reachableFromLHSElement = Sets.newHashSet(finalizedLHSElement);
-		Set<EntryPair<Relation, Relation>> processed = new HashSet<EntryPair<Relation, Relation>>();
-
-		Set<Element> reachableFromA = Sets.newHashSet(getElementFrom(finalizedLHSElement, typeDiffModel));
 		Set<Element> reachableFromB = Sets.newHashSet(getElementFrom(finalizedRHSElement, typeDiffModel));
+		Set<Element> reachableFromA = Sets.newHashSet(getElementFrom(finalizedLHSElement, typeDiffModel));
 
 		Set<Relation> explored = new HashSet<>();
-		fillReachableElementsSet(finalizedLHSElement, reachableFromA, typeDiffModel, explored);
-		explored = new HashSet<>();
 		fillReachableElementsSet(finalizedRHSElement, reachableFromB, typeDiffModel, explored);
-		Set<Element> reachableFromBoth = new HashSet<>(reachableFromA);
-		reachableFromBoth.retainAll(reachableFromB);
 
-		trackCommon(finalizedLHSElement, finalizedRHSElement, edgeFoundMap, typeCommonMap, reachableFromLHSElement,
-				processed, reachableFromBoth);
+		explored = new HashSet<>();
+		fillReachableElementsSet(finalizedLHSElement, reachableFromA, typeDiffModel, explored);
 
-		// Filter out the common reachable elements
-		Set<Element> onlyReachableFromLHSElement = filterReachableElements(reachableFromLHSElement, finalizedRHSElement,
-				typeDiffModel);
-//		System.out.println("only from lhs");
-//		onlyReachableFromLHSElement.forEach(System.out::println);
+		Set<Element> reachableFromBoth = Sets.newHashSet(reachableFromB);
+		reachableFromBoth.retainAll(reachableFromA);
 
-//		System.out.println("***MAP***");
-//		this.model.getMapper().getRestrictionMapper().getClass2Restriction().entrySet().forEach(System.out::println);
+		Set<EntryPair<Relation, Relation>> processed = new HashSet<>();
 
-		for (Element e : typeDiffModel) {
-			elementsToRemovedTypes.put(e, new HashSet<>());
-//			if (reachableFromLHSElement.contains(e)) {
-			if (onlyReachableFromLHSElement.contains(e)) {
-				for (Relation r : Sets.newHashSet(e.getRelations())) {
-					if (!r.isForward())
-						continue;
-					if (!evaluateFound(r, edgeFoundMap)) {
-						e.removeRelation(r);
-						getElementFrom(r.getElement2(), typeDiffModel).removeRelation(
-								getElementFrom(r.getElement2(), typeDiffModel).getRelations().stream().filter(
-										rel -> rel.getRoleName().equals(r.getRoleName()) && rel.getElement1().equals(e))
-										.collect(Collectors.toList()).get(0));
+		Tracker tracker = new Tracker();
+		filterTypes(finalizedLHSElement, finalizedRHSElement, typeDiffModel, reachableFromBoth, tracker, processed);
 
-//						System.out.println("current element" + e);
-						this.model.getElementUpdatedTypeToEdgeMap().get(e).stream().map(EntryPair::getFirstArg)
-								.forEach(exp -> {
-
-									elementsToRemovedTypes.get(e).add(exp);
-
-									exp = getRestrictionFromAlias(exp);
-
-									Set<EntryPair<OWLClassExpression, Relation>> toRemove;
-									Set<EntryPair<OWLClassExpression, Relation>> toBeUpdated;
-									Set<Relation> backRelations = e.getRelations().stream().filter(x -> x.isBackward())
-											.collect(Collectors.toSet()); // System.out.println("Backrelations"); //
-//									System.out.println(backRelations); //
-//									System.out.println("edge Label to remove " + exp);
-									for (Relation backR : backRelations) {
-										toBeUpdated = this.model.getElementUpdatedTypeToEdgeMap()
-												.get(backR.getElement1()); // System.out.println("tobe updated"); //
-//										System.out.println(toBeUpdated);
-										toRemove = toBeUpdated.stream()
-												.filter(x -> x.getSecondArg().getRoleName().equals(backR.getRoleName())
-														&& x.getSecondArg().getElement2().equals(e))
-												.collect(Collectors.toSet()); //
-//										System.out.println(toRemove);
-
-										for (EntryPair<OWLClassExpression, Relation> entry : toRemove) {
-											toBeUpdated.remove(entry);
-
-											// UpdateLoopTypes(backR.getElement(), exp, entry.getFirstArg());
-											OWLClassExpression newConcept = makeConcept(exp,
-													getRestrictionFromAlias(entry.getFirstArg())); //
-//											System.out.println("NEW CONCEPT -> " + newConcept);
-
-											// record what is the new meaning of the alias in the current element
-											this.model.getElementLabelToNewConceptMap().get(backR.getElement1())
-													.add(new EntryPair<>(entry.getFirstArg(), newConcept));
-
-											EntryPair<OWLClassExpression, Relation> pair = new EntryPair<>(newConcept,
-													entry.getSecondArg());
-											toBeUpdated.add(pair);
-
-//											System.out.println("===Updating===");
-//											System.out.println(getRestrictionFromAlias(entry.getFirstArg()));
-//											System.out.println("with");
-//											System.out.println(pair);
-										}
-
-									}
-
-								});
-
-						//
-
-//						// Add all types that correspond to paths
-//						System.out.println("heeeere " + e.getName());
-//						elementsToRemovedTypes.get(e).addAll(this.model.getElementLabelToEdgeMap().get(e).stream()
-//								.map(EntryPair::getFirstArg).collect(Collectors.toSet()));
-//						System.out.println("z->" + elementsToRemovedTypes.get(e));
-//						Set<EntryPair<OWLClassExpression, Relation>> toRemove = this.model.getElementLabelToEdgeMap()
-//								.get(e).stream().collect(Collectors.toSet());
-//						for (EntryPair<OWLClassExpression, Relation> pair : toRemove) {
-//							System.out.println(pair);
-//							this.model.getElementLabelToEdgeMap().get(e).remove(pair);
-//						}
-					}
-				}
-//				if (onlyReachableFromLHSElement.contains(e)) {
-				for (OWLClassExpression exp : Sets.newHashSet(e.getTypes()))
-					if (!typeCommonMap.get(e).contains(exp)) {
-						if (exp.equals(owlTools.getOWLTop()))
-							continue;
-						e.removeType(exp);
-						elementsToRemovedTypes.get(e).add(exp);
-
-//						propagateBackwards(exp, e);
-
-						// Replaced with propagate backwards
-
-						Set<EntryPair<OWLClassExpression, Relation>> toRemove;
-						Set<EntryPair<OWLClassExpression, Relation>> toBeUpdated;
-						Set<Relation> backRelations = e.getRelations().stream().filter(x -> x.isBackward())
-								.collect(Collectors.toSet());
-//						System.out.println("Label to remove " + exp);
-						for (Relation backR : backRelations) {
-							toBeUpdated = this.model.getElementUpdatedTypeToEdgeMap().get(backR.getElement1());
-							toRemove = toBeUpdated.stream()
-									.filter(x -> x.getSecondArg().getRoleName().equals(backR.getRoleName())
-											&& x.getSecondArg().getElement2().equals(e))
-									.collect(Collectors.toSet());
-
-							for (EntryPair<OWLClassExpression, Relation> entry : toRemove) {
-								toBeUpdated.remove(entry);
-
-								// UpdateLoopTypes(backR.getElement(), exp, entry.getFirstArg());
-								OWLClassExpression newConcept = makeConcept(exp,
-										getRestrictionFromAlias(entry.getFirstArg()));
-								EntryPair<OWLClassExpression, Relation> pair = new EntryPair<>(newConcept,
-										entry.getSecondArg());
-								toBeUpdated.add(pair);
-
-//								System.out.println("===Updating===");
-//								System.out.println(getRestrictionFromAlias(entry.getFirstArg()));
-//								System.out.println("with");
-//								System.out.println(pair);
-							}
-
-						}
-
-					}
-
-			}
-		}
-
-//		System.out.println("+++++++Map of updated types to concepts+++++++");
-//		for (Element e : this.model.getElementUpdatedTypeToEdgeMap().keySet()) {
-//			System.out.println("element" + e);
-//			System.out.println(this.model.getElementUpdatedTypeToEdgeMap().get(e));
-//		}
-
-//		System.out.println("diff coarse before type extension");
-//		typeDiffModel.forEach(System.out::println);
-//		System.out.println("full raw before type extension");
-//		this.model.getRawModelElements().forEach(System.out::println);
-
-		TypeExtender te = new TypeExtender(model, typeDiffModel);
-//		System.out.println(elementsToRemovedTypes.entrySet());
-		te.ExtendTypes(elementsToRemovedTypes);
-
-//		model.getMapper().getRestrictionMapper().getClass2Restriction().entrySet().forEach(System.out::println);
-
-//		System.out.println("diff coarse After type extension");
-//		typeDiffModel.forEach(System.out::println);
+		removeRelationsAndModifyTypes(typeDiffModel, tracker, reachableFromBoth);
 
 		Instant finish = Instant.now();
 		logger.info("Total " + GeneralTools.getDuration(start, finish));
@@ -242,133 +81,103 @@ public class DiffRelevantGenerator extends RelevantCounterExample {
 		return typeDiffModel;
 	}
 
-	/**
-	 * Common parts based on diff relevant counter example
-	 * 
-	 * @param lHSElement
-	 * @param rHSElement
-	 * @param edgeFoundMap
-	 * @param typeFoundMap
-	 * @param elementsReachableFromLHSElement
-	 * @param processed
-	 * @param reachableFromBoth
-	 */
-	private void trackCommon(Element lHSElement, Element rHSElement, Map<Relation, Set<Boolean>> edgeFoundMap,
-			Map<Element, Set<OWLClassExpression>> typeFoundMap, Set<Element> elementsReachableFromLHSElement,
-			Set<EntryPair<Relation, Relation>> processed, Set<Element> reachableFromBoth) {
+	private void removeRelationsAndModifyTypes(Set<Element> typeDiffModel, Tracker tracker,
+											   Set<Element> reachableFromBoth) {
+		for(Relation r : tracker.getRelationExists().keySet()){
+			if(reachableFromBoth.contains(r.getElement1()))
+				continue;
+			if(!tracker.checkRelationJustified(r)){
+				getElementFrom(r.getElement1(), typeDiffModel).removeRelation(r);
+			}else {
+				//change this from types implied to relation implied
+				if (!tracker.getImpliedRelations().contains(r))/*(!tracker.checkTypesImplied(r.getElement2()))*/{
+					if(!reachableFromBoth.contains(r.getElement2())) {
+						// In case the collected types are a subset of the types of element2 of the current edge, this
+						// means element1 is connected to each of the elements that resulted in the collected types
+						Set<OWLClassExpression> types = tracker.getTypesToKeep(r.getElement2());
 
-		Set<Relation> cRelations;
-		Set<OWLClassExpression> commonTypes;
-		Element r1Element;
-		Set<Relation> lhsElementRelations = lHSElement.getRelations().stream().filter(x -> x.isForward())
-				.collect(Collectors.toSet());
-		EntryPair<Relation, Relation> processedPair;
+						if(types.size()>1 && getElementFrom(r.getElement2(), typeDiffModel).getTypes().containsAll(types))
+							getElementFrom(r.getElement1(), typeDiffModel).removeRelation(r);
 
-		Set<Relation> rhsElementRelations;
-//		System.out.println("Processing the following pair -> " + lHSElement + ", " + rHSElement);
+						else
+							getElementFrom(r.getElement2(), typeDiffModel).getTypes().retainAll(types);
+					}
+					else{
+						if (getElementFrom(r.getElement1(), typeDiffModel).getRelations().stream().filter(x->!x.equals(r) &&
+								x.getRoleName().equals(r.getRoleName()) &&
+								getElementFrom(x.getElement2(),typeDiffModel).getTypes().size()>1).count()>=1)
 
-		for (Relation r1 : lhsElementRelations) {
-
-			rhsElementRelations = rHSElement.getRelations().stream().filter(x -> x.isForward())
-					.collect(Collectors.toSet());
-
-			cRelations = rhsElementRelations.stream().filter(x -> x.getRoleName().equals(r1.getRoleName()))
-					.collect(Collectors.toSet());
-			commonTypes = new HashSet<>();
-
-//			System.out.println("Common Relations" + cRelations);
-
-			if (cRelations.isEmpty()) {
-//				System.out.println("Recording -> " + r1 + " = " + false);
-				updateMap(r1, false, edgeFoundMap);
-			} else {
-//				System.out.println("Recording -> " + r1 + " = " + true);
-//				System.out.println("Reasons -> " + cRelations);
-				updateMap(r1, true, edgeFoundMap);
-//				this.relationReasons.updateMap(r1, cRelations);
-			}
-
-			r1Element = this.model.getFinilizedElement(r1.getElement2());
-			elementsReachableFromLHSElement.add(r1Element);
-
-			if (!reachableFromBoth.contains(r1Element)) {
-				for (Relation r2 : cRelations) {
-
-					Element r2Element = this.model.getFinilizedElement(r2.getElement2());
-					commonTypes.addAll(r1Element.getTypes().stream().filter(x -> r2Element.getTypes().contains(x))
-							.collect(Collectors.toSet()));
-
-					processedPair = new EntryPair<Relation, Relation>(r1, r2);
-					if (processed.contains(processedPair))
-						continue;
-					processed.add(processedPair);
-
-					trackCommon(r1Element, r2Element, edgeFoundMap, typeFoundMap, elementsReachableFromLHSElement,
-							processed, reachableFromBoth);
+							getElementFrom(r.getElement1(), typeDiffModel).removeRelation(r);
+					}
 				}
-			} else {
-				commonTypes = r1Element.getTypes();
 			}
-			if (typeFoundMap.containsKey(r1Element))
-				typeFoundMap.get(r1Element).addAll(commonTypes);
-			else
-				typeFoundMap.put(r1Element, new HashSet<>(commonTypes));
 		}
-//
-//		System.out.println("edge found map");
-//		edgeFoundMap.entrySet().forEach(System.out::println);
-//
-//		System.out.println("type found map");
-//		typeFoundMap.entrySet().forEach(System.out::println);
-
 	}
 
-	private void propagateBackwards(OWLClassExpression conceptNameToRemove, Element destinationElement) {
-//		System.out.println("Destination Element = " + destinationElement);
-		Element sourceElement;
-		OWLClassExpression updatedConcept;
-		Set<EntryPair<OWLClassExpression, Relation>> toBeUpdated;
-		Optional<EntryPair<OWLClassExpression, Relation>> entryToRemoveOpt;
-		for (Relation r : destinationElement.getRelations()) {
-			if (r.isBackward()) {
-				sourceElement = r.getElement1();
-				for (OWLClassExpression type : sourceElement.getTypes()) {
-					if (type.equals(owlTools.getOWLTop()))
-						continue;
+	private void filterTypes(Element left, Element right, Set<Element> modelTmp, Set<Element> reachableFromBoth,
+							 Tracker tracker, Set<EntryPair<Relation, Relation>> processed){
 
-					OWLClassExpression originalConcept = getConceptFromAlias(type);
-					updatedConcept = makeConcept(conceptNameToRemove, originalConcept);
+		Set<Relation> candidates;
+		EntryPair<Relation, Relation> processedEntry;
+		for(Relation rLeft : left.getRelations()){
+			if(!rLeft.isForward())
+				continue;
+			if (reachableFromBoth.contains(left))
+				continue;
 
-					toBeUpdated = this.model.getElementUpdatedTypeToEdgeMap().get(sourceElement);
+			candidates =
+					right.getRelations().stream().filter(rRight -> rLeft.getRoleName().equals(rRight.getRoleName()) && rRight.isForward())
+					.collect(Collectors.toSet());
 
-//					System.out.println("Type = " + type + " -> " + originalConcept);
+			if (candidates.isEmpty()) {
+				tracker.addToRelationExists(rLeft, false);
+			}
+			else{
+				tracker.addToRelationExists(rLeft, true);
 
-					entryToRemoveOpt = toBeUpdated.stream()
-							.filter(x -> x.getFirstArg().equals(type) || x.getFirstArg().equals(originalConcept))
-							.findFirst();
-
-					if (entryToRemoveOpt.isPresent()) {
-
-						toBeUpdated.remove(entryToRemoveOpt.get());
-
-						EntryPair<OWLClassExpression, Relation> pair = new EntryPair<>(updatedConcept, r);
-
-						toBeUpdated.add(pair);
-
-//						System.out.println("===Updating===");
-//						System.out.println(originalConcept);
-//						System.out.println("with");
-//						System.out.println(pair);
-
-						// record what is the new meaning of the alias in the current element
-						this.model.getElementLabelToNewConceptMap().get(sourceElement)
-								.add(new EntryPair<>(type, updatedConcept));
-					}
-
+				boolean isImplied = candidates.stream().anyMatch(rRight -> checkImplication(rLeft, rRight, modelTmp));
+				if(isImplied) {
+					tracker.addToImpliedRelations(rLeft);
+					tracker.addToTypesImplied(rLeft.getElement2(), true);
+				}
+				else {
+					tracker.addToTypesImplied(rLeft.getElement2(), false);
+					candidates.stream().map(Relation::getElement2).forEach(e->
+							tracker.addToTypesNeededCollector(rLeft.getElement2(),e)
+					);
 				}
 
-				propagateBackwards(conceptNameToRemove, sourceElement);
+				// Since we filter types when there is no direct implication between node labels, we have to iterate
+				// over the full set of candidates
+				for(Relation candidate: candidates){
+					processedEntry = new EntryPair<>(rLeft, candidate);
+					if (processed.contains(processedEntry))
+						continue;
+					processed.add(processedEntry);
+
+					filterTypes(getElementFrom(rLeft.getElement2(), modelTmp), getElementFrom(candidate.getElement2()
+							, modelTmp), modelTmp, reachableFromBoth, tracker, processed);
+				}
 			}
 		}
+	}
+
+	private boolean checkImplication(Relation rLeft, Relation rRight, Set<Element> modelTmp) {
+		assert rLeft.getRoleName().equals(rRight.getRoleName()): "The role name must be the same";
+
+		Element l = getElementFrom(rLeft.getElement2(), modelTmp);
+		Element r = getElementFrom(rRight.getElement2(), modelTmp);
+
+		Set<OWLClassExpression> lClassNames =
+				Sets.newHashSet(l.getTypes()).stream().filter(t->
+						!this.model.getMapper().getRestrictionMapper().getClass2Restriction().containsKey(t.asOWLClass()) &&
+						!this.model.getMapper().getConjunctionMapper().getClass2Conjunction().containsKey(t.asOWLClass())).collect(Collectors.toSet());
+
+		Set<OWLClassExpression> rClassNames =
+				Sets.newHashSet(r.getTypes()).stream().filter(t->
+						!this.model.getMapper().getRestrictionMapper().getClass2Restriction().containsKey(t.asOWLClass()) &&
+						!this.model.getMapper().getConjunctionMapper().getClass2Conjunction().containsKey(t.asOWLClass())).collect(Collectors.toSet());
+
+		return rClassNames.containsAll(lClassNames);
 	}
 }

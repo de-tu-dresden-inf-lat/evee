@@ -39,10 +39,9 @@ public class NonEntailmentPreferencesPanel extends PreferencesPanel {
                 this.pluginMap.put(label, singlePanel);
                 this.tabbedPane.addTab(label, scrollPane);
             } catch (Throwable e) {
-                this.logger.warn(
-                        "The following error occurred during the instantiation of the non-entailment preferences plugin " +
-                                "'{}': {}",
-                        plugin.getLabel(), e);
+                String msgString = "The following error occurred during the instantiation of the " +
+                        "non-entailment preferences plugin '" + plugin.getLabel() + "': ";
+                this.logger.warn(msgString, e);
             }
         }
         this.add(tabbedPane);
@@ -54,9 +53,9 @@ public class NonEntailmentPreferencesPanel extends PreferencesPanel {
             try {
                 this.pluginMap.get(key).dispose();
             } catch (Throwable e){
-                this.logger.error("The following error occurred when trying to dispose the non-entailment preferences plugin" +
-                        "'{}: {}", key, e);
-                this.logger.error("", e);
+                String msgString = "The following error occurred when trying to dispose the " +
+                        "non-entailment preferences plugin '" + key + "': ";
+                this.logger.error(msgString, e);
             }
         }
         this.pluginMap.clear();
@@ -68,9 +67,9 @@ public class NonEntailmentPreferencesPanel extends PreferencesPanel {
             try{
                 this.pluginMap.get(key).applyChanges();
             } catch (Throwable e){
-                this.logger.error("The following error occurred when trying to apply the changes of the non-entailment preferences plugin" +
-                        "'{}': {}", key, e);
-                this.logger.error("", e);
+                String msgString =  "The following error occurred when trying to apply the changes of the " +
+                        "non-entailment preferences plugin '" + key + "': ";
+                this.logger.error(msgString, e);
             }
         }
     }

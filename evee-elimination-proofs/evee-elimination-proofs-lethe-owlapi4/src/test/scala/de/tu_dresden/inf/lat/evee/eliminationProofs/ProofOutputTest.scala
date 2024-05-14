@@ -4,6 +4,7 @@ import java.io.File
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.{LetheBasedForgetter, OWLApiBasedJustifier}
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.ForgettingBasedProofGenerator
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool
 import de.tu_dresden.inf.lat.evee.proofs.json.{JsonProofParser, JsonProofWriter}
 import org.junit.Test
 import org.junit.Assert.assertEquals
@@ -19,7 +20,7 @@ class ProofOutputTest extends JUnitSuite {
 
     println("Parsing ontology...")
     val manager = OWLManager.createOWLOntologyManager()
-    val ontology = manager.loadOntologyFromOntologyDocument(new File(Thread.currentThread().getContextClassLoader.getResource("pizza.owl").getPath))
+    val ontology = manager.loadOntologyFromOntologyDocument(new File(Thread.currentThread().getContextClassLoader.getResource("resources/pizza.owl").getPath))
 
     println("Restricting to ALCH")
     OWLOntologyFilters.restrictToALCH(ontology)
@@ -27,7 +28,7 @@ class ProofOutputTest extends JUnitSuite {
     val forgetter = LetheBasedForgetter.ALC_ABox()
     val justifier = OWLApiBasedJustifier.UsingHermiT(ontology.getOWLOntologyManager)
 
-    val proofGenerator = new ForgettingBasedProofGenerator(forgetter, ALCHTBoxFilter, justifier, true)
+    val proofGenerator = new ForgettingBasedProofGenerator(forgetter, new OWLOntologyFilterTool.ALCHFilter(), justifier, true)
 
     proofGenerator.setOntology(ontology)
 

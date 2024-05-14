@@ -1,9 +1,10 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExplanationService;
 
-//import ch.qos.logback.classic.spi.ILoggingEvent;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
+import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import de.tu_dresden.lat.capi.experiments.AbductionProblem;
 import de.tu_dresden.lat.capi.implicateMatching.*;
 import de.tu_dresden.lat.capi.ontologyTools.ELFilter;
@@ -35,11 +36,13 @@ public class CapiAbductionSolver
         extends AbstractAbductionSolver<List<Solution>>
         implements Supplier<Set<OWLAxiom>> {
 
+    private OWLOntology workingOntology;
     private List<Solution> solutions;
     private OWLEditorKit owlEditorKit;
     private IProgressTracker progressTracker;
     private int currentSolutionIndex;
     private boolean computationSuccessful;
+    private boolean emptySolutionFound;
     private int skolemBound;
     private String errorMessage = "";
     private String spassPath;
@@ -52,6 +55,7 @@ public class CapiAbductionSolver
     private File spassOutputFile;
     private PostProcessing postProcessing = null;
     private boolean firstExecution;
+    private final OWLOntologyFilterTool ontologyFilter;
     private static final String PROBLEM_SPASS = "problem.spass";
     private static final String SPASS_MODEL = "problem.spass.model";
     private static final String SPASS_CLAUSES = "problem.spass.clauses";
@@ -80,11 +84,13 @@ public class CapiAbductionSolver
         this.logger.debug("Creating CapiAbductionSolver");
         this.solutions = new ArrayList<>();
         this.computationSuccessful = false;
+        this.emptySolutionFound = false;
         this.cancelled = false;
         this.currentSolutionIndex = 0;
         this.preferencesManager = new CapiPreferencesManager();
         this.spassProcess = null;
         this.firstExecution = true;
+        this.ontologyFilter = new OWLOntologyFilterTool(new OWLOntologyFilterTool.ELFilter());
         this.logger.debug("CapiAbductionSolver created successfully");
     }
 
@@ -101,6 +107,11 @@ public class CapiAbductionSolver
 
     @Override
     public void computeExplanation(){
+        this.logger.debug("Filtering input ontology");
+        assert this.activeOntology != null;
+        this.ontologyFilter.setOntology(this.activeOntology);
+        this.workingOntology = this.ontologyFilter.filterOntology();
+        this.logger.debug("Input ontology filtered");
         this.logger.debug("Checking path to SPASS.");
         this.spassPath = this.preferencesManager.loadSpassPath();
         if (this.spassPath.equals("")){
@@ -108,7 +119,7 @@ public class CapiAbductionSolver
             this.sendViewComponentEvent(ExplanationEventType.RESULT_RESET);
             this.showSpassPathDialog();
         } else {
-            this.logger.debug("Path to SPASS is set, continuing normally");
+            this.logger.debug("Path to SPASS is set, computing explanation");
             super.computeExplanation();
         }
     }
@@ -123,12 +134,13 @@ public class CapiAbductionSolver
             }
         }
         this.cancelled = false;
+        this.emptySolutionFound = false;
         this.timeLimit = this.preferencesManager.loadTimeLimit();
         this.removeRedundancies = this.preferencesManager.loadRemoveRedundancies();
         this.simplifyConjunctions = this.preferencesManager.loadSimplifyConjunctions();
         this.semanticallyOrdered = this.preferencesManager.loadSemanticallyOrdered();
         this.logger.debug("Generating Explanations");
-        assertNotNull(this.ontology);
+        assertNotNull(this.workingOntology);
         this.solutions = null;
         if (this.checkResultInCache()){
             this.logger.debug("Cached result found, re-displaying cached result");
@@ -164,6 +176,16 @@ public class CapiAbductionSolver
     @Override
     public String getSupportsExplanationMessage() {
         return "Please enter a single 'SubClassOfAxiom' as missing entailment.";
+    }
+
+    @Override
+    public String getFilterWarningMessage() {
+        return "Warning: Some Axioms of this ontology were filtered. This service only supports EL.";
+    }
+
+    @Override
+    public boolean ignoresPartsOfOntology() {
+        return this.ontologyFilter.ontologyContainsIgnoredElements();
     }
 
     private void computeNewExplanation() {
@@ -204,7 +226,7 @@ public class CapiAbductionSolver
                 this.concatFileName(FileNames.PROBLEM))) {
             OWLOntology ontologyCopy = ontologyManager.createOntology();
             ontologyCopy = ontologyCopy.getOWLOntologyManager().copyOntology(
-                    this.ontology, OntologyCopy.DEEP);
+                    this.workingOntology, OntologyCopy.DEEP);
             ELFilter.deleteNonELAxioms(ontologyCopy);
             AbductionProblem abductionProblem = new AbductionProblem(ontologyCopy, missingEntailment);
             OWL2SpassConverter converter = new OWL2SpassConverter(true);
@@ -366,6 +388,9 @@ public class CapiAbductionSolver
                     }
                 }
                 this.solutions = new ArrayList<>(generatedSolutions);
+                if (this.solutions.size() == 0){
+                    this.emptySolutionFound = true;
+                }
                 this.logger.debug("Solutions successfully generated");
                 this.progressTracker.setMessage("Solutions successfully generated");
                 this.logger.debug("Generated solutions:\n" + this.solutions);
@@ -470,7 +495,7 @@ public class CapiAbductionSolver
                         solution -> {
                             lhsClassNames.addAll(this.parse2OWLClasses(solution.getLHS()));
                             rhsClassNames.addAll(this.parse2OWLClasses(solution.getRHS()));
-                            OWLDataFactory factory = this.ontology.getOWLOntologyManager().getOWLDataFactory();
+                            OWLDataFactory factory = this.activeOntology.getOWLOntologyManager().getOWLDataFactory();
                             result.add(factory.getOWLSubClassOfAxiom(
                                     factory.getOWLObjectIntersectionOf(lhsClassNames),
                                     factory.getOWLObjectIntersectionOf(rhsClassNames)));
@@ -486,7 +511,7 @@ public class CapiAbductionSolver
     private Set<OWLClass> parse2OWLClasses(Collection<ClassName> classNames){
         Set<OWLClass> resultClasses = new HashSet<>();
         classNames.forEach(className -> resultClasses.addAll(
-                this.ontology.getClassesInSignature().stream().filter(
+                this.workingOntology.getClassesInSignature().stream().filter(
                                 owlClass -> owlClass.getIRI().getRemainder().or("").equals(
                                         IRI.create(className.toString()).toString()))
                         .collect(Collectors.toSet())));
@@ -496,12 +521,18 @@ public class CapiAbductionSolver
     private void computationCompleted(){
         this.computationSuccessful = ! this.cancelled;
         if (this.computationSuccessful){
-            this.logger.debug("Computation was not cancelled, display of result possible");
-            this.saveResultToCache(this.solutions);
-            this.setActiveOntologyEditedExternally(false);
-            this.currentSolutionIndex = 0;
+            this.logger.debug("Computation was not cancelled");
+            if (this.emptySolutionFound){
+                this.logger.debug("Computation found an empty result, displaying result not possible.");
+                this.computationFailed("No solution found, please adjust missing entailment or vocabulary.");
+            } else {
+                this.logger.debug("Computation found a non-empty result, displaying result possible.");
+                this.saveResultToCache(this.solutions);
+                this.setActiveOntologyEditedExternally(false);
+                this.currentSolutionIndex = 0;
+            }
         } else{
-            this.logger.debug("Computation was cancelled, cannot show result");
+            this.logger.debug("Computation was cancelled, cannot display result.");
             this.computationFailed("Last computation was cancelled");
         }
     }
@@ -519,8 +550,6 @@ public class CapiAbductionSolver
             JDialog warningDialog = warningPane.createDialog(ProtegeManager.getInstance().getFrame(
                     this.owlEditorKit.getWorkspace()), "Warning");
             warningDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            warningDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(this.owlEditorKit.getWorkspace())));
             warningDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             warningDialog.addWindowListener(new java.awt.event.WindowAdapter(){
                 @Override
@@ -529,8 +558,8 @@ public class CapiAbductionSolver
                         windowEvent.getWindow().dispose();
                         JFileChooser fileChooser = new JFileChooser();
                         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                        int result = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(
-                                ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
+                        int result = fileChooser.showOpenDialog(
+                                ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace()));
                         if (result == JFileChooser.APPROVE_OPTION){
                             File file = fileChooser.getSelectedFile();
                             preferencesManager.saveSpassPath(file.getPath());
@@ -538,7 +567,7 @@ public class CapiAbductionSolver
                     });
                 }
             });
-            warningDialog.setVisible(true);
+            UIUtilities.packAndSetWindow(warningDialog, this.owlEditorKit, true);
         });
     }
 

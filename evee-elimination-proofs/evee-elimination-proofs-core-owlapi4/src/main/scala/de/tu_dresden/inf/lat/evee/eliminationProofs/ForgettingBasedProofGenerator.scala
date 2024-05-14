@@ -4,8 +4,8 @@ import com.typesafe.scalalogging.Logger
 import de.tu_dresden.inf.lat.dltools.DLFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.dataStructures.{Forgetter, Justifier}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.tools.{Counter, OntologyTools, TidyForgettingBasedProofs}
-import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker
-import de.tu_dresden.inf.lat.evee.general.tools.ProgressTrackerCollection
+import de.tu_dresden.inf.lat.evee.general.interfaces.{IOWLOntologyFilter, IProgressTracker}
+import de.tu_dresden.inf.lat.evee.general.tools.{OWLOntologyFilterTool, ProgressTrackerCollection}
 import de.tu_dresden.inf.lat.evee.proofs.data.{AbstractSimpleOWLProofGenerator, Inference, Proof}
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProof, IProofGenerator, ISimpleProofGenerator}
 import org.semanticweb.owlapi.apibinding.OWLManager
@@ -32,7 +32,8 @@ import scala.concurrent.CancellationException
  * TODO with a default value (as for skipSteps)
  */
 class ForgettingBasedProofGenerator(forgetter: Forgetter,
-                                    filter: DLFilter,
+                                    filter: IOWLOntologyFilter,
+//                                    filter: DLFilter,
                                     justifier: Justifier,
                                     var skipSteps: Boolean = true,
                                     var hiddenSignature: Set[OWLEntity] = Set())
@@ -52,6 +53,8 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
   protected val tidyProofs = new TidyForgettingBasedProofs(formatter)
 
   protected var canceled: Boolean = false
+
+  private val filterTool = new OWLOntologyFilterTool(filter)
 
   def setSkipSteps(skipSteps: Boolean) =
     this.skipSteps=skipSteps
@@ -90,7 +93,9 @@ class ForgettingBasedProofGenerator(forgetter: Forgetter,
     if(ontology!=null && manager.contains(ontology))
       manager.removeOntology(ontology)
 
-    ontology = filter.filteredCopy(owlOntology,manager)
+    filterTool.setOntology(owlOntology)
+    ontology = filterTool.filterOntology()
+//    ontology = filter.filteredCopy(owlOntology,manager)
 
     owlDataFactory = manager.getOWLDataFactory
 

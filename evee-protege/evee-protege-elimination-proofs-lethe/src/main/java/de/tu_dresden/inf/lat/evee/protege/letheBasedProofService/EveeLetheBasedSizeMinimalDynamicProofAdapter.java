@@ -6,6 +6,7 @@ import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifie
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ApproximateProofMeasureInferenceNumber;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.MinimalForgettingBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.ProofEvaluatorInferenceNumber$;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -42,7 +43,8 @@ public class EveeLetheBasedSizeMinimalDynamicProofAdapter extends AbstractEveeSu
                 ProofEvaluatorInferenceNumber$.MODULE$,
                 new ApproximateProofMeasureInferenceNumber(JavaConverters.asScalaSet(new HashSet<OWLEntity>()).toSet()),
                 LetheBasedForgetter.ALC_ABox(timeOut),
-                ALCHTBoxFilter$.MODULE$,
+                new OWLOntologyFilterTool.ALCHFilter(),
+//                ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps);
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);

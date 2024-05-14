@@ -101,7 +101,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
             this.dialog = new JDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()));
             this.dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            this.dialog.setTitle("Manage signature for " + ontoName);
+            this.dialog.setTitle("Manage vocabulary for " + ontoName);
             this.holderPanel = new JPanel();
             this.dialog.getContentPane().add(holderPanel);
             this.holderPanel.setLayout(new GridBagLayout());
@@ -109,10 +109,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
             this.addSignaturePanelComponents();
             this.addMiddleButtons();
             this.addLowerInteractiveElements();
-            this.dialog.pack();
-            this.dialog.setLocationRelativeTo(
-                    ProtegeManager.getInstance().getFrame(this.getWorkspace()));
-            this.dialog.setVisible(true);
+            UIUtilities.packAndSetWindow(this.dialog, this.getOWLEditorKit(), true);
         });
     }
 
@@ -194,7 +191,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
 //        first row:
         JPanel checkBoxPanel = new JPanel();
         checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.LINE_AXIS));
-        JLabel checkBoxLabel = new JLabel("Use Signature for proofs:");
+        JLabel checkBoxLabel = new JLabel("Use vocabulary for proofs:");
         checkBoxLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         checkBoxLabel.setVerticalTextPosition(JLabel.CENTER);
         checkBoxLabel.setHorizontalTextPosition(JLabel.CENTER);
@@ -291,11 +288,11 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
                 this.signatureSelectionUI.setSelectedSignature(knownEntitySet);
                 this.signatureSelectionUI.clearSelectedSignatureUISelection();
             } catch (IOException e) {
-//                error-message already shown in SignatureFileHandler
+//                error-message already shown and logged in SignatureFileHandler
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
             } catch(LoadingAbortedException ignored){
-//                no handling necessary
+//                no handling necessary, logging already done in SignatureFileHandler
             }
         });
     }
@@ -310,7 +307,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
                 signatureFileHandler.saveSignature();
                 this.signatureSelectionUI.clearSelectedSignatureUISelection();
             } catch (IOException e){
-//                error-message already shown in SignatureFileHandler
+//                error-message already shown and logged in SignatureFileHandler
                 this.signatureSelectionUI.dispose();
                 this.dialog.dispose();
             }
@@ -339,7 +336,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
 //                        this.useSignatureCheckBox.isSelected());
             }
             catch (IllegalArgumentException e){
-                this.logger.error("Error while saving signature to Protege Preferences.", e);
+                this.logger.error("Error while saving signature to Protege Preferences: ", e);
                 String errorString = "<center>" + e + "</center>";
                 UIUtilities.showError(SIGNATURE_SAVING_ERROR_MSG + errorString, this.getOWLEditorKit());
             }
@@ -349,18 +346,6 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
             }
         });
     }
-
-//    private void showError(String message){
-//        SwingUtilities.invokeLater(() -> {
-//            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-//            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()), "Error");
-//            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-//            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-//                    ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace())));
-//            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//            errorDialog.setVisible(true);
-//        });
-//    }
 
     private void enableButtons(boolean enable){
         this.loadButton.setEnabled(enable);
