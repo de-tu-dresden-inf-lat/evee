@@ -101,7 +101,7 @@ abstract public class AbstractSignatureSelectionUI implements ActionListener {
         tabbedPane.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                        "Ontology signature:"),
+                        "Ontology vocabulary:"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         this.signatureTabPane = tabbedPane;
 //        JPanel ontologySignaturePanel = new JPanel();

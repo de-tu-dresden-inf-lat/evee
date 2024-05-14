@@ -101,7 +101,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
             this.dialog = new JDialog(ProtegeManager.getInstance().getFrame(this.getEditorKit().getWorkspace()));
             this.dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
             this.dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            this.dialog.setTitle("Manage signature for " + ontoName);
+            this.dialog.setTitle("Manage vocabulary for " + ontoName);
             this.holderPanel = new JPanel();
             this.dialog.getContentPane().add(holderPanel);
             this.holderPanel.setLayout(new GridBagLayout());
@@ -191,7 +191,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
 //        first row:
         JPanel checkBoxPanel = new JPanel();
         checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.LINE_AXIS));
-        JLabel checkBoxLabel = new JLabel("Use Signature for proofs:");
+        JLabel checkBoxLabel = new JLabel("Use vocabulary for proofs:");
         checkBoxLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         checkBoxLabel.setVerticalTextPosition(JLabel.CENTER);
         checkBoxLabel.setHorizontalTextPosition(JLabel.CENTER);

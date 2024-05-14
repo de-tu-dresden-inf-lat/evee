@@ -37,8 +37,8 @@ public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSub
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOutSeconds());
         this.innerProofGenerator = new ForgettingBasedProofGenerator(
                 LetheBasedForgetter.ALC_ABox(timeOut),
-//                new OWLOntologyFilterTool.SHIFilter(),
-                ALCHTBoxFilter$.MODULE$,
+                new OWLOntologyFilterTool.ALCHFilter(),
+//                ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps,
                 JavaConverters.asScalaSet(new HashSet<>()));
