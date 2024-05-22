@@ -684,6 +684,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //        SwingUtilities.invokeLater(() -> {
         try{
             OWLAxiom axiomToAdd = this.missingEntailmentTextEditor.createObject();
+            this.missingEntailmentTextEditor.setText("");
             AtomicBoolean signatureContainedInOntology = new AtomicBoolean(true);
             OWLOntology activeOntology = this.getOWLModelManager().getActiveOntology();
             axiomToAdd.getSignature().forEach(entity -> {
@@ -709,7 +710,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         }
         finally {
             this.selectedMissingEntailmentList.clearSelection();
-            this.missingEntailmentTextEditor.setText("");
             this.checkComputeButtonAndWarningLabelStatus();
         }
 //        });
