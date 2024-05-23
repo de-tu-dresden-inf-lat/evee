@@ -1,0 +1,232 @@
+{
+  "finalConclusion" : "<A> <= <B>",
+  "inferences" : [ {
+    "conclusion" : "<A> <= <B>",
+    "ruleName" : "\"some\" elimination",
+    "premises" : [ "<A> <= (E<u>.((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) u <B>)", "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= BOTTOM" ]
+  }, {
+    "conclusion" : "<A> <= (E<u>.((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) u <B>)",
+    "ruleName" : "property propagation",
+    "premises" : [ "<A> <= E<u>.(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>))))", "<A> <= (<B> u A<u>.(A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>))" ]
+  }, {
+    "conclusion" : "<A> <= E<u>.(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>))))",
+    "ruleName" : "normalize",
+    "premises" : [ "<A> = (<D> n E<u>.(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) n E<v>.<I>)" ]
+  }, {
+    "conclusion" : "<A> = (<D> n E<u>.(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) n E<v>.<I>)",
+    "ruleName" : "asserted",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "<A> <= (<B> u A<u>.(A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>))",
+    "ruleName" : "class resolution",
+    "premises" : [ "<A> <= <D>", "<D> <= (<B> u A<u>.(A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>))" ]
+  }, {
+    "conclusion" : "<A> <= <D>",
+    "ruleName" : "normalize",
+    "premises" : [ "<A> = (<D> n E<u>.(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) n E<v>.<I>)" ]
+  }, {
+    "conclusion" : "<A> = (<D> n E<u>.(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) n E<v>.<I>)",
+    "ruleName" : "asserted",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "<D> <= (<B> u A<u>.(A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>))",
+    "ruleName" : "normalize",
+    "premises" : [ "<B> = (<D> n E<u>.(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))))" ]
+  }, {
+    "conclusion" : "<B> = (<D> n E<u>.(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))))",
+    "ruleName" : "asserted",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= BOTTOM",
+    "ruleName" : "\"some\" elimination",
+    "premises" : [ "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= E<s>.((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>)))", "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= BOTTOM" ]
+  }, {
+    "conclusion" : "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= E<s>.((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>)))",
+    "ruleName" : "class resolution",
+    "premises" : [ "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= <G>", "(<G> n ((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>))))) <= E<s>.((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>)))" ]
+  }, {
+    "conclusion" : "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= <G>",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= <G>", "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= (<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>))))" ]
+  }, {
+    "conclusion" : "(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= <G>",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= (<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>))))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<G> n ((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>))))) <= E<s>.((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>)))",
+    "ruleName" : "class resolution",
+    "premises" : [ "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G>) <= A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>))", "(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= <G>", "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n (<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>))))) <= E<s>.((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>)))", "(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))" ]
+  }, {
+    "conclusion" : "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G>) <= A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= <G>",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G> n (<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>))))) <= E<s>.((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>)))",
+    "ruleName" : "property propagation",
+    "premises" : [ "(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))", "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G>) <= A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>))" ]
+  }, {
+    "conclusion" : "(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "((A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) u -<G>) n <G>) <= A<s>.(-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<G> n E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))) <= E<s>.(<E> n E<r>.(<H> n E<t>.(<C> u <F>)))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= BOTTOM",
+    "ruleName" : "\"some\" elimination",
+    "premises" : [ "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= E<r>.(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>))", "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= BOTTOM" ]
+  }, {
+    "conclusion" : "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= E<r>.(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>))",
+    "ruleName" : "class resolution",
+    "premises" : [ "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= <E>", "(((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) n <E>) <= E<r>.(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>))" ]
+  }, {
+    "conclusion" : "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= <E>",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= <E>", "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= (<E> n E<r>.(<H> n E<t>.(<C> u <F>)))" ]
+  }, {
+    "conclusion" : "(<E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= <E>",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= (<E> n E<r>.(<H> n E<t>.(<C> u <F>)))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) n <E>) <= E<r>.(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>))",
+    "ruleName" : "class resolution",
+    "premises" : [ "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= E<r>.(<H> n E<t>.(<C> u <F>))" ]
+  }, {
+    "conclusion" : "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= E<r>.(<H> n E<t>.(<C> u <F>))",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= E<r>.(<H> n E<t>.(<C> u <F>))", "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= (<E> n E<r>.(<H> n E<t>.(<C> u <F>)))" ]
+  }, {
+    "conclusion" : "(<E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= E<r>.(<H> n E<t>.(<C> u <F>))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "((-<E> u A<r>.(A<t>.(-<C> n -<F>) u -<H>)) n <E> n E<r>.(<H> n E<t>.(<C> u <F>))) <= (<E> n E<r>.(<H> n E<t>.(<C> u <F>)))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= BOTTOM",
+    "ruleName" : "\"some\" elimination",
+    "premises" : [ "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= E<t>.(-<C> n -<F> n (<C> u <F>))", "(-<C> n -<F> n (<C> u <F>)) <= BOTTOM" ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= E<t>.(-<C> n -<F> n (<C> u <F>))",
+    "ruleName" : "property propagation",
+    "premises" : [ "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= E<t>.(<C> u <F>)", "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= A<t>.(-<C> n -<F>)" ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= E<t>.(<C> u <F>)",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<H> n E<t>.(<C> u <F>)) <= E<t>.(<C> u <F>)", "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= (<H> n E<t>.(<C> u <F>))" ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>)) <= E<t>.(<C> u <F>)",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= (<H> n E<t>.(<C> u <F>))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= A<t>.(-<C> n -<F>)",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= E<t>.(<C> u <F>)", "(<H> n (<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>))) <= A<t>.(-<C> n -<F>)", "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= <H>" ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= E<t>.(<C> u <F>)",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<H> n E<t>.(<C> u <F>)) <= E<t>.(<C> u <F>)", "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= (<H> n E<t>.(<C> u <F>))" ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>)) <= E<t>.(<C> u <F>)",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= (<H> n E<t>.(<C> u <F>))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<H> n (<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>))) <= A<t>.(-<C> n -<F>)",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<H> n (A<t>.(-<C> n -<F>) u -<H>)) <= A<t>.(-<C> n -<F>)", "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= (A<t>.(-<C> n -<F>) u -<H>)" ]
+  }, {
+    "conclusion" : "(<H> n (A<t>.(-<C> n -<F>) u -<H>)) <= A<t>.(-<C> n -<F>)",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= (A<t>.(-<C> n -<F>) u -<H>)",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= <H>",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<H> n E<t>.(<C> u <F>)) <= <H>", "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= (<H> n E<t>.(<C> u <F>))" ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>)) <= <H>",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<H> n E<t>.(<C> u <F>) n (A<t>.(-<C> n -<F>) u -<H>)) <= (<H> n E<t>.(<C> u <F>))",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(-<C> n -<F> n (<C> u <F>)) <= BOTTOM",
+    "ruleName" : "class resolution",
+    "premises" : [ "(-<C> n -<F> n (<C> u <F>)) <= <F>", "(<F> n (-<C> n -<F> n (<C> u <F>))) <= BOTTOM" ]
+  }, {
+    "conclusion" : "(-<C> n -<F> n (<C> u <F>)) <= <F>",
+    "ruleName" : "class resolution",
+    "premises" : [ "(<F> n (-<C> n -<F> n (<C> u <F>))) <= BOTTOM", "(<C> n (-<C> n -<F> n (<C> u <F>))) <= BOTTOM", "(-<C> n -<F> n (<C> u <F>)) <= (<C> u <F>)" ]
+  }, {
+    "conclusion" : "(<F> n (-<C> n -<F> n (<C> u <F>))) <= BOTTOM",
+    "ruleName" : "class resolution",
+    "premises" : [ "((-<C> n -<F>) n <F>) <= BOTTOM", "(-<C> n -<F> n (<C> u <F>)) <= (-<C> n -<F>)" ]
+  }, {
+    "conclusion" : "((-<C> n -<F>) n <F>) <= BOTTOM",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(-<C> n -<F> n (<C> u <F>)) <= (-<C> n -<F>)",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<C> n (-<C> n -<F> n (<C> u <F>))) <= BOTTOM",
+    "ruleName" : "class resolution",
+    "premises" : [ "((-<C> n -<F>) n <C>) <= BOTTOM", "(-<C> n -<F> n (<C> u <F>)) <= (-<C> n -<F>)" ]
+  }, {
+    "conclusion" : "((-<C> n -<F>) n <C>) <= BOTTOM",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(-<C> n -<F> n (<C> u <F>)) <= (-<C> n -<F>)",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(-<C> n -<F> n (<C> u <F>)) <= (<C> u <F>)",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(<F> n (-<C> n -<F> n (<C> u <F>))) <= BOTTOM",
+    "ruleName" : "class resolution",
+    "premises" : [ "((-<C> n -<F>) n <F>) <= BOTTOM", "(-<C> n -<F> n (<C> u <F>)) <= (-<C> n -<F>)" ]
+  }, {
+    "conclusion" : "((-<C> n -<F>) n <F>) <= BOTTOM",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  }, {
+    "conclusion" : "(-<C> n -<F> n (<C> u <F>)) <= (-<C> n -<F>)",
+    "ruleName" : "tautology",
+    "premises" : [ ]
+  } ]
+}
