@@ -38,4 +38,7 @@ public interface INonEntailmentExplanationService<T extends OWLAxiom> extends
     String getSupportsExplanationMessage();
 
     String getFilterWarningMessage();
+
+    void repaintResultComponent();
+
 }

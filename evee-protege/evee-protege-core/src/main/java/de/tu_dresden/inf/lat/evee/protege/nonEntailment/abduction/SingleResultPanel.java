@@ -98,8 +98,6 @@ public class SingleResultPanel extends JPanel
         frame.setRootObject(result);
         JScrollPane singleResultScrollPane = new JScrollPane(frameListHolderPanel);
         this.add(singleResultScrollPane, BorderLayout.CENTER);
-//        bugfix for scrollbar appearing when horizontal divider moved to the right
-        this.hypothesisFrameList.setPreferredSize(new Dimension(0, 0));
     }
 
 

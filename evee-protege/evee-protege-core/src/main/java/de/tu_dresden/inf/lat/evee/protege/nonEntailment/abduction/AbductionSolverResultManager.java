@@ -4,7 +4,6 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureMod
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverOntologyChangeEventGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverOntologyChangeEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
@@ -30,13 +29,15 @@ public class AbductionSolverResultManager implements
         IAbductionSolverOntologyChangeEventGenerator {
 
     private OWLEditorKit owlEditorKit;
-    private JPanel resultHolderPanel;
-    private JPanel resultScrollingPanel;
-    private JScrollPane resultScrollPane;
+    private JPanel resultHolderPanel = null;
+    private JPanel resultScrollingPanel = null;
     private boolean ignoreOntologyChangeEvent = false;
     private ISignatureModificationEventListener signatureModificationEventListener;
     private int hypothesisIndex;
-    private final List<SingleResultPanel> singleResultPanels;
+    private final List<SingleResultPanel> singleResultPanelsList;
+    private final List<Set<OWLAxiom>> hypothesesList;
+    private OWLOntology currentOntology = null;
+    private Set<OWLAxiom> currentMissingEntailment = null;
     private IAbductionSolverOntologyChangeEventListener abductionSolverOntologyChangeEventListener;
     private final OntologyChangeListener ontologyChangeListener;
 
@@ -45,8 +46,14 @@ public class AbductionSolverResultManager implements
 
     public AbductionSolverResultManager(){
         this.hypothesisIndex = 0;
-        this.singleResultPanels = new ArrayList<>();
+        this.singleResultPanelsList = new ArrayList<>();
         this.ontologyChangeListener = new OntologyChangeListener();
+        this.hypothesesList = new ArrayList<>();
+    }
+
+    private void clearInternalLists(){
+        this.singleResultPanelsList.clear();
+        this.hypothesesList.clear();
     }
 
     public void setup(OWLEditorKit owlEditorKit){
@@ -64,10 +71,10 @@ public class AbductionSolverResultManager implements
         this.logger.debug("Disposing");
         this.owlEditorKit.getOWLModelManager().removeOntologyChangeListener(this.ontologyChangeListener);
         this.owlEditorKit.getOWLModelManager().removeListener(this.ontologyChangeListener);
-        for (SingleResultPanel resultPanel : this.singleResultPanels){
+        for (SingleResultPanel resultPanel : this.singleResultPanelsList){
             resultPanel.dispose();
         }
-        this.singleResultPanels.clear();
+        this.clearInternalLists();
         this.logger.debug("Disposed");
     }
 
@@ -79,15 +86,15 @@ public class AbductionSolverResultManager implements
     public void resetResultComponent(){
         this.logger.debug("Resetting result component");
         this.hypothesisIndex = 0;
-        for (SingleResultPanel panel : this.singleResultPanels){
+        for (SingleResultPanel panel : this.singleResultPanelsList){
             panel.dispose();
         }
-        this.singleResultPanels.clear();
+        this.clearInternalLists();
         this.resultHolderPanel = new JPanel(new BorderLayout());
         this.resultScrollingPanel = new JPanel();
         this.resultScrollingPanel.setLayout(new BoxLayout(this.resultScrollingPanel, BoxLayout.PAGE_AXIS));
-        this.resultScrollPane = ComponentFactory.createScrollPane(this.resultScrollingPanel);
-        this.resultHolderPanel.add(this.resultScrollPane, BorderLayout.CENTER);
+        JScrollPane resultScrollPane = ComponentFactory.createScrollPane(this.resultScrollingPanel);
+        this.resultHolderPanel.add(resultScrollPane, BorderLayout.CENTER);
         this.resultHolderPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
@@ -99,21 +106,32 @@ public class AbductionSolverResultManager implements
     protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
                                          List<Set<OWLAxiom>> hypotheses){
         this.logger.debug("Creating result component");
+        List<Set<OWLAxiom>> completeHypothesesList = new ArrayList<>(this.hypothesesList);
+        completeHypothesesList.addAll(hypotheses);
+        this.currentOntology = ontology;
+        this.currentMissingEntailment = missingEntailment;
+        this.resetResultComponent();
+        this.drawResultComponent(this.currentOntology, this.currentMissingEntailment, completeHypothesesList);
+    }
+
+    protected void drawResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
+                                       List<Set<OWLAxiom>> hypotheses){
         hypotheses.forEach(result -> {
             SingleResultPanel singleResultPanel = new SingleResultPanel(
-                    this.owlEditorKit,ontology,
+                    this.owlEditorKit, ontology,
                     missingEntailment, result, hypothesisIndex);
             singleResultPanel.registerSignatureModificationEventListener(this);
             singleResultPanel.registerSingleResultPanelEventListener(this);
-            this.singleResultPanels.add(singleResultPanel);
+            this.singleResultPanelsList.add(singleResultPanel);
+            this.hypothesesList.add(result);
             this.resultScrollingPanel.add(singleResultPanel);
             this.hypothesisIndex++;
         });
-        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
-//            width *0.3 is default divider location for split pane in the main view
-        this.resultHolderPanel.setPreferredSize(new Dimension(
-                (int) (screenWidth * 0.3),
-                this.resultHolderPanel.getHeight()));
+//        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+////            width *0.3 is default divider location for split pane in the main view
+//        this.resultHolderPanel.setPreferredSize(new Dimension(
+//                (int) (screenWidth * 0.3),
+//                this.resultHolderPanel.getHeight()));
         UIUtilities.revalidateAndRepaintComponent(this.resultHolderPanel);
     }
 
@@ -178,6 +196,11 @@ public class AbductionSolverResultManager implements
         }
     }
 
-
+    public void repaintResultComponent(){
+        this.logger.debug("Repainting result component");
+        List<Set<OWLAxiom>> hypotheses = new ArrayList<>(this.hypothesesList);
+        this.resetResultComponent();
+        this.createResultComponent(this.currentOntology, this.currentMissingEntailment, hypotheses);
+    }
 
 }

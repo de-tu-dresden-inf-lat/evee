@@ -39,6 +39,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -261,6 +263,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 this.signatureAndMissingEntailmentComponent,
                 this.nonEntailmentExplanationServiceComponent);
+        this.horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+                propertyChangeEvent -> {
+                    if (nonEntailmentExplainerManager.getCurrentExplainer() != null &&
+                            nonEntailmentExplanationServiceComponent != null){
+                        logger.debug("Movement of horizontal divider detected");
+                        nonEntailmentExplainerManager.getCurrentExplainer().repaintResultComponent();
+                    }
+                });
         this.horizontalSplitPane.setDividerLocation(0.3);
     }
 
