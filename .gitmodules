@@ -1,3 +1,6 @@
 [submodule "lat-scala-dl-tools"]
 	path = lat-scala-dl-tools
 	url = https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools.git
+[submodule "LETHE-0.8"]
+	path = LETHE-0.8
+	url = https://github.com/PKoopmann/LETHE-0.8.git
