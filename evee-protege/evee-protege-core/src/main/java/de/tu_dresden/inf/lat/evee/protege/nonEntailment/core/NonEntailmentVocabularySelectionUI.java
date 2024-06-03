@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -48,75 +47,75 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     private final NonEntailmentGeneralPreferencesManager preferencesManager;
     private final Insets STANDARD_INSETS = new Insets(5, 5, 5, 5);
 
-//    standard layout UI-elements
-    private JTabbedPane standardLayoutOntologySignatureTabbedPane;
-    private OWLObjectTree<OWLClass> standardLayoutClassesTree;
-    private OWLObjectTree<OWLObjectProperty> standardLayoutPropertyTree;
-    private OWLObjectListModel<OWLNamedIndividual> standardLayoutOntologyIndividualsListModel;
-    private JList<OWLNamedIndividual> standardLayoutOntologyIndividualsJList;
-    private JTabbedPane standardLayoutVocabularyTabbedPane;
-    private OWLObjectListModel<OWLEntity> standardLayoutPermittedVocabularyListModel;
-    private JList<OWLEntity> standardLayoutPermittedVocabularyList;
-    private OWLObjectListModel<OWLEntity> standardLayoutForbiddenVocabularyListModel;
-    private JList<OWLEntity> standardLayoutForbiddenVocabularyList;
-    private JPanel standardLayoutButtonHolderPanel;
-    private JPanel standardVocabularyManagementPanel;
-    private final List<Dimension> standardLayoutWideComponentDimensionList;
-
-//   standard layout button elements
-    private static final String STANDARD_ADD_BTN_COMMAND = "STANDARD_ADD";
-    private static final String STANDARD_ADD_BTN_TOOLTIP = "Add selected OWLObjects to the vocabulary";
-    private static final String STANDARD_ADD_ALL_BTN_COMMAND = "STANDARD_ADD_ALL";
-    private static final String STANDARD_ADD_ALL_BTN_TOOLTIP = "Add all entities to the vocabulary";
-    private static final String STANDARD_DEL_BTN_COMMAND = "STANDARD_DELETE";
-    private static final String STANDARD_DEL_BTN_TOOLTIP = "Delete selected OWLObjects from the vocabulary";
-    private static final String STANDARD_DEL_ALL_BTN_COMMAND = "STANDARD_DELETE_ALL";
-    private static final String STANDARD_DEL_ALL_BTN_TOOLTIP = "Delete all entities from the vocabulary";
-    private static final String STANDARD_LOAD_SIGNATURE_COMMAND = "STANDARD_LOAD_SIGNATURE";
-    private static final String STANDARD_SAVE_SIGNATURE_COMMAND = "STANDARD_SAVE_SIGNATURE";
-    private static final String STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND =
-            "STANDARD_ADD_MISSING_ENTAILMENT";
-    private static final String STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME =
-            "Add missing entailment vocabulary";
-    private static final String ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP =
-            "Adds vocabulary of missing entailment to the selected vocabulary tab";
-
 //    alternative layout UI-elements
-    private JPanel alternativeLayoutMiddleButtonHolderPanel;
-    private JPanel alternativeLayoutBottomButtonHolderPanel;
-    private OWLObjectListModel<OWLClass> alternativeLayoutPermittedClassesListModel;
-    private OWLObjectListModel<OWLObjectProperty> alternativeLayoutPermittedPropertiesListModel;
-    private OWLObjectListModel<OWLNamedIndividual> alternativeLayoutPermittedIndividualsListModel;
-    private OWLObjectListModel<OWLClass> alternativeLayoutForbiddenClassesListModel;
-    private OWLObjectListModel<OWLObjectProperty> alternativeLayoutForbiddenPropertiesListModel;
-    private OWLObjectListModel<OWLNamedIndividual> alternativeLayoutForbiddenIndividualsListModel;
-    private JList<OWLClass> alternativeLayoutPermittedClassesList;
-    private JList<OWLClass> alternativeLayoutForbiddenClassesList;
-    private JList<OWLObjectProperty> alternativeLayoutPermittedPropertiesList;
-    private JList<OWLObjectProperty> alternativeLayoutForbiddenPropertiesList;
-    private JList<OWLNamedIndividual> alternativeLayoutPermittedIndividualsList;
-    private JList<OWLNamedIndividual> alternativeLayoutForbiddenIndividualsList;
-    private JTabbedPane alternativeLayoutPermittedSignatureTabbedPane;
-    private JTabbedPane alternativeLayoutForbiddenSignatureTabbedPane;
+    private JTabbedPane alternativeLayoutOntologySignatureTabbedPane;
+    private OWLObjectTree<OWLClass> alternativeLayoutClassesTree;
+    private OWLObjectTree<OWLObjectProperty> alternativeLayoutPropertyTree;
+    private OWLObjectListModel<OWLNamedIndividual> alternativeLayoutOntologyIndividualsListModel;
+    private JList<OWLNamedIndividual> alternativeLayoutOntologyIndividualsJList;
+    private JTabbedPane alternativeLayoutVocabularyTabbedPane;
+    private OWLObjectListModel<OWLEntity> alternativeLayoutPermittedVocabularyListModel;
+    private JList<OWLEntity> alternativeLayoutPermittedVocabularyList;
+    private OWLObjectListModel<OWLEntity> alternativeLayoutForbiddenVocabularyListModel;
+    private JList<OWLEntity> alternativeLayoutForbiddenVocabularyList;
+    private JPanel alternativeLayoutButtonHolderPanel;
     private JPanel alternativeVocabularyManagementPanel;
     private final List<Dimension> alternativeLayoutWideComponentDimensionList;
 
 //   alternative layout button elements
     private static final String ALTERNATIVE_ADD_BTN_COMMAND = "ALTERNATIVE_ADD";
-    private static final String ALTERNATIVE_ADD_BTN_TOOLTIP = "Add selected OWLObjects to the forbidden vocabulary";
+    private static final String ALTERNATIVE_ADD_BTN_TOOLTIP = "Add selected OWLObjects to the vocabulary";
     private static final String ALTERNATIVE_ADD_ALL_BTN_COMMAND = "ALTERNATIVE_ADD_ALL";
-    private static final String ALTERNATIVE_ADD_ALL_BTN_TOOLTIP = "Add all entities to the forbidden vocabulary";
+    private static final String ALTERNATIVE_ADD_ALL_BTN_TOOLTIP = "Add all entities to the vocabulary";
     private static final String ALTERNATIVE_DEL_BTN_COMMAND = "ALTERNATIVE_DELETE";
-    private static final String ALTERNATIVE_DEL_BTN_TOOLTIP = "Delete selected OWLObjects from the forbidden vocabulary";
+    private static final String ALTERNATIVE_DEL_BTN_TOOLTIP = "Delete selected OWLObjects from the vocabulary";
     private static final String ALTERNATIVE_DEL_ALL_BTN_COMMAND = "ALTERNATIVE_DELETE_ALL";
-    private static final String ALTERNATIVE_DEL_ALL_BTN_TOOLTIP = "Delete all entities from the forbidden vocabulary";
+    private static final String ALTERNATIVE_DEL_ALL_BTN_TOOLTIP = "Delete all entities from the vocabulary";
     private static final String ALTERNATIVE_LOAD_SIGNATURE_COMMAND = "ALTERNATIVE_LOAD_SIGNATURE";
     private static final String ALTERNATIVE_SAVE_SIGNATURE_COMMAND = "ALTERNATIVE_SAVE_SIGNATURE";
     private static final String ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND =
             "ALTERNATIVE_ADD_MISSING_ENTAILMENT";
     private static final String ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME =
+            "Add missing entailment vocabulary";
+    private static final String ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP =
+            "Adds vocabulary of missing entailment to the selected vocabulary tab";
+
+//    standard layout UI-elements
+    private JPanel standardLayoutMiddleButtonHolderPanel;
+    private JPanel standardLayoutBottomButtonHolderPanel;
+    private OWLObjectListModel<OWLClass> standardLayoutPermittedClassesListModel;
+    private OWLObjectListModel<OWLObjectProperty> standardLayoutPermittedPropertiesListModel;
+    private OWLObjectListModel<OWLNamedIndividual> standardLayoutPermittedIndividualsListModel;
+    private OWLObjectListModel<OWLClass> standardLayoutForbiddenClassesListModel;
+    private OWLObjectListModel<OWLObjectProperty> standardLayoutForbiddenPropertiesListModel;
+    private OWLObjectListModel<OWLNamedIndividual> standardLayoutForbiddenIndividualsListModel;
+    private JList<OWLClass> standardLayoutPermittedClassesList;
+    private JList<OWLClass> standardLayoutForbiddenClassesList;
+    private JList<OWLObjectProperty> standardLayoutPermittedPropertiesList;
+    private JList<OWLObjectProperty> standardLayoutForbiddenPropertiesList;
+    private JList<OWLNamedIndividual> standardLayoutPermittedIndividualsList;
+    private JList<OWLNamedIndividual> standardLayoutForbiddenIndividualsList;
+    private JTabbedPane standardLayoutPermittedSignatureTabbedPane;
+    private JTabbedPane standardLayoutForbiddenSignatureTabbedPane;
+    private JPanel standardVocabularyManagementPanel;
+    private final List<Dimension> standardLayoutWideComponentDimensionList;
+
+//   standard layout button elements
+    private static final String STANDARD_ADD_BTN_COMMAND = "STANDARD_ADD";
+    private static final String STANDARD_ADD_BTN_TOOLTIP = "Add selected OWLObjects to the forbidden vocabulary";
+    private static final String STANDARD_ADD_ALL_BTN_COMMAND = "STANDARD_ADD_ALL";
+    private static final String STANDARD_ADD_ALL_BTN_TOOLTIP = "Add all entities to the forbidden vocabulary";
+    private static final String STANDARD_DEL_BTN_COMMAND = "STANDARD_DELETE";
+    private static final String STANDARD_DEL_BTN_TOOLTIP = "Delete selected OWLObjects from the forbidden vocabulary";
+    private static final String STANDARD_DEL_ALL_BTN_COMMAND = "STANDARD_DELETE_ALL";
+    private static final String STANDARD_DEL_ALL_BTN_TOOLTIP = "Delete all entities from the forbidden vocabulary";
+    private static final String STANDARD_LOAD_SIGNATURE_COMMAND = "STANDARD_LOAD_SIGNATURE";
+    private static final String STANDARD_SAVE_SIGNATURE_COMMAND = "STANDARD_SAVE_SIGNATURE";
+    private static final String STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND =
+            "Standard_ADD_MISSING_ENTAILMENT";
+    private static final String STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME =
             "Forbid missing entailment vocabulary";
-    private static final String ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP =
+    private static final String STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP =
             "Adds vocabulary of missing entailment to the forbidden vocabulary";
 
 //    general button elements
@@ -146,7 +145,8 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         return this.standardLayoutTabIndex2Name(1 - tabIndex);
     }
 
-    public NonEntailmentVocabularySelectionUI(NonEntailmentViewComponent nonEntailmentViewComponent, OWLEditorKit editorKit){
+    public NonEntailmentVocabularySelectionUI(
+            NonEntailmentViewComponent nonEntailmentViewComponent, OWLEditorKit editorKit){
         this.nonEntailmentViewComponent = nonEntailmentViewComponent;
         this.owlEditorKit = editorKit;
         this.SignatureModelManagerListener = new SignatureOWLModelChangeListener();
@@ -155,11 +155,11 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         this.owlEditorKit.getOWLModelManager().addOntologyChangeListener(
                 this.SignatureOntologyChangeListener);
         this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
-        this.standardLayoutWideComponentDimensionList = new ArrayList<>();
         this.alternativeLayoutWideComponentDimensionList = new ArrayList<>();
+        this.standardLayoutWideComponentDimensionList = new ArrayList<>();
 //        SwingUtilities.invokeLater(() -> {
-            this.createStandardLayoutComponents();
             this.createAlternativeLayoutComponents();
+            this.createStandardLayoutComponents();
             this.resetVocabularyListModels();
 //        });
     }
@@ -175,33 +175,33 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 
     private void resetVocabularyListModels(){
         this.logger.debug("Resetting vocabulary list models for standard and alternative layout");
-//        reset standard layout models:
-        this.standardLayoutPermittedVocabularyListModel.removeAll();
-        this.standardLayoutForbiddenVocabularyListModel.removeAll();
-        if (this.preferencesManager.loadDefaultVocabularyTab().equals(VocabularyTab.Permitted)){
-            this.standardLayoutPermittedVocabularyListModel.addElements(this.getCompleteOntologySignature());
-        } else{
-            this.standardLayoutForbiddenVocabularyListModel.addElements(this.getCompleteOntologySignature());
-        }
 //        reset alternative layout models:
-        this.alternativeLayoutPermittedClassesListModel.removeAll();
-        this.alternativeLayoutForbiddenClassesListModel.removeAll();
-        this.alternativeLayoutPermittedPropertiesListModel.removeAll();
-        this.alternativeLayoutForbiddenPropertiesListModel.removeAll();
-        this.alternativeLayoutPermittedIndividualsListModel.removeAll();
-        this.alternativeLayoutForbiddenIndividualsListModel.removeAll();
+        this.alternativeLayoutPermittedVocabularyListModel.removeAll();
+        this.alternativeLayoutForbiddenVocabularyListModel.removeAll();
+        if (this.preferencesManager.loadDefaultVocabularyTab().equals(VocabularyTab.Permitted)){
+            this.alternativeLayoutPermittedVocabularyListModel.addElements(this.getCompleteOntologySignature());
+        } else{
+            this.alternativeLayoutForbiddenVocabularyListModel.addElements(this.getCompleteOntologySignature());
+        }
+//        reset standard layout models:
+        this.standardLayoutPermittedClassesListModel.removeAll();
+        this.standardLayoutForbiddenClassesListModel.removeAll();
+        this.standardLayoutPermittedPropertiesListModel.removeAll();
+        this.standardLayoutForbiddenPropertiesListModel.removeAll();
+        this.standardLayoutPermittedIndividualsListModel.removeAll();
+        this.standardLayoutForbiddenIndividualsListModel.removeAll();
         Set<OWLClass> classSignature = this.owlEditorKit.getOWLModelManager().
                 getActiveOntology().getClassesInSignature();
         OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
         classSignature.remove(dataFactory.getOWLThing());
         classSignature.remove(dataFactory.getOWLNothing());
-        this.alternativeLayoutPermittedClassesListModel.checkAndAddElements(classSignature);
+        this.standardLayoutPermittedClassesListModel.checkAndAddElements(classSignature);
         Set<OWLObjectProperty> propertySignature = this.owlEditorKit.getOWLModelManager().
                 getActiveOntology().getObjectPropertiesInSignature();
         propertySignature.remove(dataFactory.getOWLTopObjectProperty());
         propertySignature.remove(dataFactory.getOWLBottomObjectProperty());
-        this.alternativeLayoutPermittedPropertiesListModel.checkAndAddElements(propertySignature);
-        this.alternativeLayoutPermittedIndividualsListModel.checkAndAddElements(
+        this.standardLayoutPermittedPropertiesListModel.checkAndAddElements(propertySignature);
+        this.standardLayoutPermittedIndividualsListModel.checkAndAddElements(
                 this.owlEditorKit.getOWLModelManager().getActiveOntology().getIndividualsInSignature());
         this.clearVocabularySelection();
         this.logger.debug("Resetting vocabulary list models for standard and alternative layout completed");
@@ -219,23 +219,23 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     }
 
     public void dispose(OWLModelManager modelManager){
-        if (this.standardLayoutClassesTree != null){
-            this.standardLayoutClassesTree.dispose();
+        if (this.alternativeLayoutClassesTree != null){
+            this.alternativeLayoutClassesTree.dispose();
         }
-        if (this.standardLayoutPropertyTree != null){
-            this.standardLayoutPropertyTree.dispose();
+        if (this.alternativeLayoutPropertyTree != null){
+            this.alternativeLayoutPropertyTree.dispose();
         }
-        if (this.standardLayoutOntologyIndividualsListModel != null){
-            this.standardLayoutOntologyIndividualsListModel.dispose();
+        if (this.alternativeLayoutOntologyIndividualsListModel != null){
+            this.alternativeLayoutOntologyIndividualsListModel.dispose();
         }
-        this.standardLayoutPermittedVocabularyListModel.dispose();
-        this.standardLayoutForbiddenVocabularyListModel.dispose();
-        this.alternativeLayoutPermittedClassesListModel.dispose();
-        this.alternativeLayoutForbiddenClassesListModel.dispose();
-        this.alternativeLayoutPermittedPropertiesListModel.dispose();
-        this.alternativeLayoutForbiddenPropertiesListModel.dispose();
-        this.alternativeLayoutPermittedIndividualsListModel.dispose();
-        this.alternativeLayoutForbiddenIndividualsListModel.dispose();
+        this.alternativeLayoutPermittedVocabularyListModel.dispose();
+        this.alternativeLayoutForbiddenVocabularyListModel.dispose();
+        this.standardLayoutPermittedClassesListModel.dispose();
+        this.standardLayoutForbiddenClassesListModel.dispose();
+        this.standardLayoutPermittedPropertiesListModel.dispose();
+        this.standardLayoutForbiddenPropertiesListModel.dispose();
+        this.standardLayoutPermittedIndividualsListModel.dispose();
+        this.standardLayoutForbiddenIndividualsListModel.dispose();
         modelManager.removeListener(this.SignatureModelManagerListener);
         modelManager.removeOntologyChangeListener(this.SignatureOntologyChangeListener);
 
@@ -244,86 +244,67 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     public Collection<OWLEntity> getPermittedVocabulary(){
         if (this.preferencesManager.loadSignatureComponentLayout().equals(
                 NonEntailmentGeneralPreferencesManager.STANDARD_LAYOUT)){
-            return this.standardLayoutPermittedVocabularyListModel.getOwlObjects();
-        } else {
             ArrayList<OWLEntity> result = new ArrayList<>();
-            result.addAll(this.alternativeLayoutPermittedClassesListModel.getOwlObjects());
-            result.addAll(this.alternativeLayoutPermittedPropertiesListModel.getOwlObjects());
-            result.addAll(this.alternativeLayoutPermittedIndividualsListModel.getOwlObjects());
+            result.addAll(this.standardLayoutPermittedClassesListModel.getOwlObjects());
+            result.addAll(this.standardLayoutPermittedPropertiesListModel.getOwlObjects());
+            result.addAll(this.standardLayoutPermittedIndividualsListModel.getOwlObjects());
             return result;
+        } else {
+            return this.alternativeLayoutPermittedVocabularyListModel.getOwlObjects();
         }
     }
 
-//    standard layout element creation
-    private void createStandardLayoutComponents(){
-        this.createStandardLayoutOntologySignatureTabbedPane();
-        this.createStandardLayoutButtonHolderPanel();
-        this.createStandardLayoutSelectedVocabularyListPane();
-        this.createStandardVocabularyManagementPanel();
+//    alternative layout element creation
+    private void createAlternativeLayoutComponents(){
+        this.createAlternativeLayoutOntologySignatureTabbedPane();
+        this.createAlternativeLayoutButtonHolderPanel();
+        this.createAlternativeLayoutSelectedVocabularyListPane();
+        this.createAlternativeVocabularyManagementPanel();
     }
-    private void createStandardLayoutOntologySignatureTabbedPane(){
-        this.logger.debug("Creating standard layout ontology signature tabbed pane");
+    private void createAlternativeLayoutOntologySignatureTabbedPane(){
+        this.logger.debug("Creating alternative layout ontology signature tabbed pane");
         JTabbedPane tabbedPane = new JTabbedPane();
-//        tabbedPane.setPreferredSize(new Dimension(400, 400));
 //        todo: highlighting keywords for classes + properties? see method "initialiseView" in Protege's "AbstractOWLEntityHierarchyViewComponent"
 //        classes
-        this.standardLayoutClassesTree = new OWLModelManagerTree<>(
+        this.alternativeLayoutClassesTree = new OWLModelManagerTree<>(
                 this.owlEditorKit,
                 this.owlEditorKit.getOWLModelManager().getOWLHierarchyManager().getOWLClassHierarchyProvider());
-        JScrollPane classesPane = new JScrollPane(this.standardLayoutClassesTree);
+        JScrollPane classesPane = new JScrollPane(this.alternativeLayoutClassesTree);
         classesPane.getViewport().setBackground(Color.WHITE);
-        this.standardLayoutClassesTree.setCellRenderer(new ProtegeTreeNodeRenderer(this.owlEditorKit));
-        this.standardLayoutClassesTree.setOWLObjectComparator(
+        this.alternativeLayoutClassesTree.setCellRenderer(new ProtegeTreeNodeRenderer(this.owlEditorKit));
+        this.alternativeLayoutClassesTree.setOWLObjectComparator(
                 this.owlEditorKit.getOWLModelManager().getOWLObjectComparator());
         tabbedPane.addTab("Classes", classesPane);
 //        object properties
-        this.standardLayoutPropertyTree = new OWLModelManagerTree<>(
+        this.alternativeLayoutPropertyTree = new OWLModelManagerTree<>(
                 this.owlEditorKit,
                 this.owlEditorKit.getOWLModelManager().getOWLHierarchyManager()
                         .getOWLObjectPropertyHierarchyProvider());
-        JScrollPane propertyPane = new JScrollPane(this.standardLayoutPropertyTree);
+        JScrollPane propertyPane = new JScrollPane(this.alternativeLayoutPropertyTree);
         propertyPane.getViewport().setBackground(Color.WHITE);
-        this.standardLayoutPropertyTree.setCellRenderer(new ProtegeTreeNodeRenderer(this.owlEditorKit));
-        this.standardLayoutPropertyTree.setOWLObjectComparator(
+        this.alternativeLayoutPropertyTree.setCellRenderer(new ProtegeTreeNodeRenderer(this.owlEditorKit));
+        this.alternativeLayoutPropertyTree.setOWLObjectComparator(
                 this.owlEditorKit.getOWLModelManager().getOWLObjectComparator());
         tabbedPane.addTab("Object properties", propertyPane);
 //        individuals
-        this.standardLayoutOntologyIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.standardLayoutOntologyIndividualsJList = new JList<>(this.standardLayoutOntologyIndividualsListModel);
-        this.standardLayoutOntologyIndividualsJList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.alternativeLayoutOntologyIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.alternativeLayoutOntologyIndividualsJList = new JList<>(this.alternativeLayoutOntologyIndividualsListModel);
+        this.alternativeLayoutOntologyIndividualsJList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
         Set<OWLNamedIndividual> individuals = this.owlEditorKit.getOWLModelManager().
                 getActiveOntology().getIndividualsInSignature(Imports.INCLUDED);
-        this.standardLayoutOntologyIndividualsListModel.addElements(individuals);
-        tabbedPane.addTab("Individuals", this.standardLayoutOntologyIndividualsJList);
+        this.alternativeLayoutOntologyIndividualsListModel.addElements(individuals);
+        tabbedPane.addTab("Individuals", this.alternativeLayoutOntologyIndividualsJList);
         TitledBorder titledBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),"Ontology vocabulary:");
         tabbedPane.setBorder(BorderFactory.createCompoundBorder(titledBorder,
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         int upperComponentTitleWidth = (int) titledBorder.getMinimumSize(tabbedPane).getWidth() + 5;
         int upperComponentTitleHeight = (int) titledBorder.getMinimumSize(tabbedPane).getHeight() + 5;
-        this.standardLayoutWideComponentDimensionList.add(new Dimension(
+        this.alternativeLayoutWideComponentDimensionList.add(new Dimension(
                 upperComponentTitleWidth, upperComponentTitleHeight));
-        this.standardLayoutOntologySignatureTabbedPane = tabbedPane;
-        this.logger.debug("Standard layout ontology signature tabbed pane created");
+        this.alternativeLayoutOntologySignatureTabbedPane = tabbedPane;
+        this.logger.debug("Alternative layout ontology signature tabbed pane created");
     }
-
-//    private void addBottomEntities2Trees(){
-//        OWLEntity owlNothing = this.owlEditorKit.getModelManager().getOWLDataFactory().getOWLNothing();
-//        OWLObjectTreeNode<OWLClass> owlNothingNode = new OWLObjectTreeNode<>(
-//                owlNothing, this.classesTree);
-//        DefaultMutableTreeNode owlThingNode = ((DefaultMutableTreeNode) (
-//                (OWLObjectTreeRootNode<OWLClass>) this.classesTree.getModel().getRoot()).getFirstChild());
-//        ((DefaultTreeModel) this.classesTree.getModel()).insertNodeInto(
-//                owlNothingNode, owlThingNode, 0);
-//        OWLEntity owlBotObjectProperty = this.owlEditorKit.getOWLModelManager().getOWLDataFactory()
-//                .getOWLBottomObjectProperty();
-//        OWLObjectTreeNode<OWLObjectProperty> owlBotObjectPropertyNode = new OWLObjectTreeNode<>(
-//                owlBotObjectProperty, this.propertyTree);
-//        DefaultMutableTreeNode owlTopObjectPropertyNode = ((DefaultMutableTreeNode) (
-//                (OWLObjectTreeRootNode<OWLObjectProperty>) this.propertyTree.getModel().getRoot()).getFirstChild());
-//        ((DefaultTreeModel) this.propertyTree.getModel()).insertNodeInto(
-//                owlBotObjectPropertyNode, owlTopObjectPropertyNode, 0);
-//    }
 
     private void removeTopAndBottomEntities(Collection<? extends OWLEntity> entities){
         OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
@@ -333,57 +314,57 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         entities.remove(dataFactory.getOWLBottomObjectProperty());
     }
 
-    private void createStandardLayoutButtonHolderPanel(){
-        this.standardLayoutButtonHolderPanel = new JPanel();
-        this.standardLayoutButtonHolderPanel.setLayout(
-                new BoxLayout(this.standardLayoutButtonHolderPanel, BoxLayout.PAGE_AXIS));
-        this.standardLayoutButtonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
+    private void createAlternativeLayoutButtonHolderPanel(){
+        this.alternativeLayoutButtonHolderPanel = new JPanel();
+        this.alternativeLayoutButtonHolderPanel.setLayout(
+                new BoxLayout(this.alternativeLayoutButtonHolderPanel, BoxLayout.PAGE_AXIS));
+        this.alternativeLayoutButtonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
         ArrayList<JButton> buttonList = new ArrayList<>();
         URL addUrl = getClass().getResource(ADD_BTN_ICON);
-        JButton addButton = UIUtilities.createIconButton(STANDARD_ADD_BTN_COMMAND, addUrl,
-                STANDARD_ADD_BTN_TOOLTIP, this);
+        JButton addButton = UIUtilities.createIconButton(ALTERNATIVE_ADD_BTN_COMMAND, addUrl,
+                ALTERNATIVE_ADD_BTN_TOOLTIP, this);
         buttonList.add(addButton);
         URL delUrl = getClass().getResource(DEL_BTN_ICON);
-        JButton deleteButton = UIUtilities.createIconButton(STANDARD_DEL_BTN_COMMAND, delUrl,
-                STANDARD_DEL_BTN_TOOLTIP, this);
+        JButton deleteButton = UIUtilities.createIconButton(ALTERNATIVE_DEL_BTN_COMMAND, delUrl,
+                ALTERNATIVE_DEL_BTN_TOOLTIP, this);
         buttonList.add(deleteButton);
         JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
-        this.standardLayoutButtonHolderPanel.add(firstButtonRowPanel);
-        this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        this.alternativeLayoutButtonHolderPanel.add(firstButtonRowPanel);
+        this.alternativeLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonList.clear();
         URL addAllUrl = getClass().getResource(ADD_ALL_BTN_ICON);
-        JButton addAllButton = UIUtilities.createIconButton(STANDARD_ADD_ALL_BTN_COMMAND, addAllUrl,
-                STANDARD_ADD_ALL_BTN_TOOLTIP, this);
+        JButton addAllButton = UIUtilities.createIconButton(ALTERNATIVE_ADD_ALL_BTN_COMMAND, addAllUrl,
+                ALTERNATIVE_ADD_ALL_BTN_TOOLTIP, this);
         buttonList.add(addAllButton);
         URL delAllUrl = getClass().getResource(DEL_ALL_BTN_ICON);
-        JButton deleteAllButton = UIUtilities.createIconButton(STANDARD_DEL_ALL_BTN_COMMAND, delAllUrl,
-                STANDARD_DEL_ALL_BTN_TOOLTIP, this);
+        JButton deleteAllButton = UIUtilities.createIconButton(ALTERNATIVE_DEL_ALL_BTN_COMMAND, delAllUrl,
+                ALTERNATIVE_DEL_ALL_BTN_TOOLTIP, this);
         buttonList.add(deleteAllButton);
         JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
-        this.standardLayoutButtonHolderPanel.add(secondButtonRowPanel);
+        this.alternativeLayoutButtonHolderPanel.add(secondButtonRowPanel);
         buttonList.clear();
         if (! this.preferencesManager.loadUseSimpleMode()){
-            this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            this.alternativeLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             JButton addMissingEntailmentSignatureButton = UIUtilities.createNamedButton(
-                    STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
-                    STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
+                    ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
+                    ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
                     ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
             buttonList.add(addMissingEntailmentSignatureButton);
-            this.standardLayoutWideComponentDimensionList.add(addMissingEntailmentSignatureButton.getMinimumSize());
+            this.alternativeLayoutWideComponentDimensionList.add(addMissingEntailmentSignatureButton.getMinimumSize());
             JPanel thirdButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
-            this.standardLayoutButtonHolderPanel.add(thirdButtonRowPanel);
-            this.standardLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            this.alternativeLayoutButtonHolderPanel.add(thirdButtonRowPanel);
+            this.alternativeLayoutButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             buttonList.clear();
-            JButton loadSignatureButton = UIUtilities.createNamedButton(STANDARD_LOAD_SIGNATURE_COMMAND,
+            JButton loadSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_LOAD_SIGNATURE_COMMAND,
                     LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
             buttonList.add(loadSignatureButton);
-            this.standardLayoutWideComponentDimensionList.add(loadSignatureButton.getMinimumSize());
-            JButton saveSignatureButton = UIUtilities.createNamedButton(STANDARD_SAVE_SIGNATURE_COMMAND,
+            this.alternativeLayoutWideComponentDimensionList.add(loadSignatureButton.getMinimumSize());
+            JButton saveSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_SAVE_SIGNATURE_COMMAND,
                     SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
             buttonList.add(saveSignatureButton);
-            this.standardLayoutWideComponentDimensionList.add(saveSignatureButton.getMinimumSize());
+            this.alternativeLayoutWideComponentDimensionList.add(saveSignatureButton.getMinimumSize());
             JPanel fourthButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.PAGE_AXIS);
-            this.standardLayoutButtonHolderPanel.add(fourthButtonRowPanel);
+            this.alternativeLayoutButtonHolderPanel.add(fourthButtonRowPanel);
         }
     }
 
@@ -406,233 +387,30 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         return buttonPanel;
     }
 
-    private void createStandardLayoutSelectedVocabularyListPane(){
-        this.logger.debug("Creating standard layout selected vocabulary tabbed pane");
-        this.standardLayoutPermittedVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.standardLayoutPermittedVocabularyList = new JList<>(this.standardLayoutPermittedVocabularyListModel);
-        this.standardLayoutPermittedVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.standardLayoutForbiddenVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.standardLayoutForbiddenVocabularyList = new JList<>(this.standardLayoutForbiddenVocabularyListModel);
-        this.standardLayoutForbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.standardLayoutVocabularyTabbedPane = new JTabbedPane();
-//        this.vocabularyTabbedPane.setPreferredSize(new Dimension(400, 400));
-        this.standardLayoutVocabularyTabbedPane.addTab("Permitted vocabulary",
-                ComponentFactory.createScrollPane(this.standardLayoutPermittedVocabularyList));
-        this.standardLayoutVocabularyTabbedPane.addTab("Forbidden vocabulary",
-                ComponentFactory.createScrollPane(this.standardLayoutForbiddenVocabularyList));
+    private void createAlternativeLayoutSelectedVocabularyListPane(){
+        this.logger.debug("Creating alternative layout selected vocabulary tabbed pane");
+        this.alternativeLayoutPermittedVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.alternativeLayoutPermittedVocabularyList = new JList<>(this.alternativeLayoutPermittedVocabularyListModel);
+        this.alternativeLayoutPermittedVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.alternativeLayoutForbiddenVocabularyListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.alternativeLayoutForbiddenVocabularyList = new JList<>(this.alternativeLayoutForbiddenVocabularyListModel);
+        this.alternativeLayoutForbiddenVocabularyList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.alternativeLayoutVocabularyTabbedPane = new JTabbedPane();
+        this.alternativeLayoutVocabularyTabbedPane.addTab("Permitted vocabulary",
+                ComponentFactory.createScrollPane(this.alternativeLayoutPermittedVocabularyList));
+        this.alternativeLayoutVocabularyTabbedPane.addTab("Forbidden vocabulary",
+                ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenVocabularyList));
         TitledBorder titledBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
                 "Vocabulary:");
-        int titleWidth = (int) titledBorder.getMinimumSize(this.standardLayoutVocabularyTabbedPane).
+        int titleWidth = (int) titledBorder.getMinimumSize(this.alternativeLayoutVocabularyTabbedPane).
                 getWidth() + 5;
-        int titleHeight = (int) titledBorder.getMinimumSize(this.standardLayoutVocabularyTabbedPane).
+        int titleHeight = (int) titledBorder.getMinimumSize(this.alternativeLayoutVocabularyTabbedPane).
                 getHeight() + 5;
-        this.standardLayoutWideComponentDimensionList.add(new Dimension(titleWidth, titleHeight));
-        this.standardLayoutVocabularyTabbedPane.setBorder(BorderFactory.createCompoundBorder(
+        this.alternativeLayoutWideComponentDimensionList.add(new Dimension(titleWidth, titleHeight));
+        this.alternativeLayoutVocabularyTabbedPane.setBorder(BorderFactory.createCompoundBorder(
                 titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        this.logger.debug("Standard layout selected vocabulary tabbed pane created");
-    }
-
-    private void createStandardVocabularyManagementPanel(){
-        this.standardVocabularyManagementPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-//        general constraints:
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = this.STANDARD_INSETS;
-        constraints.anchor = GridBagConstraints.CENTER;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.gridx = 0;
-//        specific for given signature tabbed pane:
-        constraints.gridy= 0;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.99;
-        this.standardVocabularyManagementPanel.add(this.standardLayoutOntologySignatureTabbedPane, constraints);
-//        specific for signature selected buttons:
-        constraints.gridy = 1;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.01;
-        this.standardVocabularyManagementPanel.add(this.standardLayoutButtonHolderPanel, constraints);
-//        specific for selected signature pane:
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.99;
-        this.standardVocabularyManagementPanel.add(this.standardLayoutVocabularyTabbedPane, constraints);
-        this.standardVocabularyManagementPanel.setMinimumSize(new Dimension(
-//                width of each component
-                (int) ceil(max(this.standardLayoutWideComponentDimensionList.stream().map(Dimension::getWidth).
-                        collect(Collectors.toList())))
-//                        components embedded in gridBagLayout of standardVocabularyManagementPanel
-                        + this.STANDARD_INSETS.left + this.STANDARD_INSETS.right,
-//                height of each component
-                (int) ceil(max(this.standardLayoutWideComponentDimensionList.stream().map(Dimension::getHeight).
-                        collect(Collectors.toList())))
-//                        component embedded in gridBagLayout of standardVocabularyManagementPanel
-                        + this.STANDARD_INSETS.top + this.STANDARD_INSETS.bottom
-
-        ));
-    }
-
-//    private void addTopAndBottomEntities2Collection(Collection<OWLEntity> collection){
-//        OWLDataFactory dataFactory = this.owlEditorKit.getOWLModelManager().getOWLDataFactory();
-//        if (! collection.contains(dataFactory.getOWLThing())){
-//            collection.add(dataFactory.getOWLThing());
-//        }
-//        if (! collection.contains(dataFactory.getOWLNothing())){
-//            collection.add(dataFactory.getOWLNothing());
-//        }
-//        if (! collection.contains(dataFactory.getOWLTopObjectProperty())){
-//            collection.add(dataFactory.getOWLTopObjectProperty());
-//        }
-//        if (!collection.contains(dataFactory.getOWLBottomObjectProperty())) {
-//            collection.add(dataFactory.getOWLBottomObjectProperty());
-//        }
-//    }
-
-
-//    alternative layout element creation
-    private void createAlternativeLayoutComponents(){
-        this.createAlternativeLayoutUpperPanel();
-        this.createAlternativeLayoutMiddleButtonPanel();
-        this.createAlternativeLayoutLowerPanel();
-        this.createAlternativeLayoutBottomButtonPanel();
-        this.createAlternativeVocabularyManagementPanel();
-        this.addAlternativeLayoutTabbedPaneStateChangeListeners();
-    }
-    private void createAlternativeLayoutUpperPanel() {
-        this.logger.debug("Creating alternative layout permitted vocabulary tabbed pane");
-//        general
-        this.alternativeLayoutPermittedSignatureTabbedPane = new JTabbedPane();
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
-                "Permitted vocabulary:");
-        this.alternativeLayoutPermittedSignatureTabbedPane.setBorder(BorderFactory.createCompoundBorder(
-                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        int titleWidth = (int) titledBorder.getMinimumSize(
-                this.alternativeLayoutPermittedSignatureTabbedPane).getWidth() + 5;
-        int titleHeight = (int) titledBorder.getMinimumSize(
-                this.alternativeLayoutPermittedSignatureTabbedPane).getHeight() + 5;
-        this.alternativeLayoutWideComponentDimensionList.add(new Dimension(titleWidth,
-                titleHeight));
-//        classes
-        this.alternativeLayoutPermittedClassesListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.alternativeLayoutPermittedClassesList =
-                new JList<>(this.alternativeLayoutPermittedClassesListModel);
-        this.alternativeLayoutPermittedClassesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Classes",
-                ComponentFactory.createScrollPane(this.alternativeLayoutPermittedClassesList));
-//        properties
-        this.alternativeLayoutPermittedPropertiesListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.alternativeLayoutPermittedPropertiesList =
-                new JList<>(this.alternativeLayoutPermittedPropertiesListModel);
-        this.alternativeLayoutPermittedPropertiesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Object properties",
-                ComponentFactory.createScrollPane(this.alternativeLayoutPermittedPropertiesList));
-//        individuals
-        this.alternativeLayoutPermittedIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.alternativeLayoutPermittedIndividualsList =
-                new JList<>(this.alternativeLayoutPermittedIndividualsListModel);
-        this.alternativeLayoutPermittedIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutPermittedSignatureTabbedPane.addTab("Individuals",
-                ComponentFactory.createScrollPane(this.alternativeLayoutPermittedIndividualsList));
-        this.logger.debug("Alternative layout permitted vocabulary tabbed pane created");
-    }
-
-    private void createAlternativeLayoutLowerPanel() {
-        this.logger.debug("Creating alternative layout forbidden vocabulary tabbed pane");
-//        general
-        this.alternativeLayoutForbiddenSignatureTabbedPane = new JTabbedPane();
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
-                "Forbidden vocabulary:");
-        this.alternativeLayoutForbiddenSignatureTabbedPane.setBorder(BorderFactory.createCompoundBorder(
-                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-        int lowerComponentTitleWidth = (int) titledBorder.getMinimumSize(
-                this.alternativeLayoutForbiddenSignatureTabbedPane).getWidth();
-        int lowerComponentTitleHeight = (int) titledBorder.getMinimumSize(
-                this.alternativeLayoutForbiddenSignatureTabbedPane).getHeight();
-        this.alternativeLayoutWideComponentDimensionList.add(new Dimension(lowerComponentTitleWidth,
-                lowerComponentTitleHeight));
-//        classes
-        this.alternativeLayoutForbiddenClassesListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.alternativeLayoutForbiddenClassesList = new JList<>(this.alternativeLayoutForbiddenClassesListModel);
-        this.alternativeLayoutForbiddenClassesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Classes:",
-                ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenClassesList));
-//        properties
-        this.alternativeLayoutForbiddenPropertiesListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.alternativeLayoutForbiddenPropertiesList =
-                new JList<>(this.alternativeLayoutForbiddenPropertiesListModel);
-        this.alternativeLayoutForbiddenPropertiesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Object properties",
-                ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenPropertiesList));
-//        individuals
-        this.alternativeLayoutForbiddenIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
-        this.alternativeLayoutForbiddenIndividualsList =
-                new JList<>(this.alternativeLayoutForbiddenIndividualsListModel);
-        this.alternativeLayoutForbiddenIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
-        this.alternativeLayoutForbiddenSignatureTabbedPane.addTab("Individuals",
-                ComponentFactory.createScrollPane(this.alternativeLayoutForbiddenIndividualsList));
-        this.logger.debug("Alternative layout forbidden vocabulary tabbed pane created");
-    }
-
-    private void createAlternativeLayoutMiddleButtonPanel(){
-        this.alternativeLayoutMiddleButtonHolderPanel = new JPanel();
-        this.alternativeLayoutMiddleButtonHolderPanel.setLayout(
-                new BoxLayout(this.alternativeLayoutMiddleButtonHolderPanel, BoxLayout.PAGE_AXIS));
-        this.alternativeLayoutMiddleButtonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
-        ArrayList<JButton> buttonList = new ArrayList<>();
-        URL addUrl = getClass().getResource(ADD_BTN_ICON);
-        JButton addButton = UIUtilities.createIconButton(ALTERNATIVE_ADD_BTN_COMMAND, addUrl,
-                ALTERNATIVE_ADD_BTN_TOOLTIP, this);
-        buttonList.add(addButton);
-        URL delUrl = getClass().getResource(DEL_BTN_ICON);
-        JButton deleteButton = UIUtilities.createIconButton(ALTERNATIVE_DEL_BTN_COMMAND, delUrl,
-                ALTERNATIVE_DEL_BTN_TOOLTIP, this);
-        buttonList.add(deleteButton);
-        JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
-        this.alternativeLayoutMiddleButtonHolderPanel.add(firstButtonRowPanel);
-        this.alternativeLayoutMiddleButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        buttonList.clear();
-        URL addAllUrl = getClass().getResource(ADD_ALL_BTN_ICON);
-        JButton addAllButton = UIUtilities.createIconButton(ALTERNATIVE_ADD_ALL_BTN_COMMAND, addAllUrl,
-                ALTERNATIVE_ADD_ALL_BTN_TOOLTIP, this);
-        buttonList.add(addAllButton);
-        URL delAllUrl = getClass().getResource(DEL_ALL_BTN_ICON);
-        JButton deleteAllButton = UIUtilities.createIconButton(ALTERNATIVE_DEL_ALL_BTN_COMMAND, delAllUrl,
-                ALTERNATIVE_DEL_ALL_BTN_TOOLTIP, this);
-        buttonList.add(deleteAllButton);
-        JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
-        this.alternativeLayoutMiddleButtonHolderPanel.add(secondButtonRowPanel);
-    }
-
-    private void createAlternativeLayoutBottomButtonPanel(){
-        this.alternativeLayoutBottomButtonHolderPanel = new JPanel();
-        this.alternativeLayoutBottomButtonHolderPanel.setLayout(
-                new BoxLayout(this.alternativeLayoutBottomButtonHolderPanel, BoxLayout.PAGE_AXIS));
-        this.alternativeLayoutBottomButtonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
-        if (! this.preferencesManager.loadUseSimpleMode()){
-            ArrayList<JButton> buttonList = new ArrayList<>();
-            JButton addMissingEntailmentSignatureButton =
-                    UIUtilities.createNamedButton(
-                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
-                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
-                            ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
-            buttonList.add(addMissingEntailmentSignatureButton);
-            this.alternativeLayoutWideComponentDimensionList.add(addMissingEntailmentSignatureButton.getMinimumSize());
-            JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
-            this.alternativeLayoutBottomButtonHolderPanel.add(firstButtonRowPanel);
-            this.alternativeLayoutBottomButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-            buttonList.clear();
-            JButton loadSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_LOAD_SIGNATURE_COMMAND,
-                    LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
-            buttonList.add(loadSignatureButton);
-            this.alternativeLayoutWideComponentDimensionList.add(loadSignatureButton.getMinimumSize());
-            JButton saveSignatureButton = UIUtilities.createNamedButton(ALTERNATIVE_SAVE_SIGNATURE_COMMAND,
-                    SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
-            buttonList.add(saveSignatureButton);
-            this.alternativeLayoutWideComponentDimensionList.add(saveSignatureButton.getMinimumSize());
-            JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.PAGE_AXIS);
-            this.alternativeLayoutBottomButtonHolderPanel.add(secondButtonRowPanel);
-        }
+        this.logger.debug("Alternative layout selected vocabulary tabbed pane created");
     }
 
     private void createAlternativeVocabularyManagementPanel(){
@@ -649,22 +427,17 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
         constraints.gridy= 0;
         constraints.weightx = 0.3;
         constraints.weighty = 0.99;
-        this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutPermittedSignatureTabbedPane, constraints);
-//        specific for middle buttons:
+        this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutOntologySignatureTabbedPane, constraints);
+//        specific for signature selected buttons:
         constraints.gridy = 1;
         constraints.weightx = 0.1;
         constraints.weighty = 0.01;
-        this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutMiddleButtonHolderPanel, constraints);
+        this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutButtonHolderPanel, constraints);
 //        specific for selected signature pane:
         constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.99;
-        this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutForbiddenSignatureTabbedPane, constraints);
-//            specific for bottom buttons:
-        constraints.gridy = 3;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.01;
-        this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutBottomButtonHolderPanel, constraints);
+        this.alternativeVocabularyManagementPanel.add(this.alternativeLayoutVocabularyTabbedPane, constraints);
         this.alternativeVocabularyManagementPanel.setMinimumSize(new Dimension(
 //                width of each component
                 (int) ceil(max(this.alternativeLayoutWideComponentDimensionList.stream().map(Dimension::getWidth).
@@ -674,24 +447,214 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
 //                height of each component
                 (int) ceil(max(this.alternativeLayoutWideComponentDimensionList.stream().map(Dimension::getHeight).
                         collect(Collectors.toList())))
-//                        components embedded in gridBagLayout of alternativeVocabularyManagementPanel
+//                        component embedded in gridBagLayout of alternativeVocabularyManagementPanel
+                        + this.STANDARD_INSETS.top + this.STANDARD_INSETS.bottom
+
+        ));
+    }
+
+//    standard layout element creation
+    private void createStandardLayoutComponents(){
+        this.createStandardLayoutUpperPanel();
+        this.createStandardLayoutMiddleButtonPanel();
+        this.createStandardLayoutLowerPanel();
+        this.createStandardLayoutBottomButtonPanel();
+        this.createStandardVocabularyManagementPanel();
+        this.addStandardLayoutTabbedPaneStateChangeListeners();
+    }
+    private void createStandardLayoutUpperPanel() {
+        this.logger.debug("Creating standard layout permitted vocabulary tabbed pane");
+//        general
+        this.standardLayoutPermittedSignatureTabbedPane = new JTabbedPane();
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
+                "Permitted vocabulary:");
+        this.standardLayoutPermittedSignatureTabbedPane.setBorder(BorderFactory.createCompoundBorder(
+                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        int titleWidth = (int) titledBorder.getMinimumSize(
+                this.standardLayoutPermittedSignatureTabbedPane).getWidth() + 5;
+        int titleHeight = (int) titledBorder.getMinimumSize(
+                this.standardLayoutPermittedSignatureTabbedPane).getHeight() + 5;
+        this.standardLayoutWideComponentDimensionList.add(new Dimension(titleWidth,
+                titleHeight));
+//        classes
+        this.standardLayoutPermittedClassesListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.standardLayoutPermittedClassesList =
+                new JList<>(this.standardLayoutPermittedClassesListModel);
+        this.standardLayoutPermittedClassesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.standardLayoutPermittedSignatureTabbedPane.addTab("Classes",
+                ComponentFactory.createScrollPane(this.standardLayoutPermittedClassesList));
+//        properties
+        this.standardLayoutPermittedPropertiesListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.standardLayoutPermittedPropertiesList =
+                new JList<>(this.standardLayoutPermittedPropertiesListModel);
+        this.standardLayoutPermittedPropertiesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.standardLayoutPermittedSignatureTabbedPane.addTab("Object properties",
+                ComponentFactory.createScrollPane(this.standardLayoutPermittedPropertiesList));
+//        individuals
+        this.standardLayoutPermittedIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.standardLayoutPermittedIndividualsList =
+                new JList<>(this.standardLayoutPermittedIndividualsListModel);
+        this.standardLayoutPermittedIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.standardLayoutPermittedSignatureTabbedPane.addTab("Individuals",
+                ComponentFactory.createScrollPane(this.standardLayoutPermittedIndividualsList));
+        this.logger.debug("Standard layout permitted vocabulary tabbed pane created");
+    }
+
+    private void createStandardLayoutLowerPanel() {
+        this.logger.debug("Creating standard layout forbidden vocabulary tabbed pane");
+//        general
+        this.standardLayoutForbiddenSignatureTabbedPane = new JTabbedPane();
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
+                "Forbidden vocabulary:");
+        this.standardLayoutForbiddenSignatureTabbedPane.setBorder(BorderFactory.createCompoundBorder(
+                titledBorder, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        int lowerComponentTitleWidth = (int) titledBorder.getMinimumSize(
+                this.standardLayoutForbiddenSignatureTabbedPane).getWidth();
+        int lowerComponentTitleHeight = (int) titledBorder.getMinimumSize(
+                this.standardLayoutForbiddenSignatureTabbedPane).getHeight();
+        this.standardLayoutWideComponentDimensionList.add(new Dimension(lowerComponentTitleWidth,
+                lowerComponentTitleHeight));
+//        classes
+        this.standardLayoutForbiddenClassesListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.standardLayoutForbiddenClassesList = new JList<>(this.standardLayoutForbiddenClassesListModel);
+        this.standardLayoutForbiddenClassesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.standardLayoutForbiddenSignatureTabbedPane.addTab("Classes:",
+                ComponentFactory.createScrollPane(this.standardLayoutForbiddenClassesList));
+//        properties
+        this.standardLayoutForbiddenPropertiesListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.standardLayoutForbiddenPropertiesList =
+                new JList<>(this.standardLayoutForbiddenPropertiesListModel);
+        this.standardLayoutForbiddenPropertiesList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.standardLayoutForbiddenSignatureTabbedPane.addTab("Object properties",
+                ComponentFactory.createScrollPane(this.standardLayoutForbiddenPropertiesList));
+//        individuals
+        this.standardLayoutForbiddenIndividualsListModel = new OWLObjectListModel<>(this.owlEditorKit);
+        this.standardLayoutForbiddenIndividualsList =
+                new JList<>(this.standardLayoutForbiddenIndividualsListModel);
+        this.standardLayoutForbiddenIndividualsList.setCellRenderer(new OWLCellRendererSimple(this.owlEditorKit));
+        this.standardLayoutForbiddenSignatureTabbedPane.addTab("Individuals",
+                ComponentFactory.createScrollPane(this.standardLayoutForbiddenIndividualsList));
+        this.logger.debug("Alternative layout forbidden vocabulary tabbed pane created");
+    }
+
+    private void createStandardLayoutMiddleButtonPanel(){
+        this.standardLayoutMiddleButtonHolderPanel = new JPanel();
+        this.standardLayoutMiddleButtonHolderPanel.setLayout(
+                new BoxLayout(this.standardLayoutMiddleButtonHolderPanel, BoxLayout.PAGE_AXIS));
+        this.standardLayoutMiddleButtonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
+        ArrayList<JButton> buttonList = new ArrayList<>();
+        URL addUrl = getClass().getResource(ADD_BTN_ICON);
+        JButton addButton = UIUtilities.createIconButton(STANDARD_ADD_BTN_COMMAND, addUrl,
+                STANDARD_ADD_BTN_TOOLTIP, this);
+        buttonList.add(addButton);
+        URL delUrl = getClass().getResource(DEL_BTN_ICON);
+        JButton deleteButton = UIUtilities.createIconButton(STANDARD_DEL_BTN_COMMAND, delUrl,
+                STANDARD_DEL_BTN_TOOLTIP, this);
+        buttonList.add(deleteButton);
+        JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
+        this.standardLayoutMiddleButtonHolderPanel.add(firstButtonRowPanel);
+        this.standardLayoutMiddleButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        buttonList.clear();
+        URL addAllUrl = getClass().getResource(ADD_ALL_BTN_ICON);
+        JButton addAllButton = UIUtilities.createIconButton(STANDARD_ADD_ALL_BTN_COMMAND, addAllUrl,
+                STANDARD_ADD_ALL_BTN_TOOLTIP, this);
+        buttonList.add(addAllButton);
+        URL delAllUrl = getClass().getResource(DEL_ALL_BTN_ICON);
+        JButton deleteAllButton = UIUtilities.createIconButton(STANDARD_DEL_ALL_BTN_COMMAND, delAllUrl,
+                STANDARD_DEL_ALL_BTN_TOOLTIP, this);
+        buttonList.add(deleteAllButton);
+        JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
+        this.standardLayoutMiddleButtonHolderPanel.add(secondButtonRowPanel);
+    }
+
+    private void createStandardLayoutBottomButtonPanel(){
+        this.standardLayoutBottomButtonHolderPanel = new JPanel();
+        this.standardLayoutBottomButtonHolderPanel.setLayout(
+                new BoxLayout(this.standardLayoutBottomButtonHolderPanel, BoxLayout.PAGE_AXIS));
+        this.standardLayoutBottomButtonHolderPanel.setAlignmentX(Box.CENTER_ALIGNMENT);
+        if (! this.preferencesManager.loadUseSimpleMode()){
+            ArrayList<JButton> buttonList = new ArrayList<>();
+            JButton addMissingEntailmentSignatureButton =
+                    UIUtilities.createNamedButton(
+                            STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND,
+                            STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_NAME,
+                            STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_TOOLTIP, this);
+            buttonList.add(addMissingEntailmentSignatureButton);
+            this.standardLayoutWideComponentDimensionList.add(addMissingEntailmentSignatureButton.getMinimumSize());
+            JPanel firstButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.LINE_AXIS);
+            this.standardLayoutBottomButtonHolderPanel.add(firstButtonRowPanel);
+            this.standardLayoutBottomButtonHolderPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            buttonList.clear();
+            JButton loadSignatureButton = UIUtilities.createNamedButton(STANDARD_LOAD_SIGNATURE_COMMAND,
+                    LOAD_SIGNATURE_BUTTON_NAME, LOAD_SIGNATURE_BUTTON_TOOLTIP, this);
+            buttonList.add(loadSignatureButton);
+            this.standardLayoutWideComponentDimensionList.add(loadSignatureButton.getMinimumSize());
+            JButton saveSignatureButton = UIUtilities.createNamedButton(STANDARD_SAVE_SIGNATURE_COMMAND,
+                    SAVE_SIGNATURE_BUTTON_NAME, SAVE_SIGNATURE_BUTTON_TOOLTIP, this);
+            buttonList.add(saveSignatureButton);
+            this.standardLayoutWideComponentDimensionList.add(saveSignatureButton.getMinimumSize());
+            JPanel secondButtonRowPanel = this.createButtonPanelFromList(buttonList, BoxLayout.PAGE_AXIS);
+            this.standardLayoutBottomButtonHolderPanel.add(secondButtonRowPanel);
+        }
+    }
+
+    private void createStandardVocabularyManagementPanel(){
+        this.standardVocabularyManagementPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+//        general constraints:
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.insets = this.STANDARD_INSETS;
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.gridx = 0;
+//        specific for given signature tabbed pane:
+        constraints.gridy= 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.99;
+        this.standardVocabularyManagementPanel.add(this.standardLayoutPermittedSignatureTabbedPane, constraints);
+//        specific for middle buttons:
+        constraints.gridy = 1;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.01;
+        this.standardVocabularyManagementPanel.add(this.standardLayoutMiddleButtonHolderPanel, constraints);
+//        specific for selected signature pane:
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.99;
+        this.standardVocabularyManagementPanel.add(this.standardLayoutForbiddenSignatureTabbedPane, constraints);
+//            specific for bottom buttons:
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.01;
+        this.standardVocabularyManagementPanel.add(this.standardLayoutBottomButtonHolderPanel, constraints);
+        this.standardVocabularyManagementPanel.setMinimumSize(new Dimension(
+//                width of each component
+                (int) ceil(max(this.standardLayoutWideComponentDimensionList.stream().map(Dimension::getWidth).
+                        collect(Collectors.toList())))
+//                        components embedded in gridBagLayout of standardVocabularyManagementPanel
+                        + this.STANDARD_INSETS.left + this.STANDARD_INSETS.right,
+//                height of each component
+                (int) ceil(max(this.standardLayoutWideComponentDimensionList.stream().map(Dimension::getHeight).
+                        collect(Collectors.toList())))
+//                        components embedded in gridBagLayout of standardVocabularyManagementPanel
                         + this.STANDARD_INSETS.top + this.STANDARD_INSETS.bottom
         ));
     }
 
-    private void addAlternativeLayoutTabbedPaneStateChangeListeners(){
-        this.alternativeLayoutForbiddenSignatureTabbedPane.addChangeListener(new ChangeListener() {
+    private void addStandardLayoutTabbedPaneStateChangeListeners(){
+        this.standardLayoutForbiddenSignatureTabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                alternativeLayoutPermittedSignatureTabbedPane.setSelectedIndex(
-                        alternativeLayoutForbiddenSignatureTabbedPane.getSelectedIndex());
+                standardLayoutPermittedSignatureTabbedPane.setSelectedIndex(
+                        standardLayoutForbiddenSignatureTabbedPane.getSelectedIndex());
             }
         });
-        this.alternativeLayoutPermittedSignatureTabbedPane.addChangeListener(new ChangeListener() {
+        this.standardLayoutPermittedSignatureTabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                alternativeLayoutForbiddenSignatureTabbedPane.setSelectedIndex(
-                        alternativeLayoutPermittedSignatureTabbedPane.getSelectedIndex());
+                standardLayoutForbiddenSignatureTabbedPane.setSelectedIndex(
+                        standardLayoutPermittedSignatureTabbedPane.getSelectedIndex());
             }
         });
     }
@@ -700,29 +663,6 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case STANDARD_ADD_BTN_COMMAND:
-                this.standardAddAction();
-                break;
-            case STANDARD_DEL_BTN_COMMAND:
-                this.standardDeleteAction();
-                break;
-            case STANDARD_ADD_ALL_BTN_COMMAND:
-                this.standardAddAllAction();
-                break;
-            case STANDARD_DEL_ALL_BTN_COMMAND:
-                this.standardDeleteAllAction();
-                break;
-            case STANDARD_LOAD_SIGNATURE_COMMAND:
-            case ALTERNATIVE_LOAD_SIGNATURE_COMMAND:
-                this.loadSignatureAction();
-                break;
-            case STANDARD_SAVE_SIGNATURE_COMMAND:
-            case ALTERNATIVE_SAVE_SIGNATURE_COMMAND:
-                this.saveSignatureAction();
-                break;
-            case STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND:
-                this.standardAddMissingEntailmentSignatureAction();
-                break;
             case ALTERNATIVE_ADD_BTN_COMMAND:
                 this.alternativeAddAction();
                 break;
@@ -735,8 +675,31 @@ public class NonEntailmentVocabularySelectionUI implements ActionListener {
             case ALTERNATIVE_DEL_ALL_BTN_COMMAND:
                 this.alternativeDeleteAllAction();
                 break;
+            case ALTERNATIVE_LOAD_SIGNATURE_COMMAND:
+            case STANDARD_LOAD_SIGNATURE_COMMAND:
+                this.loadSignatureAction();
+                break;
+            case ALTERNATIVE_SAVE_SIGNATURE_COMMAND:
+            case STANDARD_SAVE_SIGNATURE_COMMAND:
+                this.saveSignatureAction();
+                break;
             case ALTERNATIVE_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND:
                 this.alternativeAddMissingEntailmentSignatureAction();
+                break;
+            case STANDARD_ADD_BTN_COMMAND:
+                this.standardAddAction();
+                break;
+            case STANDARD_DEL_BTN_COMMAND:
+                this.standardDeleteAction();
+                break;
+            case STANDARD_ADD_ALL_BTN_COMMAND:
+                this.standardAddAllAction();
+                break;
+            case STANDARD_DEL_ALL_BTN_COMMAND:
+                this.standardDeleteAllAction();
+                break;
+            case STANDARD_ADD_MISSING_ENTAILMENT_SIGNATURE_BTN_COMMAND:
+                this.standardAddMissingEntailmentSignatureAction();
                 break;
         }
     }
@@ -750,26 +713,35 @@ private void loadSignatureAction(){
             Set<OWLEntity> knownEntitySet = new HashSet<>(signatureFileHandler.getSignature());
             this.removeTopAndBottomEntities(knownEntitySet);
             if (this.preferencesManager.loadSignatureComponentLayout().equals(
-                    NonEntailmentGeneralPreferencesManager.STANDARD_LAYOUT)){
-                //                deleting from one list = adding to other list
+                    NonEntailmentGeneralPreferencesManager.ALTERNATIVE_LAYOUT_LISTS)){
+//                deleting from one list = adding to other list
                 this.addAll2VocabularyList(VocabularyTab.Forbidden);
                 this.moveEntities2VocabularyList(knownEntitySet, VocabularyTab.Permitted);
                 this.clearVocabularySelection();
 //                this.vocabularyTabbedPane.setSelectedIndex(0);
             } else {
+                this.standardLayoutForbiddenClassesListModel.checkAndAddElements(
+                        this.standardLayoutPermittedClassesListModel.getOwlObjects());
+                this.standardLayoutPermittedClassesListModel.removeAll();
+                this.standardLayoutForbiddenPropertiesListModel.checkAndAddElements(
+                        this.standardLayoutPermittedPropertiesListModel.getOwlObjects());
+                this.standardLayoutPermittedPropertiesListModel.removeAll();
+                this.standardLayoutForbiddenIndividualsListModel.checkAndAddElements(
+                        this.standardLayoutPermittedIndividualsListModel.getOwlObjects());
+                this.standardLayoutPermittedIndividualsListModel.removeAll();
                 for (OWLEntity entity : knownEntitySet){
                     if (entity instanceof OWLClass){
                         OWLClass owlClass = (OWLClass) entity;
-                        this.alternativeLayoutPermittedClassesListModel.checkAndAddElement(owlClass);
-                        this.alternativeLayoutForbiddenClassesListModel.removeElement(owlClass);
+                        this.standardLayoutPermittedClassesListModel.checkAndAddElement(owlClass);
+                        this.standardLayoutForbiddenClassesListModel.removeElement(owlClass);
                     } else if (entity instanceof OWLObjectProperty){
                         OWLObjectProperty property = (OWLObjectProperty) entity;
-                        this.alternativeLayoutPermittedPropertiesListModel.checkAndAddElement(property);
-                        this.alternativeLayoutForbiddenPropertiesListModel.removeElement(property);
+                        this.standardLayoutPermittedPropertiesListModel.checkAndAddElement(property);
+                        this.standardLayoutForbiddenPropertiesListModel.removeElement(property);
                     } else if (entity instanceof OWLNamedIndividual){
                         OWLNamedIndividual individual = (OWLNamedIndividual) entity;
-                        this.alternativeLayoutPermittedIndividualsListModel.checkAndAddElement(individual);
-                        this.alternativeLayoutForbiddenIndividualsListModel.removeElement(individual);
+                        this.standardLayoutPermittedIndividualsListModel.checkAndAddElement(individual);
+                        this.standardLayoutForbiddenIndividualsListModel.removeElement(individual);
                     }
                 }
             }
@@ -786,13 +758,13 @@ private void loadSignatureAction(){
             try{
                 SignatureFileHandler signatureFileHandler = new SignatureFileHandler(this.owlEditorKit);
                 if (this.preferencesManager.loadSignatureComponentLayout().equals(
-                        NonEntailmentGeneralPreferencesManager.STANDARD_LAYOUT)){
-                    signatureFileHandler.setSignature(this.standardLayoutPermittedVocabularyListModel.getOwlObjects());
+                        NonEntailmentGeneralPreferencesManager.ALTERNATIVE_LAYOUT_LISTS)){
+                    signatureFileHandler.setSignature(this.alternativeLayoutPermittedVocabularyListModel.getOwlObjects());
                 } else{
                     Set<OWLEntity> signature = new HashSet<>();
-                    signature.addAll(this.alternativeLayoutPermittedClassesListModel.getOwlObjects());
-                    signature.addAll(this.alternativeLayoutPermittedPropertiesListModel.getOwlObjects());
-                    signature.addAll(this.alternativeLayoutPermittedIndividualsListModel.getOwlObjects());
+                    signature.addAll(this.standardLayoutPermittedClassesListModel.getOwlObjects());
+                    signature.addAll(this.standardLayoutPermittedPropertiesListModel.getOwlObjects());
+                    signature.addAll(this.standardLayoutPermittedIndividualsListModel.getOwlObjects());
                     signatureFileHandler.setSignature(signature);
                 }
                 signatureFileHandler.setUseSignature(true);
@@ -804,23 +776,23 @@ private void loadSignatureAction(){
         });
     }
 
-//    standard layout button actions
-    private void standardAddAction(){
+//    alternative layout button actions
+    private void alternativeAddAction(){
         SwingUtilities.invokeLater(() -> {
-            int ontologySignatureTabIndex = this.standardLayoutOntologySignatureTabbedPane.getSelectedIndex();
+            int ontologySignatureTabIndex = this.alternativeLayoutOntologySignatureTabbedPane.getSelectedIndex();
             List<? extends OWLEntity> entitiesToAdd;
             if (ontologySignatureTabIndex == 0){
-                entitiesToAdd = this.standardLayoutClassesTree.getSelectedOWLObjects();
+                entitiesToAdd = this.alternativeLayoutClassesTree.getSelectedOWLObjects();
                 this.removeTopAndBottomEntities(entitiesToAdd);
             }
             else if (ontologySignatureTabIndex == 1){
-                entitiesToAdd = this.standardLayoutPropertyTree.getSelectedOWLObjects();
+                entitiesToAdd = this.alternativeLayoutPropertyTree.getSelectedOWLObjects();
                 this.removeTopAndBottomEntities(entitiesToAdd);
             }
             else{
-                entitiesToAdd = this.standardLayoutOntologyIndividualsJList.getSelectedValuesList();
+                entitiesToAdd = this.alternativeLayoutOntologyIndividualsJList.getSelectedValuesList();
             }
-            int selectedVocabularyTabIndex = this.standardLayoutVocabularyTabbedPane.getSelectedIndex();
+            int selectedVocabularyTabIndex = this.alternativeLayoutVocabularyTabbedPane.getSelectedIndex();
             this.moveEntities2VocabularyList(entitiesToAdd,
                     this.standardLayoutTabIndex2Name(selectedVocabularyTabIndex));
             this.clearVocabularySelection();
@@ -828,24 +800,24 @@ private void loadSignatureAction(){
         });
     }
 
-    private void standardAddAllAction(){
+    private void alternativeAddAllAction(){
         SwingUtilities.invokeLater(() -> {
 //            deleting entities from one list = adding entities to other list
-            VocabularyTab tabToAdd = this.standardLayoutTabIndex2Name(this.standardLayoutVocabularyTabbedPane.getSelectedIndex());
+            VocabularyTab tabToAdd = this.standardLayoutTabIndex2Name(this.alternativeLayoutVocabularyTabbedPane.getSelectedIndex());
             this.addAll2VocabularyList(tabToAdd);
             this.clearVocabularySelection();
             this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
         });
     }
 
-    private void standardDeleteAction(){
+    private void alternativeDeleteAction(){
         SwingUtilities.invokeLater(() -> {
-            int deleteFromTabIndex = this.standardLayoutVocabularyTabbedPane.getSelectedIndex();
+            int deleteFromTabIndex = this.alternativeLayoutVocabularyTabbedPane.getSelectedIndex();
             List<OWLEntity> entitiesToDelete;
             if (deleteFromTabIndex == 0){
-                entitiesToDelete = this.standardLayoutPermittedVocabularyList.getSelectedValuesList();
+                entitiesToDelete = this.alternativeLayoutPermittedVocabularyList.getSelectedValuesList();
             } else{
-                entitiesToDelete = this.standardLayoutForbiddenVocabularyList.getSelectedValuesList();
+                entitiesToDelete = this.alternativeLayoutForbiddenVocabularyList.getSelectedValuesList();
             }
 //            deleting entities from one list = adding entities to other list
             this.moveEntities2VocabularyList(entitiesToDelete,
@@ -855,24 +827,24 @@ private void loadSignatureAction(){
         });
     }
 
-    private void standardDeleteAllAction(){
+    private void alternativeDeleteAllAction(){
         SwingUtilities.invokeLater(() -> {
 //            deleting entities from one list = adding entities to other list
-            VocabularyTab tabToAdd = this.tabIndex2ComplementName(this.standardLayoutVocabularyTabbedPane.getSelectedIndex());
+            VocabularyTab tabToAdd = this.tabIndex2ComplementName(this.alternativeLayoutVocabularyTabbedPane.getSelectedIndex());
             this.addAll2VocabularyList(tabToAdd);
             this.clearVocabularySelection();
             this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
         });
     }
 
-    private void standardAddMissingEntailmentSignatureAction(){
+    private void alternativeAddMissingEntailmentSignatureAction(){
         SwingUtilities.invokeLater(() -> {
             ArrayList<OWLObject> missingEntailmentList = this.nonEntailmentViewComponent.getMissingEntailments();
             HashSet<OWLEntity> missingEntailmentSet = new HashSet<>();
             missingEntailmentList.forEach(missingEntailment -> missingEntailmentSet.addAll(missingEntailment.getSignature()));
             this.removeTopAndBottomEntities(missingEntailmentSet);
 //            deleting entities from one list = adding entities to other list
-            int tabIndex = this.standardLayoutVocabularyTabbedPane.getSelectedIndex();
+            int tabIndex = this.alternativeLayoutVocabularyTabbedPane.getSelectedIndex();
             this.moveEntities2VocabularyList(missingEntailmentSet,
                     this.standardLayoutTabIndex2Name(tabIndex));
             this.nonEntailmentViewComponent.checkComputeButtonAndWarningLabelStatus();
@@ -883,144 +855,144 @@ private void loadSignatureAction(){
         OWLObjectListModel<OWLEntity> listToAdd;
         OWLObjectListModel<OWLEntity> listToDelete;
         if (addToTab == VocabularyTab.Permitted){
-            listToAdd = this.standardLayoutPermittedVocabularyListModel;
-            listToDelete = this.standardLayoutForbiddenVocabularyListModel;
+            listToAdd = this.alternativeLayoutPermittedVocabularyListModel;
+            listToDelete = this.alternativeLayoutForbiddenVocabularyListModel;
         } else{
-            listToAdd = this.standardLayoutForbiddenVocabularyListModel;
-            listToDelete = this.standardLayoutPermittedVocabularyListModel;
+            listToAdd = this.alternativeLayoutForbiddenVocabularyListModel;
+            listToDelete = this.alternativeLayoutPermittedVocabularyListModel;
         }
         listToAdd.checkAndAddElements(entitiesToAdd);
         listToDelete.removeElements(entitiesToAdd);
     }
 
     private void clearVocabularySelection(){
-        this.standardLayoutClassesTree.clearSelection();
-        this.standardLayoutPropertyTree.clearSelection();
-        this.standardLayoutOntologyIndividualsJList.clearSelection();
-        this.standardLayoutPermittedVocabularyList.clearSelection();
-        this.standardLayoutForbiddenVocabularyList.clearSelection();
-        this.alternativeLayoutPermittedClassesList.clearSelection();
-        this.alternativeLayoutForbiddenClassesList.clearSelection();
-        this.alternativeLayoutPermittedPropertiesList.clearSelection();
-        this.alternativeLayoutForbiddenPropertiesList.clearSelection();
-        this.alternativeLayoutPermittedIndividualsList.clearSelection();
-        this.alternativeLayoutForbiddenIndividualsList.clearSelection();
+        this.alternativeLayoutClassesTree.clearSelection();
+        this.alternativeLayoutPropertyTree.clearSelection();
+        this.alternativeLayoutOntologyIndividualsJList.clearSelection();
+        this.alternativeLayoutPermittedVocabularyList.clearSelection();
+        this.alternativeLayoutForbiddenVocabularyList.clearSelection();
+        this.standardLayoutPermittedClassesList.clearSelection();
+        this.standardLayoutForbiddenClassesList.clearSelection();
+        this.standardLayoutPermittedPropertiesList.clearSelection();
+        this.standardLayoutForbiddenPropertiesList.clearSelection();
+        this.standardLayoutPermittedIndividualsList.clearSelection();
+        this.standardLayoutForbiddenIndividualsList.clearSelection();
     }
 
     private void addAll2VocabularyList(VocabularyTab addToTab){
         this.moveEntities2VocabularyList(this.getCompleteOntologySignature(), addToTab);
     }
 
-//    alternative layout button actions
-    private void alternativeAddAction() {
+//    standard layout button actions
+    private void standardAddAction() {
         SwingUtilities.invokeLater(() -> {
-            int idx = this.alternativeLayoutPermittedSignatureTabbedPane.getSelectedIndex();
+            int idx = this.standardLayoutPermittedSignatureTabbedPane.getSelectedIndex();
             switch (idx){
                 case 0:
                     ArrayList<OWLClass> classes = new ArrayList<>(
-                            this.alternativeLayoutPermittedClassesList.getSelectedValuesList());
-                    this.alternativeLayoutPermittedClassesListModel.removeElements(classes);
-                    this.alternativeLayoutForbiddenClassesListModel.checkAndAddElements(classes);
+                            this.standardLayoutPermittedClassesList.getSelectedValuesList());
+                    this.standardLayoutPermittedClassesListModel.removeElements(classes);
+                    this.standardLayoutForbiddenClassesListModel.checkAndAddElements(classes);
                     break;
                 case 1:
                     ArrayList<OWLObjectProperty> properties = new ArrayList<>(
-                            this.alternativeLayoutPermittedPropertiesList.getSelectedValuesList());
-                    this.alternativeLayoutPermittedPropertiesListModel.removeElements(properties);
-                    this.alternativeLayoutForbiddenPropertiesListModel.checkAndAddElements(properties);
+                            this.standardLayoutPermittedPropertiesList.getSelectedValuesList());
+                    this.standardLayoutPermittedPropertiesListModel.removeElements(properties);
+                    this.standardLayoutForbiddenPropertiesListModel.checkAndAddElements(properties);
                     break;
                 case 2:
                     ArrayList<OWLNamedIndividual> individuals = new ArrayList<>(
-                            this.alternativeLayoutPermittedIndividualsList.getSelectedValuesList());
-                    this.alternativeLayoutPermittedIndividualsListModel.removeElements(individuals);
-                    this.alternativeLayoutForbiddenIndividualsListModel.addElements(individuals);
+                            this.standardLayoutPermittedIndividualsList.getSelectedValuesList());
+                    this.standardLayoutPermittedIndividualsListModel.removeElements(individuals);
+                    this.standardLayoutForbiddenIndividualsListModel.addElements(individuals);
                     break;
             }
             this.clearVocabularySelection();
         });
     }
 
-    private void alternativeDeleteAction() {
+    private void standardDeleteAction() {
         SwingUtilities.invokeLater(() -> {
-            int idx = this.alternativeLayoutForbiddenSignatureTabbedPane.getSelectedIndex();
+            int idx = this.standardLayoutForbiddenSignatureTabbedPane.getSelectedIndex();
             switch (idx){
                 case 0:
                     ArrayList<OWLClass> classes = new ArrayList<>(
-                            this.alternativeLayoutForbiddenClassesList.getSelectedValuesList());
-                    this.alternativeLayoutForbiddenClassesListModel.removeElements(classes);
-                    this.alternativeLayoutPermittedClassesListModel.checkAndAddElements(classes);
+                            this.standardLayoutForbiddenClassesList.getSelectedValuesList());
+                    this.standardLayoutForbiddenClassesListModel.removeElements(classes);
+                    this.standardLayoutPermittedClassesListModel.checkAndAddElements(classes);
                     break;
                 case 1:
                     ArrayList<OWLObjectProperty> properties = new ArrayList<>(
-                            this.alternativeLayoutForbiddenPropertiesList.getSelectedValuesList());
-                    this.alternativeLayoutForbiddenPropertiesListModel.removeElements(properties);
-                    this.alternativeLayoutPermittedPropertiesListModel.checkAndAddElements(properties);
+                            this.standardLayoutForbiddenPropertiesList.getSelectedValuesList());
+                    this.standardLayoutForbiddenPropertiesListModel.removeElements(properties);
+                    this.standardLayoutPermittedPropertiesListModel.checkAndAddElements(properties);
                     break;
                 case 2:
                     ArrayList<OWLNamedIndividual> individuals = new ArrayList<>(
-                            this.alternativeLayoutForbiddenIndividualsList.getSelectedValuesList());
-                    this.alternativeLayoutForbiddenIndividualsListModel.removeElements(individuals);
-                    this.alternativeLayoutPermittedIndividualsListModel.addElements(individuals);
+                            this.standardLayoutForbiddenIndividualsList.getSelectedValuesList());
+                    this.standardLayoutForbiddenIndividualsListModel.removeElements(individuals);
+                    this.standardLayoutPermittedIndividualsListModel.addElements(individuals);
                     break;
             }
             this.clearVocabularySelection();
         });
     }
 
-    private void alternativeAddAllAction() {
+    private void standardAddAllAction() {
         SwingUtilities.invokeLater(() -> {
-            int idx = this.alternativeLayoutPermittedSignatureTabbedPane.getSelectedIndex();
+            int idx = this.standardLayoutPermittedSignatureTabbedPane.getSelectedIndex();
             switch (idx){
                 case 0:
                     ArrayList<OWLClass> classes = new ArrayList<>(
-                            this.alternativeLayoutPermittedClassesListModel.getOwlObjects());
-                    this.alternativeLayoutPermittedClassesListModel.removeElements(classes);
-                    this.alternativeLayoutForbiddenClassesListModel.checkAndAddElements(classes);
+                            this.standardLayoutPermittedClassesListModel.getOwlObjects());
+                    this.standardLayoutPermittedClassesListModel.removeElements(classes);
+                    this.standardLayoutForbiddenClassesListModel.checkAndAddElements(classes);
                     break;
                 case 1:
                     ArrayList<OWLObjectProperty> properties = new ArrayList<>(
-                            this.alternativeLayoutPermittedPropertiesListModel.getOwlObjects());
-                    this.alternativeLayoutPermittedPropertiesListModel.removeElements(properties);
-                    this.alternativeLayoutForbiddenPropertiesListModel.checkAndAddElements(properties);
+                            this.standardLayoutPermittedPropertiesListModel.getOwlObjects());
+                    this.standardLayoutPermittedPropertiesListModel.removeElements(properties);
+                    this.standardLayoutForbiddenPropertiesListModel.checkAndAddElements(properties);
                     break;
                 case 2:
                     ArrayList<OWLNamedIndividual> individuals = new ArrayList<>(
-                            this.alternativeLayoutPermittedIndividualsListModel.getOwlObjects());
-                    this.alternativeLayoutPermittedIndividualsListModel.removeElements(individuals);
-                    this.alternativeLayoutForbiddenIndividualsListModel.addElements(individuals);
+                            this.standardLayoutPermittedIndividualsListModel.getOwlObjects());
+                    this.standardLayoutPermittedIndividualsListModel.removeElements(individuals);
+                    this.standardLayoutForbiddenIndividualsListModel.addElements(individuals);
                     break;
             }
             this.clearVocabularySelection();
         });
     }
 
-    private void alternativeDeleteAllAction() {
+    private void standardDeleteAllAction() {
         SwingUtilities.invokeLater(() -> {
-            int idx = this.alternativeLayoutForbiddenSignatureTabbedPane.getSelectedIndex();
+            int idx = this.standardLayoutForbiddenSignatureTabbedPane.getSelectedIndex();
             switch (idx){
                 case 0:
                     ArrayList<OWLClass> classes = new ArrayList<>(
-                            this.alternativeLayoutForbiddenClassesListModel.getOwlObjects());
-                    this.alternativeLayoutForbiddenClassesListModel.removeElements(classes);
-                    this.alternativeLayoutPermittedClassesListModel.checkAndAddElements(classes);
+                            this.standardLayoutForbiddenClassesListModel.getOwlObjects());
+                    this.standardLayoutForbiddenClassesListModel.removeElements(classes);
+                    this.standardLayoutPermittedClassesListModel.checkAndAddElements(classes);
                     break;
                 case 1:
                     ArrayList<OWLObjectProperty> properties = new ArrayList<>(
-                            this.alternativeLayoutForbiddenPropertiesListModel.getOwlObjects());
-                    this.alternativeLayoutForbiddenPropertiesListModel.removeElements(properties);
-                    this.alternativeLayoutPermittedPropertiesListModel.checkAndAddElements(properties);
+                            this.standardLayoutForbiddenPropertiesListModel.getOwlObjects());
+                    this.standardLayoutForbiddenPropertiesListModel.removeElements(properties);
+                    this.standardLayoutPermittedPropertiesListModel.checkAndAddElements(properties);
                     break;
                 case 2:
                     ArrayList<OWLNamedIndividual> individuals = new ArrayList<>(
-                            this.alternativeLayoutForbiddenIndividualsListModel.getOwlObjects());
-                    this.alternativeLayoutForbiddenIndividualsListModel.removeElements(individuals);
-                    this.alternativeLayoutPermittedIndividualsListModel.addElements(individuals);
+                            this.standardLayoutForbiddenIndividualsListModel.getOwlObjects());
+                    this.standardLayoutForbiddenIndividualsListModel.removeElements(individuals);
+                    this.standardLayoutPermittedIndividualsListModel.addElements(individuals);
                     break;
             }
             this.clearVocabularySelection();
         });
     }
 
-    private void alternativeAddMissingEntailmentSignatureAction() {
+    private void standardAddMissingEntailmentSignatureAction() {
         SwingUtilities.invokeLater(() -> {
             ArrayList<OWLObject> missingEntailmentList = this.nonEntailmentViewComponent.getMissingEntailments();
             HashSet<OWLEntity> missingEntailmentSet = new HashSet<>();
@@ -1031,16 +1003,16 @@ private void loadSignatureAction(){
             missingEntailmentSet.forEach(entity -> {
                 if (entity instanceof OWLClass){
                     OWLClass owlClass = (OWLClass) entity;
-                    alternativeLayoutPermittedClassesListModel.removeElement(owlClass);
-                    alternativeLayoutForbiddenClassesListModel.checkAndAddElement(owlClass);
+                    standardLayoutPermittedClassesListModel.removeElement(owlClass);
+                    standardLayoutForbiddenClassesListModel.checkAndAddElement(owlClass);
                 } else if (entity instanceof OWLObjectProperty){
                     OWLObjectProperty property = (OWLObjectProperty) entity;
-                    alternativeLayoutPermittedPropertiesListModel.removeElement(property);
-                    alternativeLayoutForbiddenPropertiesListModel.checkAndAddElement(property);
+                    standardLayoutPermittedPropertiesListModel.removeElement(property);
+                    standardLayoutForbiddenPropertiesListModel.checkAndAddElement(property);
                 } else if (entity instanceof OWLNamedIndividual){
                     OWLNamedIndividual individual = (OWLNamedIndividual) entity;
-                    alternativeLayoutPermittedIndividualsListModel.removeElement(individual);
-                    alternativeLayoutForbiddenIndividualsListModel.checkAndAddElement(individual);
+                    standardLayoutPermittedIndividualsListModel.removeElement(individual);
+                    standardLayoutForbiddenIndividualsListModel.checkAndAddElement(individual);
                 }
             });
             this.clearVocabularySelection();
@@ -1053,38 +1025,38 @@ private void loadSignatureAction(){
             if (name instanceof OWLClass){
                 OWLClass newClassName = (OWLClass) name;
                 if (! newClassName.isBottomEntity() && ! newClassName.isTopEntity()){
-                    this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newClassName);
-                    this.standardLayoutPermittedVocabularyListModel.removeElement(newClassName);
-                    this.alternativeLayoutForbiddenClassesListModel.checkAndAddElement(newClassName);
-                    this.alternativeLayoutPermittedClassesListModel.removeElement(newClassName);
+                    this.alternativeLayoutForbiddenVocabularyListModel.checkAndAddElement(newClassName);
+                    this.alternativeLayoutPermittedVocabularyListModel.removeElement(newClassName);
+                    this.standardLayoutForbiddenClassesListModel.checkAndAddElement(newClassName);
+                    this.standardLayoutPermittedClassesListModel.removeElement(newClassName);
                 }
             } else if (name instanceof OWLObjectProperty){
                 OWLObjectProperty newPropertyName = (OWLObjectProperty) name;
                 if (! newPropertyName.isBottomEntity() && ! newPropertyName.isTopEntity()){
-                    this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newPropertyName);
-                    this.standardLayoutPermittedVocabularyListModel.removeElement(newPropertyName);
-                    this.alternativeLayoutForbiddenPropertiesListModel.checkAndAddElement(newPropertyName);
-                    this.alternativeLayoutPermittedPropertiesListModel.removeElement(newPropertyName);
+                    this.alternativeLayoutForbiddenVocabularyListModel.checkAndAddElement(newPropertyName);
+                    this.alternativeLayoutPermittedVocabularyListModel.removeElement(newPropertyName);
+                    this.standardLayoutForbiddenPropertiesListModel.checkAndAddElement(newPropertyName);
+                    this.standardLayoutPermittedPropertiesListModel.removeElement(newPropertyName);
                 }
             } else if (name instanceof OWLNamedIndividual){
                 OWLNamedIndividual newIndividualName = (OWLNamedIndividual) name;
-                this.standardLayoutForbiddenVocabularyListModel.checkAndAddElement(newIndividualName);
-                this.standardLayoutPermittedVocabularyListModel.removeElement(newIndividualName);
-                this.alternativeLayoutForbiddenIndividualsListModel.checkAndAddElement(newIndividualName);
-                this.alternativeLayoutPermittedIndividualsListModel.removeElement(newIndividualName);
+                this.alternativeLayoutForbiddenVocabularyListModel.checkAndAddElement(newIndividualName);
+                this.alternativeLayoutPermittedVocabularyListModel.removeElement(newIndividualName);
+                this.standardLayoutForbiddenIndividualsListModel.checkAndAddElement(newIndividualName);
+                this.standardLayoutPermittedIndividualsListModel.removeElement(newIndividualName);
             }
         });
         if (this.preferencesManager.loadSignatureComponentLayout().equals(
-                NonEntailmentGeneralPreferencesManager.STANDARD_LAYOUT)){
-            this.standardLayoutVocabularyTabbedPane.setSelectedIndex(1);
+                NonEntailmentGeneralPreferencesManager.ALTERNATIVE_LAYOUT_LISTS)){
+            this.alternativeLayoutVocabularyTabbedPane.setSelectedIndex(1);
         }
     }
 
     public void resetVocabularyManagementPanel() {
-        this.alternativeLayoutWideComponentDimensionList.clear();
-        this.createStandardLayoutComponents();
         this.standardLayoutWideComponentDimensionList.clear();
         this.createAlternativeLayoutComponents();
+        this.alternativeLayoutWideComponentDimensionList.clear();
+        this.createStandardLayoutComponents();
         this.resetVocabularyListModels();
     }
 
@@ -1104,11 +1076,11 @@ private void loadSignatureAction(){
                 if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
                         changeEvent.isType(EventType.ONTOLOGY_RELOADED)){
 //                    ontology signature component:
-                    standardLayoutOntologyIndividualsListModel.removeAll();
-                    standardLayoutOntologyIndividualsListModel.addElements(
+                    alternativeLayoutOntologyIndividualsListModel.removeAll();
+                    alternativeLayoutOntologyIndividualsListModel.addElements(
                             owlEditorKit.getOWLModelManager().getActiveOntology()
                                     .getIndividualsInSignature(Imports.INCLUDED));
-                    standardLayoutOntologyIndividualsJList.clearSelection();
+                    alternativeLayoutOntologyIndividualsJList.clearSelection();
 //                    selected vocabulary component:
                     resetVocabularyListModels();
                     clearVocabularySelection();
@@ -1153,31 +1125,31 @@ private void loadSignatureAction(){
                         entitiesToDelete.add(deletedEntity);
                     }
                 }
-                updateStandardLayoutListModels(entitiesToDelete);
-                updateAlternativeLayoutListModels(entitiesToAdd, entitiesToDelete);
+                updateAlternativeLayoutListModels(entitiesToDelete);
+                updateStandardLayoutListModels(entitiesToAdd, entitiesToDelete);
             });
         }
 
-        private void updateStandardLayoutListModels(Set<OWLEntity> entitiesToDelete){
+        private void updateAlternativeLayoutListModels(Set<OWLEntity> entitiesToDelete){
 //               ontology signature component:
-            standardLayoutOntologyIndividualsListModel.removeAll();
-            standardLayoutOntologyIndividualsListModel.addElements(
+            alternativeLayoutOntologyIndividualsListModel.removeAll();
+            alternativeLayoutOntologyIndividualsListModel.addElements(
                     owlEditorKit.getOWLModelManager().getActiveOntology().getIndividualsInSignature(
                             Imports.INCLUDED));
-            standardLayoutOntologyIndividualsJList.clearSelection();
+            alternativeLayoutOntologyIndividualsJList.clearSelection();
 //               selected vocabulary component:
 //                deleting individuals removed from vocabulary (permitted and forbidden):
-            standardLayoutPermittedVocabularyListModel.removeElements(entitiesToDelete);
-            standardLayoutForbiddenVocabularyListModel.removeElements(entitiesToDelete);
+            alternativeLayoutPermittedVocabularyListModel.removeElements(entitiesToDelete);
+            alternativeLayoutForbiddenVocabularyListModel.removeElements(entitiesToDelete);
 //                adding new entities to default vocabulary list:
             OWLObjectListModel<OWLEntity> listToAdd;
             OWLObjectListModel<OWLEntity> listToCheck;
             if (preferencesManager.loadDefaultVocabularyTab().equals(VocabularyTab.Permitted)){
-                listToAdd = standardLayoutPermittedVocabularyListModel;
-                listToCheck = standardLayoutForbiddenVocabularyListModel;
+                listToAdd = alternativeLayoutPermittedVocabularyListModel;
+                listToCheck = alternativeLayoutForbiddenVocabularyListModel;
             } else{
-                listToAdd = standardLayoutForbiddenVocabularyListModel;
-                listToCheck = standardLayoutPermittedVocabularyListModel;
+                listToAdd = alternativeLayoutForbiddenVocabularyListModel;
+                listToCheck = alternativeLayoutPermittedVocabularyListModel;
             }
             OWLOntology activeOntology = owlEditorKit.getOWLModelManager().getActiveOntology();
             Set<OWLEntity> entitiesToAdd = new HashSet<>(activeOntology
@@ -1193,57 +1165,57 @@ private void loadSignatureAction(){
             listToAdd.checkAndAddElements(entitiesToAdd);
         }
     }
-    private void updateAlternativeLayoutListModels(Set<OWLEntity> entitiesToAdd, Set<OWLEntity> entitiesToDelete){
+    private void updateStandardLayoutListModels(Set<OWLEntity> entitiesToAdd, Set<OWLEntity> entitiesToDelete){
 //        delete classes, properties, individuals that were removed from signature
         entitiesToDelete.forEach(entity ->{
             if (entity instanceof OWLClass){
                 OWLClass owlClass = (OWLClass) entity;
-                alternativeLayoutPermittedClassesListModel.removeElement(owlClass);
-                alternativeLayoutForbiddenClassesListModel.removeElement(owlClass);
+                standardLayoutPermittedClassesListModel.removeElement(owlClass);
+                standardLayoutForbiddenClassesListModel.removeElement(owlClass);
             } else if (entity instanceof OWLObjectProperty){
                 OWLObjectProperty property = (OWLObjectProperty) entity;
-                alternativeLayoutPermittedPropertiesListModel.removeElement(property);
-                alternativeLayoutForbiddenPropertiesListModel.removeElement(property);
+                standardLayoutPermittedPropertiesListModel.removeElement(property);
+                standardLayoutForbiddenPropertiesListModel.removeElement(property);
             } else if (entity instanceof OWLNamedIndividual){
                 OWLNamedIndividual individual = (OWLNamedIndividual) entity;
-                alternativeLayoutPermittedIndividualsListModel.removeElement(individual);
-                alternativeLayoutForbiddenIndividualsListModel.removeElement(individual);
+                standardLayoutPermittedIndividualsListModel.removeElement(individual);
+                standardLayoutForbiddenIndividualsListModel.removeElement(individual);
             }
         });
-//        add classes, propertis, individuals that were added to the signature
+//        add classes, properties, individuals that were added to the signature
         boolean addToPermitted = preferencesManager.loadDefaultVocabularyTab().equals(VocabularyTab.Permitted);
         for (OWLEntity entity : entitiesToAdd){
             if (entity instanceof OWLClass){
                 OWLClass owlClass = (OWLClass) entity;
                 if (addToPermitted){
-                    if (! alternativeLayoutForbiddenClassesListModel.getOwlObjects().contains(owlClass)){
-                        alternativeLayoutPermittedClassesListModel.checkAndAddElement(owlClass);
+                    if (! standardLayoutForbiddenClassesListModel.getOwlObjects().contains(owlClass)){
+                        standardLayoutPermittedClassesListModel.checkAndAddElement(owlClass);
                     }
                 } else{
-                    if (! alternativeLayoutPermittedClassesListModel.getOwlObjects().contains(owlClass)){
-                        alternativeLayoutForbiddenClassesListModel.checkAndAddElement(owlClass);
+                    if (! standardLayoutPermittedClassesListModel.getOwlObjects().contains(owlClass)){
+                        standardLayoutForbiddenClassesListModel.checkAndAddElement(owlClass);
                     }
                 }
             } else if (entity instanceof OWLObjectProperty){
                 OWLObjectProperty property = (OWLObjectProperty) entity;
                 if (addToPermitted){
-                    if (! alternativeLayoutForbiddenPropertiesListModel.getOwlObjects().contains(property)){
-                        alternativeLayoutPermittedPropertiesListModel.checkAndAddElement(property);
+                    if (! standardLayoutForbiddenPropertiesListModel.getOwlObjects().contains(property)){
+                        standardLayoutPermittedPropertiesListModel.checkAndAddElement(property);
                     }
                 } else {
-                    if (! alternativeLayoutPermittedPropertiesListModel.getOwlObjects().contains(property)){
-                        alternativeLayoutForbiddenPropertiesListModel.checkAndAddElement(property);
+                    if (! standardLayoutPermittedPropertiesListModel.getOwlObjects().contains(property)){
+                        standardLayoutForbiddenPropertiesListModel.checkAndAddElement(property);
                     }
                 }
             } else if (entity instanceof OWLNamedIndividual){
                 OWLNamedIndividual individual = (OWLNamedIndividual) entity;
                 if (addToPermitted){
-                    if (! alternativeLayoutForbiddenIndividualsListModel.getOwlObjects().contains(individual)){
-                        alternativeLayoutPermittedIndividualsListModel.checkAndAddElement(individual);
+                    if (! standardLayoutForbiddenIndividualsListModel.getOwlObjects().contains(individual)){
+                        standardLayoutPermittedIndividualsListModel.checkAndAddElement(individual);
                     }
                 } else{
-                    if (! alternativeLayoutPermittedIndividualsListModel.getOwlObjects().contains(individual)){
-                        alternativeLayoutForbiddenIndividualsListModel.checkAndAddElement(individual);
+                    if (! standardLayoutPermittedIndividualsListModel.getOwlObjects().contains(individual)){
+                        standardLayoutForbiddenIndividualsListModel.checkAndAddElement(individual);
                     }
                 }
             }

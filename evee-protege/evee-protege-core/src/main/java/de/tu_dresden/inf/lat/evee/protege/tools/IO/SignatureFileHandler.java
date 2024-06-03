@@ -74,7 +74,7 @@ public class SignatureFileHandler {
                     try{
                         signatureEnum = SignatureEnum.valueOf(line);
                     } catch (IllegalArgumentException e){
-                        logger.debug("Last read line does not correspond to known delimiter, interpreting line as as IRI");
+                        logger.debug("Last read line does not correspond to known delimiter, interpreting line as IRI");
                         signatureEnum = SignatureEnum.DEFAULT;
                     }
                     switch (signatureEnum) {
