@@ -206,4 +206,9 @@ abstract public class AbstractCounterexampleGenerationService
     public boolean ignoresPartsOfOntology() {
         return false;
     }
+
+    @Override
+    public void repaintResultComponent() {
+
+    }
 }

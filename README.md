@@ -46,6 +46,7 @@ Some of the Evee plugins require the OWL Reasoner [HermiT](http://www.hermit-rea
 ### Requirements
 Evee requires the following software, which is included as a git-submodule:
 - The library [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools")
+- The library [LETHE-0.8](https://github.com/PKoopmann/LETHE-0.8.git "https://github.com/PKoopmann/LETHE-0.8.git")
 
 The Evee-Protégé plugins require the following other Protégé plugins:
 - The [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin
@@ -59,14 +60,14 @@ These plugins also need to be installed into Protégé in order to use the Evee 
 #### Getting the latest stable version of Evee
 1. If you have never downloaded this repository, use `git clone https://github.com/de-tu-dresden-inf-lat/evee --recurse-submodules`.
    If you have already cloned this repository in the past, use `git pull origin main` from the root directory.
-   These commands will create/update your local repository of Evee (including the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools")) to the latest commit.
+   These commands will create/update your local repository of Evee (including the submodules [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") and [LETHE-0.8](https://github.com/PKoopmann/LETHE-0.8.git "https://github.com/PKoopmann/LETHE-0.8.git")) to the latest commit.
 
-2. Currently, the latest stable version of Evee is tagged as `v0.2` (you can find previous stable versions by checking the *Releases* on GitHub).
-   To check out the commit of this version, use `git checkout tags/v0.2`.
+2. Currently, the latest stable version of Evee is tagged as `v0.3` (you can find previous stable versions by checking the *Releases* on GitHub).
+   To check out the commit of this version, use `git checkout tags/v0.3`.
    This command will set your local Evee-repository to the commit of this release.
-   However, this does **not** change the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit associated with the stable release.
+   However, this does **not** change the submodules [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") or [LETHE-0.8](https://github.com/PKoopmann/LETHE-0.8.git "https://github.com/PKoopmann/LETHE-0.8.git") to the commit associated with the stable release.
 
-3. Use `git submodule update` to set the submodule [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") to the commit specified in the stable release you have just checked out.
+3. Use `git submodule update` to set the submodules [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") and [LETHE-0.8](https://github.com/PKoopmann/LETHE-0.8.git "https://github.com/PKoopmann/LETHE-0.8.git") to the commit specified in the stable release you have just checked out.
 
 #### Compiling Evee with Maven
 
@@ -78,7 +79,7 @@ For easy compilation, we have created several Maven profiles:
 - complete: This will compile all submodules of Evee. Every library except for evee-elimination-proofs-fame and the Protégé plugins will be compiled in 2 versions, one using the OWL API version 4, the other using the OWL API version 5.
 
 The standard profile is "complete", which can be used via the command `mvn clean install` from the root directory.
-If you want to use any of the other profiles, use the command `mvn clean install -P !complete,profileName` instead, where *profileName* is one of the other 3 mentioned above.
+If you want to use any of the other profiles, use the command `mvn clean install -P profileName` instead, where *profileName* is one of the other 3 mentioned above.
 
 For easy reuse of Evee as a library, use [evee-libs-owlapi4](evee-libs/evee-libs-owlapi4/pom.xml) or [evee-libs-owlapi5](evee-libs/evee-libs-owlapi5/pom.xml) as a dependency, depending on the version of the OWL API that you need.
 These libraries contain all submodules of Evee except for the Evee Protégé plugins.
@@ -93,10 +94,10 @@ The Protégé plugins were developed for and tested with Protégé version 5.5.0
 
 On Windows, the Connection-Minimal Abduction solver was developed and tested with SPASS 3.5 for Windows.
 
-Evee internally relies on the libraries FamePlus, Lethe (consisting of lethe-core, lethe-owlapi4, lethe-owlapi5, lethe-abduction, lethe-abduction-owlapi4 and lethe-abduction-owlapi5) and CAPI.
+Evee internally relies on the libraries FamePlus, and CAPI.
 All these libraries have been pre-installed to a maven-repository in the directory [lib](lib).
 If you only want to use the Evee plugins for Protégé, no further steps are required.
-However, if you want to use Evee anywhere else (e.g. as part of your own project), Lethe, Fame and CAPI are required for some functionalities of Evee.
+However, if you want to use Evee anywhere else (e.g. as part of your own project), Fame and CAPI are required for some functionalities of Evee.
 In this case, please declare the directory [lib](lib) as a repository in your pom like this:
 
 ```xml

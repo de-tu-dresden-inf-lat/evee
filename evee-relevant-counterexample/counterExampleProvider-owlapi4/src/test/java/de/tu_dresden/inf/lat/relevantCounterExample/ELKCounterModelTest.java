@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
 
 public class ELKCounterModelTest {
 
-	private static final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	private static final OWLDataFactory factory = OWLManager.getOWLDataFactory();
 	private static final ToOWLTools oWLTools = ToOWLTools.getInstance();
 	private ELKModelGenerator model;
@@ -31,7 +30,7 @@ public class ELKCounterModelTest {
 	@Ignore("Raw canonical model is computed relatively fast, instantiating relations takes very long")
 	@Test
 	public void Test3() throws OWLOntologyCreationException {
-		ontology = manager.loadOntologyFromOntologyDocument(
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(
 				Objects.requireNonNull(ELKCounterModelTest.class.getClassLoader().getResourceAsStream("ontologies/full-galen.owl")));
 
 		OWLSubClassOfAxiom conclusion = oWLTools.getOWLSubClassOfAxiom(
@@ -52,7 +51,7 @@ public class ELKCounterModelTest {
 	@Test
 	public void Test2() throws OWLOntologyCreationException {
 
-		ontology = manager.loadOntologyFromOntologyDocument(
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(
 				Objects.requireNonNull(ELKCounterModelTest.class.getClassLoader().getResourceAsStream("ontologies/elkTest2.owl")));
 
 		OWLSubClassOfAxiom conclusion = oWLTools.getOWLSubClassOfAxiom(oWLTools.getOWLConceptName("http://test#B"),
@@ -71,7 +70,7 @@ public class ELKCounterModelTest {
 	@Test
 	public void Test1() throws OWLOntologyCreationException {
 
-		ontology = manager.loadOntologyFromOntologyDocument(
+		ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(
 				Objects.requireNonNull(ELKCounterModelTest.class.getClassLoader().getResourceAsStream("ontologies/elkTest.owl")));
 
 		OWLSubClassOfAxiom conclusion = oWLTools.getOWLSubClassOfAxiom(
@@ -90,7 +89,7 @@ public class ELKCounterModelTest {
 
 	@Test
 	public void test1() throws OWLOntologyCreationException, ModelGenerationException {
-		OWLOntology pizzaOntology = manager.loadOntologyFromOntologyDocument(
+		OWLOntology pizzaOntology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(
 				Objects.requireNonNull(RelevantCounterExampleGeneratorTest.class.getClassLoader().getResourceAsStream("ontologies/pizza.owl")));
 
 		OWLSubClassOfAxiom conclusion = factory.getOWLSubClassOfAxiom(

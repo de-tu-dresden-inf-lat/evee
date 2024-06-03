@@ -5,7 +5,7 @@ linux-build-job:
   script:
     - echo "Compiling EVEE"
     # first step always needs to be updating lat-scala-dl-tools submodule
-    - echo "Updating submodule lat-scala-dl-tools"
+    - echo "Updating submodules lat-scala-dl-tools and LETHE-0.8"
     - git submodule update --init --recursive
     - echo "Purging local mvn dependency to remove old versions of LETHE"
     - mvn dependency:purge-local-repository -DreResolve=false -DactTransitively=false

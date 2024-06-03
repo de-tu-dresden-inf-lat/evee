@@ -39,6 +39,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -267,6 +269,14 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 this.signatureAndMissingEntailmentComponent,
                 this.nonEntailmentExplanationServiceComponent);
+        this.horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+                propertyChangeEvent -> {
+                    if (nonEntailmentExplainerManager.getCurrentExplainer() != null &&
+                            nonEntailmentExplanationServiceComponent != null){
+                        logger.debug("Movement of horizontal divider detected");
+                        nonEntailmentExplainerManager.getCurrentExplainer().repaintResultComponent();
+                    }
+                });
         this.horizontalSplitPane.setDividerLocation(0.3);
     }
 
@@ -690,6 +700,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //        SwingUtilities.invokeLater(() -> {
         try{
             OWLAxiom axiomToAdd = this.missingEntailmentTextEditor.createObject();
+            this.missingEntailmentTextEditor.setText("");
             AtomicBoolean signatureContainedInOntology = new AtomicBoolean(true);
             OWLOntology activeOntology = this.getOWLModelManager().getActiveOntology();
             axiomToAdd.getSignature().forEach(entity -> {
@@ -715,7 +726,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         }
         finally {
             this.selectedMissingEntailmentList.clearSelection();
-            this.missingEntailmentTextEditor.setText("");
             this.checkComputeButtonAndWarningLabelStatus();
         }
 //        });

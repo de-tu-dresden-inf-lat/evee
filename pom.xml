@@ -71,6 +71,7 @@
             </activation>
             <modules>
                 <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
+                <module>LETHE-0.8</module>
                 <module>evee-data/evee-data-owlapi4</module>
                 <module>evee-elimination-proofs/evee-elimination-proofs-core-owlapi4</module>
                 <module>evee-elimination-proofs/evee-elimination-proofs-fame-owlapi4</module>
@@ -97,6 +98,7 @@
             </properties>
             <modules>
                 <module>lat-scala-dl-tools</module>
+                <module>LETHE-0.8</module>
                 <module>evee-data</module>
                 <module>evee-elimination-proofs</module>
                 <module>evee-lethe-proof-extractor</module>
@@ -114,6 +116,7 @@
             </activation>
             <modules>
                 <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
+                <module>LETHE-0.8</module>
                 <module>evee-data/evee-data-owlapi4</module>
                 <module>evee-elimination-proofs/evee-elimination-proofs-core-owlapi4</module>
                 <module>evee-elimination-proofs/evee-elimination-proofs-fame-owlapi4</module>
@@ -142,6 +145,7 @@
             </activation>
             <modules>
                 <module>lat-scala-dl-tools</module>
+                <module>LETHE-0.8</module>
                 <module>evee-data</module>
                 <module>evee-elimination-proofs</module>
                 <module>evee-lethe-proof-extractor</module>
