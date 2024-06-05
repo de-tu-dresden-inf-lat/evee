@@ -127,6 +127,7 @@
                 <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-small-model-generator/evee-small-model-generator-owlapi4</module>
                 <module>evee-protege</module>
+                <module>evee-protege-create-release</module>
             </modules>
         </profile>
         <profile>
@@ -136,6 +137,7 @@
             </activation>
             <modules>
                 <module>evee-protege</module>
+                <module>evee-protege-create-release</module>
             </modules>
         </profile>
         <profile>
@@ -153,6 +155,7 @@
                 <module>evee-relevant-counterexample</module>
                 <module>evee-small-model-generator</module>
                 <module>evee-protege</module>
+                <module>evee-protege-create-release</module>
                 <module>evee-libs</module>
             </modules>
         </profile>
