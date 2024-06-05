@@ -187,9 +187,6 @@ public class AbductionSolverResultManager implements
         OWLOntology ontology = this.currentOntology;
         Set<OWLAxiom> missingEntailment = new HashSet<>(this.currentMissingEntailment);
         this.resetResultComponent();
-        if (ontology == null){
-            this.logger.debug("TEST_MESSAGE: ontology is null!!!");
-        }
         this.createResultComponent(ontology, missingEntailment, hypotheses);
     }
 
