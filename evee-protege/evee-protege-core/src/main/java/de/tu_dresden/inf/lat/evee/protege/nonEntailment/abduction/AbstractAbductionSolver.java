@@ -211,6 +211,7 @@ abstract public class AbstractAbductionSolver<Result>
         this.lastUsedVocabulary = this.vocabulary;
         this.setActiveOntologyChanged(false);
 //        this.resetSavedCache();
+        this.resetResultComponent();
         this.resultStreamIterator = null;
         AbductionSolverThread thread = new AbductionSolverThread(
                 this, this);
@@ -241,6 +242,10 @@ abstract public class AbstractAbductionSolver<Result>
         this.logger.debug("Sending event of type {} to view component", type);
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this, type));
+    }
+
+    protected void resetResultComponent(){
+        this.resultManager.resetResultComponent();
     }
 
     protected boolean parametersChanged(){

@@ -526,6 +526,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JComboBox){
+            this.logger.debug("Selected <Missing Entailment Explanation Service> changed");
             JComboBox comboBox = (JComboBox) e.getSource();
             String serviceName = (String) comboBox.getSelectedItem();
             this.nonEntailmentExplainerManager.setExplanationService(serviceName);

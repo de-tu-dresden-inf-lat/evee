@@ -49,11 +49,17 @@ public class AbductionSolverResultManager implements
         this.singleResultPanelsList = new ArrayList<>();
         this.ontologyChangeListener = new OntologyChangeListener();
         this.hypothesesList = new ArrayList<>();
+        this.currentMissingEntailment = new HashSet<>();
     }
 
-    private void clearInternalLists(){
+    public void resetInternalVariables(){
+        for (SingleResultPanel resultPanel : this.singleResultPanelsList){
+            resultPanel.dispose();
+        }
         this.singleResultPanelsList.clear();
         this.hypothesesList.clear();
+        this.currentOntology = null;
+        this.currentMissingEntailment.clear();
     }
 
     public void setup(OWLEditorKit owlEditorKit){
@@ -71,10 +77,7 @@ public class AbductionSolverResultManager implements
         this.logger.debug("Disposing");
         this.owlEditorKit.getOWLModelManager().removeOntologyChangeListener(this.ontologyChangeListener);
         this.owlEditorKit.getOWLModelManager().removeListener(this.ontologyChangeListener);
-        for (SingleResultPanel resultPanel : this.singleResultPanelsList){
-            resultPanel.dispose();
-        }
-        this.clearInternalLists();
+        this.resetInternalVariables();
         this.logger.debug("Disposed");
     }
 
@@ -86,10 +89,7 @@ public class AbductionSolverResultManager implements
     public void resetResultComponent(){
         this.logger.debug("Resetting result component");
         this.hypothesisIndex = 0;
-        for (SingleResultPanel panel : this.singleResultPanelsList){
-            panel.dispose();
-        }
-        this.clearInternalLists();
+        this.resetInternalVariables();
         this.resultHolderPanel = new JPanel(new BorderLayout());
         this.resultScrollingPanel = new JPanel();
         this.resultScrollingPanel.setLayout(new BoxLayout(this.resultScrollingPanel, BoxLayout.PAGE_AXIS));
@@ -106,16 +106,6 @@ public class AbductionSolverResultManager implements
     protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
                                          List<Set<OWLAxiom>> hypotheses){
         this.logger.debug("Creating result component");
-        List<Set<OWLAxiom>> completeHypothesesList = new ArrayList<>(this.hypothesesList);
-        completeHypothesesList.addAll(hypotheses);
-        this.currentOntology = ontology;
-        this.currentMissingEntailment = missingEntailment;
-        this.resetResultComponent();
-        this.drawResultComponent(this.currentOntology, this.currentMissingEntailment, completeHypothesesList);
-    }
-
-    protected void drawResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
-                                       List<Set<OWLAxiom>> hypotheses){
         hypotheses.forEach(result -> {
             SingleResultPanel singleResultPanel = new SingleResultPanel(
                     this.owlEditorKit, ontology,
@@ -127,11 +117,6 @@ public class AbductionSolverResultManager implements
             this.resultScrollingPanel.add(singleResultPanel);
             this.hypothesisIndex++;
         });
-//        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
-////            width *0.3 is default divider location for split pane in the main view
-//        this.resultHolderPanel.setPreferredSize(new Dimension(
-//                (int) (screenWidth * 0.3),
-//                this.resultHolderPanel.getHeight()));
         UIUtilities.revalidateAndRepaintComponent(this.resultHolderPanel);
     }
 
@@ -199,8 +184,13 @@ public class AbductionSolverResultManager implements
     public void repaintResultComponent(){
         this.logger.debug("Repainting result component");
         List<Set<OWLAxiom>> hypotheses = new ArrayList<>(this.hypothesesList);
+        OWLOntology ontology = this.currentOntology;
+        Set<OWLAxiom> missingEntailment = new HashSet<>(this.currentMissingEntailment);
         this.resetResultComponent();
-        this.createResultComponent(this.currentOntology, this.currentMissingEntailment, hypotheses);
+        if (ontology == null){
+            this.logger.debug("TEST_MESSAGE: ontology is null!!!");
+        }
+        this.createResultComponent(ontology, missingEntailment, hypotheses);
     }
 
 }
