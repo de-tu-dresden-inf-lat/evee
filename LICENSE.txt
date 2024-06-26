@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2022 Christian Alrabbaa, Stefan Borgwardt, Tom Friese, Patrick Koopmann, Alexej Popovič
+Copyright (c) 2024 Christian Alrabbaa, Stefan Borgwardt, Tom Friese, Patrick Koopmann, Mikhail Kotlov, Alexej Popovič
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

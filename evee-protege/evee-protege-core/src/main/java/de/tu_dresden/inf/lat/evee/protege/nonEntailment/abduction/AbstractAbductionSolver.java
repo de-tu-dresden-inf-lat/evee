@@ -5,11 +5,9 @@ import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverOntologyChangeEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.abduction.IAbductionSolverSingleResultPanelEventListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
@@ -211,7 +209,7 @@ abstract public class AbstractAbductionSolver<Result>
         this.lastUsedVocabulary = this.vocabulary;
         this.setActiveOntologyChanged(false);
 //        this.resetSavedCache();
-        this.resetResultComponent();
+        this.resultManager.resetResultComponent();
         this.resultStreamIterator = null;
         AbductionSolverThread thread = new AbductionSolverThread(
                 this, this);
@@ -242,10 +240,6 @@ abstract public class AbstractAbductionSolver<Result>
         this.logger.debug("Sending event of type {} to view component", type);
         this.viewComponentListener.handleEvent(new ExplanationEvent<>(
                 this, type));
-    }
-
-    protected void resetResultComponent(){
-        this.resultManager.resetResultComponent();
     }
 
     protected boolean parametersChanged(){
@@ -297,16 +291,29 @@ abstract public class AbstractAbductionSolver<Result>
 
     public void handleEvent(AbductionSolverOntologyChangeEvent event){
         switch (event.getType()){
-            case ONTOLOGY_EDITED:
-                this.ontologyEdited();
+            case ONTOLOGY_EDITED_EXTERNALLY:
+                this.ontologyEditedExternally();
+                break;
+            case ONTOLOGY_EDITED_INTERNALLY:
+                this.ontologyEditedInternally();
                 break;
             case ACTIVE_ONTOLOGY_CHANGED:
                 this.activeOntologyChanged();
                 break;
+            case VIEW_COMPONENT_IGNORE_CHANGE:
+                this.viewComponentListener.handleEvent(new ExplanationEvent<>(
+                        this, ExplanationEventType.IGNORE_ONTOLOGY_CHANGE));
+                break;
         }
     }
 
-    private void ontologyEdited(){
+    private void ontologyEditedInternally(){
+        this.setActiveOntologyEditedExternally(false);
+        this.setActiveOntologyEditedInternally(true);
+        this.resetCache();
+    }
+
+    private void ontologyEditedExternally(){
         this.setActiveOntologyEditedExternally(true);
         this.setActiveOntologyEditedInternally(false);
 //        this.resetSavedCache();

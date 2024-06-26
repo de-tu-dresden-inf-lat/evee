@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
 
+import java.util.Collections;
 import java.util.HashSet;
 
 public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
@@ -42,7 +43,7 @@ public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSub
                 //ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps,
-                JavaConverters.asScalaSet(new HashSet<>()));
+                JavaConverters.asScalaSet(Collections.EMPTY_SET));
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
         this.logger.debug("Long parameter timeOut set to " + timeOut);
         this.skipStepsTimeStamp = this.proofPreferencesManager.getSkipStepsTimeStamp();

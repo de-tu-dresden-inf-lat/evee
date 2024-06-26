@@ -14,6 +14,8 @@ public enum ExplanationEventType {
 
     WARNING,
 
-    SHOW_LOADING_SCREEN
+    SHOW_LOADING_SCREEN,
+
+    IGNORE_ONTOLOGY_CHANGE
 
 }

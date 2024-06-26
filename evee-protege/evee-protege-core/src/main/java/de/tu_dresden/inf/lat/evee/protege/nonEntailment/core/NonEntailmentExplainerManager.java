@@ -34,6 +34,10 @@ public class NonEntailmentExplainerManager {
         }
     }
 
+    protected boolean isCurrentExplanationService(String serviceName){
+        return this.serviceMap.get(serviceName) == this.currentNonEntailmentExplanationService;
+    }
+
 //    @Override
 //    public void actionPerformed(ActionEvent e) {
 //        if (e.getSource() instanceof JComboBox){

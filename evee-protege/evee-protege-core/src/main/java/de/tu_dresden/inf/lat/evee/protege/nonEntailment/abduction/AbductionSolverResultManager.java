@@ -30,7 +30,6 @@ public class AbductionSolverResultManager implements
 
     private OWLEditorKit owlEditorKit;
     private JPanel resultHolderPanel = null;
-    private JPanel resultScrollingPanel = null;
     private boolean ignoreOntologyChangeEvent = false;
     private ISignatureModificationEventListener signatureModificationEventListener;
     private int hypothesisIndex;
@@ -88,13 +87,8 @@ public class AbductionSolverResultManager implements
 
     public void resetResultComponent(){
         this.logger.debug("Resetting result component");
-        this.hypothesisIndex = 0;
         this.resetInternalVariables();
         this.resultHolderPanel = new JPanel(new BorderLayout());
-        this.resultScrollingPanel = new JPanel();
-        this.resultScrollingPanel.setLayout(new BoxLayout(this.resultScrollingPanel, BoxLayout.PAGE_AXIS));
-        JScrollPane resultScrollPane = ComponentFactory.createScrollPane(this.resultScrollingPanel);
-        this.resultHolderPanel.add(resultScrollPane, BorderLayout.CENTER);
         this.resultHolderPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
                         BorderFactory.createEmptyBorder(5, 5, 5, 5),
@@ -104,26 +98,55 @@ public class AbductionSolverResultManager implements
     }
 
     protected void createResultComponent(OWLOntology ontology, Set<OWLAxiom> missingEntailment,
-                                         List<Set<OWLAxiom>> hypotheses){
+                                         List<Set<OWLAxiom>> newHypotheses){
         this.logger.debug("Creating result component");
-        hypotheses.forEach(result -> {
+        JPanel resultScrollingPanel = new JPanel();
+        resultScrollingPanel.setLayout(new BoxLayout(resultScrollingPanel, BoxLayout.PAGE_AXIS));
+        this.hypothesesList.addAll(newHypotheses);
+        this.hypothesisIndex = 0;
+        for (SingleResultPanel panel : this.singleResultPanelsList){
+            panel.dispose();
+        }
+        this.hypothesesList.forEach(result -> {
             SingleResultPanel singleResultPanel = new SingleResultPanel(
                     this.owlEditorKit, ontology,
                     missingEntailment, result, hypothesisIndex);
             singleResultPanel.registerSignatureModificationEventListener(this);
             singleResultPanel.registerSingleResultPanelEventListener(this);
             this.singleResultPanelsList.add(singleResultPanel);
-            this.hypothesesList.add(result);
-            this.resultScrollingPanel.add(singleResultPanel);
+            resultScrollingPanel.add(singleResultPanel);
             this.hypothesisIndex++;
         });
-        UIUtilities.revalidateAndRepaintComponent(this.resultHolderPanel);
+        this.resultHolderPanel.removeAll();
+        this.resultHolderPanel.add(ComponentFactory.createScrollPane(resultScrollingPanel), BorderLayout.CENTER);
+        UIUtilities.revalidateAndRepaintComponent(resultScrollingPanel);
+    }
+
+    public void repaintResultComponent(){
+        this.logger.debug("Repainting result component");
+        List<Set<OWLAxiom>> hypotheses = new ArrayList<>(this.hypothesesList);
+        OWLOntology ontology = this.currentOntology;
+        Set<OWLAxiom> missingEntailment = new HashSet<>(this.currentMissingEntailment);
+        this.resetResultComponent();
+        this.createResultComponent(ontology, missingEntailment, hypotheses);
     }
 
 //    methods related to SingleResultPanelEvents
     @Override
     public void handleEvent(AbductionSolverSingleResultPanelEvent event) {
-        this.ignoreOntologyChangeEvent = true;
+        if (event.getType().equals(SingleResultPanelEventType.EXPLAIN) ||
+                event.getType().equals(SingleResultPanelEventType.ADD) ||
+                event.getType().equals(SingleResultPanelEventType.EXPLANATION_DIALOG_CLOSED)){
+            this.ignoreOntologyChangeEvent = true;
+        }
+        if (event.getType().equals(SingleResultPanelEventType.ADD)){
+            this.abductionSolverOntologyChangeEventListener.handleEvent(
+                    new AbductionSolverOntologyChangeEvent(OntologyChangeEventType.ONTOLOGY_EDITED_INTERNALLY));
+        } else if (event.getType().equals(SingleResultPanelEventType.EXPLAIN) ||
+                event.getType().equals(SingleResultPanelEventType.EXPLANATION_DIALOG_CLOSED)){
+            this.abductionSolverOntologyChangeEventListener.handleEvent(
+                    new AbductionSolverOntologyChangeEvent(OntologyChangeEventType.VIEW_COMPONENT_IGNORE_CHANGE));
+        }
     }
 
 //    SignatureModificationEvent
@@ -161,7 +184,7 @@ public class AbductionSolverResultManager implements
                         resetResultComponent();
                         abductionSolverOntologyChangeEventListener.handleEvent(
                                 new AbductionSolverOntologyChangeEvent(
-                                        OntologyChangeEventType.ONTOLOGY_EDITED));
+                                        OntologyChangeEventType.ONTOLOGY_EDITED_EXTERNALLY));
                         break;
                     }
                 }
@@ -179,15 +202,6 @@ public class AbductionSolverResultManager implements
                                 OntologyChangeEventType.ACTIVE_ONTOLOGY_CHANGED));
             }
         }
-    }
-
-    public void repaintResultComponent(){
-        this.logger.debug("Repainting result component");
-        List<Set<OWLAxiom>> hypotheses = new ArrayList<>(this.hypothesesList);
-        OWLOntology ontology = this.currentOntology;
-        Set<OWLAxiom> missingEntailment = new HashSet<>(this.currentMissingEntailment);
-        this.resetResultComponent();
-        this.createResultComponent(ontology, missingEntailment, hypotheses);
     }
 
 }
