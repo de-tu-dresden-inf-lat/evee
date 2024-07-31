@@ -57,7 +57,7 @@
                   <artifactId>model-datastructures-owlapi4</artifactId>
                   <version>${project.version}</version>
                   <classifier>sources</classifier>
-                  <overWrite>false</overWrite>
+                  <overWrite>true</overWrite>
                   <outputDirectory>${project.basedir}/target/src/main/java</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -65,7 +65,7 @@
                   <artifactId>model-datastructures-owlapi4</artifactId>
                   <version>${project.version}</version>
                   <classifier>test-sources</classifier>
-                  <overWrite>false</overWrite>
+                  <overWrite>true</overWrite>
                   <outputDirectory>${project.basedir}/target/src/test/java</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -73,7 +73,7 @@
                   <artifactId>model-datastructures-owlapi4</artifactId>
                   <version>${project.version}</version>
                   <classifier>main-resources</classifier>
-                  <overWrite>false</overWrite>
+                  <overWrite>true</overWrite>
                   <outputDirectory>${project.basedir}/target/src/main/resources</outputDirectory>
                 </artifactItem>
               </artifactItems>

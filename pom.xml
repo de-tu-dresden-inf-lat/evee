@@ -16,12 +16,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <skipCompilation>false</skipCompilation>
         <revision>0.3</revision>
         <LatScalaDlTools.Version>0.4.1-SNAPSHOT</LatScalaDlTools.Version>
         <LETHE.Version>0.8-SNAPSHOT</LETHE.Version>
+        <skipCompilation>false</skipCompilation>
+        <skipTests>true</skipTests>
     </properties>
 
     <build>
@@ -127,7 +129,7 @@
                 <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-small-model-generator/evee-small-model-generator-owlapi4</module>
                 <module>evee-protege</module>
-                <module>evee-protege-create-release</module>
+                <module>evee-protege-release</module>
             </modules>
         </profile>
         <profile>
@@ -137,7 +139,7 @@
             </activation>
             <modules>
                 <module>evee-protege</module>
-                <module>evee-protege-create-release</module>
+                <module>evee-protege-release</module>
             </modules>
         </profile>
         <profile>
@@ -155,7 +157,7 @@
                 <module>evee-relevant-counterexample</module>
                 <module>evee-small-model-generator</module>
                 <module>evee-protege</module>
-                <module>evee-protege-create-release</module>
+                <module>evee-protege-release</module>
                 <module>evee-libs</module>
             </modules>
         </profile>
