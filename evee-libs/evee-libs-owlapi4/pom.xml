@@ -19,6 +19,11 @@
             <version>${LatScalaDlTools.Version}</version>
         </dependency>
         <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lethe-owlapi4_2.12</artifactId>
+            <version>${LETHE.Version}</version>
+        </dependency>
+        <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
