@@ -14,10 +14,6 @@
     <artifactId>evee-data</artifactId>
     <packaging>pom</packaging>
 
-    <properties>
-        <scala.version>2.12.17</scala.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.scala-lang</groupId>

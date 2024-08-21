@@ -13,10 +13,6 @@
     <artifactId>evee-elimination-proofs_2.12</artifactId>
     <packaging>pom</packaging>
 
-    <properties>
-        <scala.version>2.12.6</scala.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.scalatest</groupId>
