@@ -2,6 +2,8 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.INonEntailmentExplainer;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -17,7 +19,7 @@ public class AbductionSolverThread extends Thread implements IExplanationGenerat
             ExplanationEvent<
                     IExplanationGenerator<
                             Stream<Set<OWLAxiom>>>>> abstractAbductionSolverListener;
-    private final AbstractAbductionSolver<?> abductionSolver;
+    private final IOWLAbductionSolver internalSolver;
     private Stream<Set<OWLAxiom>> resultStream;
     private final Logger logger = LoggerFactory.getLogger(AbductionSolverThread.class);
 
@@ -25,10 +27,10 @@ public class AbductionSolverThread extends Thread implements IExplanationGenerat
             ExplanationEvent<
                     IExplanationGenerator<
                             Stream<Set<OWLAxiom>>>>> abstractAbductionSolverListener,
-                                 AbstractAbductionSolver<?> abductionSolver){
+                                 IOWLAbductionSolver internalSolver){
         super.setName("Evee Abduction Generation Thread");
         this.abstractAbductionSolverListener = abstractAbductionSolverListener;
-        this.abductionSolver = abductionSolver;
+        this.internalSolver = internalSolver;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class AbductionSolverThread extends Thread implements IExplanationGenerat
 
     public void run(){
         this.logger.debug("Running thread");
-        this.resultStream = abductionSolver.generateExplanations();
+        this.resultStream = internalSolver.generateExplanations();
         this.abstractAbductionSolverListener.handleEvent(
                 new ExplanationEvent<>(this,
                         ExplanationEventType.COMPUTATION_COMPLETE)

@@ -53,7 +53,7 @@ abstract public class AbstractCounterexampleGenerationService
         this.errorMessage = "";
         this.supportsExplanationMessage = "Please enter some observation containing a single OWLSubClassOfAxiom";
         this.man = OWLManager.createOWLOntologyManager();
-        this.preferencesManager.registerPreferencesChangeListener(this);
+        this.preferencesManager.registerPreferencesChangeEventListener(this);
         this.simpleMode = preferencesManager.loadUseSimpleMode();
     }
 
@@ -112,10 +112,7 @@ abstract public class AbstractCounterexampleGenerationService
     public void registerListener(IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
         this.viewComponentListener = listener;
     }
-    @Override
-    public Component getSettingsComponent() {
-        return null;
-    }
+
     @Override
     public Stream<Set<OWLIndividualAxiom>> generateExplanations() {
 
