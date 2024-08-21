@@ -24,11 +24,6 @@ public interface INonEntailmentExplanationService<T extends OWLAxiom> extends
      */
     void computeExplanation();
 
-    /**
-     * @return Either null or a component that contains all necessary settings for the service.
-     */
-    Component getSettingsComponent();
-
     void registerListener(IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener);
 
     /**
