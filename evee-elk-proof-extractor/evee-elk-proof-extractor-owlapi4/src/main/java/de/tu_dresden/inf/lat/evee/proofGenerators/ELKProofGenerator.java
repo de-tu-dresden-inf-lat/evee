@@ -151,7 +151,7 @@ public class ELKProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>
 
 		IProof<OWLAxiom> derivationStructure = getProof(axiom);
 
-		if (type == ProofType.TreeUnravellingOFMinimalSizeGraph)
+		if (type == ProofType.TreeUnravellingOfMinimalSizeGraph)
 			return TreeProofGenerator.getTreeUnravelOfMinHypProof(derivationStructure);
 
 		//
