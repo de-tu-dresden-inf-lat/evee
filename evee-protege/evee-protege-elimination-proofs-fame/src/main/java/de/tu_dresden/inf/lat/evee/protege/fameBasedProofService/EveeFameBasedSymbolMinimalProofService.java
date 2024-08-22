@@ -6,13 +6,13 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSub
 
 public class EveeFameBasedSymbolMinimalProofService extends AbstractEveeProofService {
 
-    private static final String identifier = EveeFameBasedEliminationProofPreferencesManager.SYMBOL_MINIMAL;
-
     public EveeFameBasedSymbolMinimalProofService(){
         super(new EveeFameBasedSymbolMinimalDynamicProofAdapter(
                 new FameBasedSymbolMinimalProofGenerator(),
-                new EveeFameBasedEliminationProofPreferencesManager(identifier),
-                new EveeDynamicSuboptimalProofLoadingUI(identifier)));
+                new EveeFameBasedEliminationProofPreferencesManager(
+                        EveeFameBasedEliminationProofPreferencesManager.PROOF_SERVICE_ID3),
+                new EveeDynamicSuboptimalProofLoadingUI(
+                        EveeFameBasedEliminationProofPreferencesManager.PROOF_SERVICE_NAME3)));
     }
 
 }

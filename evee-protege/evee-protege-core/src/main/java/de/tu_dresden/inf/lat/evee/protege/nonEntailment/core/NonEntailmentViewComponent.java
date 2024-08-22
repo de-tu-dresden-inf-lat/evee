@@ -39,8 +39,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -51,7 +49,6 @@ import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 
 import static java.lang.Math.ceil;
 import static java.util.Collections.max;
-import static java.util.Collections.min;
 import static org.junit.Assert.assertNotNull;
 
 public class NonEntailmentViewComponent extends AbstractOWLViewComponent
@@ -120,7 +117,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     public NonEntailmentViewComponent(){
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
         this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
-        this.preferencesManager.registerPreferencesChangeListener(this);
+        this.preferencesManager.registerPreferencesChangeEventListener(this);
         this.changeListener = new ViewComponentOntologyChangeListener();
         this.loadingUI = new NonEntailmentExplanationLoadingScreenManager(DEFAULT_UI_TITLE);
         this.loadingUI.registerLoadingUIListener(this);
@@ -249,17 +246,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             if (explainer != null){
                 this.logger.debug("Explainer available");
-                if (explainer.getSettingsComponent() != null){
-                    this.logger.debug("Adding settings to explanationServiceComponent");
-                    JSplitPane serviceSettingsAndResultSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                            explainer.getSettingsComponent(), this.resultHolderComponent);
-                    serviceSettingsAndResultSplitPane.setDividerLocation(0.3);
-                    this.nonEntailmentExplanationServiceComponent.add(serviceSettingsAndResultSplitPane);
-                }
-                else {
-                    this.logger.debug("No settings available");
-                    this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
-                }
+                this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
             }
             else {
                 this.logger.debug("No explainer available");
@@ -341,7 +328,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     private void resetResultComponent(){
         JComponent oldExplanationServiceComponent = this.nonEntailmentExplanationServiceComponent;
-        resetExplanationServiceComponent();
+        this.resetExplanationServiceComponent();
         JComponent newExplanationServiceComponent = this.nonEntailmentExplanationServiceComponent;
         this.horizontalSplitPane.remove(oldExplanationServiceComponent);
         this.horizontalSplitPane.add(newExplanationServiceComponent);
@@ -621,7 +608,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                         this.filterWarningLabel.setText("");
                         SwingUtilities.invokeLater(() -> {
                             this.loadingUI.resetLoadingUI();
-                            this.loadingUI.activeLoadingUI();
+                            this.loadingUI.activateLoadingUI();
                         });
                         this.logger.debug("loading UI is activated");
                         INonEntailmentExplanationService<?> explainer =
@@ -688,7 +675,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.filterWarningLabel.setText("");
         SwingUtilities.invokeLater(() -> {
             this.loadingUI.resetLoadingUI();
-            this.loadingUI.activeLoadingUI();
+            this.loadingUI.activateLoadingUI();
         });
         this.logger.debug("loading UI is activated");
         INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
@@ -899,13 +886,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             if (changeEvent.isType(EventType.ACTIVE_ONTOLOGY_CHANGED) ||
                     changeEvent.isType(EventType.ONTOLOGY_RELOADED)) {
                 logger.debug("Change or reload of active ontology detected");
-                if (ignoreOntologyChangeEvent){
-                    logger.debug("Change/reload ignored due to previous IGNORE_ONTOLOGY_CHANGE-event");
-                    ignoreOntologyChangeEvent = false;
-                } else {
-                    selectedMissingEntailmentListModel.removeAll();
-                    change();
-                }
+                selectedMissingEntailmentListModel.removeAll();
+                change();
             }
         }
 
@@ -937,7 +919,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         private void change(){
             INonEntailmentExplanationService<?> explainer = nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(getOWLModelManager().getActiveOntology());
-//            resetResultComponent();
+            resetResultComponent();
 //            resetExplanationServiceComponent();
 //            resetHorizontalSplitPane();
 //            resetHolderPanel();

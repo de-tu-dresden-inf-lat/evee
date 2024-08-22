@@ -39,9 +39,7 @@ public class OWLOntologyFilterTool {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         OWLOntology filteredOntology = null;
         try {
-            logger.debug("try-statement entered");
             OWLOntology temporaryOntology = manager.createOntology();
-            logger.debug("temporaryOntology created");
             this.ontology.getAxioms().forEach(axiom -> {
                 ;
                 if ( (axiom.isOfType(this.filter.getSupportedFromABoxTBoxRBox()) &&

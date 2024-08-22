@@ -5,12 +5,12 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSub
 
 public class EveeLetheBasedHeuristicProofService extends AbstractEveeProofService {
 
-    private static final String identifier = EveeLetheBasedEliminationProofPreferencesManager.HEURISTIC;
-
     public EveeLetheBasedHeuristicProofService(){
         super(new EveeLetheBasedForgettingDynamicProofAdapter(
-                new EveeLetheBasedEliminationProofPreferencesManager(identifier),
-                new EveeDynamicSuboptimalProofLoadingUI(identifier)));
+                new EveeLetheBasedEliminationProofPreferencesManager(
+                        EveeLetheBasedEliminationProofPreferencesManager.PROOF_SERVICE_ID1),
+                new EveeDynamicSuboptimalProofLoadingUI(
+                        EveeLetheBasedEliminationProofPreferencesManager.PROOF_SERVICE_NAME1)));
     }
 
 }

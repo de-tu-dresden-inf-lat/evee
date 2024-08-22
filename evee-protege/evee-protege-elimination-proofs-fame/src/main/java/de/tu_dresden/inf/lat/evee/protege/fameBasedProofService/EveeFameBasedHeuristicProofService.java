@@ -6,13 +6,13 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSub
 
 public class EveeFameBasedHeuristicProofService extends AbstractEveeProofService {
 
-    private static final String identifier = EveeFameBasedEliminationProofPreferencesManager.HEURISTIC;
-
     public EveeFameBasedHeuristicProofService(){
         super(new EveeFameBasedForgettingDynamicProofAdapter(
                 new FameBasedHeuristicProofGenerator(),
-                new EveeFameBasedEliminationProofPreferencesManager(identifier),
-                new EveeDynamicSuboptimalProofLoadingUI(identifier)));
+                new EveeFameBasedEliminationProofPreferencesManager(
+                        EveeFameBasedEliminationProofPreferencesManager.PROOF_SERVICE_ID1),
+                new EveeDynamicSuboptimalProofLoadingUI(
+                        EveeFameBasedEliminationProofPreferencesManager.PROOF_SERVICE_NAME1)));
     }
 
 }

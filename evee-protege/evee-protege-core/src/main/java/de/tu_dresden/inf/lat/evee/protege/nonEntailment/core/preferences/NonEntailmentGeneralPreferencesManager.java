@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences;
 
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.VocabularyTab;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeEventGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-public class NonEntailmentGeneralPreferencesManager {
+public class NonEntailmentGeneralPreferencesManager implements IPreferencesChangeEventGenerator {
 
     private static final String SET_ID = "EVEE_NON_ENTAILMENT_PREFERENCES";
     private static final String PREFERENCE_ID = "GENERAL";
@@ -31,12 +32,9 @@ public class NonEntailmentGeneralPreferencesManager {
     public NonEntailmentGeneralPreferencesManager(){
     }
 
-    public void registerPreferencesChangeListener(IPreferencesChangeListener changeListener){
+    @Override
+    public void registerPreferencesChangeEventListener(IPreferencesChangeListener changeListener){
         changeListeners.add(changeListener);
-    }
-
-    public void removePreferenceChangeListener(IPreferencesChangeListener changeListener){
-        changeListeners.remove(changeListener);
     }
 
     private Preferences getProtegePreferences(){

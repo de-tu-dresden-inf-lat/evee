@@ -1,11 +1,9 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExplanationService;
 
-import com.kitfox.svg.A;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionCache;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
-import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
@@ -43,8 +41,6 @@ public class LetheAbductionSolver
     private TimerThread timerThread;
     private final Map<OWLOntology, AbductionCache<AtomicBoolean>> cachedFilterWarnings;
     private boolean filtered;
-    private AbductionCache<AtomicBoolean> savedFilterCache = null;
-    private OWLEditorKit owlEditorKit;
     private static final String TIMER_ELAPSED_MESSAGE =
             "The computation is taking some time. Consider changing the forbidden vocabulary to reduce wait time.";
     private String errorMessage;
@@ -67,12 +63,6 @@ public class LetheAbductionSolver
         this.cachedFilterWarnings = new HashMap<>();
         this.filtered = false;
         this.logger.debug("LetheAbductionSolver created successfully");
-    }
-
-    @Override
-    public void setup(OWLEditorKit editorKit){
-        super.setup(editorKit);
-        this.owlEditorKit = editorKit;
     }
 
     @Override
@@ -270,39 +260,10 @@ public class LetheAbductionSolver
         }
     }
 
-//    @Override
-//    protected void saveCache(){
-//        super.saveCache();
-//        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-//        this.logger.debug("Saving cached filter warning for ontology " + ontology.getOntologyID().
-//                getOntologyIRI().or(IRI.create("")));
-//        this.savedFilterCache = this.cachedFilterWarnings.get(ontology);
-//    }
-
-//    @Override
-//    protected void reinstateCache(){
-//        super.reinstateCache();
-//        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-//        this.logger.debug("Reinstating cached filter warning for ontology " + ontology.getOntologyID().
-//                getOntologyIRI().or(IRI.create("")));
-//        this.cachedFilterWarnings.put(ontology, this.savedFilterCache);
-//    }
-
-//    @Override
-//    protected void resetSavedCache(){
-//        super.resetSavedCache();
-//        this.logger.debug("Saved filter cache reset");
-//        this.savedFilterCache = null;
-//    }
-
-//    @Override
-//    protected void resetCache(){
-//        super.resetCache();
-//        OWLOntology ontology = this.owlEditorKit.getOWLModelManager().getActiveOntology();
-//        this.logger.debug("Resetting cached filter warning for ontology " + ontology.getOntologyID()
-//                .getOntologyIRI().or(IRI.create("")));
-//        this.cachedFilterWarnings.put(ontology, new AbductionCache<>());
-//    }
+    @Override
+    public IOWLAbductionSolver getInternalSolver() {
+        return this;
+    }
 
     @Override
     public List<Set<OWLAxiom>> createHypothesesListFromStream(){

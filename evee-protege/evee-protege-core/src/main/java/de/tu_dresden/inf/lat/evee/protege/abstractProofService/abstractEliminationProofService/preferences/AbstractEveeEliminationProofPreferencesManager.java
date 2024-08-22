@@ -87,7 +87,4 @@ public abstract class AbstractEveeEliminationProofPreferencesManager extends Abs
         return this.skipStepsDefaultPreference.getUiToolTip();
     }
 
-    @Override
-    abstract protected void createIdentifierSet();
-
 }
