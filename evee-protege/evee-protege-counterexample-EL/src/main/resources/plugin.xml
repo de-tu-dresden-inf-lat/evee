@@ -2,13 +2,13 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.EL.ELCounterexampleGenerationServiceSmallModel"
+    <extension id="ELCounterexampleGenerationServiceSmallModel"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
         <name value="Small Counterexample"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.EL.ELCounterexampleGenerationServiceSmallModel"/>
     </extension>
 
-    <extension id="de.tu_dresden.inf.lat.evee.protege.counterexample.EL.ELCounterexampleGenerationServiceTreeModel"
+    <extension id="ELCounterexampleGenerationServiceTreeModel"
                point="de.tu_dresden.inf.lat.evee.nonEntailment_explanation_service">
         <name value="Tree-shaped Counterexample"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.counterexample.EL.ELCounterexampleGenerationServiceTreeModel"/>
