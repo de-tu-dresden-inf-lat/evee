@@ -3,6 +3,10 @@ package de.tu_dresden.inf.lat.evee.concreteDomains
 import org.semanticweb.owlapi.model.OWLDataProperty
 import org.apache.commons.math3.fraction.BigFraction
 
+/**
+ * This is another concrete domain in which every constraint is a linear constraint
+ */
+
 case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDConstraint {
   override def toString() = {
     val l = lhs.keys.toList.sortWith(_.toString < _.toString).map{key => format(key, lhs(key))}
