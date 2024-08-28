@@ -162,6 +162,19 @@
                 <module>evee-libs</module>
             </modules>
         </profile>
+        <profile>
+            <id>elExplicator</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
+                <module>evee-data/evee-data-owlapi4</module>
+                <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
+                <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
+                <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
+            </modules>
+        </profile>
     </profiles>
 
 
