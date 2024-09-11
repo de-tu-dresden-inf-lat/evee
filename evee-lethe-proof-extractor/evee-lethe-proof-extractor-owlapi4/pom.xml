@@ -40,11 +40,11 @@
             <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>
-            <version>${LatScalaDlTools.Version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>de.tu-dresden.inf.lat</groupId>-->
+<!--            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>-->
+<!--            <version>${LatScalaDlTools.Version}</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
