@@ -44,17 +44,17 @@
             <version>0.1.0</version>
         </dependency>
         <!--		de.tu-dresden.inf.lat-->
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-data-owlapi4</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>de.tu-dresden.inf.lat.evee</groupId>-->
+<!--            <artifactId>evee-data-owlapi4</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>com.google.guava</groupId>-->
+<!--                    <artifactId>guava</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>

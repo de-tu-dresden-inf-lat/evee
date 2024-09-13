@@ -29,6 +29,7 @@ import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserImpl;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ParserException;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -703,7 +704,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             AtomicBoolean signatureContainedInOntology = new AtomicBoolean(true);
             OWLOntology activeOntology = this.getOWLModelManager().getActiveOntology();
             axiomToAdd.getSignature().forEach(entity -> {
-                if (! activeOntology.getSignature().contains(entity)){
+                if (! activeOntology.getSignature(Imports.INCLUDED).contains(entity)){
                     signatureContainedInOntology.set(false);
                 }
             });

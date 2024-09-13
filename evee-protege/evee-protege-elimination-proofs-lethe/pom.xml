@@ -18,16 +18,16 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>
-            <version>${LatScalaDlTools.Version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>de.tu-dresden.inf.lat</groupId>-->
+<!--            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>-->
+<!--            <version>${LatScalaDlTools.Version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>de.tu-dresden.inf.lat.evee</groupId>-->
+<!--            <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-api</artifactId>

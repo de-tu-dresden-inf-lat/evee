@@ -36,11 +36,11 @@
             <version>1.7.30</version>
         </dependency>
         <!--        evee-related-->
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-data-owlapi4</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>de.tu-dresden.inf.lat.evee</groupId>-->
+<!--            <artifactId>evee-data-owlapi4</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>
