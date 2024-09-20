@@ -16,11 +16,11 @@ trait CDMultUnaryPredicate extends CDMultPredicate
 
 
 /**
- * property > bound
+ * property < bound
  */
-case class CDMultGreaterThan(property: OWLDataProperty, bound: BigFraction)
+case class CDMultLessThan(property: OWLDataProperty, bound: BigFraction)
   extends CDMultUnaryPredicate {
-  override def toString() = property + " > " + bound.doubleValue()
+  override def toString() = property + " < " + bound.doubleValue()
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
