@@ -5,12 +5,12 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSub
 
 public class EveeLetheBasedSizeMinimalProofService extends AbstractEveeProofService {
 
-    private static final String identifier = EveeLetheBasedEliminationProofPreferencesManager.SIZE_MINIMAL;
-
     public EveeLetheBasedSizeMinimalProofService(){
         super(new EveeLetheBasedSizeMinimalDynamicProofAdapter(
-                new EveeLetheBasedEliminationProofPreferencesManager(identifier),
-                new EveeDynamicSuboptimalProofLoadingUI(identifier)));
+                new EveeLetheBasedEliminationProofPreferencesManager(
+                        EveeLetheBasedEliminationProofPreferencesManager.PROOF_SERVICE_ID2),
+                new EveeDynamicSuboptimalProofLoadingUI(
+                        EveeLetheBasedEliminationProofPreferencesManager.PROOF_SERVICE_NAME2)));
     }
 
 }

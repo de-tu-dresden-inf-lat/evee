@@ -1,35 +1,50 @@
 package de.tu_dresden.inf.lat.evee.protege.abduction.letheBasedNonEntailmentExplanationService;
 
-import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
-import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionLoadingUI;
+import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbductionCache;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
-import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.man.cs.lethe.abduction.OWLAbducer;
+import uk.ac.man.cs.lethe.abduction.ObservationEntailedException;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.DLStatement;
-import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.ConjunctiveDLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
+import uk.ac.man.cs.lethe.internal.tools.CanceledException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.assertNotNull;
 
-public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> implements IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<DLStatement>>> {
+public class LetheAbductionSolver
+        extends AbstractAbductionSolver<DLStatement>
+        implements Supplier<Set<OWLAxiom>> {
 
-    private OWLEditorKit owlEditorKit;
+    private final static boolean FILTER_REDUNDANT_HYPOTHESES=true;
+    private Set<Set<OWLAxiom>> previousHypotheses;
+
     private int maxLevel;
     private int currentResultAdapterIndex;
-    private String errorMessage = "";
+    private boolean computationSuccessful;
+    private boolean computationRunning;
+    private boolean canceled;
+    private IProgressTracker progressTracker;
     private final OWLAbducer abducer;
     private final List<DLStatementAdapter> hypothesesAdapterList;
-    private final static String LOADING = "LOADING";
+    private TimerThread timerThread;
+    private final Map<OWLOntology, AbductionCache<AtomicBoolean>> cachedFilterWarnings;
+    private boolean filtered;
+    private static final String TIMER_ELAPSED_MESSAGE =
+            "The computation is taking some time. Consider changing the forbidden vocabulary to reduce wait time.";
+    private String errorMessage;
+    private static final String ALREADY_ENTAILED_WARNING = "Specified axioms are already entailed.";
 
     private final Logger logger = LoggerFactory.getLogger(LetheAbductionSolver.class);
 
@@ -40,53 +55,93 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
         this.hypothesesAdapterList = new ArrayList<>();
         this.maxLevel = 0;
         this.currentResultAdapterIndex = 0;
-        this.setComputationSuccessful(false);
+        this.computationSuccessful = false;
+        this.computationRunning = false;
+        this.canceled = false;
+        this.timerThread = null;
+        this.errorMessage = "";
+        this.cachedFilterWarnings = new HashMap<>();
+        this.filtered = false;
         this.logger.debug("LetheAbductionSolver created successfully");
     }
 
     @Override
-    public void setup(OWLEditorKit editorKit) {
-        this.owlEditorKit = editorKit;
-        super.setup(editorKit);
+    public void addProgressTracker(IProgressTracker tracker){
+        this.progressTracker = tracker;
     }
 
     @Override
     public String getSupportsExplanationMessage() {
-        return "Please enter some signature and observation";
+        return "Please enter some permitted vocabulary and missing entailment.";
     }
 
     @Override
-    public void setOntology(OWLOntology ontology) {
-        super.setOntology(ontology);
-
+    public String getFilterWarningMessage() {
+        return "Warning: Some Axioms of this ontology were filtered. This service only supports ALC.";
     }
 
     @Override
-    public boolean supportsExplanation() {
-        return this.observation.size() != 0 && this.abducibles.size() != 0;
-    }
-
-    @Override
-    public void handleEvent(ExplanationEvent<IExplanationGenerator<DLStatement>> event){
-        this.disposeLoadingScreen();
-        switch (event.getType()){
-            case COMPUTATION_COMPLETE :
-                this.explanationComputationCompleted(event.getSource().getResult());
-                break;
-            case ERROR :
-                this.explanationComputationFailed(event.getSource().getErrorMessage());
-                break;
+    public Stream<Set<OWLAxiom>> generateExplanations() {
+        this.logger.debug("Generating Explanations");
+        DLStatement result;
+        AtomicBoolean filtered = new AtomicBoolean();
+        this.canceled = false;
+        if (this.checkResultInCache()){
+            this.logger.debug("Cached result found, re-displaying cached result");
+            result = this.loadResultFromCache();
+            filtered.set(this.cachedFilterWarnings.get(this.activeOntology).
+                    getResult(this.missingEntailment, this.vocabulary).get());
+            return this.explanationComputationCompleted(result, filtered);
+        } else{
+            this.logger.debug("No cached result found, trying to compute new explanation");
+            try{
+                this.abducer.setBackgroundOntology(this.activeOntology);
+                this.abducer.setAbducibles(this.vocabulary);
+                this.computationRunning = true;
+                this.timerThread = new TimerThread();
+                this.timerThread.start();
+                result = this.abducer.abduce(this.missingEntailment);
+                filtered.set(this.abducer.getUnsupportedAxiomsEncountered());
+                this.timerThread = null;
+                this.computationRunning = false;
+                this.logger.debug("Computation completed");
+                return this.explanationComputationCompleted(result, filtered);
+            }
+            catch (ObservationEntailedException oe){
+                this.logger.error("Exception caught during abduction: ", oe);
+                this.explanationComputationFailed(ALREADY_ENTAILED_WARNING);
+                return null;
+            }
+            catch (CanceledException ce){
+                String message = "Computation cancelled.";
+                this.explanationComputationFailed(message);
+                this.logger.debug("Exception caught during abduction: ", ce);
+                return null;
+            }
+            catch (Throwable e) {
+                this.explanationComputationFailed("Error during abduction generation: " + e);
+                StringWriter stringWriter = new StringWriter();
+                e.printStackTrace(new PrintWriter(stringWriter));
+                String loggingString = stringWriter.toString();
+                this.logger.error(loggingString);
+                return null;
+            }
         }
     }
 
     @Override
-    public String getErrorMessage() {
-        return this.errorMessage;
+    public boolean supportsExplanation() {
+        return this.missingEntailment.size() != 0 && this.vocabulary.size() != 0;
+    }
+
+    @Override
+    public boolean ignoresPartsOfOntology() {
+        return this.filtered;
     }
 
     @Override
     public Set<OWLAxiom> get() {
-        if (! this.computationSuccessful()){
+        if (! this.computationSuccessful){
             this.logger.debug("Last computation did not end successfully, cannot return result");
             return null;
         }
@@ -118,6 +173,10 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
                 }
             }
             else{
+                if(FILTER_REDUNDANT_HYPOTHESES && redundant(result))
+                    return get();
+
+                previousHypotheses.add(result);
                 return result;
             }
         }
@@ -126,50 +185,145 @@ public class LetheAbductionSolver extends AbstractAbductionSolver<DLStatement> i
                      // (in case it is not exceptional to not have an explanation)
     }
 
-    @Override
-    protected void createNewExplanation() {
-        this.abducer.setBackgroundOntology(this.ontology);
-        this.abducer.setAbducibles(this.abducibles);
-        LetheAbductionSolverThread thread = new LetheAbductionSolverThread(this, this.abducer, this.observation);
-        this.loadingUI = new AbductionLoadingUI(LOADING, this.owlEditorKit);
-        this.loadingUI.showLoadingScreen();
-        thread.start();
+    private boolean redundant(Set<OWLAxiom> hypothesis) {
+        //return previousHypotheses.stream().anyMatch(hypothesis::containsAll);
+        return previousHypotheses.stream().anyMatch(x -> x.stream().allMatch(y -> hypothesis.stream().anyMatch(y::equals)));
     }
 
-    protected void explanationComputationCompleted(DLStatement hypotheses){
+    private Stream<Set<OWLAxiom>> explanationComputationCompleted(DLStatement hypotheses, AtomicBoolean filtered){
+        previousHypotheses=new HashSet<>();
         if (((DisjunctiveDLStatement) hypotheses).statements().size() == 0){
+            this.logger.debug("No result found for input parameters");
             this.explanationComputationFailed("No result found, please adjust the vocabulary");
+            return null;
         }
-        else{
-            this.setComputationSuccessful(true);
-            this.cachedResults.get(this.ontology).putResult(this.observation, this.abducibles, hypotheses);
+        else if (this.canceled) {
+            this.logger.debug("Computation was cancelled, cannot show result");
+            this.explanationComputationFailed("Last computation was cancelled");
+            return null;
+        }
+        else {
+            this.logger.debug("Computation was not cancelled and returned some non-empty hypotheses, preparing to show result");
+            this.saveResultToCache(hypotheses);
+            this.cachedFilterWarnings.get(this.activeOntology).
+                    putResult(this.missingEntailment, this.vocabulary, filtered);
+            this.logger.debug("Filter-information saved to cached result");
+            this.filtered = filtered.get();
+            this.computationSuccessful = true;
             this.setActiveOntologyEditedExternally(false);
-            this.prepareResultComponentCreation();
-            this.createResultComponent();
+            this.maxLevel = 0;
+            this.currentResultAdapterIndex = 0;
+            this.hypothesesAdapterList.clear();
+            ((DisjunctiveDLStatement) hypotheses).statements().foreach(statement -> {
+                this.hypothesesAdapterList.add(new DLStatementAdapter(statement, this.abducer));
+                return null;
+            });
+            return Stream.generate(this);
         }
     }
 
     private void explanationComputationFailed(String errorMessage){
-        this.setComputationSuccessful(false);
+        this.computationSuccessful = false;
         this.setActiveOntologyEditedExternally(false);
         this.errorMessage = errorMessage;
-        this.viewComponentListener.handleEvent(new ExplanationEvent<>(this,
-                ExplanationEventType.ERROR));
     }
 
     @Override
-    protected void prepareResultComponentCreation(){
-        DLStatement hypotheses = this.cachedResults.get(this.ontology).getResult(
-                this.observation, this.abducibles);
-        assertNotNull(hypotheses);
-        this.maxLevel = 0;
-        this.currentResultAdapterIndex = 0;
-        this.hypothesesAdapterList.clear();
-        ((DisjunctiveDLStatement) hypotheses).statements().foreach(statement -> {
-            this.hypothesesAdapterList.add(new DLStatementAdapter((ConjunctiveDLStatement) statement));
-            return null;
-        });
+    public void cancel() {
+        if (this.computationRunning){
+            this.logger.debug("Cancelling computation");
+            this.canceled = true;
+            if (this.timerThread != null){
+                this.timerThread.cancel();
+            }
+            this.abducer.cancel();
+        }
+        super.cancel();
     }
 
+    @Override
+    public boolean successful() {
+        return this.abducer.isCanceled();
+    }
+
+    @Override
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
+    @Override
+    public void setOntology(OWLOntology ontology){
+        super.setOntology(ontology);
+        if (this.cachedFilterWarnings.get(ontology) == null){
+            this.logger.debug("No cached filter warnings for ontology detected, creating new cache");
+            this.cachedFilterWarnings.put(ontology, new AbductionCache<>());
+        }
+    }
+
+    @Override
+    public IOWLAbductionSolver getInternalSolver() {
+        return this;
+    }
+
+    @Override
+    public List<Set<OWLAxiom>> createHypothesesListFromStream(){
+        // TODO Patrick: is this used? I didn't observe this behavior
+        List<Set<OWLAxiom>> hypotheses = super.createHypothesesListFromStream();
+        hypotheses.sort(resultComparator);
+        return hypotheses;
+    }
+
+    /**
+     * Compare two results based on the string representation. Shorter results should come first.
+     */
+    private final Comparator<Set<OWLAxiom>> resultComparator = (result1, result2) -> {
+        if (result1 == null){
+            return -1;
+        } else if(result2 == null){
+            return 1;
+        } else if(result1.size()!=result2.size())
+            return result1.size()-result2.size();
+        else {
+            String r1 = result1.stream().map(Object::toString).reduce("", (a,b) -> a+b);
+            String r2 = result2.stream().map(Object::toString).reduce("", (a,b) -> a+b);
+            if(r1.length()!=r2.length())
+                return r1.length()-r2.length();
+            else
+                return r1.compareTo(r2);
+        }
+    };
+
+    private class TimerThread extends Thread{
+
+        private int counter;
+        private final AtomicBoolean cancelled;
+
+        public TimerThread(){
+            this.counter = 0;
+            this.cancelled = new AtomicBoolean(false);
+        }
+
+        public void cancel(){
+            this.cancelled.set(true);
+        }
+
+        @Override
+        public void run(){
+            while (counter < 10){
+                if (this.cancelled.get()){
+                    break;
+                }
+                try{
+                    Thread.sleep(1000);
+                } catch (InterruptedException e){
+                    Thread.currentThread().interrupt();
+                    logger.debug("TimerThread interrupted: ", e);
+                }
+                counter += 1;
+            }
+            progressTracker.setMessage(TIMER_ELAPSED_MESSAGE);
+        }
+
+    }
 
 }

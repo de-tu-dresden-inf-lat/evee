@@ -1,9 +1,9 @@
 package de.tu_dresden.inf.lat.evee.protege.letheBasedProofService;
 
-import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter$;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.ForgettingBasedProofGenerator;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
 
+import java.util.Collections;
 import java.util.HashSet;
 
 public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSuboptimalDynamicProofAdapter {
@@ -37,10 +38,12 @@ public class EveeLetheBasedForgettingDynamicProofAdapter extends AbstractEveeSub
         long timeOut = (long) (1000 * this.proofPreferencesManager.loadTimeOutSeconds());
         this.innerProofGenerator = new ForgettingBasedProofGenerator(
                 LetheBasedForgetter.ALC_ABox(timeOut),
-                ALCHTBoxFilter$.MODULE$,
+//                new OWLOntologyFilterTool.SHIFilter(),
+                new OWLOntologyFilterTool.ALCHFilter(),
+                //ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps,
-                JavaConverters.asScalaSet(new HashSet<>()));
+                JavaConverters.asScalaSet(Collections.EMPTY_SET));
         this.logger.debug("Boolean parameter skipSteps set to " + skipSteps);
         this.logger.debug("Long parameter timeOut set to " + timeOut);
         this.skipStepsTimeStamp = this.proofPreferencesManager.getSkipStepsTimeStamp();

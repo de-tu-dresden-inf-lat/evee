@@ -9,6 +9,7 @@ import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.OWLAxiom
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.{ApproximateProofMeasureAxiomSizeSum, MinimalForgettingBasedProofGenerator, SymbolMinimalForgettingBasedProofGenerator}
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool
 
 import java.io.File
 import java.util
@@ -29,7 +30,8 @@ object ProofsForTask {
 
     val proofGen1 = new ForgettingBasedProofGenerator(
       LetheBasedForgetter.ALC_ABox(10000),
-      ALCHTBoxFilter,
+      new OWLOntologyFilterTool.ALCHFilter(),
+//      ALCHTBoxFilter,
       OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
       skipSteps = false
     )
@@ -38,13 +40,15 @@ object ProofsForTask {
       evaluator,
       new ApproximateProofMeasureAxiomSizeSum,
       LetheBasedForgetter.ALC_ABox(10000),
-      ALCHTBoxFilter,
+      new OWLOntologyFilterTool.ALCHFilter(),
+//      ALCHTBoxFilter,
       OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
       skipSteps = false
     )
     val proofGen3 = new SymbolMinimalForgettingBasedProofGenerator(
       LetheBasedForgetter.ALC_ABox(10000),
-      ALCHTBoxFilter,
+      new OWLOntologyFilterTool.ALCHFilter(),
+//      ALCHTBoxFilter,
       OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
       skipSteps = false,
       varyJustifications = true

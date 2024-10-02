@@ -14,10 +14,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <skipTests>true</skipTests>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
         <skipCompilation>false</skipCompilation>
     </properties>
 
@@ -45,12 +41,6 @@
             <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
             <version>${LatScalaDlTools.Version}</version>
         </dependency>
-
-        <!--    <dependency>
-              <groupId>com.fasterxml.jackson.core</groupId>
-              <artifactId>jackson-databind</artifactId>
-              <version>2.9.8</version>
-            </dependency> -->
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -116,7 +106,7 @@
                                     <artifactId>evee-data-owlapi4</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/main/java</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -124,7 +114,7 @@
                                     <artifactId>evee-data-owlapi4</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/test/java</outputDirectory>
                                 </artifactItem>
                             </artifactItems>

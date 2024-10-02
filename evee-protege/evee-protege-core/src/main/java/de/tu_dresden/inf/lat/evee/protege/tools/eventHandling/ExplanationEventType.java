@@ -10,6 +10,12 @@ public enum ExplanationEventType {
 
     NOT_SUPPORTED,
 
-    RESULT_RESET
+    RESULT_RESET,
+
+    WARNING,
+
+    SHOW_LOADING_SCREEN,
+
+    IGNORE_ONTOLOGY_CHANGE
 
 }

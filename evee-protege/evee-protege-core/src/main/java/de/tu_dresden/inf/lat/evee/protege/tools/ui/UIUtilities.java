@@ -2,9 +2,11 @@ package de.tu_dresden.inf.lat.evee.protege.tools.ui;
 
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.ui.renderer.OWLRendererPreferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
@@ -13,7 +15,19 @@ import java.net.URL;
 
 public class UIUtilities {
 
+    private static final Color control = UIManager.getColor("control");
+    private static final Color highlight = UIManager.getColor("controlLtHighlight");
+    private static final Color black = Color.BLACK;
+
     private static final Logger logger = LoggerFactory.getLogger(UIUtilities.class);
+
+    public static JLabel createProgressUILabel(String labelText){
+        JLabel label = new JLabel(labelText);
+        label.setHorizontalTextPosition(JLabel.CENTER);
+        label.setVerticalTextPosition(JLabel.CENTER);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        return label;
+    }
 
     public static JLabel createLabel(String labelText){
         JLabel label = new JLabel(labelText);
@@ -23,10 +37,14 @@ public class UIUtilities {
         return label;
     }
 
-    public static JButton createNamedButton(String actionCommand, String name, String toolTip, ActionListener listener){
+    public static JButton createNamedButton(String actionCommand, @Nonnull String name, String toolTip, @Nonnull ActionListener listener){
         JButton button = new JButton(name);
-        button.setActionCommand(actionCommand);
-        button.setToolTipText(toolTip);
+        if (actionCommand != null){
+            button.setActionCommand(actionCommand);
+        }
+        if (toolTip != null){
+            button.setToolTipText(toolTip);
+        }
         button.addActionListener(listener);
         return button;
     }
@@ -40,8 +58,12 @@ public class UIUtilities {
         button.setActionCommand(actionCommand);
         button.setToolTipText(tooltip);
         button.addActionListener(listener);
-        Icon icon = new ImageIcon(url);
-        button.setIcon(icon);
+        ImageIcon icon = new ImageIcon(url);
+        OWLRendererPreferences preferences = OWLRendererPreferences.getInstance();
+//        negative number used to keep aspect ratio
+        Image image = icon.getImage().getScaledInstance(-1,
+                (int) (preferences.getFontSize() * 1.5), Image.SCALE_SMOOTH);
+        button.setIcon(new ImageIcon(image));
         return button;
     }
 
@@ -49,8 +71,8 @@ public class UIUtilities {
                                             String toolTip, ActionListener listener){
         assert (direction == BasicArrowButton.EAST || direction == BasicArrowButton.WEST
                 || direction == BasicArrowButton.NORTH || direction == BasicArrowButton.SOUTH);
-        JButton button = new BasicArrowButton(direction, UIManager.getColor("control"),
-                Color.BLACK, Color.BLACK, UIManager.getColor("controlLtHighlight"));
+        JButton button = new BasicArrowButton(direction, control,
+                black, black, highlight);
         button.setActionCommand(actionCommand);
         button.setToolTipText(toolTip);
         button.addActionListener(listener);
@@ -68,25 +90,53 @@ public class UIUtilities {
         return button;
     }
 
+    public static void showWarning(String message, OWLEditorKit owlEditorKit){
+        logger.debug("Displaying warning message: {}", message);
+        showMessage(message, JOptionPane.WARNING_MESSAGE, owlEditorKit);
+    }
+
     public static void showError(String message, OWLEditorKit owlEditorKit){
         logger.debug("Displaying error message: {}", message);
+        showMessage(message, JOptionPane.ERROR_MESSAGE, owlEditorKit);
+
+    }
+
+    private static void showMessage(String message, int messageType, OWLEditorKit owlEditorKit){
         SwingUtilities.invokeLater(() -> {
-            JOptionPane errorPane = new JOptionPane(message, JOptionPane.ERROR_MESSAGE);
-            JDialog errorDialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
-                    owlEditorKit.getWorkspace()), "Error");
-            errorDialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
-            errorDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(
-                    ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace())));
-            errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            errorDialog.setVisible(true);
+            JOptionPane errorPane = new JOptionPane(message, messageType);
+            String title = "";
+            switch (messageType){
+                case JOptionPane.ERROR_MESSAGE:
+                    title = "Error";
+                    break;
+                case JOptionPane.WARNING_MESSAGE:
+                    title = "Warning";
+                    break;
+            }
+            JDialog dialog = errorPane.createDialog(ProtegeManager.getInstance().getFrame(
+                    owlEditorKit.getWorkspace()), title);
+            dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            UIUtilities.packAndSetWindow(dialog, owlEditorKit, true);
         });
+    }
+
+    public static void packAndSetWindow(Window window, OWLEditorKit owlEditorKit, boolean showWindow){
+        window.pack();
+        window.setLocationRelativeTo(ProtegeManager.getInstance().getFrame(owlEditorKit.getWorkspace()));
+        window.setVisible(showWindow);
+    }
+
+    public static void revalidateAndRepaintComponent(Component component){
+        component.revalidate();
+        component.repaint();
     }
 
     private static class DoubleArrowButton extends BasicArrowButton {
 
         public DoubleArrowButton(int direction) {
-            super(direction, UIManager.getColor("control"), Color.BLACK,
-                    Color.BLACK, UIManager.getColor("controlLtHighlight"));
+            super(direction, control, black,
+                    black, highlight);
         }
 
         @Override

@@ -1,25 +1,33 @@
 package de.tu_dresden.inf.lat.evee.protege.tools.ui;
 
-import org.semanticweb.owlapi.model.OWLObject;
+import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.model.event.EventType;
+import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
+import org.protege.editor.owl.model.event.OWLModelManagerListener;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class OWLObjectListModel<O extends OWLObject>
         extends AbstractListModel<O>{
 
-    private static final long serialVersionUID = 7889399632276626077L;
-
     private final List<O> owlObjects;
+    private final OWLEditorKit owlEditorKit;
+    private final ListElementRenderingChangeListener renderingChangeListener;
     private final Logger logger = LoggerFactory.getLogger(OWLObjectListModel.class);
 
-    public OWLObjectListModel(){
+    public OWLObjectListModel(OWLEditorKit owlEditorKit){
         this.owlObjects = new ArrayList<>();
+        this.owlEditorKit = owlEditorKit;
+        this.renderingChangeListener = new ListElementRenderingChangeListener();
+        this.owlEditorKit.getOWLModelManager().addListener(this.renderingChangeListener);
+    }
+
+    public void dispose(){
+        this.owlEditorKit.getOWLModelManager().removeListener(this.renderingChangeListener);
     }
 
     @Override
@@ -37,12 +45,17 @@ public class OWLObjectListModel<O extends OWLObject>
     }
 
     private void sort(){
-        Collections.sort(this.owlObjects);
+        this.owlObjects.sort(new ListElementComparator());
         this.fireContentsChanged(this, 0, this.owlObjects.size() -1);
     }
 
     public void removeElements(Collection<? extends O> deletedEntities){
         this.owlObjects.removeAll(deletedEntities);
+        this.fireContentsChanged(this, 0, this.owlObjects.size() -1);
+    }
+
+    public void removeElement(O deletedEntity){
+        this.owlObjects.remove(deletedEntity);
         this.fireContentsChanged(this, 0, this.owlObjects.size() -1);
     }
 
@@ -73,6 +86,35 @@ public class OWLObjectListModel<O extends OWLObject>
     public void removeAll(){
         this.owlObjects.clear();
         this.fireContentsChanged(this, 0, 0);
+    }
+
+    private class ListElementComparator implements Comparator<O>{
+
+        @Override
+        public int compare(O elem1, O elem2) {
+            if ((elem1 instanceof OWLClass && elem2 instanceof  OWLClass) ||
+                    (elem1 instanceof OWLObjectProperty && elem2 instanceof OWLObjectProperty) ||
+                    (elem1 instanceof OWLIndividual && elem2 instanceof OWLIndividual) ||
+                    (elem1 instanceof OWLAxiom && elem2 instanceof OWLAxiom)){
+                String elem1String = owlEditorKit.getOWLModelManager().getRendering(elem1);
+                String elem2String = owlEditorKit.getOWLModelManager().getRendering(elem2);
+                return elem1String.compareTo(elem2String);
+            } else{
+                return elem1.compareTo(elem2);
+            }
+        }
+    }
+
+    private class ListElementRenderingChangeListener implements OWLModelManagerListener{
+
+        @Override
+        public void handleChange(OWLModelManagerChangeEvent owlModelManagerChangeEvent) {
+            if (owlModelManagerChangeEvent.isType(EventType.ENTITY_RENDERER_CHANGED) ||
+            owlModelManagerChangeEvent.isType(EventType.ENTITY_RENDERING_CHANGED)){
+                sort();
+            }
+        }
+
     }
 
 }

@@ -12,16 +12,16 @@
 
     <artifactId>evee-libs-owlapi5</artifactId>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
             <version>${LatScalaDlTools.Version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat</groupId>
+            <artifactId>lethe-owlapi5_2.12</artifactId>
+            <version>${LETHE.Version}</version>
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
@@ -46,6 +46,11 @@
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-lethe-proof-extractor-owlapi5</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-small-model-generator-owlapi5</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

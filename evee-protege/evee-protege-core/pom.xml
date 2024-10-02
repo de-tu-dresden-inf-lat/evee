@@ -11,12 +11,8 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-<!--        bundleName needs to coincide with pluginId used in constructor of nonEntailment pluginLoader in order to correctly declare our extension point for protege-->
+<!--        bundleName needs to coincide with pluginId used in constructors of nonEntailment pluginLoader in order to correctly declare our extension point for protege-->
         <bundleName>de.tu_dresden.inf.lat.evee</bundleName>
-<!--        <bundleName>${artifactId}</bundleName>-->
     </properties>
 
 
@@ -106,6 +102,25 @@
             <artifactId>jackson-core</artifactId>
             <version>2.13.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.graphstream</groupId>
+            <artifactId>gs-ui-swing</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graphstream</groupId>
+            <artifactId>gs-core</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.swt.win32.win32</groupId>
+            <artifactId>x86</artifactId>
+            <version>3.3.0-v3346</version>
+            <scope>compile</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -114,8 +129,14 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>plugin.xml</include>
-                    <include>downArrow.png</include>
-                    <include>upArrow.png</include>
+                    <include>NonEntailmentDefaultTab.xml</include>
+                    <include>plain.css</include>
+                    <include>DoubleDownArrow_Transparent.png</include>
+                    <include>DoubleUpArrow_Transparent.png</include>
+                    <include>DownArrow_Transparent.png</include>
+                    <include>UpArrow_Transparent.png</include>
+                    <include>DownArrow_Transparent_Big_Mid.png</include>
+                    <include>UpArrow_Transparent_Big_Mid.png</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
@@ -124,7 +145,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.10.1</version>
                 <configuration>
                     <source>8</source>
                     <target>8</target>
@@ -139,23 +160,19 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
-                            org.protege.editor.owl.*;version="4.3",
-                            org.protege.editor.core.*;version="4.3",
+                            org.protege.editor.owl.*;version="5.0",
+                            org.protege.editor.owl.ui;version="5.0",
+                            org.protege.editor.core.*;version="5.0",
                             sun.misc.*;resolution:=optional,
                             org.checkerframework.checker.nullness.qual.*;resolution:=optional,
-<!--                            org.apache.batik.transcoder.*;resolution:=optional,-->
-<!--                            org.apache.tools.ant.*;resolution:=optional,-->
-<!--                            org.graalvm.polyglot.*;resolution:=optional,-->
                             *
                         </Import-Package>
                         <Export-Package>
                             com.fasterxml.jackson.*,
-<!--                            de.tu_dresden.inf.lat.evee.eliminationProofs.*;-split-package:=merge-last,-->
                             de.tu_dresden.inf.lat.evee.general.data.exceptions.*,
                             de.tu_dresden.inf.lat.evee.general.interfaces.*,
                             de.tu_dresden.inf.lat.evee.general.tools.*,
                             de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.*,
-<!--                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.*,-->
                             de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.dltools.*,
                             de.tu_dresden.inf.lat.prettyPrinting.*,
@@ -171,17 +188,10 @@
                             junit.framework.*,
                             junit.runner.*,
                             org.hamcrest.*,
-<!--                            guru.nidi.graphviz.attribute.*,-->
-<!--                            guru.nidi.graphviz.engine.*,-->
-<!--                            guru.nidi.graphviz.model.*,-->
-<!--                            guru.nidi.graphviz.service.*,-->
-<!--                            com.eclipsesource.v8.*,-->
-<!--                            com.kitfox.svg.*,-->
-<!--                            com.google.common.collect.*;-split-package:=merge-last,-->
-<!--                            com.google.common.base.*;-split-package:=merge-last,-->
-<!--                            com.google.common.math.*;-split-package:=merge-last,-->
-<!--                            com.google.common.primitives.*;-split-package:=merge-last,-->
-<!--                            org.apache.commons.exec.*,-->
+
+                            org.graphstream.*,
+                            javax.xml.stream.*,
+                            org.miv.*
                         </Private-Package>
 <!--                        problem with embedding dependencies: adds import-package instruction for android.dalvik which cannot be resolved by protege
                             solution: try embedding only those dependencies currently mentioned in import/export/private-package-->
@@ -199,13 +209,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <artifactId>maven-eclipse-plugin</artifactId>-->
-<!--                <version>2.9</version>-->
-<!--                <configuration>-->
-<!--                    <pde>true</pde>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 

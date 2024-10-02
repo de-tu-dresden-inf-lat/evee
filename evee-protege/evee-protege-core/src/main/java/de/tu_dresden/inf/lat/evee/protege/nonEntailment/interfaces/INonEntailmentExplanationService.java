@@ -7,11 +7,15 @@ import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import org.protege.editor.core.plugin.ProtegePluginInstance;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import java.awt.*;
+import java.util.Set;
 
-public interface INonEntailmentExplanationService<T extends OWLAxiom> extends ProtegePluginInstance,
-        IExplanationGenerator<Component>, IOWLNonEntailmentExplainer<T> {
+public interface INonEntailmentExplanationService<T extends OWLAxiom> extends
+        ProtegePluginInstance, IExplanationGenerator<Component>,
+        ISignatureModificationEventGenerator,
+        IOWLNonEntailmentExplainer<T> {
 
     void setup(OWLEditorKit editorKit);
 
@@ -20,11 +24,6 @@ public interface INonEntailmentExplanationService<T extends OWLAxiom> extends Pr
      */
     void computeExplanation();
 
-    /**
-     * @return Either null or a component that contains all necessary settings for the service.
-     */
-    Component getSettingsComponent();
-
     void registerListener(IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener);
 
     /**
@@ -32,5 +31,9 @@ public interface INonEntailmentExplanationService<T extends OWLAxiom> extends Pr
      * IOWLAbductionSolver/IOWLModelGenerator) should satisfy in order for the Explainer to return a result.
      */
     String getSupportsExplanationMessage();
+
+    String getFilterWarningMessage();
+
+    void repaintResultComponent();
 
 }

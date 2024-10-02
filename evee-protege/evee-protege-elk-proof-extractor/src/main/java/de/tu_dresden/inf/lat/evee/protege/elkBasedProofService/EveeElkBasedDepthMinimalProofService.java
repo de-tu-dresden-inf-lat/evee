@@ -7,13 +7,13 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicPro
 
 public class EveeElkBasedDepthMinimalProofService extends AbstractEveeProofService {
 
-    private static final String identifier = EveeElkBasedExtractorProofPreferencesManager.DEPTH_MINIMAL;
-
     public EveeElkBasedDepthMinimalProofService(){
         super(new EveeElkBasedDynamicProofAdapter(
                 new ESPGMinimalDepth(),
-                new EveeElkBasedExtractorProofPreferencesManager(identifier),
-                new EveeDynamicProofLoadingUI(identifier)));
+                new EveeElkBasedExtractorProofPreferencesManager(
+                        EveeElkBasedExtractorProofPreferencesManager.PROOF_SERVICE_ID1),
+                new EveeDynamicProofLoadingUI(
+                        EveeElkBasedExtractorProofPreferencesManager.PROOF_SERVICE_NAME1)));
     }
 
 }

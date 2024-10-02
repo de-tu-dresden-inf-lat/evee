@@ -16,14 +16,6 @@
     <name>evee-data-owlapi4</name>
 
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <skipTests>true</skipTests>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -55,11 +47,6 @@
             <version>2.13.3</version>
         </dependency>
 
-        <!--<dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

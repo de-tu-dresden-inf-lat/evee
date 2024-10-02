@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+    <VSNode splits="1.0">
+        <CNode>
+            <Component label="Missing Entailment Explanation">
+                <Property id="pluginId" value="de.tu_dresden.inf.lat.evee.NonEntailmentExplanationView"/>
+            </Component>
+        </CNode>
+    </VSNode>
+</layout>

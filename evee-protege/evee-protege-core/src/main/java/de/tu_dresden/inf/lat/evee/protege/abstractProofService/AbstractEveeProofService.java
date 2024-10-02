@@ -81,8 +81,16 @@ public abstract class AbstractEveeProofService extends ProofService
     }
 
     @Override
-    public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> var1){
-        this.proofAdapter.resetCachingProofGenerator();
+    public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> changes){
+        this.logger.debug("Change to ontology detected");
+        for (OWLOntologyChange change: changes){
+            if (change.getOntology().equals(getEditorKit().getOWLModelManager().getActiveOntology())){
+                this.logger.debug("Change made to current ACTIVE ontology");
+                this.proofAdapter.resetCachingProofGenerator();
+                break;
+            }
+        }
+
     }
 
 }

@@ -4,7 +4,7 @@ import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
-import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.ConjunctiveDLStatement;
+import uk.ac.man.cs.lethe.abduction.OWLAbducer;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.GreatestFixpoint;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.LeastFixpoint;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.*;
@@ -14,7 +14,7 @@ import java.util.*;
 
 public class DLStatementAdapter {
 
-    private final ConjunctiveDLStatement statement;
+    private final DLStatement statement;
     private final Map<Concept, FixpointAdapter> fixpointAdapterMap;
 //    maps to each fixpoint (identified via their variableName) the level to which this fixpoint
 //    should be unraveled in the next result that is returned
@@ -23,10 +23,13 @@ public class DLStatementAdapter {
     private int currentMaxLevel;
     private boolean singleResultReturned;
 
+    private final OWLAbducer hypothesisSimplifier;
+
     private final Logger logger = LoggerFactory.getLogger(DLStatementAdapter.class);
 
-    public DLStatementAdapter(ConjunctiveDLStatement statement){
+    public DLStatementAdapter(DLStatement statement, OWLAbducer abducer){
         this.statement = statement;
+        this.hypothesisSimplifier = abducer;
         this.fixpointAdapterMap = new LinkedHashMap<>();
         this.prepareFixpointMap();
         this.fixpointCurrentLevelMap = new LinkedHashMap<>();
@@ -54,8 +57,16 @@ public class DLStatementAdapter {
                 this.logger.debug("no result returned yet, generating result once");
                 this.singleResultReturned = true;
                 DLStatement simplifiedStatement = CheapSimplifier$.MODULE$.simplify(this.statement);
-//                this.logger.debug("Simplified statement:\n" + simplifiedStatement.toString());
+                this.logger.debug("Simplified statement:\n" + simplifiedStatement.toString());
                 Set<OWLLogicalAxiom> axiomSet = JavaConverters.setAsJavaSet(new OWLExporter().toOwl(null, simplifiedStatement));
+                this.logger.debug("Simplified statement converted to owl:");
+                axiomSet.forEach(axiom -> this.logger.debug(axiom.toString()));
+                axiomSet = JavaConverters.setAsJavaSet(
+                        hypothesisSimplifier.simplify(
+                                JavaConverters.asScalaSet(axiomSet)
+                                        .toSet()));
+                this.logger.debug("Very simplified statement:");
+                axiomSet.forEach(axiom -> this.logger.debug(axiom.toString()));
                 result.addAll(axiomSet);
                 return result;
             }
@@ -122,67 +133,7 @@ public class DLStatementAdapter {
                 this.fixpointAdapterMap.put(gfp.variable(), adapter);
             }
         }
-//        for (DLStatement innerStatement : JavaConverters.setAsJavaSet(( this.statement).statements())){
-//            this.findFixpoint(innerStatement);
-//        }
     }
-
-//    protected void findFixpoint(DLStatement dls){
-//        if (dls instanceof ConceptAssertion){
-//            findFixpoint(((ConceptAssertion) dls).concept());
-//        }
-//        else if (dls instanceof Axiom){
-//            findFixpoint(((Axiom) dls));
-//        }
-//    }
-//
-//    protected void findFixpoint(Axiom a){
-//        if (a instanceof Subsumption){
-//            this.findFixpoint(((Subsumption) a).subsumee() );
-//            this.findFixpoint(((Subsumption) a).subsumer());
-//        }
-//        else if (a instanceof ConceptEquivalence){
-//            this.findFixpoint(((ConceptEquivalence) a).leftConcept());
-//            this.findFixpoint(((ConceptEquivalence) a).rightConcept());
-//        }
-//    }
-//
-//    protected void findFixpoint(Concept c){
-//        if (c instanceof LeastFixpoint){
-//            LeastFixpoint lfp = (LeastFixpoint) c;
-//            FixpointAdapter adapter = new FixpointAdapter(lfp, lfp.concept(), lfp.variable(),
-//                    BottomConcept$.MODULE$);
-//            this.fixpointAdapterMap.put(lfp.variable(), adapter);
-//        }
-//        else if (c instanceof  GreatestFixpoint){
-//            GreatestFixpoint gfp = (GreatestFixpoint) c;
-//            FixpointAdapter adapter = new FixpointAdapter(gfp, gfp.concept(), gfp.variable(),
-//                    TopConcept$.MODULE$);
-//            this.fixpointAdapterMap.put(gfp.variable(), adapter);
-//        }
-//        else if (c instanceof ConceptComplement){
-//            this.findFixpoint(((ConceptComplement) c).concept());
-//        }
-//        else if (c instanceof ConceptConjunction){
-//            for (Concept conj : JavaConverters.setAsJavaSet(((ConceptConjunction) c).conjuncts())){
-//                this.findFixpoint(conj);
-//            }
-//        }
-//        else if (c instanceof ConceptDisjunction){
-//            for (Concept disj : JavaConverters.setAsJavaSet(((ConceptDisjunction) c).disjuncts())){
-//                this.findFixpoint(disj);
-//            }
-//        }
-//        else if (c instanceof RoleRestriction){
-//            this.findFixpoint(((RoleRestriction) c).filler());
-//        }
-//        else if (c instanceof MaxNumberRestriction){
-//            this.findFixpoint(((MaxNumberRestriction) c).filler());
-//        }
-//        else if (c instanceof MinNumberRestriction){
-//            this.findFixpoint(((MinNumberRestriction) c).filler());
-//        }
-//    }
 
     /**
      * We save in this.levelList a list of lists of integers. Each integer represents the level of a fixpoint-statement.

@@ -13,19 +13,8 @@
     </parent>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <skipTests>true</skipTests>
         <skipCompilation>false</skipCompilation>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -106,7 +95,7 @@
                                     <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/main/java</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -114,7 +103,7 @@
                                     <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/test/java</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -122,7 +111,7 @@
                                     <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-resources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/test/resources</outputDirectory>
                                 </artifactItem>
                             </artifactItems>

@@ -4,6 +4,7 @@ import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter$;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.LetheBasedForgetter;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.adaptors.OWLApiBasedJustifier;
 import de.tu_dresden.inf.lat.evee.eliminationProofs.minimal.SymbolMinimalForgettingBasedProofGenerator;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeSuboptimalDynamicProofAdapter;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicSuboptimalProofLoadingUI;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -36,7 +37,8 @@ public class EveeLetheBasedSymbolMinimalDynamicProofAdapter extends AbstractEvee
         long timeOut = (long) ((1000) * this.proofPreferencesManager.loadTimeOutSeconds());
         this.innerProofGenerator = new SymbolMinimalForgettingBasedProofGenerator(
                 LetheBasedForgetter.ALC_ABox(timeOut),
-                ALCHTBoxFilter$.MODULE$,
+                new OWLOntologyFilterTool.ALCHFilter(),
+//                ALCHTBoxFilter$.MODULE$,
                 OWLApiBasedJustifier.UsingHermiT(OWLManager.createOWLOntologyManager()),
                 skipSteps,
                 varyJustifications);

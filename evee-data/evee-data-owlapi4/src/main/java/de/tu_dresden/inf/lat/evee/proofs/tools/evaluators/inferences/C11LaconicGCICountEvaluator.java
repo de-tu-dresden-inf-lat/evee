@@ -5,6 +5,7 @@ package de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.inferences;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,11 +48,15 @@ public class C11LaconicGCICountEvaluator implements IInferenceEvaluator<OWLAxiom
 		Collection<OWLAxiom> delta = computeDelta(new LinkedList<>(inf.getPremises()));
 		Collection<OWLAxiom> deltaPlus = computeDeltaPlus(delta);
 		// TODO: replace by Justifier interface to be able to switch between HermiT and ELK?
-		Set<? extends Set<? extends OWLAxiom>> just = OWLTools.computeJustifications(deltaPlus, inf.getConclusion());
-		return just.stream().map(j -> unfoldFreshNames(j, sig)).filter(j -> isLaconic(j, inf.getConclusion()))
-				.mapToDouble(j -> j.stream().filter(ax -> ax instanceof OWLSubClassOfAxiom)
-						.filter(ax -> ((OWLSubClassOfAxiom) ax).getSubClass().isAnonymous()).count())
-				.summaryStatistics().getAverage();
+		// #51: to improve performance, instead of computing all justifications and filtering out the preferred laconic ones,
+		// compute only a single justification here
+		return (double) unfoldFreshNames(OWLTools.computeJustification(deltaPlus, inf.getConclusion()), sig).stream().
+				filter(ax -> ax instanceof OWLSubClassOfAxiom).filter(ax -> ((OWLSubClassOfAxiom) ax).getSubClass().isAnonymous()).count();
+//		Set<? extends Set<? extends OWLAxiom>> just = OWLTools.computeJustifications(deltaPlus, inf.getConclusion());
+//		return just.stream().map(j -> unfoldFreshNames(j, sig)).filter(j -> isLaconic(j, inf.getConclusion()))
+//				.mapToDouble(j -> j.stream().filter(ax -> ax instanceof OWLSubClassOfAxiom)
+//						.filter(ax -> ((OWLSubClassOfAxiom) ax).getSubClass().isAnonymous()).count())
+//				.summaryStatistics().getAverage();
 	}
 
 	@Override
@@ -68,7 +73,7 @@ public class C11LaconicGCICountEvaluator implements IInferenceEvaluator<OWLAxiom
 			Collection<OWLAxiom> replaced = new LinkedList<>();
 			for (OWLAxiom ax : j) {
 				Collection<? extends OWLAxiom> newAxioms = ax.accept(splitter);
-				if (newAxioms == null) {
+				if (newAxioms.isEmpty()) {
 					replaced.add(ax);
 				} else {
 					changed = true;
@@ -114,7 +119,7 @@ public class C11LaconicGCICountEvaluator implements IInferenceEvaluator<OWLAxiom
 		OWLSuperClassExpressionUnfolder supUnfolder = new OWLSuperClassExpressionUnfolder(o, sig);
 		subUnfolder.setSupUnfolder(supUnfolder);
 		supUnfolder.setSubUnfolder(subUnfolder);
-		Set<OWLAxiom> res = j.stream().map(ax -> unfold(ax, subUnfolder, supUnfolder)).filter(ax -> ax != null)
+		Set<OWLAxiom> res = j.stream().map(ax -> unfold(ax, subUnfolder, supUnfolder)).filter(Objects::nonNull)
 				.collect(Collectors.toSet());
 		OWLTools.manager.removeOntology(o);
 		return res;

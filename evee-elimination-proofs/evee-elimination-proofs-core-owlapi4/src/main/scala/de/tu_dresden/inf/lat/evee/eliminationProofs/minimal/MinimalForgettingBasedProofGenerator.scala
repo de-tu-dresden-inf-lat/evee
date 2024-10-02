@@ -5,13 +5,12 @@ import de.tu_dresden.inf.lat.dltools.DLFilter
 import de.tu_dresden.inf.lat.evee.eliminationProofs.dataStructures.{Forgetter, Justifier}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.tools.{SearchTreeProgressTracker, TidyForgettingBasedProofs}
 import de.tu_dresden.inf.lat.evee.eliminationProofs.{Constants, ForgettingBasedProofGenerator}
-import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker
-import de.tu_dresden.inf.lat.evee.general.tools.ProgressTrackerCollection
+import de.tu_dresden.inf.lat.evee.general.interfaces.{IOWLOntologyFilter, IProgressTracker}
+import de.tu_dresden.inf.lat.evee.general.tools.{OWLOntologyFilterTool, ProgressTrackerCollection}
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.{SimpleOWLFormatter, SimpleOWLFormatterCl}
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException
 import de.tu_dresden.inf.lat.evee.proofs.interfaces._
-import org.semanticweb.HermiT
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model._
 import org.semanticweb.owlapi.model.parameters.Imports
@@ -24,7 +23,7 @@ import scala.collection.{JavaConverters, mutable}
 class MinimalSignatureAndForgettingBasedProofGenerator(_measure: IProofEvaluator[OWLAxiom],
                                                        approximateMeasure: ApproximateProofMeasure,
                                                        forgetter: Forgetter,
-                                                       filter: DLFilter,
+                                                       filter: IOWLOntologyFilter,
                                                        justifier: Justifier,
                                                        skipSteps: Boolean = true)
   extends MinimalForgettingBasedProofGenerator(
@@ -46,7 +45,8 @@ class MinimalSignatureAndForgettingBasedProofGenerator(_measure: IProofEvaluator
 class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom],
                                            approximateMeasure: ApproximateProofMeasure,
                                            forgetter: Forgetter,
-                                           filter: DLFilter,
+                                           filter: IOWLOntologyFilter,
+//                                           filter: DLFilter,
                                            justifier: Justifier,
                                            var skipSteps: Boolean = true)
   extends IProofGenerator[OWLAxiom, OWLOntology] with ISimpleProofGenerator[OWLClass, OWLAxiom, OWLOntology] {
@@ -71,6 +71,8 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
 
   //override def setReasoner(owlReasoner: OWLReasoner): Unit = {}
 
+  private val filterTool = new OWLOntologyFilterTool(filter)
+
   private var canceled = false
 
   def setSkipSteps(skipSteps: Boolean) =
@@ -88,14 +90,20 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
 
   override def supportsProof(axiom: OWLAxiom): Boolean = {
     knownSupport.getOrElseUpdate(axiom, {
-      val reasoner = new HermiT.Reasoner.ReasonerFactory().createReasoner(ontology)
-
-      reasoner.isEntailed(axiom)
+      val reasoner = new org.semanticweb.HermiT.ReasonerFactory().createReasoner(ontology)
+      val result = reasoner.isEntailed(axiom)
+      reasoner.dispose()
+      return result
     })
   }
 
   override def setOntology(owlOntology: OWLOntology): Unit = {
-    ontology = filter.filteredCopy(owlOntology, manager)
+    if(ontology!=null && manager.contains(ontology))
+      manager.removeOntology(ontology)
+
+    filterTool.setOntology(owlOntology)
+    ontology = filterTool.filterOntology()
+//    ontology = filter.filteredCopy(owlOntology, manager)
 
     println("Ontology changed!")
 
@@ -261,7 +269,7 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
 
 
     if (!eliminated.isEmpty)
-      progressTrackers.setMessage("trying " + eliminated.map(formatter.format(_)).mkString(", "))
+      progressTrackers.setMessage("trying forgetting order " + eliminated.map(formatter.format(_)).mkString(", "))
 
 
     //println("\n\n Entering with bound: "+bound)
@@ -340,6 +348,8 @@ class MinimalForgettingBasedProofGenerator(var measure: IProofEvaluator[OWLAxiom
       heuristicProver.setOntology(ont)
 
       val restProof = heuristicProver.getProof(targetAxiom)
+
+      manager.removeOntology(ont)
 
       val proof = new ExtendableProof[OWLAxiom](targetAxiom)
       restProof.getInferences.forEach(inf =>

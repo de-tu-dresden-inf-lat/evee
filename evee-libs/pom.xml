@@ -13,11 +13,6 @@
 
     <artifactId>evee-libs</artifactId>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
-
     <modules>
         <module>evee-libs-owlapi4</module>
         <module>evee-libs-owlapi5</module>

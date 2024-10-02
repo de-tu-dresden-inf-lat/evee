@@ -1,0 +1,35 @@
+package de.tu_dresden.inf.lat.evee.protege.tools.eventHandling;
+
+public enum ExplanationLoadingUIEventType {
+
+    UPDATE_LOADING_MESSAGE,
+
+    UPDATE_LOADING_PROGRESS,
+
+    UPDATE_LOADING_MAXIMUM,
+
+    EXPLANATION_GENERATION_FINISHED,
+
+    EXPLANATION_GENERATION_CANCELLED,
+
+//    SHOW_ERROR,
+
+//    SHOW_LOADING_SCREEN,
+//
+//    HIDE_LOADING_SCREEN,
+//
+//    DISPOSE_LOADING_SCREEN,
+//
+//    SHOW_CANCEL_SCREEN,
+//
+//    DISPOSE_CANCEL_SCREEN,
+//
+//    CANCEL_GENERATION,
+//
+//    UPDATE_CANCEL_MESSAGE,
+//
+//    UPDATE_CANCEL_PROGRESS,
+//
+//    UPDATE_CANCEL_MAXIMUM,
+
+}

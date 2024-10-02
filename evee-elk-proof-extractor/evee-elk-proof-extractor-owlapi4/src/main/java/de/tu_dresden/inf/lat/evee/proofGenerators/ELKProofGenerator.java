@@ -151,7 +151,7 @@ public class ELKProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>
 
 		IProof<OWLAxiom> derivationStructure = getProof(axiom);
 
-		if (type == ProofType.TreeUnravellingOFMinimalSizeGraph)
+		if (type == ProofType.TreeUnravellingOfMinimalSizeGraph)
 			return TreeProofGenerator.getTreeUnravelOfMinHypProof(derivationStructure);
 
 		//
@@ -242,7 +242,9 @@ public class ELKProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>
 
 			ElkOwlInference inf = inferencesList.get(i);
 
-			IInference<OWLAxiom> newInf = new Inference<OWLAxiom>(conclusionAxiom, inf.getName(), inf.getPremises());
+			String ruleName = inf.getName().equals("Property Domain Transaltion") ? "Property Domain Translation" :
+					inf.getName();
+			IInference<OWLAxiom> newInf = new Inference<OWLAxiom>(conclusionAxiom, ruleName, inf.getPremises());
 			if (!myProof.getInferences().contains(newInf))
 				myProof.addInference(newInf);
 

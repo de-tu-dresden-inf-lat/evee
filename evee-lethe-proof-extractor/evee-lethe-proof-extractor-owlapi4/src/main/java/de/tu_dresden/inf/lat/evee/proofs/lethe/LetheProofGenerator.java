@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.proofs.lethe;
 
 import com.clarkparsia.owlapi.explanation.util.SilentExplanationProgressMonitor;
 import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter;
+import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
 import de.tu_dresden.inf.lat.evee.proofs.data.AbstractSimpleOWLProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
@@ -77,9 +78,13 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
 
     boolean inferTautologiesFromInput = false;
 
+    private final OWLOntologyFilterTool filterTool = new OWLOntologyFilterTool(new OWLOntologyFilterTool.ALCHFilter());
+
     @Override
     public void setOntology(OWLOntology owlOntology) {
-        ontology = ALCHTBoxFilter.filteredCopy(owlOntology, ontologyManager);
+        filterTool.setOntology(owlOntology);
+        ontology = filterTool.filterOntology();
+//        ontology = ALCHTBoxFilter.filteredCopy(owlOntology, ontologyManager);
     }
 
     public OWLOntology getOntology() {
@@ -241,10 +246,11 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     }
 
     public void addMissingInferences(OWLOntology currentJustification, IProof<OWLAxiom> proof) {
-        assert proof.hasInferenceFor(proof.getFinalConclusion()) : "final conclusion not proved!";
         Set<IInference<OWLAxiom>> missing = new HashSet<>();
         for(IInference<OWLAxiom> inference: proof.getInferences()){
-            for(OWLAxiom premise: inference.getPremises()){
+            List<OWLAxiom> axioms = new LinkedList<>(inference.getPremises());
+            axioms.add(proof.getFinalConclusion());
+            for(OWLAxiom premise: axioms){
                 if(cancelled)
                     return;
                 if(!proof.hasInferenceFor(premise)) {
@@ -265,6 +271,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
             }
         }
         proof.addInferences(missing);
+        assert proof.hasInferenceFor(proof.getFinalConclusion()) : "final conclusion not proved!";
     }
 
     /**
@@ -590,7 +597,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     private OWLAxiom unsatAxiom(OWLOntology currentJustification, Set<Concept> definers, DefinerTranslatingVisitor translatingVisitor) {
         return removeDefiners(dataFactory,translatingVisitor,
                 dataFactory.getOWLSubClassOfAxiom(
-                        owlExporter.toOwl(currentJustification, new ConceptConjunction(JavaConverters.asScalaSet(definers).toSet())),
+                        owlExporter.toOwl(currentJustification, new ConceptConjunction(JavaConverters.asScalaSet(definers).<Concept>toSet())),
                         dataFactory.getOWLNothing()));
     }
 

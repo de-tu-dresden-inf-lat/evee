@@ -1,0 +1,3003 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.example.org/sushi_x"
+     xml:base="http://www.example.org/sushi_x"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.example.org/sushi_x.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.org/sushi_x#contains -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/sushi_x#contains">
+        <rdfs:subPropertyOf rdf:resource="http://www.example.org/sushi_x#transContains"/>
+        <rdfs:domain rdf:resource="http://www.example.org/sushi_x#Domain_thing"/>
+        <rdfs:range rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+        <rdfs:comment xml:lang="en">Direct contains relation for ingredients.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.example.org/sushi_x#hasTaste -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/sushi_x#hasTaste">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdfs:domain rdf:resource="http://www.example.org/sushi_x#Domain_thing"/>
+        <rdfs:range rdf:resource="http://www.example.org/sushi_x#Taste"/>
+        <owl:propertyChainAxiom rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#contains"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#hasTaste"/>
+        </owl:propertyChainAxiom>
+        <rdfs:comment xml:lang="en">Assigns taste.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.example.org/sushi_x#inPriceRange -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/sushi_x#inPriceRange">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Dish"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Drink"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.example.org/sushi_x#Price_range"/>
+        <rdfs:comment xml:lang="en">Assigns price range.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.example.org/sushi_x#producedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/sushi_x#producedIn">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+        <rdfs:range rdf:resource="http://www.example.org/sushi_x#Country"/>
+        <rdfs:comment xml:lang="en">Assigns a country where product was produced in.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.example.org/sushi_x#transContains -->
+
+    <owl:ObjectProperty rdf:about="http://www.example.org/sushi_x#transContains">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.example.org/sushi_x#Domain_thing"/>
+        <rdfs:comment xml:lang="en">Transitive contains relation for ingredients.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.org/sushi_x#costs -->
+
+    <owl:DatatypeProperty rdf:about="http://www.example.org/sushi_x#costs">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Dish"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Drink"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.org/sushi_x#Alcohol -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Alcohol">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Liquid"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegan_ingredient"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Alcoholic_drink -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Alcoholic_drink">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Drink"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                        <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Alcohol"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Drink"/>
+        <rdfs:label xml:lang="en">Alcoholic drink</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Allergen -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Allergen">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Food"/>
+        <rdfs:comment xml:lang="en">Declarable allergens as per the EU directive 2003/89/EG (except sulfite).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Animal_product -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Animal_product">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Egg"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Meat"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Milk"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Seafood"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+        <owl:disjointUnionOf rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Egg"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Meat"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Milk"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Seafood"/>
+        </owl:disjointUnionOf>
+        <rdfs:label xml:lang="en">Animal product</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Avo_maki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Avo_maki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Maki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Avocado"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Avocado"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Maki with avocado.</rdfs:comment>
+        <rdfs:label xml:lang="en">Avo maki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Avo_nigiri -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Avo_nigiri">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Nigiri"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Avocado"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Nori"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Avocado"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Nigiri with avocado.</rdfs:comment>
+        <rdfs:label xml:lang="en">Avo nigiri</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Avocado -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Avocado">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Beef -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Beef">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Meat"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Germany"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.example.org/sushi_x#Chicken"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Beer -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Beer">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Cold_drink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Alcohol"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Bitter -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Bitter">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Taste"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Bowl_of_rice -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Bowl_of_rice">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Side_dish"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                        <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Rice"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Side_dish"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.00</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Bowl of rice</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#California_maki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#California_maki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Maki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Avocado"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Surimi"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Avocado"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Surimi"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">California maki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Carrot -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Carrot">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Celery -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Celery">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Allergen"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Cheap -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Cheap">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Price_range"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Cheap_dish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Cheap_dish">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Dish"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:maxExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.00</xsd:maxExclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Dish"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#inPriceRange"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Cheap"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Dish in the &apos;cheap&apos; price range (under 4.00).</rdfs:comment>
+        <rdfs:label xml:lang="en">Cheap dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Chicken -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Chicken">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Meat"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Germany"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Chirashi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Chirashi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sushi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Nori"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Rice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Sushi dish served in a shallow bowl, with sushi rice at the bottom and other ingredients on top.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Classic_chirashi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Classic_chirashi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Chirashi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Cucumber"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Roe"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salmon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tuna"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Wasabi"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Cucumber"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Roe"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Salmon"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tuna"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Wasabi"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">8.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Classic chirashi</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Classic_inari -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Classic_inari">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Inari"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tofu"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Classic inari</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Coffee -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Coffee">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Hot_drink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Bitter"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.10</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.example.org/sushi_x#Tea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Cold_drink -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Cold_drink">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Drink"/>
+        <rdfs:label xml:lang="en">Cold drink</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Country -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Country">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Value_partition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Cucumber -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Cucumber">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Dish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Dish">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Domain_thing -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Domain_thing">
+        <rdfs:label xml:lang="en">Domain thing</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Drink -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Drink">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Liquid"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Ebi_avo_maki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Ebi_avo_maki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Maki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Avocado"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Shrimp"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Avocado"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Shrimp"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Maki with shrimp and avocado.</rdfs:comment>
+        <rdfs:label xml:lang="en">Ebi-Avo maki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Ebi_nigiri -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Ebi_nigiri">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Nigiri"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Shrimp"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Shrimp"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.10</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Nigiri with shrimp.</rdfs:comment>
+        <rdfs:label xml:lang="en">Ebi nigiri</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Ebi_tempura -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Ebi_tempura">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Tempura"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Egg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Shrimp"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Egg"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Shrimp"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Battered and deep fried shrimp.</rdfs:comment>
+        <rdfs:label xml:lang="en">Ebi tempura</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Egg -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Egg">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Allergen"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Eggplant -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Eggplant">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Expensive -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Expensive">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Price_range"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Expensive_dish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Expensive_dish">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Dish"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">9.00</xsd:minInclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Dish"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#inPriceRange"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Expensive"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Dish in the &apos;expensive&apos; price range (at least 9.00).</rdfs:comment>
+        <rdfs:label xml:lang="en">Expensive dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Fair -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Fair">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Price_range"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Fair_dish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Fair_dish">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Dish"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                        <owl:someValuesFrom>
+                            <rdfs:Datatype>
+                                <owl:onDatatype rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+                                <owl:withRestrictions rdf:parseType="Collection">
+                                    <rdf:Description>
+                                        <xsd:minInclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.00</xsd:minInclusive>
+                                    </rdf:Description>
+                                    <rdf:Description>
+                                        <xsd:maxExclusive rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">9.00</xsd:maxExclusive>
+                                    </rdf:Description>
+                                </owl:withRestrictions>
+                            </rdfs:Datatype>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Dish"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#inPriceRange"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Fair"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Dish in the &apos;fair&apos; price range [4.00, 9.00).</rdfs:comment>
+        <rdfs:label xml:lang="en">Fair dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Fish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Fish">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Seafood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Fish_sauce -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Fish_sauce">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sauce"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Fish"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Fish"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Fish sauce</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Food -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Food">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Domain_thing"/>
+        <rdfs:comment xml:lang="en">Edible concepts</rdfs:comment>
+        <rdfs:label xml:lang="en">Food</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Ginger -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Ginger">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Spice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Spicy"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Ginger_ale -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Ginger_ale">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Cold_drink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Ginger"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sweet"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.80</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Ginger ale</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Gluten -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Gluten">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Allergen"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Green_tea -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Green_tea">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Tea"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Bitter"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.10</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Green tea</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Gunkanmaki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Gunkanmaki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sushi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Nori"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Rice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Rice wrapped with nori to form a boat-like shape, filled with ingredients.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Hot_drink -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Hot_drink">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Drink"/>
+        <rdfs:label xml:lang="en">Hot drink</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Inari -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Inari">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sushi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Rice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tofu"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Tofu bag filled with rice.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Ingredient -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Ingredient">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Interesting_dish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Interesting_dish">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Dish"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                        <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">4</owl:minQualifiedCardinality>
+                        <owl:onClass rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Dish"/>
+        <rdfs:comment xml:lang="en">Dish that contains at least 4 different ingredients.</rdfs:comment>
+        <rdfs:label xml:lang="en">Interesting dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Jasmine_tea -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Jasmine_tea">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Tea"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.10</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Jasmine tea</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Legume -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Legume">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Allergen"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Liquid -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Liquid">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Domain_thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Main_dish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Main_dish">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Dish"/>
+        <rdfs:label xml:lang="en">Main dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Maki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Maki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sushi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Nori"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Rice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Sushi roll; rice wrapped in nori.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Mango_juice -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Mango_juice">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Cold_drink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sweet"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Mango juice</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Mango_lassi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Mango_lassi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Cold_drink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Milk"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sweet"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Indian yoghurt drink with mango.</rdfs:comment>
+        <rdfs:label xml:lang="hi">Aam lassi</rdfs:label>
+        <rdfs:label xml:lang="en">Mango lassi</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Meat -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Meat">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Animal_product"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Milk -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Milk">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Allergen"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Miso -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Miso">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Spice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Soy"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Japan"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Mixed_sashimi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Mixed_sashimi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sashimi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salmon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Shrimp"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tuna"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Salmon"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Shrimp"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tuna"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">19.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Mixed sashimi</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Mustard -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Mustard">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Allergen"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Spice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Spicy"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Germany"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Nigiri -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Nigiri">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sushi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Rice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Pressed sushi rice with a topping.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Nori -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Nori">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Seaweed"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.example.org/sushi_x#Wakame"/>
+        <rdfs:comment xml:lang="en">Dried seaweed used for sushi.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Onion -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Onion">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Peanut -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Peanut">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Legume"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.example.org/sushi_x#Soy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Pescetarian_food -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Pescetarian_food">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Dish"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                        <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Pescetarian_ingredient"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Dish"/>
+        <rdfs:comment xml:lang="en">Dish that does not contain meat.</rdfs:comment>
+        <rdfs:label xml:lang="en">Pescetarian dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Pescetarian_ingredient -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Pescetarian_ingredient">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Ingredient"/>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Seafood"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Surimi"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Vegetarian_ingredient"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+        <rdfs:comment xml:lang="en">Ingredient that is not meat.</rdfs:comment>
+        <rdfs:label xml:lang="en">Pescetarian ingredient</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Price_range -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Price_range">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Cheap"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Expensive"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Fair"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Value_partition"/>
+        <rdfs:label xml:lang="en">Price range</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Pumpkin -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Pumpkin">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Radeberger -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Radeberger">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Beer"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Bitter"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Germany"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.example.org/sushi_x#Sapporo"/>
+        <rdfs:comment xml:lang="en">German beer brand.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Rice -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Rice">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Roe -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Roe">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Seafood"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Roe_gunkanmaki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Roe_gunkanmaki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Gunkanmaki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Roe"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Roe"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Roe gunkanmaki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sake -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sake">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Cold_drink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Alcohol"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Salmon -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Salmon">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Fish"/>
+        <owl:disjointWith rdf:resource="http://www.example.org/sushi_x#Tuna"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Salmon_gunkanmaki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Salmon_gunkanmaki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Gunkanmaki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salmon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Salmon"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Salmon gunkanmaki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Salmon_maki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Salmon_maki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Maki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salmon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Salmon"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.10</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Salmon maki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Salmon_nigiri -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Salmon_nigiri">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Nigiri"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salmon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Salmon"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Salmon nigiri</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Salmon_sashimi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Salmon_sashimi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sashimi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Roe"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salmon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Roe"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Salmon"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">9.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Salmon sashimi</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Salmon_uramaki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Salmon_uramaki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Uramaki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Avocado"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salmon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Avocado"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Salmon"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sesame"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Salmon uramaki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Salty -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Salty">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Taste"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sapporo -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sapporo">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Beer"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Japan"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Japanese beer brand.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sashimi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sashimi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Main_dish"/>
+        <rdfs:comment xml:lang="en">Fresh raw fish or meat sliced into thin pieces.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sauce -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sauce">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Liquid"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Seafood -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Seafood">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Allergen"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Seaweed -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Seaweed">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sesame -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sesame">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Allergen"/>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Shaolin_uramaki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Shaolin_uramaki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Uramaki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Avocado"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Cucumber"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tamago"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tofu"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Avocado"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Cucumber"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sesame"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tamago"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tofu"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Uramaki with a variety of vegetarian ingredients.</rdfs:comment>
+        <rdfs:label xml:lang="en">Shaolin uramaki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Shellfish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Shellfish">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Seafood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Shiitake -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Shiitake">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Shrimp -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Shrimp">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Shellfish"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Side_dish -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Side_dish">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Dish"/>
+        <rdfs:label xml:lang="en">Side dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sour -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sour">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Taste"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Soy -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Soy">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Legume"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Soy_sauce -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Soy_sauce">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sauce"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Soy"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Umami"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Soy"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Soy sauce</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Special_inari -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Special_inari">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Inari"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Carrot"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sesame"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Shiitake"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Carrot"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sesame"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Shiitake"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tofu"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.10</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Special inari</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Spice -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Spice">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegan_ingredient"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Spicy -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Spicy">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Taste"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Surimi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Surimi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Egg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Fish"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Shellfish"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Soy"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Japan"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Egg"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Fish"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Shellfish"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Soy"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Paste made from fish and shrimp.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Surimi_nigiri -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Surimi_nigiri">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Nigiri"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Surimi"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Surimi"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Nigiri with fish paste.</rdfs:comment>
+        <rdfs:label xml:lang="en">Surimi nigiri</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sushi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sushi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Main_dish"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sweet -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sweet">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Taste"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Sweetpotato -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Sweetpotato">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetable"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sweet"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tamago -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tamago">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Egg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Soy_sauce"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Egg"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Soy_sauce"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Japanese omelette made by rolling together several layers of fried beaten egg.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tamago_maki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tamago_maki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Maki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tamago"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tamago"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Maki with Japanese omelette.</rdfs:comment>
+        <rdfs:label xml:lang="en">Tamago maki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tamago_nigiri -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tamago_nigiri">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Nigiri"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Nori"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tamago"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tamago"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Nigiri with Japanese omelette.</rdfs:comment>
+        <rdfs:label xml:lang="en">Tamago nigiri</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Taste -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Taste">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Value_partition"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tea -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tea">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Hot_drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tempura -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tempura">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Side_dish"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Salty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Battered and deep fried seafood or other ingredients.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Teriyaki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Teriyaki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sauce"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Soy_sauce"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sweet"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sake"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Soy_sauce"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Sauce combining soy sauce, sugar and sake.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tofu -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tofu">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegan_ingredient"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Soy"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Germany"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Soy"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tofu_tempura -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tofu_tempura">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Tempura"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Egg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tofu"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Egg"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tofu"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.50</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Battered and deep fried tofu.</rdfs:comment>
+        <rdfs:label xml:lang="en">Tofu tempura</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tuna -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tuna">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Fish"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tuna_maki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tuna_maki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Maki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tuna"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tuna"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.10</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Tuna maki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tuna_nigiri -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tuna_nigiri">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Nigiri"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tuna"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tuna"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.10</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Tuna nigiri</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Tuna_sashimi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Tuna_sashimi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sashimi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tuna"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Tuna"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">12.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Tuna sashimi</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Umami -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Umami">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Taste"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Uramaki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Uramaki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sushi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Nori"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Rice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sesame"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Sushi rolled inside-out.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Value_partition -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Value_partition">
+        <rdfs:comment xml:lang="en">Ranges of object properties</rdfs:comment>
+        <rdfs:label xml:lang="en">Value partition</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegan_chirashi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegan_chirashi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Chirashi"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Carrot"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Cucumber"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Pumpkin"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Shiitake"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sweetpotato"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Tofu"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Wasabi"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Carrot"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Cucumber"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Pumpkin"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Shiitake"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sweetpotato"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tofu"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Wasabi"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">8.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label xml:lang="en">Vegan chirashi</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegan_food -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegan_food">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Vegetarian_food"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                        <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Vegan_ingredient"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegetarian_food"/>
+        <rdfs:comment xml:lang="en">Dish that contains no animal products.</rdfs:comment>
+        <rdfs:label xml:lang="en">Vegan dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegan_ingredient -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegan_ingredient">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+        <rdfs:label xml:lang="en">Vegan ingredient</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegan_sushi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegan_sushi">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Sushi"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Vegan_food"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sushi"/>
+        <rdfs:label xml:lang="en">Vegan sushi</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegetable -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegetable">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Vegan_ingredient"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegetarian_animal_product -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegetarian_animal_product">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Egg"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Milk"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Animal_product"/>
+        <rdfs:comment xml:lang="en">Animal product produced by an animal but not an animal itself.</rdfs:comment>
+        <rdfs:label xml:lang="en">Vegetarian animal product</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegetarian_food -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegetarian_food">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Pescetarian_food"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                        <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Vegetarian_ingredient"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Pescetarian_food"/>
+        <rdfs:comment xml:lang="en">Dish that contains neither meat nor some kind of fish.</rdfs:comment>
+        <rdfs:label xml:lang="en">Vegetarian dish</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegetarian_ingredient -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegetarian_ingredient">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Ingredient"/>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Tamago"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Vegan_ingredient"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Vegetarian_animal_product"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Ingredient"/>
+        <rdfs:comment xml:lang="en">Ingredient that is not meat or some kind of fish.</rdfs:comment>
+        <rdfs:label xml:lang="en">Vegetarian ingredient</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Vegetarian_sushi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Vegetarian_sushi">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Sushi"/>
+                    <rdf:Description rdf:about="http://www.example.org/sushi_x#Vegetarian_food"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Sushi"/>
+        <rdfs:label xml:lang="en">Vegetarian sushi</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Wakame -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Wakame">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Seaweed"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Sweet"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Seaweed mainly used for soups and salads.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Wakame_gunkanmaki -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Wakame_gunkanmaki">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Gunkanmaki"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Wakame"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Nori"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Wakame"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.90</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Gunkanmaki with seaweed salad.</rdfs:comment>
+        <rdfs:label xml:lang="en">Wakame gunkanmaki</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Wasabi -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Wasabi">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Spice"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:someValuesFrom rdf:resource="http://www.example.org/sushi_x#Mustard"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#producedIn"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:oneOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.example.org/sushi_x#Germany"/>
+                        </owl:oneOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#contains"/>
+                <owl:allValuesFrom rdf:resource="http://www.example.org/sushi_x#Mustard"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Water -->
+
+    <owl:Class rdf:about="http://www.example.org/sushi_x#Water">
+        <rdfs:subClassOf rdf:resource="http://www.example.org/sushi_x#Cold_drink"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#hasTaste"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2002/07/owl#Nothing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.example.org/sushi_x#costs"/>
+                <owl:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.40</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.example.org/sushi_x#Germany -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.org/sushi_x#Germany">
+        <rdf:type rdf:resource="http://www.example.org/sushi_x#Country"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.example.org/sushi_x#Japan -->
+
+    <owl:NamedIndividual rdf:about="http://www.example.org/sushi_x#Japan">
+        <rdf:type rdf:resource="http://www.example.org/sushi_x#Country"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Avocado"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Carrot"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Celery"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Cucumber"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Eggplant"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Legume"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Onion"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Pumpkin"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Rice"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Seaweed"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sesame"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Shiitake"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sweetpotato"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Beer"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Ginger_ale"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Mango_juice"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Mango_lassi"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sake"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Water"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Bitter"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Salty"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sour"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Spicy"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Sweet"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Umami"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Cheap"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Expensive"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Fair"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Fish_sauce"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Soy_sauce"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Teriyaki"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Meat"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Seafood"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Vegetable"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Germany"/>
+            <rdf:Description rdf:about="http://www.example.org/sushi_x#Japan"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

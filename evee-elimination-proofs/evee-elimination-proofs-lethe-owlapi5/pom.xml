@@ -14,14 +14,6 @@
         <skipCompilation>false</skipCompilation>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
@@ -52,7 +44,7 @@
                                     <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/main/scala</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -60,7 +52,7 @@
                                     <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/test/scala</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -68,7 +60,7 @@
                                     <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-resources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/test/resources</outputDirectory>
                                 </artifactItem>
                             </artifactItems>

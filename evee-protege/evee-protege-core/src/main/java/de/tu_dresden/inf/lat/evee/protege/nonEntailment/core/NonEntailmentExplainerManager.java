@@ -34,6 +34,10 @@ public class NonEntailmentExplainerManager {
         }
     }
 
+    protected boolean isCurrentExplanationService(String serviceName){
+        return this.serviceMap.get(serviceName) == this.currentNonEntailmentExplanationService;
+    }
+
 //    @Override
 //    public void actionPerformed(ActionEvent e) {
 //        if (e.getSource() instanceof JComboBox){
@@ -55,9 +59,12 @@ public class NonEntailmentExplainerManager {
         for (String serviceName : this.serviceMap.keySet()){
             try {
                 this.serviceMap.get(serviceName).dispose();
+                this.logger.debug("Service disposed: {}", serviceName);
             } catch (Exception ex) {
-                this.logger.error("Error when disposing Non-Entailment Explanation service named \"{}\"", serviceName);
-                this.logger.error(ex.getMessage());
+                String msgString =
+                        "The following error occurred when disposing the Non-Entailment Explanation service '" +
+                                serviceName + "': ";
+                this.logger.error(msgString, ex);
             }
         }
     }
