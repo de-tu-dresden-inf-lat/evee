@@ -24,7 +24,6 @@ public interface IProverGenerator extends IGenerator {
 
 	/**
 	 * @param ontStr
-	 * @return OWLOntology
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws OWLOntologyCreationException

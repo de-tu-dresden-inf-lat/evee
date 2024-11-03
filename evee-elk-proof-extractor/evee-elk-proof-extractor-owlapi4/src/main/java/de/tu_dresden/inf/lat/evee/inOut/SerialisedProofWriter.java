@@ -37,7 +37,6 @@ public class SerialisedProofWriter {
 	 * Save the provided list of proofs in one text file
 	 * 
 	 * @param proofs
-	 * @param fullPath
 	 * @throws IOException
 	 */
 	public void writeSerializedProofs(OWLAxiom conclusion, Collection<IProof<OWLAxiom>> proofs, File file)

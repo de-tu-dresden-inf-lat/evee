@@ -15,6 +15,7 @@
 
     <properties>
         <bundleName>${project.artifactId}</bundleName>
+        <excludeResourcesInSourceJar>false</excludeResourcesInSourceJar>
     </properties>
 
     <build>
