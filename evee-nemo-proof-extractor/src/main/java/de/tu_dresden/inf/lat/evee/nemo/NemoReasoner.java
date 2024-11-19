@@ -29,12 +29,12 @@ public class NemoReasoner {
         
     System.out.println("start cooking");
 
-    //export ontology to nt file
+    //export ontology to ttl file
 
     //File file = File.createTempFile("ontology", ".nt");
     //String tmpDir = System.getProperty("java.io.tmpdir");
 
-    File file = new File(nemoExecDir + "/Documents/work/ont.nt");
+    File file = new File(nemoExecDir + "/Documents/work/ont.ttl");
     TurtleDocumentFormat format = new TurtleDocumentFormat();
     ontology.saveOntology(format, IRI.create(file.toURI()));
     
