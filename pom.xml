@@ -82,6 +82,7 @@
                 <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-libs/evee-libs-owlapi4</module>
                 <module>evee-small-model-generator</module>
+                <module>evee-nemo-proof-extractor</module>
             </modules>
         </profile>
         <profile>
