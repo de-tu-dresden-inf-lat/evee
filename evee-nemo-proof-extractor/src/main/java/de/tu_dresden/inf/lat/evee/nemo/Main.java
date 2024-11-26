@@ -14,7 +14,7 @@ public class Main {
         String homeDir = System.getProperty("user.home");
 
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File(homeDir + "/Documents/work/galenOWL.owl"));
+        OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File(homeDir + "/Documents/galenOWL.owl"));
         
         NemoReasoner reasoner = new NemoReasoner(ont);
         reasoner.proof(null);
