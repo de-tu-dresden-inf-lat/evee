@@ -17,24 +17,24 @@ import java.util.Set;
 public class ELAtomsParser {
 	private final OWLHelper owlHelper = OWLHelper.getInstance();
 
-	private final String inferredSubClassOf = "<http://rulewerk.semantic-web.org/inferred/subClassOf>",
+	private static final String inferredSubClassOf = "<http://rulewerk.semantic-web.org/inferred/subClassOf>",
 	normalFormSubClassOf = "<http://rulewerk.semantic-web.org/normalForm/subClassOf>",
 	prepareSubClassOf = "prepareSco";
-	private final String xePredicate = "<http://rulewerk.semantic-web.org/inferred/xe>";
-	private final String aux = "aux",
+	private static final String xePredicate = "<http://rulewerk.semantic-web.org/inferred/xe>";
+	private static final String aux = "aux",
 			auxSubExists = "aux_subsubExt";
-	private final String conjunction = "<http://rulewerk.semantic-web.org/normalForm/conj>";
-	private final String exists = "<http://rulewerk.semantic-web.org/normalForm/exists>";
-	private final Set<String> subClassOf = Sets.newHashSet(inferredSubClassOf,
+	private static final String conjunction = "<http://rulewerk.semantic-web.org/normalForm/conj>";
+	private static final String exists = "<http://rulewerk.semantic-web.org/normalForm/exists>";
+	private static final Set<String> subClassOf = Sets.newHashSet(inferredSubClassOf,
 			normalFormSubClassOf,prepareSubClassOf);
-	private final Set<String> auxSubClassOf =Sets.newHashSet(aux, auxSubExists);
+	private static final Set<String> auxSubClassOf =Sets.newHashSet(aux, auxSubExists);
 
 	// Pushing the EL calculus
-	private final String conjSubClassOf = "<http://rulewerk.semantic-web.org/normalForm/subClassConj>";
-	private final String subClassOfExists = "<http://rulewerk.semantic-web.org/normalForm/subClassEx>";
-	private final String supClassOfExists = "<http://rulewerk.semantic-web.org/normalForm/supClassEx>";
-	private final String subProperty = "<http://rulewerk.semantic-web.org/normalForm/subProp>";
-	private final String subPropertyChain = "<http://rulewerk.semantic-web.org/normalForm/subPropChain>";
+	private static final String conjSubClassOf = "<http://rulewerk.semantic-web.org/normalForm/subClassConj>";
+	private static final String subClassOfExists = "<http://rulewerk.semantic-web.org/normalForm/subClassEx>";
+	private static final String supClassOfExists = "<http://rulewerk.semantic-web.org/normalForm/supClassEx>";
+	private static final String subProperty = "<http://rulewerk.semantic-web.org/normalForm/subProp>";
+	private static final String subPropertyChain = "<http://rulewerk.semantic-web.org/normalForm/subPropChain>";
 
 	private final OWLSubClassOfAxiom defaultAxiom = owlHelper.getOWLSubClassOfAxiom(owlHelper.getOWLBot(),
 			owlHelper.getOWLTop());
@@ -43,7 +43,7 @@ public class ELAtomsParser {
 		return this.defaultAxiom;
 	}
 
-	public ELAtomsParser() {}
+	private ELAtomsParser() {}
 
 	private static class LazyHolder {
 		static ELAtomsParser instance = new ELAtomsParser();
@@ -53,7 +53,7 @@ public class ELAtomsParser {
 		return LazyHolder.instance;
 	}
 
-	public OWLAxiom parse(String axiomPredicateName, List<Object> args) {
+	public OWLAxiom parse(String axiomPredicateName, List<String> args) {
 
 		if (auxSubClassOf.contains(axiomPredicateName))
 			return parseAux(args);
@@ -77,41 +77,41 @@ public class ELAtomsParser {
 		return defaultAxiom;
 	}
 
-	private OWLAxiom parseSubPropertyChain(List<Object> args) {
+	private OWLAxiom parseSubPropertyChain(List<String> args) {
 		return owlHelper.getOWLSubPropertyChainOfAxiom(Lists.newLinkedList(Arrays.asList(getProp(args.get(0)),
 				getProp(args.get(1)))), getProp(args.get(2)));
 	}
 
-	private OWLAxiom parseSubProperty(List<Object> args) {
+	private OWLAxiom parseSubProperty(List<String> args) {
 		return owlHelper.getOWLSubObjectPropertyAxiom(getProp(args.get(0)), getProp(args.get(1)));
 	}
 
-	private OWLAxiom parseSubClassOfExistential(List<Object> args) {
+	private OWLAxiom parseSubClassOfExistential(List<String> args) {
 		return owlHelper.getOWLSubClassOfAxiom(
 				owlHelper.getOWLExistentialRestriction(getProp(args.get(0)), getCls(args.get(1))), getCls(args.get(2)));
 	}
 
-	private OWLAxiom parseSupClassOfExistential(List<Object> args) {
+	private OWLAxiom parseSupClassOfExistential(List<String> args) {
 		return owlHelper.getOWLSubClassOfAxiom(getCls(args.get(0)),
 				owlHelper.getOWLExistentialRestriction(getProp(args.get(1)), getCls(args.get(2))));
 	}
 
-	private OWLAxiom parseConjSubClassOf(List<Object> args) {
+	private OWLAxiom parseConjSubClassOf(List<String> args) {
 		return owlHelper.getOWLSubClassOfAxiom(
 				owlHelper.getOWLConjunction(Sets.newHashSet(getCls(args.get(0)), getCls(args.get(1)))),
 				getCls(args.get(2)));
 	}
 
-	private OWLAxiom parseAux(List<Object> args) {
+	private OWLAxiom parseAux(List<String> args) {
 		return owlHelper.getOWLSubClassOfAxiom(
 				owlHelper.getOWLExistentialRestriction(getProp(args.get(1)), getCls(args.get(0))), getCls(args.get(2)));
 	}
 
-	private OWLSubClassOfAxiom parseSubclassOf(List<Object> args) {
+	private OWLSubClassOfAxiom parseSubclassOf(List<String> args) {
 		return owlHelper.getOWLSubClassOfAxiom(getCls(args.get(0)), getCls(args.get(1)));
 	}
 
-	private OWLSubClassOfAxiom parseXE(List<Object> args) {
+	private OWLSubClassOfAxiom parseXE(List<String> args) {
 		return owlHelper.getOWLSubClassOfAxiom(getCls(args.get(2)),
 				owlHelper.getOWLExistentialRestriction(getProp(args.get(1)), getCls(args.get(0))));
 
