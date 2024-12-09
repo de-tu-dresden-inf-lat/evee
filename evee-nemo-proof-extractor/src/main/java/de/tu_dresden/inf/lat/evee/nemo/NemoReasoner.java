@@ -3,20 +3,32 @@ package de.tu_dresden.inf.lat.evee.nemo;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.UnknownFormatConversionException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
-import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
+import de.tu_dresden.inf.lat.evee.nemo.parser.NemoOwlParser;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
+import de.tu_dresden.inf.lat.evee.proofs.json.JsonStringProofParser;
 
 public class NemoReasoner {
 
+    private static final Logger logger = LogManager.getLogger(NemoReasoner.class);
+
+    private static final String OWL_RDF_COMPLETE_FILE_NAME = "owl-rdf-complete-reasoning";
+    private static final String NEMO_RULE_FILE_SUFFIX = ".rls";
+    private static final String ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
+
     private final String nemoExecDir = System.getProperty("user.home"); // TODO make configurable
-    private final String OWL_RDF_CCOMPLETE_FILE_NAME = "/owl-rdf-complete-reasoning.rls";
 
     private OWLOntology ontology;
     
@@ -24,35 +36,65 @@ public class NemoReasoner {
         this.ontology = ontology;
     }
 
-    public Proof<OWLAxiom> proof(OWLAxiom axiom) throws OWLOntologyStorageException, IOException, InterruptedException{
+    public IProof<OWLAxiom> proof(OWLAxiom axiom) throws OWLOntologyStorageException, IOException, InterruptedException{
         
-    System.out.println("start cooking");
+        logger.debug("start proofing");
 
-    String tmpDir = System.getProperty("java.io.tmpdir");
+        //parse axiom to nemo format
+        //assume every requested axiom is a subClass axiom (TODO: intance check of axiom)
+        NemoOwlParser parser = NemoOwlParser.getInstance();
+        String nemoAxiom = parser.subClassAxiomToNemoString((OWLSubClassOfAxiom) axiom);
+        logger.debug("parsed nemo Axiom: " + nemoAxiom);
 
-    //export ontology to ttl file
-    File ontFile = new File(tmpDir + "/ont.ttl");
-    TurtleDocumentFormat format = new TurtleDocumentFormat();
-    ontology.saveOntology(format, IRI.create(ontFile.toURI()));
+        //create all needed files
+        Path importDir = prepareImportDir(ontology);
+        File ruleFile = prepareRuleFile(OWL_RDF_COMPLETE_FILE_NAME, NEMO_RULE_FILE_SUFFIX);
+        File traceFile = File.createTempFile("nemoTrace", ".json");
 
-    //copy rule file to tmp dir
-    ClassLoader classLoader = getClass().getClassLoader();
-    File ruleSrcFile = new File(classLoader.getResource(OWL_RDF_CCOMPLETE_FILE_NAME).getFile());
-    File ruleDstFile = new File(tmpDir + OWL_RDF_CCOMPLETE_FILE_NAME);
-    Files.copy(ruleSrcFile.toPath(), ruleDstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        logger.debug("running nemo");
 
-    
-    System.out.println("cooking...");
+        //run nemo
+        int exitCode = runNemo(importDir.toString(), ruleFile.getAbsolutePath(), traceFile.getAbsolutePath(), nemoAxiom);
+        logger.debug("return Code of nemo: " + exitCode);
 
-    //run nemo
-    ProcessBuilder pb = new ProcessBuilder("./nmo", "-v", "-I", tmpDir, ruleDstFile.getAbsolutePath()).inheritIO();
-    pb.directory(new File(nemoExecDir));
-    Process p = pb.start();
+        JsonStringProofParser proofParser = JsonStringProofParser.getInstance();
+        IProof<String> proof = proofParser.fromFile(traceFile);
 
-    int returnCode = p.waitFor();
-    System.out.println("return Code of nemo: " + returnCode);
-
-    return null;
+        if (proof == null)
+            throw new UnknownFormatConversionException("error parsing proof. see debug log for stacktrace"); //TODO throw which excetption??
+        
+        return parser.nemoProoftoProofOWL(proof);
     }
 
+    
+    private File prepareRuleFile(String resourceFileName, String resourceSuffix) throws IOException{
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        File ruleSrcFile = new File(classLoader.getResource(resourceFileName + resourceSuffix).getFile());
+        File ruleDstFile =  File.createTempFile(resourceFileName, resourceSuffix);
+
+        Files.copy(ruleSrcFile.toPath(), ruleDstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        return ruleDstFile;
+    }
+
+    private Path prepareImportDir(OWLOntology ontology) throws IOException, OWLOntologyStorageException {
+        Path importDir = Files.createTempDirectory("nemo_exec");
+
+        File ontFile = new File(importDir + "/" + ONTOLOGY_EXPORT_FILE_NAME);
+        ontology.saveOntology(new TurtleDocumentFormat(), IRI.create(ontFile.toURI()));
+
+        return importDir;
+    }
+
+    private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws InterruptedException, IOException{
+        ProcessBuilder pb = new ProcessBuilder("./nmo", "-v", "-I", importDir, ruleFile,
+        "--trace-output", traceFile, "--trace", axiom)
+            .inheritIO();
+
+        pb.directory(new File(nemoExecDir));
+        Process p = pb.start();
+
+        return p.waitFor();
+    }
 }

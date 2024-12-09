@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<A> <= <B>",
+  "inferences" : [ {
+    "conclusion" : "<A> <= <B>",
+    "ruleName" : "generic",
+    "premises" : [ "<C> <= <D>", "<D> <= <E>", "<F> = (<G> n E<r>.<I> n E<s>.<H>)", "<B> = (<K> n E<r>.<J>)", "<C> = (<G> n E<r>.<L> n E<s>.<H>)", "<A> = (<K> n E<r>.<I>)", "<E> = (<G> n E<r>.<J> n E<s>.<H>)", "<A> <= <F>", "<M> = (<N> n E<r>.<L>)", "<A> <= <M>" ]
+  } ]
+}
