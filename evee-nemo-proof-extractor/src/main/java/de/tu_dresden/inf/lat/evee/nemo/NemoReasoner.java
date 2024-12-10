@@ -28,7 +28,7 @@ public class NemoReasoner {
     private static final String NEMO_RULE_FILE_SUFFIX = ".rls";
     private static final String ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
 
-    private final String nemoExecDir = System.getProperty("user.home"); // TODO make configurable
+    private static final String nemoExecDir = System.getProperty("user.home"); // TODO make configurable
 
     private OWLOntology ontology;
     
@@ -38,7 +38,7 @@ public class NemoReasoner {
 
     public IProof<OWLAxiom> proof(OWLAxiom axiom) throws OWLOntologyStorageException, IOException, InterruptedException{
         
-        logger.debug("start proofing");
+        logger.debug("generating proof");
 
         //parse axiom to nemo format
         //assume every requested axiom is a subClass axiom (TODO: intance check of axiom)

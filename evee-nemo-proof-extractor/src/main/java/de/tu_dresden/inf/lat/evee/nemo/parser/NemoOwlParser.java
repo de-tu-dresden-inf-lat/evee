@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,9 +17,6 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 
 public class NemoOwlParser {
     
-    //TODO: check prefix stuff
-    private static final String prefix = "http://www.w3.org/2002/07/";
-
     private NemoOwlParser() {}
 
 	private static class LazyHolder {
@@ -33,7 +31,7 @@ public class NemoOwlParser {
         String superClass = axiom.getSuperClass().asOWLClass().getIRI().toString();
         String subClass = axiom.getSubClass().asOWLClass().getIRI().toString();
 
-        return String.format("mainSubClassOf(<" + prefix + "%s>,<" + prefix + "%s>)", subClass, superClass);
+        return String.format("mainSubClassOf(<%s>,<%s>)", subClass, superClass);
     }
 
     public IProof<OWLAxiom> nemoProoftoProofOWL(IProof<String> proofStr){
@@ -43,10 +41,14 @@ public class NemoOwlParser {
 
         Set<List<String>> tripleAtomsArgs = null; //TODO: wat is zis?
   
-        TripleAtomsParser tp = new TripleAtomsParser(tripleAtomsArgs);
+        TripleAtomsParser tp = new TripleAtomsParser(Collections.emptySet());
         ELAtomsParser ep = ELAtomsParser.getInstance();
 
+        System.out.println("berfore first call");
+
         IProof<OWLAxiom>  proof = new Proof<>(toOWlAxiom(proofStr.getFinalConclusion(),tp,ep));
+
+        System.out.println("entering for");
         for(IInference<String> infStr:proofStr.getInferences()){
             currentConclusion = toOWlAxiom(infStr.getConclusion(),tp,ep);
             currentPremise = infStr.getPremises().stream().map(x->toOWlAxiom(x,tp,ep)).collect(Collectors.toList());

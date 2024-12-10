@@ -3,16 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <artifactId>evee-data</artifactId>
         <groupId>de.tu-dresden.inf.lat.evee</groupId>
         <version>${revision}</version>
     </parent>
-
     <artifactId>evee-data-owlapi5</artifactId>
     <packaging>jar</packaging>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <skipTests>true</skipTests>
@@ -20,38 +17,32 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <skipCompilation>false</skipCompilation>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
         </dependency>
-
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-distribution</artifactId>
             <version>5.1.17</version>
         </dependency>
-
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>javax.persistence-api</artifactId>
             <version>2.2</version>
         </dependency>
-
         <dependency>
             <groupId>de.tu-dresden.inf.lat</groupId>
             <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
             <version>${LatScalaDlTools.Version}</version>
         </dependency>
-
         <!--    <dependency>
               <groupId>com.fasterxml.jackson.core</groupId>
               <artifactId>jackson-databind</artifactId>
               <version>2.9.8</version>
             </dependency> -->
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -62,7 +53,6 @@
             <artifactId>log4j-core</artifactId>
             <version>2.17.2</version>
         </dependency>
-
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>org.semanticweb.hermit</artifactId>
@@ -70,10 +60,8 @@
         </dependency>
 
     </dependencies>
-
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -82,25 +70,21 @@
                     <skipTests>${skipTests}</skipTests>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.1</version>
-
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
-
                 <executions>
                     <execution>
                         <id>make-assembly</id>
                         <phase>package</phase>
                     </execution>
                 </executions>
-
             </plugin>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -133,10 +117,10 @@
                 </executions>
             </plugin>
         </plugins>
-
         <sourceDirectory>${project.basedir}/target/src/main/java</sourceDirectory>
         <testSourceDirectory>${project.basedir}/target/src/test/java</testSourceDirectory>
-
     </build>
 
+
 </project>
+
