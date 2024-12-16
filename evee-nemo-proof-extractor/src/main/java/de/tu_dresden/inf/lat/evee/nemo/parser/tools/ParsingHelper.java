@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser.tools;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -33,16 +34,28 @@ public class ParsingHelper {
     }
 
     public String getPredicateName(String predicateStr){
+        if(!isPredicate(predicateStr))
+            return "";
+
         Pattern pattern = Pattern.compile(predicateNameReg);
-        if(isPredicate(predicateStr))
-            return pattern.matcher(predicateStr).group(1);
-        return "";
+        Matcher matcher = pattern.matcher(predicateStr);
+
+        if (!matcher.find()) //no match
+            return "";
+
+       return matcher.group();
     }
 
     public List<String> getPredicateArguments(String predicateStr){
+        if(!isPredicate(predicateStr))
+            return Collections.emptyList();
+
         Pattern pattern = Pattern.compile(predicateArgumentsReg);
-        if(isPredicate(predicateStr))
-            return new ArrayList<>(Arrays.asList(pattern.matcher(predicateStr).group(1).split(",")));
-        return Collections.emptyList();
+        Matcher matcher = pattern.matcher(predicateStr);
+
+        if (!matcher.find()) //no match
+            return Collections.emptyList();
+
+        return new ArrayList<>(Arrays.asList(matcher.group().split(",")));
     }
 }

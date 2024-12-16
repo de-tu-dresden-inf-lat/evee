@@ -2,7 +2,6 @@ package de.tu_dresden.inf.lat.evee.nemo.parser;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -16,6 +15,11 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 
 public class NemoOwlParser {
+
+    //Set<List<String>> tripleAtomsArgs = null; //TODO: wat is zis?
+    private final TripleAtomsParser tripleParser = new TripleAtomsParser(Collections.emptySet());
+    private final ELAtomsParser elParser = ELAtomsParser.getInstance();
+    private final ParsingHelper helper = ParsingHelper.getInstance();
     
     private NemoOwlParser() {}
 
@@ -39,19 +43,12 @@ public class NemoOwlParser {
         List<OWLAxiom> currentPremise;
         OWLAxiom currentConclusion;
 
-        Set<List<String>> tripleAtomsArgs = null; //TODO: wat is zis?
-  
-        TripleAtomsParser tp = new TripleAtomsParser(Collections.emptySet());
-        ELAtomsParser ep = ELAtomsParser.getInstance();
+        String finalConc = proofStr.getFinalConclusion();
+        IProof<OWLAxiom>  proof = new Proof<>(toOWlAxiom(finalConc));
 
-        System.out.println("berfore first call");
-
-        IProof<OWLAxiom>  proof = new Proof<>(toOWlAxiom(proofStr.getFinalConclusion(),tp,ep));
-
-        System.out.println("entering for");
         for(IInference<String> infStr:proofStr.getInferences()){
-            currentConclusion = toOWlAxiom(infStr.getConclusion(),tp,ep);
-            currentPremise = infStr.getPremises().stream().map(x->toOWlAxiom(x,tp,ep)).collect(Collectors.toList());
+            currentConclusion = toOWlAxiom(infStr.getConclusion());
+            currentPremise = infStr.getPremises().stream().map(x->toOWlAxiom(x)).collect(Collectors.toList());
             currentInf = new Inference<>(currentConclusion,infStr.getRuleName(),currentPremise);
 
             proof.addInference(currentInf);
@@ -60,15 +57,15 @@ public class NemoOwlParser {
         return proof;
     }
 
-    private OWLAxiom toOWlAxiom(String atom, TripleAtomsParser tp, ELAtomsParser ep){
-        ParsingHelper helper = ParsingHelper.getInstance();
+    private OWLAxiom toOWlAxiom(String atom){
         if(helper.getPredicateName(atom).equals(TripleAtomsParser.triple)) {
             try {
-                return tp.parse(helper.getPredicateArguments(atom));
+                return tripleParser.parse(helper.getPredicateArguments(atom));
             } catch (ConceptTranslationError e) {
                 throw new RuntimeException(e); //TODO this cant be good
             }
         }
-        return ep.parse(helper.getPredicateName(atom), helper.getPredicateArguments(atom));
+        
+        return elParser.parse(helper.getPredicateName(atom), helper.getPredicateArguments(atom));
     }
 }
