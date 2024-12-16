@@ -36,15 +36,9 @@ public class NemoReasoner {
         this.ontology = ontology;
     }
 
-    public IProof<OWLAxiom> proof(OWLAxiom axiom) throws OWLOntologyStorageException, IOException, InterruptedException{
+    public IProof<String> proof(String axiom) throws IOException, OWLOntologyStorageException, InterruptedException {
         
         logger.debug("generating proof");
-
-        //parse axiom to nemo format
-        //assume every requested axiom is a subClass axiom (TODO: intance check of axiom)
-        NemoOwlParser parser = NemoOwlParser.getInstance();
-        String nemoAxiom = parser.subClassAxiomToNemoString((OWLSubClassOfAxiom) axiom);
-        logger.debug("parsed nemo Axiom: " + nemoAxiom);
 
         //create all needed files
         Path importDir = prepareImportDir(ontology);
@@ -54,16 +48,17 @@ public class NemoReasoner {
         logger.debug("running nemo");
 
         //run nemo
-        int exitCode = runNemo(importDir.toString(), ruleFile.getAbsolutePath(), traceFile.getAbsolutePath(), nemoAxiom);
+        int exitCode = runNemo(importDir.toString(), ruleFile.getAbsolutePath(), traceFile.getAbsolutePath(), axiom);
         logger.debug("return Code of nemo: " + exitCode);
+        //TODO: check exit code?
 
         JsonStringProofParser proofParser = JsonStringProofParser.getInstance();
-        IProof<String> proof = proofParser.fromFile(traceFile);
 
+        IProof<String> proof = proofParser.fromFile(traceFile);
         if (proof == null)
-            throw new UnknownFormatConversionException("error parsing proof. see debug log for stacktrace"); //TODO throw which excetption??
-        
-        return parser.nemoProoftoProofOWL(proof);
+            throw new IOException("Error reading nemo trace file");
+
+        return proof;
     }
 
     
