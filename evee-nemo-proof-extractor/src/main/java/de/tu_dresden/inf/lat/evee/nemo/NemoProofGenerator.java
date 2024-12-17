@@ -20,27 +20,14 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
     }
 
     @Override
-    public boolean successful() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'successful'");
-    }
-
-    @Override
     public void setOntology(OWLOntology ontology) {
         reasoner = new NemoReasoner(ontology);
-    }
-
-    @Override
-    public boolean supportsProof(OWLAxiom axiom) {
-        // TODO add isEntailed or something??
-        return axiom instanceof OWLSubClassOfAxiom;
     }
 
     @Override
     public IProof<OWLAxiom> getProof(OWLAxiom axiom) throws ProofGenerationException {
         NemoOwlParser parser = NemoOwlParser.getInstance();
 
-        //TODO type check axiom
         String nemoAxiom = parser.subClassAxiomToNemoString((OWLSubClassOfAxiom) axiom);
 
         IProof<String> proof;
@@ -50,7 +37,30 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
             throw new ProofGenerationException(e);
         }
 
-        return parser.nemoProoftoProofOWL(proof);
+        return parser.toProofOWL(proof);
     }
+
+    @Override
+    public boolean supportsProof(OWLAxiom axiom) {
+        if (!(axiom instanceof OWLSubClassOfAxiom))
+            return false;
+    
+        OWLSubClassOfAxiom subAxiom = (OWLSubClassOfAxiom) axiom;
+        boolean subClassValid = subAxiom.getSubClass().asOWLClass().isOWLClass();
+        boolean superClassValid = subAxiom.getSuperClass().asOWLClass().isOWLClass();
+
+        return subClassValid && superClassValid;
+    }
+
+    @Override
+	public void cancel() {
+		// do nothing, assuming that NEMO is fast enough
+	}
+
+	@Override
+	public boolean successful() {
+		// return true, because we let NEMO run through to the end
+		return true;
+	}
     
 }

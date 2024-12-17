@@ -11,12 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
-import de.tu_dresden.inf.lat.evee.nemo.parser.NemoOwlParser;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonStringProofParser;
 
@@ -28,12 +25,16 @@ public class NemoReasoner {
     private static final String NEMO_RULE_FILE_SUFFIX = ".rls";
     private static final String ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
 
-    private static final String nemoExecDir = System.getProperty("user.home"); // TODO make configurable
-
+    //path to directory of nemo executable
+    private String nemoExecDir = System.getProperty("user.home");
     private OWLOntology ontology;
     
     public NemoReasoner(OWLOntology ontology){
         this.ontology = ontology;
+    }
+
+    public void setNemoExecDir(String nemoExecDirPath){
+        nemoExecDir = nemoExecDirPath;
     }
 
     public IProof<String> proof(String axiom) throws IOException, OWLOntologyStorageException, InterruptedException {

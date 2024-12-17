@@ -38,7 +38,7 @@ public class NemoOwlParser {
         return String.format("mainSubClassOf(<%s>,<%s>)", subClass, superClass);
     }
 
-    public IProof<OWLAxiom> nemoProoftoProofOWL(IProof<String> proofStr){
+    public IProof<OWLAxiom> toProofOWL(IProof<String> proofStr){
         IInference<OWLAxiom> currentInf;
         List<OWLAxiom> currentPremise;
         OWLAxiom currentConclusion;
@@ -57,7 +57,7 @@ public class NemoOwlParser {
         return proof;
     }
 
-    private OWLAxiom toOWlAxiom(String atom){
+    public OWLAxiom toOWlAxiom(String atom){
         if(helper.getPredicateName(atom).equals(TripleAtomsParser.triple)) {
             try {
                 return tripleParser.parse(helper.getPredicateArguments(atom));

@@ -33,5 +33,6 @@ public class ProofTest {
         IProof<OWLAxiom> proof = generator.getProof(task.getConclusion());
 
         System.out.println(proof.toString());
+        System.out.println("final conclusion: " + proof.getFinalConclusion());
     }
 }
