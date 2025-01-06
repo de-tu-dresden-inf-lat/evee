@@ -3,6 +3,7 @@ package de.tu_dresden.inf.lat.evee.nemo.parser.tools;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Alrabbaa
@@ -10,9 +11,9 @@ import java.util.regex.Pattern;
  */
 public class ParsingHelper {
     private static final String idReg = "[_:]*[0-9a-zA-Z]+[0-9a-zA-Z-]*";
-    private static final String predicateNameReg = "<?[a-zA-z0-9]+>?(?=\\()";
+    private static final String predicateNameReg = "<?[a-zA-z0-9:/.-]+>?(?=\\()";
     private static final String predicateArgumentsReg = "(?<=\\()[^()]*(?=\\))";
-    private static final String predicateReg = "<?[a-zA-z0-9]+>?[(][^()]*[)]";
+    private static final String predicateReg = "<?[a-zA-z0-9:/.-]+>?[(][^()]*[)]";
     private ParsingHelper() {
     }
 
@@ -42,8 +43,8 @@ public class ParsingHelper {
 
         if (!matcher.find()) //no match
             return "";
-
-       return matcher.group();
+        
+        return matcher.group();
     }
 
     public List<String> getPredicateArguments(String predicateStr){
@@ -56,6 +57,9 @@ public class ParsingHelper {
         if (!matcher.find()) //no match
             return Collections.emptyList();
 
-        return new ArrayList<>(Arrays.asList(matcher.group().split(",")));
+        String [] args =  matcher.group().split(",");
+
+        //removing whitespaces
+        return Arrays.stream(args).map(String::trim).collect(Collectors.toList());
     }
 }
