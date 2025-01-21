@@ -18,33 +18,23 @@ import java.util.stream.Collectors;
 public class TripleAtomsParser {
 	private static final Logger logger = LogManager.getLogger(TripleAtomsParser.class);
 
-	private static final String subclassOfStr = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
-
 	//
+	private static final String subclassOfStr = "<http://www.w3.org/2000/01/rdf-schema#subClassOf>";
 
-	private static final String existentialRestrictionStr = "http://www.w3.org/2002/07/owl#someValuesFrom";
+	private static final String existentialRestrictionStr = "<http://www.w3.org/2002/07/owl#someValuesFrom>";
+	private static final String conjuctionStr = "<http://www.w3.org/2002/07/owl#intersectionOf>";
 
-	private static final String conjuctionStr = "http://www.w3.org/2002/07/owl#intersectionOf";
+	private static final String typeStr = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>";
+	private static final String conceptStr = "<http://www.w3.org/2002/07/owl#Class>";
+	private static final String propertyStr = "<http://www.w3.org/2002/07/owl#onProperty>";
 
-	//
-
-	private static final String typeStr = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-
-	private static final String conceptStr = "http://www.w3.org/2002/07/owl#Class";
-
-	private static final String propertyStr = "http://www.w3.org/2002/07/owl#onProperty";
-
-	//
-
-	private static final String firstStr = "http://www.w3.org/1999/02/22-rdf-syntax-ns#first";
-
-	private static final String restStr = "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest";
-
-	private static final String nilStr = "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil";
-
+	private static final String firstStr = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>";
+	private static final String restStr = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>";
+	private static final String nilStr = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>";
 	//
 
 	public static final String triple = "TRIPLE";
+	public static final String repOf = "repOf";
 
 	private static final OWLHelper owlHelper = OWLHelper.getInstance();
 	private static final ParsingHelper parsingHelper = ParsingHelper.getInstance();
@@ -52,8 +42,19 @@ public class TripleAtomsParser {
 	private static final OWLSubClassOfAxiom defaultAxiom =
 			owlHelper.getOWLSubClassOfAxiom(owlHelper.getOWLBot(), owlHelper.getOWLTop());
 
-	private final Set<List<String>> tripleAtoms;
-	public TripleAtomsParser(Set<List<String>> tripleAtomsArgs){
+	// holds all relevant triples of a proof to parse placeholders
+	private Set<List<String>> tripleAtoms;
+
+	// chaches already parsed placeholders. 
+	// Key is the placeholder id and value the corresponding OWL concept 
+	private Map<String, OWLClassExpression> placeholderCache;
+
+	public TripleAtomsParser(){
+		this.placeholderCache = new HashMap<>();
+		this.tripleAtoms = Collections.emptySet();
+	}
+
+	public void setTripleFacts(Set<List<String>> tripleAtomsArgs){
 		this.tripleAtoms = Sets.newHashSet(tripleAtomsArgs);
 	}
 
@@ -72,8 +73,8 @@ public class TripleAtomsParser {
 		String lhsStr = args.get(0);
 		String rhsStr = args.get(2);
 
-		OWLClassExpression lhs = getConceptFromId(lhsStr);
-		OWLClassExpression rhs = getConceptFromId(rhsStr);
+		OWLClassExpression lhs = parseConceptName(lhsStr);
+		OWLClassExpression rhs = parseConceptName(rhsStr);
 
 		OWLAxiom result = owlHelper.getOWLSubClassOfAxiom(lhs, rhs);
 
@@ -94,10 +95,9 @@ public class TripleAtomsParser {
 		String fillerConceptStr = relevantFacts.stream().filter(x -> x.get(1).equals(existentialRestrictionStr))
 				.findFirst().get().get(2);
 
-		OWLClassExpression filler = getConceptFromId(fillerConceptStr);
+		OWLClassExpression filler = parseConceptName(fillerConceptStr);
 
 		return owlHelper.getOWLExistentialRestriction(property, filler);
-
 	}
 
 	private OWLObjectIntersectionOf parseConjunction(String id, Set<List<String>> relevantFacts) {
@@ -114,7 +114,7 @@ public class TripleAtomsParser {
 		Set<OWLClassExpression> conjuncts = new HashSet<>();
 		relevantFacts.stream().filter(x -> x.get(1).equals(firstStr)).forEach(x -> {
 			try {
-				conjuncts.add(getConceptFromId(x.get(2)));
+				conjuncts.add(parseConceptName(x.get(2)));
 			} catch (ConceptTranslationError e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -148,29 +148,52 @@ public class TripleAtomsParser {
 			result.add(atomArgs);
 
 			for (String arg : atomArgs) {
-				if (parsingHelper.isID(arg)) {
-					if (!explored.contains(arg)) {
-						getAllRelevantTripleFacts(arg, explored, result);
-					}
+				if (parsingHelper.isPlaceholder(arg) && !explored.contains(arg)) {
+					getAllRelevantTripleFacts(arg, explored, result);
 				}
 			}
 		}
 	}
 
-	private OWLClassExpression getConceptFromId(String id) throws ConceptTranslationError {
-		if (!parsingHelper.isID(id))
-			return owlHelper.getOWLConceptName(format(id));
+	private OWLClassExpression parseRepresentativeOf(String placeholder) throws ConceptTranslationError{
+		
+		List<String> repOfFact = this.tripleAtoms.stream()
+			.filter(x ->  x.get(1).equals(repOf) && x.get(2).equals(placeholder))
+				.findFirst().orElse(null);
 
-		Set<List<String>> relevantFacts = this.tripleAtoms.stream().filter(x -> x.get(0).equals(id))
+		if (repOfFact == null)
+			throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
+		
+		return getConceptFromPlaceholder(repOfFact.get(0));
+	}
+
+	public OWLClassExpression getConceptFromPlaceholder(String placeholder) throws ConceptTranslationError {
+		if (placeholderCache.get(placeholder) != null){
+			return placeholderCache.get(placeholder);
+		}
+
+		Set<List<String>> relevantFacts = this.tripleAtoms.stream().filter(x -> x.get(0).equals(placeholder))
 				.collect(Collectors.toSet());
 
-		if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(existentialRestrictionStr)))
-			return parseExistentialRestriction(relevantFacts);
+		OWLClassExpression parsedConcept;
+		if (relevantFacts.isEmpty()) //no match in triples -> 1:1 mapping of placholders
+			parsedConcept = parseRepresentativeOf(placeholder);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(existentialRestrictionStr))) //existential restriction
+			parsedConcept = parseExistentialRestriction(relevantFacts);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(conjuctionStr))) // conjunction
+			parsedConcept = parseConjunction(placeholder, relevantFacts);
+		else // error
+			throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
 
-		if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(conjuctionStr)))
-			return parseConjunction(id, relevantFacts);
+		placeholderCache.put(placeholder, parsedConcept);
+		return parsedConcept;
+	}
 
-		throw new ConceptTranslationError("Failed to parse " + triple + " facts with id = " + id);
+	private OWLClassExpression parseConceptName(String conceptName) throws ConceptTranslationError {
+		if (!parsingHelper.isPlaceholder(conceptName))
+			return owlHelper.getOWLConceptName(format(conceptName));
+
+			return getConceptFromPlaceholder(conceptName);
 	}
 
 	private void isConcept(Set<List<String>> relevantFacts) {

@@ -1,7 +1,9 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -14,23 +16,21 @@ import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 
-public class NemoOwlParser {
+public class NemoProofParser {
 
     //Set<List<String>> tripleAtomsArgs = null; //TODO: wat is zis?
-    private final TripleAtomsParser tripleParser = new TripleAtomsParser(Collections.emptySet());
-    private final ELAtomsParser elParser = ELAtomsParser.getInstance();
+   //  = new TripleAtomsParser(Collections.emptySet());
     private final ParsingHelper helper = ParsingHelper.getInstance();
+    private final TripleAtomsParser tripleParser;
+    private final AbstractAtomParser atomParser;
+
     
-    private NemoOwlParser() {}
+    public NemoProofParser(AbstractAtomParser atomParser, TripleAtomsParser tripleParser) {
+        this.tripleParser = tripleParser;
+        this.atomParser = atomParser;
+    }
 
-	private static class LazyHolder {
-		static NemoOwlParser instance = new NemoOwlParser();
-	}
-
-	public static NemoOwlParser getInstance() {
-		return LazyHolder.instance;
-	}
-
+    // TODO move method somewhere else?
     public String subClassAxiomToNemoString(OWLSubClassOfAxiom axiom){
         String superClass = axiom.getSuperClass().asOWLClass().getIRI().toString();
         String subClass = axiom.getSubClass().asOWLClass().getIRI().toString();
@@ -42,6 +42,8 @@ public class NemoOwlParser {
         IInference<OWLAxiom> currentInf;
         List<OWLAxiom> currentPremise;
         OWLAxiom currentConclusion;
+
+        tripleParser.setTripleFacts(getPlaceholderTriples(proofStr.getInferences()));
 
         String finalConc = proofStr.getFinalConclusion();
         IProof<OWLAxiom>  proof = new Proof<>(toOWlAxiom(finalConc));
@@ -66,6 +68,31 @@ public class NemoOwlParser {
             }
         }
         
-        return elParser.parse(helper.getPredicateName(atom), helper.getPredicateArguments(atom));
+        return atomParser.parse(helper.getPredicateName(atom), helper.getPredicateArguments(atom));
+    }
+
+    public Set<List<String>> getPlaceholderTriples(List<IInference<String>> inferences){
+
+        Set<List<String>> relevantTriples = new HashSet<List<String>>();
+
+        for(IInference<String> inf : inferences){
+            String conc = inf.getConclusion();
+
+            if(helper.isRdfTriple(conc) && helper.containsPlaceholders(conc)){
+                relevantTriples.add(helper.getPredicateArguments(conc));
+            }
+            else if(helper.getPredicateName(conc).equals(TripleAtomsParser.repOf) && 
+                    helper.countPlaceholders(conc) == 2){ //TODO optimize
+                
+                List<String> args = helper.getPredicateArguments(conc);
+                
+                //to match triple format
+                args.add(1, helper.getPredicateName(conc));
+
+                relevantTriples.add(args);
+            }
+        }
+        
+        return relevantTriples;
     }
 }

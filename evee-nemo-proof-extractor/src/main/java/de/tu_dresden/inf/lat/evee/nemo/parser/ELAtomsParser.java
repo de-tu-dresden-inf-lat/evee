@@ -12,7 +12,7 @@ import java.util.Set;
 
 /**
  * @author Christian Alrabbaa
- *
+ *  DEPRICATED - will be removed
  */
 public class ELAtomsParser {
 	private final OWLHelper owlHelper = OWLHelper.getInstance();

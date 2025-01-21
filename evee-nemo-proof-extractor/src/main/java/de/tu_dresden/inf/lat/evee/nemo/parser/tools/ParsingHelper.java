@@ -10,10 +10,11 @@ import java.util.stream.Collectors;
  *
  */
 public class ParsingHelper {
-    private static final String idReg = "[_:]*[0-9a-zA-Z]+[0-9a-zA-Z-]*";
     private static final String predicateNameReg = "<?[a-zA-z0-9:/.-]+>?(?=\\()";
     private static final String predicateArgumentsReg = "(?<=\\()[^()]*(?=\\))";
     private static final String predicateReg = "<?[a-zA-z0-9:/.-]+>?[(][^()]*[)]";
+    private static final String tripleReq = "TRIPLE[(][^()]*[)]";
+    private static final String placeholderReg = "_:[0-9]{1,3}";
     private ParsingHelper() {
     }
 
@@ -25,9 +26,8 @@ public class ParsingHelper {
         return ParsingHelper.LazyHolder.instance;
     }
 
-    public boolean isID(String arg) {
-        arg = arg.replaceAll("\"", "");
-        return !arg.contains("#") && arg.matches(idReg);
+    public boolean isRdfTriple(String predicateStr){
+        return predicateStr.matches(tripleReq);
     }
 
     public boolean isPredicate(String predicateStr){
@@ -62,4 +62,41 @@ public class ParsingHelper {
         //removing whitespaces
         return Arrays.stream(args).map(String::trim).collect(Collectors.toList());
     }
+
+    public boolean isPlaceholder(String arg){
+        return arg.matches(placeholderReg);
+    }
+
+    public boolean containsPlaceholders(String predicateStr){
+
+        Pattern pattern = Pattern.compile(placeholderReg);
+        Matcher matcher = pattern.matcher(predicateStr);
+
+        return matcher.find();
+    }
+
+    public int countPlaceholders(String predicateStr){
+        Pattern pattern = Pattern.compile(placeholderReg);
+        Matcher matcher = pattern.matcher(predicateStr);
+
+        int count = 0;
+        while (matcher.find())
+            count++;
+        
+        return count;
+    }
+
+    public List<String> getPlaceholders(String predicateStr){
+
+        Pattern pattern = Pattern.compile(placeholderReg);
+        Matcher matcher = pattern.matcher(predicateStr);
+            
+        List<String> placeholders = new  ArrayList<String>();
+        while(matcher.find()){
+            placeholders.add(matcher.group());
+        }
+
+        return placeholders;
+    }
+
 }

@@ -4,7 +4,10 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
-import de.tu_dresden.inf.lat.evee.nemo.parser.NemoOwlParser;
+import de.tu_dresden.inf.lat.evee.nemo.parser.ELAtomParser;
+import de.tu_dresden.inf.lat.evee.nemo.parser.ELAtomsParser;
+import de.tu_dresden.inf.lat.evee.nemo.parser.NemoProofParser;
+import de.tu_dresden.inf.lat.evee.nemo.parser.TripleAtomsParser;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
@@ -26,7 +29,7 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     @Override
     public IProof<OWLAxiom> getProof(OWLAxiom axiom) throws ProofGenerationException {
-        NemoOwlParser parser = NemoOwlParser.getInstance();
+        NemoProofParser parser = new NemoProofParser(new ELAtomParser(), new TripleAtomsParser());
 
         String nemoAxiom = parser.subClassAxiomToNemoString((OWLSubClassOfAxiom) axiom);
 
