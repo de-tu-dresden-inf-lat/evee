@@ -22,6 +22,12 @@
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-osgidistribution</artifactId>
             <version>4.5.29</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>edu.stanford.protege</groupId>
@@ -165,7 +171,6 @@
                             org.protege.editor.core.*;version="5.0",
                             sun.misc.*;resolution:=optional,
                             org.checkerframework.checker.nullness.qual.*;resolution:=optional,
-                            android.os;resolution:=optional,
                             *
                         </Import-Package>
                         <Export-Package>
@@ -181,11 +186,11 @@
                             com.typesafe.scalalogging.*,
                             scala.*,
                             com.google.errorprone.annotations.*,
-<!--                            com.google.common.*,
-                            com.google.appengine.api,
-                            com.google.appengine.api.utils,
-                            com.google.apphosting.api,
-                            com.google.thirdparty.publicsuffix, -->
+                            <!-- com.google.common.*,
+                                 com.google.appengine.api,
+                                 com.google.appengine.api.utils,
+                                 com.google.apphosting.api,
+                                 com.google.thirdparty.publicsuffix, -->
                         </Export-Package>
                         <Private-Package>
                             org.yaml.snakeyaml.*,

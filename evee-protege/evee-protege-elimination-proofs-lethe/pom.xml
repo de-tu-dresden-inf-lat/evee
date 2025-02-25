@@ -28,11 +28,11 @@
             <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>net.sourceforge.owlapi</groupId>
-            <artifactId>owlapi-api</artifactId>
-            <version>4.5.29</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>net.sourceforge.owlapi</groupId>-->
+<!--            <artifactId>owlapi-api</artifactId>-->
+<!--            <version>4.5.29</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>

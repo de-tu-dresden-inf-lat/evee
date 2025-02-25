@@ -29,6 +29,11 @@
             <artifactId>protege-editor-owl</artifactId>
             <version>5.6.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
         <!--        logging related-->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -78,11 +83,14 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
-                            org.protege.editor.owl.*;version="4.3",
-                            org.protege.editor.core.*;version="4.3",
+                            org.protege.editor.owl.*;version="5.0",
+                            org.protege.editor.core.*;version="5.0",
                             de.tu_dresden.inf.lat.evee.protege.tools.ui.*,
-                            scala.swing.*;resolution:=optional,
                             de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.*,
+                            scala.swing.*;resolution:=optional,
+                            com.google.appengine.api.*;resolution:=optional,
+                            com.google.apphosting.api.*;resolution:=optional,
+                            com.google.thirdparty.publicsuffix.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>
@@ -97,6 +105,8 @@
                             junit.framework.*,
                             junit.runner.*,
                             org.hamcrest.*,
+                            com.google.common.*,
+                            com.google.common.base.*
                         </Private-Package>
                     </instructions>
                 </configuration>

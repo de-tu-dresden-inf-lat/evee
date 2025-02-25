@@ -29,6 +29,26 @@
             <artifactId>protege-editor-owl</artifactId>
             <version>5.6.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.13.3</version>
+        </dependency>
         <!--        logging related-->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -77,6 +97,10 @@
                             org.checkerframework.*;resolution:=optional,
                             sun.misc.*;resolution:=optional,
                             org.openrdf.*;resolution:=optional,
+                            android.os.*;resolution:=optional,
+                            com.google.appengine.api.*;resolution:=optional,
+                            com.google.apphosting.api.*;resolution:=optional,
+                            com.google.thirdparty.publicsuffix.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>

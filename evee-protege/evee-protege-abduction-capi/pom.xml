@@ -37,6 +37,11 @@
             <artifactId>protege-editor-owl</artifactId>
             <version>5.6.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
 <!--        evee-related -->
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
