@@ -51,8 +51,40 @@ public class PlaceholderParser {
 	// Key is the placeholder id and value the corresponding OWL concept 
 	private Map<String, OWLClassExpression> placeholderCache = new HashMap<>();
 
-	public PlaceholderParser(List<IInference<String>> inferences){
-		computeParsingBase(inferences);
+	public PlaceholderParser(){}
+
+	/*
+	 * computes facts of input that are relevant for parsing placeholders 
+	 */
+	public void initParsingBase(List<IInference<String>> inferences){
+
+        Set<List<String>> parsingBase = new HashSet<>();
+        Map<String,String> equiv = new HashMap<>();
+
+        for(IInference<String> inf : inferences){
+            String conc = inf.getConclusion();
+
+            if(!parsingHelper.containsPlaceholders(conc))
+                continue;
+
+            if(parsingHelper.isRdfTriple(conc)){
+                parsingBase.add(parsingHelper.getPredicateArguments(conc));
+            }
+            else if(parsingHelper.getPredicateName(conc).equals(repOf)){
+				List<String> args = parsingHelper.getPredicateArguments(conc);         
+				equiv.put(args.get(1), args.get(0)); //second arg of repOf predicate is Placeholder intr by nemo
+            }
+        }
+        
+        this.parsingBase = parsingBase;
+		this.equivalentPlaceholders = equiv;
+    }
+	
+	public OWLClassExpression parseConceptOrPlaceholder(String conceptName) throws ConceptTranslationError {
+		if (parsingHelper.isPlaceholder(conceptName))
+			return getConceptFromPlaceholder(conceptName);
+
+		return owlHelper.getOWLConceptName(parsingHelper.format(conceptName));
 	}
 
 	public OWLClassExpression getConceptFromPlaceholder(String placeholder) throws ConceptTranslationError {
@@ -77,13 +109,6 @@ public class PlaceholderParser {
 		return parsedConcept;
 	}
 	
-	public OWLClassExpression parseConceptOrPlaceholder(String conceptName) throws ConceptTranslationError {
-		if (parsingHelper.isPlaceholder(conceptName))
-			return getConceptFromPlaceholder(conceptName);
-
-		return owlHelper.getOWLConceptName(format(conceptName));
-	}
-	
 	private OWLAxiom parseSubclassOf(List<String> args) throws ConceptTranslationError {
 		String lhsStr = args.get(0);
 		String rhsStr = args.get(2);
@@ -105,7 +130,7 @@ public class PlaceholderParser {
 		String currentPropertyStr =
 				relevantFacts.stream().filter(x -> x.get(1).equals(propertyStr)).findFirst().get().get(2);
 
-		OWLObjectProperty property = owlHelper.getPropertyName(format(currentPropertyStr));
+		OWLObjectProperty property = owlHelper.getPropertyName(parsingHelper.format(currentPropertyStr));
 
 		String fillerConceptStr = relevantFacts.stream().filter(x -> x.get(1).equals(existentialRestrictionStr))
 				.findFirst().get().get(2);
@@ -118,7 +143,7 @@ public class PlaceholderParser {
 	private OWLObjectIntersectionOf parseConjunction(String id, Set<List<String>> relevantFacts) {
 
 		logger.debug("Parsing a conjunction");
-		relevantFacts.addAll(getAllRelevantTripleFacts(id));
+		relevantFacts.addAll(getAllRelevantConjFacts(id));
 
 		Set<OWLClassExpression> conjuncts = new HashSet<>();
 		relevantFacts.stream().filter(x -> x.get(1).equals(firstStr)).forEach(x -> {
@@ -137,14 +162,14 @@ public class PlaceholderParser {
 		return result;
 	}
 
-	private Set<List<String>> getAllRelevantTripleFacts(String id) {
+	private Set<List<String>> getAllRelevantConjFacts(String id) {
 		Set<List<String>> result = new HashSet<>();
-		getAllRelevantTripleFacts(id, result);
+		getAllRelevantConjFacts(id, result);
 
 		return result;
 	}
 
-	private void getAllRelevantTripleFacts(String id, Set<List<String>> result) {		
+	private void getAllRelevantConjFacts(String id, Set<List<String>> result) {		
 		 Set<List<String>> relevantFacts = this.parsingBase.stream()
 		 	.filter(x -> !result.contains(x))
 				.filter(x -> x.get(0).equals(id))
@@ -156,7 +181,7 @@ public class PlaceholderParser {
 			String next = atomArgs.get(2);
 			if (parsingHelper.isPlaceholder(next) && 
 					(atomArgs.get(1).equals(restStr) || atomArgs.get(1).equals(conjuctionStr))) {
-				getAllRelevantTripleFacts(next, result);
+				getAllRelevantConjFacts(next, result);
 			}
 		}
 	}
@@ -179,39 +204,6 @@ public class PlaceholderParser {
 		}
 	}
 
-	private String format(String arg) {
-		if (arg.startsWith("<") && arg.endsWith(">"))
-			return arg.substring(1, arg.length() - 1);
-		return arg;
-	}
-
-	/*
-	 * computes facts of input that are relevant for parsing placeholders 
-	 */
-	private void computeParsingBase(List<IInference<String>> inferences){
-
-        Set<List<String>> parsingBase = new HashSet<>();
-        Map<String,String> equiv = new HashMap<>();
-
-        for(IInference<String> inf : inferences){
-            String conc = inf.getConclusion();
-
-            if(!parsingHelper.containsPlaceholders(conc))
-                continue;
-
-            if(parsingHelper.isRdfTriple(conc)){
-                parsingBase.add(parsingHelper.getPredicateArguments(conc));
-            }
-            else if(parsingHelper.getPredicateName(conc).equals(repOf)){
-				List<String> args = parsingHelper.getPredicateArguments(conc);         
-				equiv.put(args.get(1), args.get(0)); //second arg of repOf predicate is unique
-            }
-        }
-        
-        this.parsingBase = parsingBase;
-		this.equivalentPlaceholders = equiv;
-    }
-
 	//for manually setting parsingBase & equivalentPlaceholders i.e. for testing
 	public void setParsingBase(Set<List<String>> parsingBase){
 		this.parsingBase = Sets.newHashSet(parsingBase);
@@ -219,10 +211,6 @@ public class PlaceholderParser {
 	
 	public void setEquivalentPlaceholders(Map<String, String> equiv){
 		equivalentPlaceholders = new HashMap<String, String>(equiv);
-	}
-
-	public void printCache(){
-		System.out.println("CACHE: \n" + placeholderCache);
 	}
 
 }

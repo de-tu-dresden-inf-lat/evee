@@ -104,7 +104,7 @@ nf:isSubClass(?C1), nf:isSubClass(?C2) :- nf:conj(?X, ?C1, ?C2), nf:isSubClass(?
 directSubProp(?R,?S) :- TRIPLE(?R,rdfs:subPropertyOf,?S) .
 % Initialise role hierarchy only for roles in subclass positions:
 nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) . 
-nf:subProp(?R,?T) :- nf:subProp(?R,?S), directSubProp(?S,?T) .
+nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 
 
 %%% Start classification for all named classes:
@@ -133,6 +133,7 @@ inf:subClassOf(?C,?Y) :-
 inf:ex(?E,?R,?C) :- inf:subClassOf(?E,?Y), nf:exists(?Y,?R,?C) .
 
 % R_\exists^+
+#[name("R_\exists^+")]
 inf:subClassOf(?E,?Y) :-
 	inf:ex(?E,?R,?C), inf:subClassOf(?C,?D),
 	nf:subProp(?R,?S), nf:exists(?Y,?S,?D), nf:isSubClass(?Y) .

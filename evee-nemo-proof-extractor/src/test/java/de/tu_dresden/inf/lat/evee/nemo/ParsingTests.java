@@ -81,7 +81,7 @@ public class ParsingTests {
 
 
 
-        PlaceholderParser parser = new PlaceholderParser(Collections.emptyList());
+        PlaceholderParser parser = new PlaceholderParser();
         parser.setParsingBase(parsingBase);
         parser.setEquivalentPlaceholders(repOfs);
 

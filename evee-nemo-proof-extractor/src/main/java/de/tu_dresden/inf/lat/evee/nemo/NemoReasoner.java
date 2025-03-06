@@ -25,7 +25,7 @@ public class NemoReasoner {
     private static final String NEMO_RULE_FILE_SUFFIX = ".rls";
     private static final String ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
 
-    //path to directory of nemo executable
+    //path to directory of nemo executable TODO: make configurable
     private String nemoExecDir = System.getProperty("user.home");
     private OWLOntology ontology;
     

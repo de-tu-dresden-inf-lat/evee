@@ -15,8 +15,8 @@ public class ParsingHelper {
     private static final String predicateReg = "<?[a-zA-z0-9:/.-]+>?[(][^()]*[)]";
     private static final String tripleReq = "TRIPLE[(][^()]*[)]";
     private static final String placeholderReg = "_:[0-9]{1,3}";
-    private ParsingHelper() {
-    }
+
+    private ParsingHelper() {}
 
     private static class LazyHolder {
         static ParsingHelper instance = new ParsingHelper();
@@ -98,5 +98,11 @@ public class ParsingHelper {
 
         return placeholders;
     }
+
+    public String format(String arg) {
+		if (arg.startsWith("<") && arg.endsWith(">"))
+			return arg.substring(1, arg.length() - 1);
+		return arg;
+	}
 
 }

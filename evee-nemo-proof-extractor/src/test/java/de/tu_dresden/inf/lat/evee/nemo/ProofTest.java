@@ -1,5 +1,7 @@
 package de.tu_dresden.inf.lat.evee.nemo;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.HashSet;
 
@@ -14,6 +16,7 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationExceptio
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofParser;
+import de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.CorrectnessEvaluator;
 
 public class ProofTest {
     
@@ -23,16 +26,21 @@ public class ProofTest {
         
         IInference<OWLAxiom> task = JsonProofParser.getInstance()
         .fromFile(new File(
-                Thread.currentThread().getContextClassLoader().getResource("task01212.json").getPath()))
+                Thread.currentThread().getContextClassLoader().getResource("task_roleInc.json").getPath()))
         .getInferences().get(0);
 
         OWLOntology ontology = manager.createOntology();
 		manager.addAxioms(ontology, new HashSet<OWLAxiom>(task.getPremises()));
+
+        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
+        evaluator.setTask(task);
 
         NemoProofGenerator generator = new NemoProofGenerator(ontology);
         IProof<OWLAxiom> proof = generator.getProof(task.getConclusion());
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
+
+        assertTrue(evaluator.evaluate(proof)==1d);
     }
 }

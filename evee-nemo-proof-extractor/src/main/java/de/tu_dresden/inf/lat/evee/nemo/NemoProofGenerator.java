@@ -9,6 +9,8 @@ import de.tu_dresden.inf.lat.evee.nemo.parser.NemoProofParser;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.tools.MinimalProofExtractor;
+import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
 
 public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology>{
 
@@ -37,11 +39,9 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
         }catch(Exception e) {
             throw new ProofGenerationException(e);
         }
-
-        ELAtomParser atomParser = new ELAtomParser(proof.getInferences());
-        parser.setAtomParser(atomParser);
-
-        return parser.toProofOWL(proof);
+        parser.setAtomParser(new ELAtomParser());
+        
+        return parser.toProofOWL(proof);   
     }
 
     @Override

@@ -30,15 +30,6 @@ public class OWLHelper {
     }
 
     /**
-     * Return a sub-class-of axiom of the provided class expressions
-     *
-     * @return OWLSubClassOfAxiom
-     */
-    public OWLSubClassOfAxiom getOWLSubClassOfAxiom(OWLClassExpression subClass, OWLClassExpression superClass) {
-        return factory.getOWLSubClassOfAxiom(subClass, superClass);
-    }
-
-    /**
      * Returns an owl:Thing object
      *
      * @return OWLClass
@@ -56,6 +47,24 @@ public class OWLHelper {
         return factory.getOWLNothing();
     }
 
+    /**
+     * Return a sub-class-of axiom of the provided class expressions
+     *
+     * @return OWLSubClassOfAxiom
+     */
+    public OWLSubClassOfAxiom getOWLSubClassOfAxiom(OWLClassExpression subClass, OWLClassExpression superClass) {
+        return factory.getOWLSubClassOfAxiom(subClass, superClass);
+    }
+
+    /**
+     * Return an OWL equivalence class axiom
+     *
+     * @return OWLEquivalentClassesAxiom
+     */
+    public OWLEquivalentClassesAxiom getOWLEquivalenceAxiom(OWLClassExpression cls1, OWLClassExpression cls2) {
+        return factory.getOWLEquivalentClassesAxiom(cls1, cls2);
+    }
+    
     /**
      * Returns a sub-property-chain axiom
      *

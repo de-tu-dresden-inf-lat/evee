@@ -10,6 +10,8 @@ import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
+import de.tu_dresden.inf.lat.evee.proofs.tools.MinimalProofExtractor;
+import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
 
 public class NemoProofParser {
 
@@ -41,22 +43,36 @@ public class NemoProofParser {
         if (atomParser == null)
             throw new IllegalStateException("no AtomParser configured");
 
-        IInference<OWLAxiom> currentInf;
-        List<OWLAxiom> currentPremise;
-        OWLAxiom currentConclusion;
+        atomParser.initFacts(proofStr.getInferences());
 
         String finalConc = proofStr.getFinalConclusion();
-        IProof<OWLAxiom>  proof = new Proof<>(atomParser.toOwlAxiom(finalConc));
+        IProof<OWLAxiom>  proof = new Proof<>(atomParser.toOwlAxiom(finalConc, ""));
 
         for(IInference<String> infStr:proofStr.getInferences()){
-            currentConclusion = atomParser.toOwlAxiom(infStr.getConclusion());
-            currentPremise = infStr.getPremises().stream().map(x->atomParser.toOwlAxiom(x)).collect(Collectors.toList());
-            currentInf = new Inference<>(currentConclusion,infStr.getRuleName(),currentPremise);
+            String ruleName = infStr.getRuleName();
+            OWLAxiom conclusion = atomParser.toOwlAxiom(infStr.getConclusion(), ruleName);
+            if (conclusion == atomParser.getDefaultAxiom())
+                continue;
 
-            proof.addInference(currentInf);
+            List<OWLAxiom> premises = infStr.getPremises().stream()
+                .map(x->atomParser.toOwlAxiom(x, ruleName))
+                    .filter(x -> !(x == atomParser.getDefaultAxiom()))
+                        .collect(Collectors.toList());
+
+            String finalRuleName = premises.isEmpty() ? "asserted" : infStr.getRuleName();  //TODO just for now. general aproach for rule names
+            IInference<OWLAxiom> parsedInf = new Inference<>(conclusion, finalRuleName, premises); 
+
+            proof.addInference(parsedInf);
         }
 
-       // atomParser.printCache();
+        return mininmizeProof(proof);
+    }
+
+    private IProof<OWLAxiom> mininmizeProof(IProof<OWLAxiom> proof){
+        try {
+            proof = new MinimalProofExtractor<>(new TreeSizeMeasure<OWLAxiom>()).extract(proof);
+        }catch (Exception e){}
+
         return proof;
     }
 
