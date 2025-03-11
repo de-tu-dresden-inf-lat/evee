@@ -46,21 +46,20 @@ public class NemoProofParser {
         atomParser.initFacts(proofStr.getInferences());
 
         String finalConc = proofStr.getFinalConclusion();
-        IProof<OWLAxiom>  proof = new Proof<>(atomParser.toOwlAxiom(finalConc, ""));
+        IProof<OWLAxiom>  proof = new Proof<>(atomParser.toOwlAxiom(finalConc));
 
         for(IInference<String> infStr:proofStr.getInferences()){
-            String ruleName = infStr.getRuleName();
-            OWLAxiom conclusion = atomParser.toOwlAxiom(infStr.getConclusion(), ruleName);
+            OWLAxiom conclusion = atomParser.toOwlAxiom(infStr.getConclusion());
             if (conclusion == atomParser.getDefaultAxiom())
                 continue;
 
             List<OWLAxiom> premises = infStr.getPremises().stream()
-                .map(x->atomParser.toOwlAxiom(x, ruleName))
+                .map(x->atomParser.toOwlAxiom(x))
                     .filter(x -> !(x == atomParser.getDefaultAxiom()))
                         .collect(Collectors.toList());
 
-            String finalRuleName = premises.isEmpty() ? "asserted" : infStr.getRuleName();  //TODO just for now. general aproach for rule names
-            IInference<OWLAxiom> parsedInf = new Inference<>(conclusion, finalRuleName, premises); 
+            String ruleName = premises.isEmpty() ? "asserted" : infStr.getRuleName();  //TODO just for now. general aproach for rule names
+            IInference<OWLAxiom> parsedInf = new Inference<>(conclusion, ruleName, premises); 
 
             proof.addInference(parsedInf);
         }

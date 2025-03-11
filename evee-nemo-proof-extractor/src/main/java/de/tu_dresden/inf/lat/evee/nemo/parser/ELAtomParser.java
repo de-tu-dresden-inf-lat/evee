@@ -45,7 +45,7 @@ public class ELAtomParser extends AbstractAtomParser{
         placeholderParser.initParsingBase(inferences);
     }
 
-    public OWLAxiom toOwlAxiom(String atom, String ruleName){
+    public OWLAxiom toOwlAxiom(String atom){
         String predName = parsingHelper.getPredicateName(atom);
         List<String> args = parsingHelper.getPredicateArguments(atom);
         

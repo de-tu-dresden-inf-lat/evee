@@ -18,7 +18,7 @@ abstract class AbstractAtomParser {
 
     public AbstractAtomParser(){}
 
-    abstract public OWLAxiom toOwlAxiom(String axiom, String ruleName);
+    abstract public OWLAxiom toOwlAxiom(String axiom);
 
     abstract public void initFacts(List<IInference<String>> inferences);
     
