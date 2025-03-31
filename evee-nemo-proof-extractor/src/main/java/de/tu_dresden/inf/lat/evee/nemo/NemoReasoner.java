@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.UnknownFormatConversionException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
@@ -21,7 +19,7 @@ public class NemoReasoner {
 
     private static final Logger logger = LogManager.getLogger(NemoReasoner.class);
 
-    private static final String OWL_RDF_COMPLETE_FILE_NAME = "owl-rdf-complete-reasoning";
+    private static final String ELK_RULE_FILE_NAME = "elk";
     private static final String NEMO_RULE_FILE_SUFFIX = ".rls";
     private static final String ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
 
@@ -43,7 +41,7 @@ public class NemoReasoner {
 
         //create all needed files
         Path importDir = prepareImportDir(ontology);
-        File ruleFile = prepareRuleFile(OWL_RDF_COMPLETE_FILE_NAME, NEMO_RULE_FILE_SUFFIX);
+        File ruleFile = prepareRuleFile(ELK_RULE_FILE_NAME, NEMO_RULE_FILE_SUFFIX);
         File traceFile = File.createTempFile("nemoTrace", ".json");
 
         logger.debug("running nemo");
@@ -84,7 +82,7 @@ public class NemoReasoner {
     }
 
     private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws InterruptedException, IOException{
-        ProcessBuilder pb = new ProcessBuilder("./nmo", "-v", "-I", importDir, ruleFile,
+        ProcessBuilder pb = new ProcessBuilder("./nmoNew", "-v", "-I", importDir, ruleFile,
         "--trace-output", traceFile, "--trace", axiom)
             .inheritIO();
 

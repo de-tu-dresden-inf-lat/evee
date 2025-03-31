@@ -19,11 +19,11 @@ public class JsonArrayOrString2StringDeserializer extends JsonDeserializer<Strin
                 return node.asText();
         } 
         else if (node.isArray()) {
-            ArrayNode arrayNode = (ArrayNode) node;
-            JsonNode valueNode = arrayNode.get(0);
-            if (arrayNode.size() > 0 && valueNode.isTextual()) {
-                return valueNode.asText();
-            }
+            JsonNode valueNode = ((ArrayNode)node).get(0);
+            if (valueNode == null)
+                return "";
+
+            return valueNode.asText();   
         }
 
         throw MismatchedInputException.from(parser, String.class,

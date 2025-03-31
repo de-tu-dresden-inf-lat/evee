@@ -16,6 +16,7 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationExceptio
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofParser;
+import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofWriter;
 import de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.CorrectnessEvaluator;
 
 public class ProofTest {
@@ -26,7 +27,7 @@ public class ProofTest {
         
         IInference<OWLAxiom> task = JsonProofParser.getInstance()
         .fromFile(new File(
-                Thread.currentThread().getContextClassLoader().getResource("task_roleInc.json").getPath()))
+                Thread.currentThread().getContextClassLoader().getResource("task_roleChain.json").getPath()))
         .getInferences().get(0);
 
         OWLOntology ontology = manager.createOntology();
@@ -42,5 +43,12 @@ public class ProofTest {
         System.out.println("final conclusion: " + proof.getFinalConclusion());
 
         assertTrue(evaluator.evaluate(proof)==1d);
+
+        // JsonProofWriter<OWLAxiom> jsonWriter = new JsonProofWriter<>();
+        // try{
+        //     jsonWriter.writeToFile(proof, "/Users/max/Documents/proofs/owlProof_EL_ruleNames");
+        // }catch(Exception e){
+        //     System.out.println(e);
+        // }
     }
 }

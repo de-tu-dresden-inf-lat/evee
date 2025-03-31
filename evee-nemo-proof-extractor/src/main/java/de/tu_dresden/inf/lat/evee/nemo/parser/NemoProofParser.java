@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
+import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
@@ -15,6 +16,9 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
 
 public class NemoProofParser {
 
+    private static final String ASSERTED_RULENAME = "Asserted";
+
+    private final ParsingHelper parsingHelper = ParsingHelper.getInstance();
     private AbstractAtomParser atomParser;
 
     public NemoProofParser(){}
@@ -58,9 +62,7 @@ public class NemoProofParser {
                     .filter(x -> !(x == atomParser.getDefaultAxiom()))
                         .collect(Collectors.toList());
 
-            String ruleName = premises.isEmpty() ? "asserted" : infStr.getRuleName();  //TODO just for now. general aproach for rule names
-            IInference<OWLAxiom> parsedInf = new Inference<>(conclusion, ruleName, premises); 
-
+            IInference<OWLAxiom> parsedInf = new Inference<>(conclusion, parseRuleName(infStr.getRuleName()), premises); 
             proof.addInference(parsedInf);
         }
 
@@ -73,6 +75,14 @@ public class NemoProofParser {
         }catch (Exception e){}
 
         return proof;
+    }
+
+    private String parseRuleName(String ruleStr){
+        String ruleName = parsingHelper.getRuleName(ruleStr);
+        if (ruleName.isEmpty())
+            return ruleStr;
+        
+        return ruleName;
     }
 
 }

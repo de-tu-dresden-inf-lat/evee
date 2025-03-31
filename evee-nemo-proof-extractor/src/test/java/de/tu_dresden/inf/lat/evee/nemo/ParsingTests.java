@@ -8,8 +8,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,10 +19,6 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 
-/**
- * @author Christian Alrabbaa
- *
- */
 public class ParsingTests {
 
     ParsingHelper helper = ParsingHelper.getInstance();
@@ -184,6 +178,26 @@ public class ParsingTests {
 
         for (int i = 0; i < input.length; i++) {
             assertEquals(expected[i], helper.isRdfTriple(input[i]));
+        }
+    }
+
+
+    @Test
+    public void TestHelperGetRuleName(){
+        String[] input = {
+            "exists^+: http://rulewerk.semantic-web.org/inferred/subClassOf(<http://www.example.com/test/A>, _:3) :- http://rulewerk.semantic-web.or.....",
+            "sqsubseteq: http://rulewerk.semantic-web.org/inferred/subClassOf(<http://w.....",
+            "http://rulewerk.semantic-web.org/inferred/subClassOf(<http://w....."
+        };
+
+        String[] expected = {
+            "exists^+",
+            "sqsubseteq",
+            ""
+        };
+
+        for (int i = 0; i < input.length; i++) {
+            assertEquals(expected[i], helper.getRuleName(input[i]));
         }
     }
 

@@ -87,8 +87,13 @@ nf:subPropChain(?S,?T,?R), nf:subProp(?R,?R) :-
 	TRIPLE(?L,rdfs:subPropertyOf,?R), TRIPLE(?L,owl:propertyChain,?L1),
 	in(?L1,?S), next(?L1,?L2), in(?L2,?T) .
 
+%%% modern property chains:
+nf:subPropChain(?S,?T,?R), chainProp(?R), chainProp(?S), chainProp(?T) :- 
+		TRIPLE(?R,owl:propertyChainAxiom,?L1), in(?L1,?S), next(?L1,?L2), in(?L2,?T), last(?L2) .
+
 %%% Initialise subsumption axioms:
                          prepareSco(?X,?Y) :- TRIPLE(?X, rdfs:subClassOf, ?Y) .
+		#[name("equiv")]
       prepareSco(?X,?Y), prepareSco(?Y,?X) :- TRIPLE(?X, owl:equivalentClass, ?Y) .
 nf:subClassOf(?RX,?RY), nf:isSubClass(?RX) :- prepareSco(?X,?Y), repOf(?X,?RX), repOf(?Y,?RY) .
 
@@ -102,7 +107,10 @@ nf:isSubClass(?C1), nf:isSubClass(?C2) :- nf:conj(?X, ?C1, ?C2), nf:isSubClass(?
 
 %%% Precompute role hierarchy:
 directSubProp(?R,?S) :- TRIPLE(?R,rdfs:subPropertyOf,?S) .
-% Initialise role hierarchy only for roles in subclass positions:
+% Initialise role hierarchy only for roles in subclass positions or role chains:
+#[name("R_0")]
+nf:subProp(?P,?P) :- chainProp(?P) .
+#[name("R_0")]
 nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) . 
 nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 
@@ -114,22 +122,27 @@ inf:init(?C) :- nf:isMainClass(?C) .
 %%% Inference rules (from "The Incredible ELK", Fig. 3)
 
 % R_0
+#[name("R_0")]
 inf:subClassOf(?C,?C) :- inf:init(?C) .
 
 % R_\top
+#[name("R_\top")]
 inf:subClassOf(?C,owl:Thing) :-
 	nf:isMainClass(?C), nf:isSubClass(owl:Thing) .
 
 % R_\sqcap^-
+#[name("R_\sqcap^-")]
 inf:subClassOf(?C,?D1), inf:subClassOf(?C,?D2) :-
 	inf:subClassOf(?C,?Y), nf:conj(?Y,?D1,?D2) .
 
 % R_\sqcap^+
+#[name("R_\sqcap^+")]
 inf:subClassOf(?C,?Y) :-
 	inf:subClassOf(?C,?D1), inf:subClassOf(?C,?D2),
 	nf:conj(?Y,?D1,?D2), nf:isSubClass(?Y) .
 
 % R_\exists^-
+#[name("R_\exists^-")]
 inf:ex(?E,?R,?C) :- inf:subClassOf(?E,?Y), nf:exists(?Y,?R,?C) .
 
 % R_\exists^+
@@ -139,15 +152,18 @@ inf:subClassOf(?E,?Y) :-
 	nf:subProp(?R,?S), nf:exists(?Y,?S,?D), nf:isSubClass(?Y) .
 
 % R_\sqsubseteq
+#[name("R_\sqsubseteq")]
 inf:subClassOf(?C,?E) :-
 	inf:subClassOf(?C,?D), nf:subClassOf(?D,?E) .
 
 % R_\circ
+#[name("R_\circ")]
 inf:ex(?E,?S,?D) :-
 	inf:ex(?E,?R1,?C), inf:ex(?C,?R2,?D),
 	nf:subProp(?R1,?S1), nf:subProp(?R2,?S2), nf:subPropChain(?S1,?S2,?S) .
 
 % R_\bot
+#[name("R_\bot")]
 inf:subClassOf(?E,owl:Nothing) :-
 	inf:ex(?E,?R,?C), inf:subClassOf(?C,owl:Nothing) .
 

@@ -15,6 +15,7 @@ public class ParsingHelper {
     private static final String predicateReg = "<?[a-zA-z0-9:/.-]+>?[(][^()]*[)]";
     private static final String tripleReq = "TRIPLE[(][^()]*[)]";
     private static final String placeholderReg = "_:[0-9]{1,3}";
+    private static final String rulenameReg = "[a-zA-Z^+-_\\\\]+(?=: )";
 
     private ParsingHelper() {}
 
@@ -97,6 +98,16 @@ public class ParsingHelper {
         }
 
         return placeholders;
+    }
+
+    public String getRuleName(String ruleStr){
+        Pattern pattern = Pattern.compile(rulenameReg);
+        Matcher matcher = pattern.matcher(ruleStr);
+
+        if (!matcher.find()) //no match
+            return "";
+        
+        return matcher.group();
     }
 
     public String format(String arg) {

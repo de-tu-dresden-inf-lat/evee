@@ -1,7 +1,5 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser.tools;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
@@ -14,7 +12,6 @@ import java.util.Set;
  */
 public class OWLHelper {
 
-    private static final Logger logger = LogManager.getLogger(OWLHelper.class);
     private final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
     private final OWLDataFactory factory = manager.getOWLDataFactory();
 
