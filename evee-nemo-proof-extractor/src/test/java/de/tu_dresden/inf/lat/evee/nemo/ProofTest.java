@@ -27,7 +27,7 @@ public class ProofTest {
         
         IInference<OWLAxiom> task = JsonProofParser.getInstance()
         .fromFile(new File(
-                Thread.currentThread().getContextClassLoader().getResource("task_roleChain.json").getPath()))
+                Thread.currentThread().getContextClassLoader().getResource("task_roleChain_concat.json").getPath()))
         .getInferences().get(0);
 
         OWLOntology ontology = manager.createOntology();

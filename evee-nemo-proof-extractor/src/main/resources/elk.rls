@@ -5,7 +5,7 @@
 % based on input that is the W3C standard encoding of an OWN ontology in RDF, using
 % the NTriples syntax.
 
-% owl-rdf-complete-reasoning.rls:
+% elk.rls:
 %
 % Complete reasoner, producing all inferred class subsumptions as output.
 %
@@ -48,25 +48,31 @@ class(?X) :- TRIPLE(?X, ?P, ?O), ClassSubject(?P) .
 %% Mark auxiliary existential role restrictions:
 synEx(?Y,?P,?X), auxClass(?X) :- TRIPLE(?X, owl:someValuesFrom, ?Y), TRIPLE(?X, owl:onProperty, ?P) .
 
-%% Mark auxiliary conjunctions:
+%% Mark auxiliary lists:
 
 next(?L1,?L2) :- TRIPLE(?L1,rdf:rest,?L2) .
-   first(?L1) :- TRIPLE(?X, owl:intersectionOf, ?L1) .
-nonfirst(?L2) :- first(?L1), next(?L1,?L2) .
-nonfirst(?L2) :- nonfirst(?L1), next(?L1,?L2) .
     last(?Ln) :- next(?Ln,rdf:nil) .
   nonlast(?L) :- next(?L,?Ln), last(?Ln) .
  nonlast(?L1) :- next(?L1,?L2), nonlast(?L2) .
     in(?L,?C) :- TRIPLE(?L,rdf:first,?C) .
+
+firstCon(?L1)     :- TRIPLE(?X, owl:intersectionOf, ?L1) .
+nonfirstCon(?L2)  :- firstCon(?L1), next(?L1,?L2) .
+nonfirstCon(?L2)  :- nonfirstCon(?L1), next(?L1,?L2) .
+
+firstProp(?L1)    :-  TRIPLE(?R,owl:propertyChainAxiom,?L1).
+nonfirstProp(?L2) :- firstProp(?L1), next(?L1,?L2) .
+nonfirstProp(?L2) :- nonfirstProp(?L1), next(?L1,?L2) .
+
 % Mark conjunctions:
 synConj(?X,?C1,?C2), auxClass(?X) :-
 	TRIPLE(?X, owl:intersectionOf, ?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
 synConj(?X,?C1,?L2), auxClass(?X) :-
 	TRIPLE(?X, owl:intersectionOf, ?L1), next(?L1,?L2), nonlast(?L2), in(?L1,?C1) .
 synConj(?L1,?C1,?L2), auxClass(?L1) :-
-	nonfirst(?L1), next(?L1,?L2), nonlast(?L2), in(?L1,?C1) .
+	nonfirstCon(?L1), next(?L1,?L2), nonlast(?L2), in(?L1,?C1) .
 synConj(?L1,?C1,?C2), auxClass(?L1) :-
-	nonfirst(?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
+	nonfirstCon(?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
 
 %%% The other classes are "main classes" that are not normalised:
 nf:isMainClass(?X) :- class(?X), ~auxClass(?X) .
@@ -81,15 +87,19 @@ nf:exists(!New,?P,?Rep) :- synExRep(?X,?P,?Rep) .
 nf:conj(!New,?R1,?R2) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
          repOf(?X,?N) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2), nf:conj(?N,?R1,?R2) .
 
+%%% normalise  property chains:
+auxPropChain(?S,?T,?R), chainProp(?R), chainProp(?S), chainProp(?T):-
+        TRIPLE(?R,owl:propertyChainAxiom,?L1), in(?L1,?S), next(?L1,?L2), in(?L2,?T), last(?L2) .
+auxPropChain(?S,?L2,?R), chainProp(?R), chainProp(?S) :- 
+        TRIPLE(?R,owl:propertyChainAxiom,?L1), in(?L1,?S), next(?L1,?L2), nonlast(?L2) .
+auxPropChain(?S,?L2,?L1), chainProp(?S), auxProp(?L1) :-  
+        nonfirstProp(?L1), next(?L1,?L2), nonlast(?L2), in(?L1, ?S).
+auxPropChain(?S, ?T, ?L1), chainProp(?S), chainProp(?T), auxProp(?L1) :- 
+        nonfirstProp(?L1), next(?L1,?L2), last(?L2), in(?L1, ?S), in(?L2, ?T).
 
-%%% Extract old-style property chains:
-nf:subPropChain(?S,?T,?R), nf:subProp(?R,?R) :-
-	TRIPLE(?L,rdfs:subPropertyOf,?R), TRIPLE(?L,owl:propertyChain,?L1),
-	in(?L1,?S), next(?L1,?L2), in(?L2,?T) .
-
-%%% modern property chains:
-nf:subPropChain(?S,?T,?R), chainProp(?R), chainProp(?S), chainProp(?T) :- 
-		TRIPLE(?R,owl:propertyChainAxiom,?L1), in(?L1,?S), next(?L1,?L2), in(?L2,?T), last(?L2) .
+repOfProp(?R,?R)              :- chainProp(?R), ~auxProp(?R).
+repOfProp(?R,!New)            :- auxProp(?R), ~chainProp(?R).
+nf:subPropChain(?S1,?S2,?S)   :- auxPropChain(?R1,?R2,?R), repOfProp(?R1,?S1), repOfProp(?R2,?S2), repOfProp(?R,?S) .
 
 %%% Initialise subsumption axioms:
                          prepareSco(?X,?Y) :- TRIPLE(?X, rdfs:subClassOf, ?Y) .
@@ -110,6 +120,8 @@ directSubProp(?R,?S) :- TRIPLE(?R,rdfs:subPropertyOf,?S) .
 % Initialise role hierarchy only for roles in subclass positions or role chains:
 #[name("R_0")]
 nf:subProp(?P,?P) :- chainProp(?P) .
+#[name("R_0")]
+nf:subProp(?P,?P) :- auxProp(?R), repOfProp(?R,?P) .
 #[name("R_0")]
 nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) . 
 nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .

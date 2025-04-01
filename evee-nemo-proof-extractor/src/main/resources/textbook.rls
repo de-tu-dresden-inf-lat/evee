@@ -1,0 +1,27 @@
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?B) :- <http://rulewerk.semantic-web.org/normalForm/subClassOf>(?A,?B) .
+<http://rulewerk.semantic-web.org/inferred/subClassConj>(?A,?B,?C) :- <http://rulewerk.semantic-web.org/normalForm/subClassConj>(?A,?B,?C) .
+<http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A,?B) :- <http://rulewerk.semantic-web.org/normalForm/subClassEx>(?R,?A,?B) .
+<http://rulewerk.semantic-web.org/inferred/supClassEx>(?A,?R,?B) :- <http://rulewerk.semantic-web.org/normalForm/supClassEx>(?A,?R,?B) .
+
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?A) :- <http://rulewerk.semantic-web.org/normalForm/isMainClass>(?A) .
+
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,<http://www.w3.org/2002/07/owl#Thing>) :- <http://rulewerk.semantic-web.org/normalForm/isMainClass>(?A) .
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,<http://www.w3.org/2002/07/owl#Thing>) :- <http://rulewerk.semantic-web.org/normalForm/exists>(?A,?R,?B) .
+
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?A3) :- <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?A2), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A2,?A3) .
+<http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?A4) :- <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?A3), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A3,?A4) .
+<http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A1,?A3) :- <http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A1,?A2), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A2,?A3) .
+<http://rulewerk.semantic-web.org/inferred/supClassEx>(?A1,?R,?A3) :- <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?A2), <http://rulewerk.semantic-web.org/inferred/supClassEx>(?A2,?R,?A3) .
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?A3) :- <http://rulewerk.semantic-web.org/inferred/supClassEx>(?A1,?R,?A2), <http://rulewerk.semantic-web.org/normalForm/subProp>(?R,?S), <http://rulewerk.semantic-web.org/inferred/subClassEx>(?S,?A2,?A3) .
+
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?B) :- <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?A1), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?A2), <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?B) .
+<http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?B) :- <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?A3), <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?A4), <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A3,?A4,?B) .
+<http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A,?B) :- <http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A,?A1), <http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A,?A2), <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?B) .
+
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?B) :- <http://rulewerk.semantic-web.org/inferred/supClassEx>(?A,?R,?A1), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?B1), <http://rulewerk.semantic-web.org/normalForm/subProp>(?R,?S), <http://rulewerk.semantic-web.org/inferred/subClassEx>(?S,?B1,?B) .
+
+<http://rulewerk.semantic-web.org/inferred/subClassOf>(?E,<http://www.w3.org/2002/07/owl#Nothing>) :-
+	<http://rulewerk.semantic-web.org/inferred/supClassEx>(?E,?R,?C), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?C,<http://www.w3.org/2002/07/owl#Nothing>) .
+
+mainSubClassOf(?A,?B) :-
+	<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?B), <http://rulewerk.semantic-web.org/normalForm/isMainClass>(?A), <http://rulewerk.semantic-web.org/normalForm/isMainClass>(?B) .
