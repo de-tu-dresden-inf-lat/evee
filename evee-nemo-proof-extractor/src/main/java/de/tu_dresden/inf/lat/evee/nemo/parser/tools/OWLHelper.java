@@ -3,8 +3,6 @@ package de.tu_dresden.inf.lat.evee.nemo.parser.tools;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLTransitiveObjectPropertyAxiomImpl;
-
 import java.util.List;
 import java.util.Set;
 

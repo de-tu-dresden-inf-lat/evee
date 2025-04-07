@@ -16,8 +16,6 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
 
 public class NemoProofParser {
 
-    private static final String ASSERTED_RULENAME = "Asserted";
-
     private final ParsingHelper parsingHelper = ParsingHelper.getInstance();
     private AbstractAtomParser atomParser;
 

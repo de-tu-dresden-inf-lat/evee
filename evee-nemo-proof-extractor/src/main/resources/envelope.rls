@@ -1,27 +1,134 @@
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?B) :- <http://rulewerk.semantic-web.org/normalForm/subClassOf>(?A,?B) .
-<http://rulewerk.semantic-web.org/inferred/subClassConj>(?A,?B,?C) :- <http://rulewerk.semantic-web.org/normalForm/subClassConj>(?A,?B,?C) .
-<http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A,?B) :- <http://rulewerk.semantic-web.org/normalForm/subClassEx>(?R,?A,?B) .
-<http://rulewerk.semantic-web.org/inferred/supClassEx>(?A,?R,?B) :- <http://rulewerk.semantic-web.org/normalForm/supClassEx>(?A,?R,?B) .
+% This is the completely unoptimized, literal encoding
+% of the EL reasoning calculus published in Table 2 of 
+% Franz Baader, Sebastian Brandt and Carsten Lutz:
+% "Pushing the EL Envelope", IJCAI, 2005
+% (without concrete domains and nominals)
 
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?A) :- <http://rulewerk.semantic-web.org/normalForm/isMainClass>(?A) .
+@prefix nf: <http://rulewerk.semantic-web.org/normalForm/> .
+@prefix inf: <http://rulewerk.semantic-web.org/inferred/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix genid: <https://rulewerk.semantic-web.org/.well-known/genid/> .
 
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,<http://www.w3.org/2002/07/owl#Thing>) :- <http://rulewerk.semantic-web.org/normalForm/isMainClass>(?A) .
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,<http://www.w3.org/2002/07/owl#Thing>) :- <http://rulewerk.semantic-web.org/normalForm/exists>(?A,?R,?B) .
+%%% Mark classes:
+ClassObject(owl:someValuesFrom) .
+ClassObject(rdf:first) .
+ClassObject(rdfs:subClassOf) .
+ClassObject(owl:equivalentClass) .
+ClassSubject(rdfs:subClassOf) .
+ClassSubject(owl:equivalentClass) .
+class(?O) :- TRIPLE(?X, ?P, ?O), ClassObject(?P) .
+class(?X) :- TRIPLE(?X, ?P, ?O), ClassSubject(?P) .
 
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?A3) :- <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?A2), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A2,?A3) .
-<http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?A4) :- <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?A3), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A3,?A4) .
-<http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A1,?A3) :- <http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A1,?A2), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A2,?A3) .
-<http://rulewerk.semantic-web.org/inferred/supClassEx>(?A1,?R,?A3) :- <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?A2), <http://rulewerk.semantic-web.org/inferred/supClassEx>(?A2,?R,?A3) .
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?A3) :- <http://rulewerk.semantic-web.org/inferred/supClassEx>(?A1,?R,?A2), <http://rulewerk.semantic-web.org/normalForm/subProp>(?R,?S), <http://rulewerk.semantic-web.org/inferred/subClassEx>(?S,?A2,?A3) .
+%%% Distinguish auxiliary class expressions from primary classes:
 
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?B) :- <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?A1), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?A2), <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?B) .
-<http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?B) :- <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?A3), <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?A4), <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A3,?A4,?B) .
-<http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A,?B) :- <http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A,?A1), <http://rulewerk.semantic-web.org/inferred/subClassEx>(?R,?A,?A2), <http://rulewerk.semantic-web.org/inferred/subClassConj>(?A1,?A2,?B) .
+%% Mark auxiliary existential role restrictions:
+synEx(?Y,?P,?X), auxClass(?X) :- TRIPLE(?X, owl:someValuesFrom, ?Y), TRIPLE(?X, owl:onProperty, ?P) .
 
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?B) :- <http://rulewerk.semantic-web.org/inferred/supClassEx>(?A,?R,?A1), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?A1,?B1), <http://rulewerk.semantic-web.org/normalForm/subProp>(?R,?S), <http://rulewerk.semantic-web.org/inferred/subClassEx>(?S,?B1,?B) .
+%% Mark auxiliary conjunctions:
+next(?L1,?L2) :- TRIPLE(?L1,rdf:rest,?L2) .
+   first(?L1) :- TRIPLE(?X, owl:intersectionOf, ?L1) .
+nonfirst(?L2) :- first(?L1), next(?L1,?L2) .
+nonfirst(?L2) :- nonfirst(?L1), next(?L1,?L2) .
+    last(?Ln) :- next(?Ln,rdf:nil) .
+  nonlast(?L) :- next(?L,?Ln), last(?Ln) .
+ nonlast(?L1) :- next(?L1,?L2), nonlast(?L2) .
+    in(?L,?C) :- TRIPLE(?L,rdf:first,?C) .
 
-<http://rulewerk.semantic-web.org/inferred/subClassOf>(?E,<http://www.w3.org/2002/07/owl#Nothing>) :-
-	<http://rulewerk.semantic-web.org/inferred/supClassEx>(?E,?R,?C), <http://rulewerk.semantic-web.org/inferred/subClassOf>(?C,<http://www.w3.org/2002/07/owl#Nothing>) .
+% Mark conjunctions:
+synConj(?X,?C1,?C2), auxClass(?X) :-
+	TRIPLE(?X, owl:intersectionOf, ?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
+synConj(?X,?C1,?L2), auxClass(?X) :-
+	TRIPLE(?X, owl:intersectionOf, ?L1), next(?L1,?L2), nonlast(?L2), in(?L1,?C1) .
+synConj(?L1,?C1,?L2), auxClass(?L1) :-
+	nonfirst(?L1), next(?L1,?L2), nonlast(?L2), in(?L1,?C1) .
+synConj(?L1,?C1,?C2), auxClass(?L1) :-
+	nonfirst(?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
+
+%%% The other classes are "main classes" that are not normalised:
+nf:isMainClass(?X) :- class(?X), ~auxClass(?X) .
+
+%%% Normalise auxiliary nested class expressions:
+            repOf(?X,?X) :- nf:isMainClass(?X) . % keep main classes unchanged
+
+    synExRep(?X,?P,?Rep) :- synEx(?Y,?P,?X), repOf(?Y,?Rep) .
+ nf:exists(!New,?P,?Rep) :- synExRep(?X,?P,?Rep) .
+represents(?N,nf:exists) :- nf:exists(?N,?P,?Rep) , synExRep(?X,?P,?Rep).
+            repOf(?X,?N) :- synExRep(?X,?P,?Rep), nf:exists(?N,?P,?Rep) .
+
+   nf:conj(!New,?R1,?R2) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
+represents(?New,nf:conj) :- nf:conj(?New,?R1,?R2), repOf(?C1,?R1), repOf(?C2,?R2), synConj(?X,?C1,?C2).
+         	repOf(?X,?N) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2), nf:conj(?N,?R1,?R2) .
+
+%%% Extract old-style property chains:
+nf:subPropChain(?S,?T,?R), nf:subProp(?R,?R) :-
+	TRIPLE(?L,rdfs:subPropertyOf,?R), TRIPLE(?L,owl:propertyChain,?L1),
+	in(?L1,?S), next(?L1,?L2), in(?L2,?T) .
+
+
+%%% Initialise subsumption axioms:
+                         prepareSco(?X,?Y) :- TRIPLE(?X, rdfs:subClassOf, ?Y) .
+      prepareSco(?X,?Y), prepareSco(?Y,?X) :- TRIPLE(?X, owl:equivalentClass, ?Y) .
+   prepareSco(?Y, ?D), prepareSco(?Y, ?E), :- nf:conj(?Y,?D,?E) .
+nf:subClassOf(?RX,?RY), nf:isSubClass(?RX) :- prepareSco(?X,?Y), repOf(?X,?RX), repOf(?Y,?RY) .
+
+%%% express different kinds of sequents
+nf:subClassConj(?RD,?RE,?Y) :- nf:conj(?Y,?D,?E), repOf(?RY,?Y), repOf(?D,?RD), repOf(?E,?RE) .
+nf:subClassEx(?R,?RB,?Y) :- nf:exists(?Y,?R,?B), repOf(?RY,?Y), repOf(?B,?RB) .
+nf:supClassEx(?Y,?R,?RB) :- nf:exists(?Y,?R,?B), repOf(?RY,?Y), repOf(?B,?RB) .
+
+
+%%% Initialise disjointness:
+nf:subClassOf(!C,owl:Nothing), nf:conj(!C,?X,?Y), nf:isSubClass(!C), nf:isSubClass(?X), nf:isSubClass(?Y)
+	:- TRIPLE(?X,owl:disjointWith,?Y) .
+represents(?C,nf:subClassOf) :- nf:subClassOf(?C,owl:Nothing), nf:conj(?C,?X,?Y), nf:isSubClass(?C), TRIPLE(?X,owl:disjointWith,?Y)  .
+
+%%% Mark classes in subclass position recursively:
+                     nf:isSubClass(?D) :- nf:exists(?C, ?P, ?D), nf:isSubClass(?C) .
+nf:isSubClass(?C1), nf:isSubClass(?C2) :- nf:conj(?X, ?C1, ?C2), nf:isSubClass(?X) .
+
+%%% Precompute role hierarchy:
+directSubProp(?R,?S) :- TRIPLE(?R,rdfs:subPropertyOf,?S) .
+% Initialise role hierarchy only for roles in subclass positions:
+nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) . 
+nf:subProp(?R,?T) :- nf:subProp(?R,?S), directSubProp(?S,?T) .
+ 
+%% Initialize 'S' sets 
+%% D ∈ S(C) is represented as S(C,D)
+%% (C,D) ∈ R(r) is represented as R(C,r,D)
+
+       S(?A,?A) :- class(?A) .
+S(?A,owl:Thing) :- class(?A) .
+
+
+%%% Inference rules
+
+% CR1
+S(?C,?D) :- S(?C,?Cp), nf:subClassOf(?Cp,?D) .
+
+% CR2
+S(?C,?D) :- S(?C,?C1), S(?C, ?C2), nf:subClassConj(?C1,?C2,?D) .
+
+% CR3
+R(?C,?R,?D) :- S(?C,?Cp), nf:supClassEx(?Cp,?R,?D) .
+
+% CR4
+S(?C,?E) :- R(?C,?R,?D), S(?D,?Dp), nf:subClassEx(?R,?Dp,?E) .
+
+% CR5
+S(C,owl:Nothing) :- R(?C,?R,?D), S(?D,owl:Nothing) .
+
+% (CR6-9 are for nominals and concrete domains.)
+
+% CR10
+R(?C,?S,?D) :- R(?C,?R,?D), nf:subProp(?R,?S) .
+
+% CR11
+R(?C,?R3,?E) :- R(?C,?R1,?D), R(?D,?R2,?E), nf:subPropChain(?R1,?R2,?R3) .
+
+
+%%% Extract final results for main classes
 
 mainSubClassOf(?A,?B) :-
-	<http://rulewerk.semantic-web.org/inferred/subClassOf>(?A,?B), <http://rulewerk.semantic-web.org/normalForm/isMainClass>(?A), <http://rulewerk.semantic-web.org/normalForm/isMainClass>(?B) .
+	S(?A,?B), nf:isMainClass(?A), nf:isMainClass(?B) .

@@ -5,9 +5,6 @@ import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyExpressionImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLPropertyExpressionImpl;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.semanticweb.owlapi.model.*;
