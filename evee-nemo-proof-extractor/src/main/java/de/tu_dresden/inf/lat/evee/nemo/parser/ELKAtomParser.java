@@ -7,7 +7,9 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 
 import com.google.common.collect.Sets;
 
@@ -29,6 +31,7 @@ public class ELKAtomParser extends AbstractAtomParser{
         SUBPROP_DIR = "directSubProp",
         
         SUBPROP_CHAIN = "http://rulewerk.semantic-web.org/normalForm/subPropChain",
+        SUBPROP_CHAIN_AUX = "auxPropChain",
 
         TRIPLE = "TRIPLE",
         EQUIV_TRIPLE = "<http://www.w3.org/2002/07/owl#equivalentClass>",
@@ -59,9 +62,7 @@ public class ELKAtomParser extends AbstractAtomParser{
             return parseSubProperty(args);
         else if(predName.equals(SUBOF_EXIST))
             return parseSubOfExistential(args);
-        else if(predName.equals(SUBPROP_CHAIN))
-            return parsePropChain(args);
-        else if(predName.equals(TRIPLE) && args.get(1).equals(EQUIV_TRIPLE))
+        else if(predName.equals(SUBPROP_CHAIN) || predName.equals(SUBPROP_CHAIN_AUX)) return parsePropChain(args); else if(predName.equals(TRIPLE) && args.get(1).equals(EQUIV_TRIPLE))
             return parseEquivTriple(args);
         else if(predName.equals(TRIPLE) && args.get(1).equals(SUBOF_TRIPLE))
             return parseSubOfTriple(args);
@@ -88,34 +89,50 @@ public class ELKAtomParser extends AbstractAtomParser{
 
     
     private OWLAxiom parseSubProperty(List<String> args) {
+        String supStr = parsingHelper.format(args.get(1));
+        if(parsingHelper.isPlaceholder(supStr)) // rolechains on right hand side not supported
+            return defaultAxiom;
+
+        OWLObjectPropertyExpression sup = parseProp(supStr);
         OWLObjectPropertyExpression sub = parseProp(parsingHelper.format(args.get(0)));
-        OWLObjectPropertyExpression sup = parseProp(parsingHelper.format(args.get(1)));
         
 		return owlHelper.getOWLSubObjectPropertyAxiom(sub, sup);
 	}
     
     private OWLAxiom parseSubOfExistential(List<String> args){
         OWLClassExpression sub, existCls;
-        OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(1)));
+        List<OWLObjectPropertyExpression> props; 
         
         try{
             sub = placeholderParser.parseConceptOrPlaceholder(args.get(0));
             existCls = placeholderParser.parseConceptOrPlaceholder(args.get(2));
+            props = placeholderParser.parseRoleOrPlaceholder(args.get(1));
         } catch (ConceptTranslationError e) {
             return defaultAxiom;
         }
+
+        OWLClassExpression restriction = existCls;
+        for(int i=props.size()-1; i>=0; i--){ //dealing with role chains by nested Ex.Restrictions
+            restriction = owlHelper.getOWLExistentialRestriction(props.get(i), restriction);
+        }
         
-        return owlHelper.getOWLSubClassOfAxiom(sub,
-        owlHelper.getOWLExistentialRestriction(prop, existCls));
+        return owlHelper.getOWLSubClassOfAxiom(sub,restriction);
     }
 
     private OWLAxiom parsePropChain(List<String> args) {
-        OWLObjectPropertyExpression sup = parseProp(parsingHelper.format(args.get(2)));
-
+        String supStr = parsingHelper.format(args.get(2));
+        if(parsingHelper.isPlaceholder(supStr)) // rolechains on right hand side not supported
+            return defaultAxiom;
+        
+        OWLObjectPropertyExpression sup = parseProp(supStr);
         List<OWLObjectPropertyExpression> chain = new ArrayList<>();
-        chain.add(parseProp(parsingHelper.format(args.get(0))));
-        chain.add(parseProp(parsingHelper.format(args.get(1))));
-
+        try {
+            chain.addAll(placeholderParser.parseRoleOrPlaceholder(args.get(0)));
+            chain.addAll(placeholderParser.parseRoleOrPlaceholder(args.get(1)));
+        } catch (Exception e) {
+            return defaultAxiom;
+        }
+    
         return owlHelper.getOWLSubPropertyChainOfAxiom(chain, sup);
     }
 

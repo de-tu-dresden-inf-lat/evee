@@ -123,7 +123,8 @@ nf:subProp(?P,?P) :- chainProp(?P) .
 #[name("R_0")]
 nf:subProp(?P,?P) :- auxProp(?R), repOfProp(?R,?P) .
 #[name("R_0")]
-nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) . 
+nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) .
+#[name("R_⊑")]
 nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 
 
@@ -138,44 +139,44 @@ inf:init(?C) :- nf:isMainClass(?C) .
 inf:subClassOf(?C,?C) :- inf:init(?C) .
 
 % R_\top
-#[name("R_\top")]
+#[name("R_⊤")]
 inf:subClassOf(?C,owl:Thing) :-
 	nf:isMainClass(?C), nf:isSubClass(owl:Thing) .
 
 % R_\sqcap^-
-#[name("R_\sqcap^-")]
+#[name("R_⊓^-")]
 inf:subClassOf(?C,?D1), inf:subClassOf(?C,?D2) :-
 	inf:subClassOf(?C,?Y), nf:conj(?Y,?D1,?D2) .
 
 % R_\sqcap^+
-#[name("R_\sqcap^+")]
+#[name("R_⊓^+")]
 inf:subClassOf(?C,?Y) :-
 	inf:subClassOf(?C,?D1), inf:subClassOf(?C,?D2),
 	nf:conj(?Y,?D1,?D2), nf:isSubClass(?Y) .
 
 % R_\exists^-
-#[name("R_\exists^-")]
+#[name("R_∃^-")]
 inf:ex(?E,?R,?C) :- inf:subClassOf(?E,?Y), nf:exists(?Y,?R,?C) .
 
 % R_\exists^+
-#[name("R_\exists^+")]
+#[name("R_∃^+")]
 inf:subClassOf(?E,?Y) :-
 	inf:ex(?E,?R,?C), inf:subClassOf(?C,?D),
 	nf:subProp(?R,?S), nf:exists(?Y,?S,?D), nf:isSubClass(?Y) .
 
 % R_\sqsubseteq
-#[name("R_\sqsubseteq")]
+#[name("R_⊑")]
 inf:subClassOf(?C,?E) :-
 	inf:subClassOf(?C,?D), nf:subClassOf(?D,?E) .
 
 % R_\circ
-#[name("R_\circ")]
+#[name("R_∘")]
 inf:ex(?E,?S,?D) :-
 	inf:ex(?E,?R1,?C), inf:ex(?C,?R2,?D),
 	nf:subProp(?R1,?S1), nf:subProp(?R2,?S2), nf:subPropChain(?S1,?S2,?S) .
 
 % R_\bot
-#[name("R_\bot")]
+#[name("R_⊥")]
 inf:subClassOf(?E,owl:Nothing) :-
 	inf:ex(?E,?R,?C), inf:subClassOf(?C,owl:Nothing) .
 

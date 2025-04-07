@@ -3,6 +3,6 @@
     "inferences" : [ {
       "conclusion" : "<http://www.example.com/test/A> <= <http://www.example.com/test/B>",
       "ruleName" : "generic",
-      "premises" : ["<http://www.example.com/test/A> <=  E<http://www.example.com/test/r>.<http://www.example.com/test/C>", "<http://www.example.com/test/C> <= E<http://www.example.com/test/s>.<http://www.example.com/test/D>", "<http://www.example.com/test/D> <= E<http://www.example.com/test/t>.<http://www.example.com/test/E>", "<http://www.example.com/test/B> = E<http://www.example.com/test/u>.<http://www.example.com/test/E>", "<http://www.example.com/test/r> o <http://www.example.com/test/s> o <http://www.example.com/test/t> <r <http://www.example.com/test/u>" ]
+      "premises" : ["<http://www.example.com/test/A> <=  E<http://www.example.com/test/r>.<http://www.example.com/test/C>", "<http://www.example.com/test/C> <= E<http://www.example.com/test/s>.<http://www.example.com/test/D>", "<http://www.example.com/test/D> <= E<http://www.example.com/test/t>.<http://www.example.com/test/E>", "<http://www.example.com/test/E> <=  E<http://www.example.com/test/u>.<http://www.example.com/test/F>","<http://www.example.com/test/B> = E<http://www.example.com/test/x>.<http://www.example.com/test/F>", "<http://www.example.com/test/r> o <http://www.example.com/test/s> o <http://www.example.com/test/t> o <http://www.example.com/test/u> <r <http://www.example.com/test/x>" ]
       } ]
   }

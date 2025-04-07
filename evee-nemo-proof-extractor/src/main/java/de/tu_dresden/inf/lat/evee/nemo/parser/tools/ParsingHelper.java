@@ -15,7 +15,7 @@ public class ParsingHelper {
     private static final String predicateReg = "<?[a-zA-z0-9:/.-]+>?[(][^()]*[)]";
     private static final String tripleReq = "TRIPLE[(][^()]*[)]";
     private static final String placeholderReg = "_:[0-9]{1,3}";
-    private static final String rulenameReg = "[a-zA-Z^+-_\\\\]+(?=: )";
+    private static final String rulenameReg = "[a-zA-Z^+-_\\\\∃⊥⊤∘⊑⊓]+(?=: )";
 
     private ParsingHelper() {}
 
