@@ -88,6 +88,9 @@ nf:conj(!New,?R1,?R2) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
          repOf(?X,?N) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2), nf:conj(?N,?R1,?R2) .
 
 %%% normalise  property chains:
+#[name("trans")]
+auxPropChain(?R,?R,?R), chainProp(?R) :- 
+		TRIPLE(?R, rdf:type, owl:TransitiveProperty) .
 auxPropChain(?S,?T,?R), chainProp(?R), chainProp(?S), chainProp(?T):-
         TRIPLE(?R,owl:propertyChainAxiom,?L1), in(?L1,?S), next(?L1,?L2), in(?L2,?T), last(?L2) .
 auxPropChain(?S,?L2,?R), chainProp(?R), chainProp(?S) :- 

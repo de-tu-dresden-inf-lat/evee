@@ -3,6 +3,8 @@ package de.tu_dresden.inf.lat.evee.nemo.parser.tools;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLTransitiveObjectPropertyAxiomImpl;
+
 import java.util.List;
 import java.util.Set;
 
@@ -80,6 +82,16 @@ public class OWLHelper {
     public OWLSubObjectPropertyOfAxiom getOWLSubObjectPropertyAxiom(OWLObjectPropertyExpression subProp,
                                                                     OWLObjectPropertyExpression superProp){
         return factory.getOWLSubObjectPropertyOfAxiom(subProp,superProp);
+    }
+
+    /**
+     * Return a transitive-object-property axiom of the provided object property
+     *
+     * @return OWLTransitiveObjectPropertyAxiom
+     */
+    public OWLTransitiveObjectPropertyAxiom getOWOwlTransitivePropertyAxiom(OWLObjectPropertyExpression prop){
+
+        return factory.getOWLTransitiveObjectPropertyAxiom(prop);
     }
 
     /**

@@ -7,10 +7,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-
 import com.google.common.collect.Sets;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
@@ -37,7 +34,8 @@ public class ELKAtomParser extends AbstractAtomParser{
         EQUIV_TRIPLE = "<http://www.w3.org/2002/07/owl#equivalentClass>",
         SUBOF_TRIPLE= "<http://www.w3.org/2000/01/rdf-schema#subClassOf>",
         SUBPROP_TRIPLE = "<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
-        PROPCHAIN_TRIPLE = "<http://www.w3.org/2002/07/owl#propertyChainAxiom>";
+        PROPCHAIN_TRIPLE = "<http://www.w3.org/2002/07/owl#propertyChainAxiom>",
+        TRANSPROP_TRIPLE = "<http://www.w3.org/2002/07/owl#TransitiveProperty>";
         
     private final Set<String> subClassOfNames = Sets.newHashSet(SUBOF_MAIN, SUBOF_INF, SUBOF_NF, SUBOF_PREPARE);
 
@@ -62,7 +60,9 @@ public class ELKAtomParser extends AbstractAtomParser{
             return parseSubProperty(args);
         else if(predName.equals(SUBOF_EXIST))
             return parseSubOfExistential(args);
-        else if(predName.equals(SUBPROP_CHAIN) || predName.equals(SUBPROP_CHAIN_AUX)) return parsePropChain(args); else if(predName.equals(TRIPLE) && args.get(1).equals(EQUIV_TRIPLE))
+        else if(predName.equals(SUBPROP_CHAIN) || predName.equals(SUBPROP_CHAIN_AUX))
+             return parsePropChain(args);
+        else if(predName.equals(TRIPLE) && args.get(1).equals(EQUIV_TRIPLE))
             return parseEquivTriple(args);
         else if(predName.equals(TRIPLE) && args.get(1).equals(SUBOF_TRIPLE))
             return parseSubOfTriple(args);
@@ -70,6 +70,8 @@ public class ELKAtomParser extends AbstractAtomParser{
             return parseSubPropTriple(args);
         else if(predName.equals(TRIPLE) && args.get(1).equals(PROPCHAIN_TRIPLE))
             return parsePropChainTriple(args);
+        else if(predName.equals(TRIPLE) && args.get(2).equals(TRANSPROP_TRIPLE))
+            return parseTransPropTriple(args);
 
         return defaultAxiom;
     }
@@ -170,4 +172,12 @@ public class ELKAtomParser extends AbstractAtomParser{
 
         return owlHelper.getOWLSubPropertyChainOfAxiom(chain, sup);     
     }
+
+    private OWLAxiom parseTransPropTriple(List<String> args){
+        OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(0)));
+
+       // return owlHelper.getOWLSubPropertyChainOfAxiom(Arrays.asList(prop, prop), prop);
+       return owlHelper.getOWOwlTransitivePropertyAxiom(prop);
+    }
+        
 }
