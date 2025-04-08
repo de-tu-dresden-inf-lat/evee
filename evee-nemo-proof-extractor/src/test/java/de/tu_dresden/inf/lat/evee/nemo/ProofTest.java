@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.HashSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -20,35 +21,72 @@ import de.tu_dresden.inf.lat.evee.proofs.json.JsonProofWriter;
 import de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.CorrectnessEvaluator;
 
 public class ProofTest {
-    
+
     @Test
-    public void testProof_success() throws ProofGenerationException, OWLOntologyCreationException{
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        
-        IInference<OWLAxiom> task = JsonProofParser.getInstance()
-        .fromFile(new File(
-                Thread.currentThread().getContextClassLoader().getResource("task_transProp.json").getPath()))
-        .getInferences().get(0);
-
-        OWLOntology ontology = manager.createOntology();
-		manager.addAxioms(ontology, new HashSet<OWLAxiom>(task.getPremises()));
-
+    public void testAllTasks() throws OWLOntologyCreationException, ProofGenerationException{
+        String [] taskFiles = {
+            "task_EL.json",
+            "task_roleChain_concat.json",
+            "task_roleChain_simple.json",
+            "task_roleChain.json",
+            "task_roleInc.json",
+            "task_transProp.json"
+        };
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
-        evaluator.setTask(task);
 
-        NemoProofGenerator generator = new NemoProofGenerator(ontology);
-        IProof<OWLAxiom> proof = generator.getProof(task.getConclusion());
+        for(String taskFile : taskFiles){
+            IInference<OWLAxiom> task = readTask(taskFile);
+            IProof<OWLAxiom> proof = runTask(task);
+            evaluator.setTask(task);
+
+            assertTrue(evaluator.evaluate(proof)==1d);
+        }
+    }
+
+    //for dev purposes
+    @Ignore @Test
+    public void testTask() throws OWLOntologyCreationException, ProofGenerationException{
+        IInference<OWLAxiom> task = readTask(  "task_transProp.json");
+        IProof<OWLAxiom> proof = runTask(task);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
 
+        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
+        evaluator.setTask(task);
         assertTrue(evaluator.evaluate(proof)==1d);
-
-        // JsonProofWriter<OWLAxiom> jsonWriter = new JsonProofWriter<>();
-        // try{
-        //     jsonWriter.writeToFile(proof, "/Users/max/Documents/proofs/owlProof_EL_ruleNames");
-        // }catch(Exception e){
-        //     System.out.println(e);
-        // }
     }
+
+    //for dev purposes
+    @Ignore @Test
+    public void exportProofJson() throws Exception{
+        IInference<OWLAxiom> task = readTask(  "task_transProp.json");
+        IProof<OWLAxiom> proof = runTask(task);
+
+        JsonProofWriter<OWLAxiom> jsonWriter = new JsonProofWriter<>();
+        try{
+            jsonWriter.writeToFile(proof, "filePath");
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    private IProof<OWLAxiom> runTask(IInference<OWLAxiom> task) throws ProofGenerationException, OWLOntologyCreationException{
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+
+        OWLOntology ontology = manager.createOntology();
+		manager.addAxioms(ontology, new HashSet<OWLAxiom>(task.getPremises()));
+
+        NemoProofGenerator generator = new NemoProofGenerator(ontology);
+
+        return generator.getProof(task.getConclusion());
+    }
+
+    private IInference<OWLAxiom> readTask(String fileName){
+        String path = Thread.currentThread().getContextClassLoader().getResource(fileName).getPath();
+        File taskFile = new File(path);
+
+        return JsonProofParser.getInstance().fromFile(taskFile).getInferences().get(0);
+    }
+
 }
