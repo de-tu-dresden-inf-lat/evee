@@ -61,6 +61,15 @@ public class OWLHelper {
     public OWLEquivalentClassesAxiom getOWLEquivalenceAxiom(OWLClassExpression cls1, OWLClassExpression cls2) {
         return factory.getOWLEquivalentClassesAxiom(cls1, cls2);
     }
+
+    /**
+     * Return an OWL disjoint classes axiom
+     *
+     * @return OWLDisjointClassesAxiom
+     */
+    public OWLDisjointClassesAxiom getOWLDisjointAxiom(OWLClassExpression... classExpressions){
+        return factory.getOWLDisjointClassesAxiom(classExpressions);
+    }
     
     /**
      * Returns a sub-property-chain axiom

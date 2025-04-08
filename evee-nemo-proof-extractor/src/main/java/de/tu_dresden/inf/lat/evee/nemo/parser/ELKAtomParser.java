@@ -35,7 +35,8 @@ public class ELKAtomParser extends AbstractAtomParser{
         SUBOF_TRIPLE= "<http://www.w3.org/2000/01/rdf-schema#subClassOf>",
         SUBPROP_TRIPLE = "<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
         PROPCHAIN_TRIPLE = "<http://www.w3.org/2002/07/owl#propertyChainAxiom>",
-        TRANSPROP_TRIPLE = "<http://www.w3.org/2002/07/owl#TransitiveProperty>";
+        TRANSPROP_TRIPLE = "<http://www.w3.org/2002/07/owl#TransitiveProperty>",
+        DISJOINT_TRIPLE = "<http://www.w3.org/2002/07/owl#disjointWith>";
         
     private final Set<String> subClassOfNames = Sets.newHashSet(SUBOF_MAIN, SUBOF_INF, SUBOF_NF, SUBOF_PREPARE);
 
@@ -72,6 +73,8 @@ public class ELKAtomParser extends AbstractAtomParser{
             return parsePropChainTriple(args);
         else if(predName.equals(TRIPLE) && args.get(2).equals(TRANSPROP_TRIPLE))
             return parseTransPropTriple(args);
+        else if(predName.equals(TRIPLE) && args.get(1).equals(DISJOINT_TRIPLE))
+            return parseDisjointTriple(args);
 
         return defaultAxiom;
     }
@@ -176,8 +179,16 @@ public class ELKAtomParser extends AbstractAtomParser{
     private OWLAxiom parseTransPropTriple(List<String> args){
         OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(0)));
 
-       // return owlHelper.getOWLSubPropertyChainOfAxiom(Arrays.asList(prop, prop), prop);
-       return owlHelper.getOWOwlTransitivePropertyAxiom(prop);
+        return owlHelper.getOWOwlTransitivePropertyAxiom(prop);
     }
+
+
+    private OWLAxiom parseDisjointTriple(List<String> args){
+        OWLClassExpression cls1 = parseCls(parsingHelper.format(args.get(0)));
+        OWLClassExpression cls2 = parseCls(parsingHelper.format(args.get(2)));
+
+        return owlHelper.getOWLDisjointAxiom(cls1, cls2);
+    }
+    
         
 }
