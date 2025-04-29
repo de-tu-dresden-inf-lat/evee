@@ -1,10 +1,12 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
+import org.semanticweb.owlapi.model.*;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
@@ -35,6 +37,20 @@ public class NemoProofParser {
         String subClass = axiom.getSubClass().asOWLClass().getIRI().toString();
 
         return String.format("mainSubClassOf(<%s>,<%s>)", subClass, superClass);
+    }
+
+    private String EquivClassAxiomToNemString(OWLEquivalentClassesAxiom axiom) {
+        List<OWLClass> classes = new ArrayList<>(axiom.getNamedClasses());
+
+        return String.format("mainEquivClass(%s,%s)", classes.get(0), classes.get(1));
+    }
+
+    public String axiomToNemoString(OWLAxiom axiom) throws ProofGenerationException {
+        if (axiom.isOfType(AxiomType.SUBCLASS_OF))
+            return subClassAxiomToNemoString((OWLSubClassOfAxiom) axiom);
+        if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES))
+            return EquivClassAxiomToNemString((OWLEquivalentClassesAxiom) axiom);
+        throw new ProofGenerationException("Axiom type is not supported by this proof generator!");
     }
 
     /*
@@ -82,5 +98,4 @@ public class NemoProofParser {
         
         return ruleName;
     }
-
 }

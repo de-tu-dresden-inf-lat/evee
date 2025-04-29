@@ -193,4 +193,6 @@ inf:init(?C) :- inf:ex(?E,?R,?C) .
 mainSubClassOf(?A,?B) :-
 	inf:subClassOf(?A,?B), nf:isMainClass(?A), nf:isMainClass(?B) .
 
-@output mainSubClassOf .
+mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).
+
+@output mainSubClassOf, mainEquivClass.
