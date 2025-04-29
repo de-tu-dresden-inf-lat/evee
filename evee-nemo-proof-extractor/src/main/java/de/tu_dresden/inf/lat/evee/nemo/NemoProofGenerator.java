@@ -1,8 +1,6 @@
 package de.tu_dresden.inf.lat.evee.nemo;
 
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.*;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.ELKAtomParser;
 import de.tu_dresden.inf.lat.evee.nemo.parser.NemoProofParser;
@@ -14,22 +12,26 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     private NemoReasoner reasoner;
     private NemoProofParser parser;
-
-    public NemoProofGenerator(){}
+//    private OWLOntology ontology;
 
     public NemoProofGenerator(OWLOntology ontology){
         reasoner = new NemoReasoner(ontology);
         parser = new NemoProofParser();
     }
 
+    public NemoProofGenerator(){
+        parser = new NemoProofParser();
+    }
+
     @Override
     public void setOntology(OWLOntology ontology) {
+//        this.ontology = ontology;
         reasoner = new NemoReasoner(ontology);
     }
 
     @Override
     public IProof<OWLAxiom> getProof(OWLAxiom axiom) throws ProofGenerationException {
-        String nemoAxiom = parser.subClassAxiomToNemoString((OWLSubClassOfAxiom) axiom);
+        String nemoAxiom = parser.axiomToNemoString(axiom);
 
         IProof<String> proof;
         try{
@@ -48,10 +50,15 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     @Override
     public boolean supportsProof(OWLAxiom axiom) {
-        if (!(axiom instanceof OWLSubClassOfAxiom))
+        OWLSubClassOfAxiom subAxiom;
+
+        if (axiom instanceof OWLSubClassOfAxiom)
+            subAxiom = (OWLSubClassOfAxiom) axiom;
+        else if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES))
+            subAxiom = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms().iterator().next();
+        else
             return false;
-    
-        OWLSubClassOfAxiom subAxiom = (OWLSubClassOfAxiom) axiom;
+
         boolean subClassValid = subAxiom.getSubClass().asOWLClass().isOWLClass();
         boolean superClassValid = subAxiom.getSuperClass().asOWLClass().isOWLClass();
 

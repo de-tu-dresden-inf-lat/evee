@@ -1,7 +1,6 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
