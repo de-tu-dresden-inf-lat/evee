@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.nemo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -57,8 +58,37 @@ public class ProofTest {
         assertTrue(evaluator.evaluate(proof)==1d);
     }
 
+    @Ignore("For dev purposes")
+    @Test
+    public void testTask2() throws OWLOntologyCreationException, ProofGenerationException{
+        IInference<OWLAxiom> task = readTask(  "task00001.json");
+        IProof<OWLAxiom> proof = runTask(task);
+
+        System.out.println(proof.toString());
+        System.out.println("final conclusion: " + proof.getFinalConclusion());
+
+        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
+        evaluator.setTask(task);
+        assertEquals(1d, evaluator.evaluate(proof), 0.0);
+    }
+
+
+    @Test
+    public void testTask3() throws OWLOntologyCreationException, ProofGenerationException{
+        IInference<OWLAxiom> task = readTask(  "task00003.json");
+        IProof<OWLAxiom> proof = runTask(task);
+
+        System.out.println(proof.toString());
+        System.out.println("final conclusion: " + proof.getFinalConclusion());
+
+        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
+        evaluator.setTask(task);
+        assertEquals(1d, evaluator.evaluate(proof), 0.0);
+    }
+
     //for dev purposes
-    @Ignore @Test
+    //@Ignore
+    @Test
     public void exportProofJson() throws Exception{
         IInference<OWLAxiom> task = readTask(  "task_transProp.json");
         IProof<OWLAxiom> proof = runTask(task);
