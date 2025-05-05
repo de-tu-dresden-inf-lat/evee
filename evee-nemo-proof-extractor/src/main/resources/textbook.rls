@@ -50,7 +50,7 @@ class(?X) :- TRIPLE(?X, ?P, ?O), ClassSubject(?P) .
 %% Mark auxiliary existential role restrictions:
 synEx(?Y,?P,?X), auxClass(?X) :- TRIPLE(?X, owl:someValuesFrom, ?Y), TRIPLE(?X, owl:onProperty, ?P) .
 
-%% Mark auxiliary conjunctions:
+%% Mark auxiliary lists:
 next(?L1,?L2) :- TRIPLE(?L1,rdf:rest,?L2) .
    first(?L1) :- TRIPLE(?X, owl:intersectionOf, ?L1) .
 nonfirst(?L2) :- first(?L1), next(?L1,?L2) .
@@ -59,8 +59,15 @@ nonfirst(?L2) :- nonfirst(?L1), next(?L1,?L2) .
   nonlast(?L) :- next(?L,?Ln), last(?Ln) .
  nonlast(?L1) :- next(?L1,?L2), nonlast(?L2) .
     in(?L,?C) :- TRIPLE(?L,rdf:first,?C) .
+
+%% Initialise disjointness:
+#[name("disjoint")]
+TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
+TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
+TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
+	:- TRIPLE(?X,owl:disjointWith,?Y) .
 	
-% Mark conjunctions:
+%% Mark conjunctions:
 synConj(?X,?C1,?C2), auxClass(?X) :-
 	TRIPLE(?X, owl:intersectionOf, ?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
 synConj(?X,?C1,?L2), auxClass(?X) :-
@@ -92,16 +99,15 @@ nf:subClassConj(?D,?E,?Y),  nf:class(?Y) :- nf:conj(?Y,?D,?E) .
 nf:subClassEx(?R,?B,?Y), nf:class(?Y)  :- nf:exists(?Y,?R,?B) . 
 nf:supClassEx(?Y,?R,?B), nf:class(?Y)  :- nf:exists(?Y,?R,?B) .
 % NF4
-#[name("NF4")]
+#[name("taut")]
 nf:subClassOf(?X, ?C), nf:subClassOf(?X, ?D) :- nf:conj(?X,?C,?D). 
-
-%%% Initialise disjointness: TODO
-%nf:subClassOf(!C,owl:Nothing), nf:conj(!C,?X,?Y) :- TRIPLE(?X,owl:disjointWith,?Y) .
 
 % Precompute role hierarchy: 
 directSubProp(?R,?S) :- TRIPLE(?R,rdfs:subPropertyOf,?S) .
 % Initialise role hierarchy only for roles in subclass positions:
-nf:subProp(?P,?P) :- nf:supClassEx(_,?P,_) . 
+#[name("role_hierarchy")]
+nf:subProp(?P,?P) :- nf:supClassEx(_,?P,_) .
+#[name("role_hierarchy")]
 nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 
 
@@ -110,6 +116,7 @@ nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 % A ⊑ B
 inf:subClassOf(?A,?B) :- nf:subClassOf(?A,?B) .
 % A ⊓ B ⊑ C
+#[name("taut")]
 inf:subClassConj(?A,?B,?C) :- nf:subClassConj(?A,?B,?C) .
 % ∃R.A ⊑ B
 inf:subClassEx(?R,?A,?B) :- nf:subClassEx(?R,?A,?B) .

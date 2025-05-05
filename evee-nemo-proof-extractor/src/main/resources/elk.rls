@@ -63,6 +63,13 @@ firstProp(?L1)    :-  TRIPLE(?R,owl:propertyChainAxiom,?L1).
 nonfirstProp(?L2) :- firstProp(?L1), next(?L1,?L2) .
 nonfirstProp(?L2) :- nonfirstProp(?L1), next(?L1,?L2) .
 
+%% Initialise disjointness:
+#[name("disjoint")]
+TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
+TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
+TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
+	:- TRIPLE(?X,owl:disjointWith,?Y) .
+
 % Mark conjunctions:
 synConj(?X,?C1,?C2), auxClass(?X) :-
 	TRIPLE(?X, owl:intersectionOf, ?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
@@ -109,14 +116,6 @@ nf:subPropChain(?S1,?S2,?S)   :- auxPropChain(?R1,?R2,?R), repOfProp(?R1,?S1), r
 		#[name("equiv")]
       prepareSco(?X,?Y), prepareSco(?Y,?X) :- TRIPLE(?X, owl:equivalentClass, ?Y) .
 nf:subClassOf(?RX,?RY), nf:isSubClass(?RX) :- prepareSco(?X,?Y), repOf(?X,?RX), repOf(?Y,?RY) .
-
-%%% Initialise disjointness:
-#[name("disjoint")]
-TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
-TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
-TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
-	:- TRIPLE(?X,owl:disjointWith,?Y) .
-
 
 %%% Mark classes in subclass position recursively:
                      nf:isSubClass(?D) :- nf:exists(?C, ?P, ?D), nf:isSubClass(?C) .

@@ -77,7 +77,7 @@ public class ProofTest {
     @Ignore("For dev purposes")
     @Test
     public void testTask() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task_EL.json");
+        IInference<OWLAxiom> task = readTask(  "task_roleInc.json");
         IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
 
         System.out.println(proof.toString());
