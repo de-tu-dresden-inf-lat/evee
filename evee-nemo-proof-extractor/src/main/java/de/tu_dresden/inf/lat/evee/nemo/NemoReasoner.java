@@ -19,10 +19,13 @@ public class NemoReasoner {
 
     private static final Logger logger = LogManager.getLogger(NemoReasoner.class);
 
-    private static final String ELK_RULE_FILE_NAME = "elk";
-    private static final String NEMO_RULE_FILE_SUFFIX = ".rls";
-    private static final String ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
-
+    private final static String
+            ELK_FILENAME = "elk",
+            ENVELOPE_FILENAME = "envelope",
+            TEXTBOOK_FILENAME = "textbook",
+            NEMO_RULE_FILE_SUFFIX = ".rls",
+            ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
+    
     //path to directory of nemo executable TODO: make configurable
     private String nemoExecDir = System.getProperty("user.home");
     private OWLOntology ontology;
@@ -35,24 +38,22 @@ public class NemoReasoner {
         nemoExecDir = nemoExecDirPath;
     }
 
-    public IProof<String> proof(String axiom) throws IOException, OWLOntologyStorageException, InterruptedException {
+    public IProof<String> proof(String axiom, ECalculus calculus) throws IOException, NemoExcecException {
         
         logger.debug("generating proof");
 
-        //create all needed files
+        //create tmp files
         Path importDir = prepareImportDir(ontology);
-        File ruleFile = prepareRuleFile(ELK_RULE_FILE_NAME, NEMO_RULE_FILE_SUFFIX);
+        File ruleFile = prepareRuleFile(getRuleFileName(calculus));
         File traceFile = File.createTempFile("nemoTrace", ".json");
 
-        logger.debug("running nemo");
-
         //run nemo
+        logger.debug("running nemo");
         int exitCode = runNemo(importDir.toString(), ruleFile.getAbsolutePath(), traceFile.getAbsolutePath(), axiom);
-        logger.debug("return Code of nemo: " + exitCode);
-        //TODO: check exit code?
+        if (exitCode != 0)
+            throw new NemoExcecException("error running nemo. Exit code " + exitCode);
 
         JsonStringProofParser proofParser = JsonStringProofParser.getInstance();
-
         IProof<String> proof = proofParser.fromFile(traceFile);
         if (proof == null)
             throw new IOException("Error reading nemo trace file");
@@ -60,35 +61,58 @@ public class NemoReasoner {
         return proof;
     }
 
-    
-    private File prepareRuleFile(String resourceFileName, String resourceSuffix) throws IOException{
+    private String getRuleFileName(ECalculus calculus){
+        switch (calculus) {
+            case ELK:
+                return ELK_FILENAME;
+            case ENVELOPE:
+                return ENVELOPE_FILENAME;
+            case TEXTBOOK:
+                return TEXTBOOK_FILENAME;
+            default:
+                return "";
+        }
+    }
+
+    private File prepareRuleFile(String ruleFile) throws IOException{
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        File ruleSrcFile = new File(classLoader.getResource(resourceFileName + resourceSuffix).getFile());
-        File ruleDstFile =  File.createTempFile(resourceFileName, resourceSuffix);
+        File ruleSrcFile = new File(classLoader.getResource(ruleFile + NEMO_RULE_FILE_SUFFIX).getFile());
+        File ruleDstFile =  File.createTempFile(ruleFile,  NEMO_RULE_FILE_SUFFIX);
 
         Files.copy(ruleSrcFile.toPath(), ruleDstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         return ruleDstFile;
     }
 
-    private Path prepareImportDir(OWLOntology ontology) throws IOException, OWLOntologyStorageException {
+    private Path prepareImportDir(OWLOntology ontology) throws IOException {
         Path importDir = Files.createTempDirectory("nemo_exec");
 
         File ontFile = new File(importDir + "/" + ONTOLOGY_EXPORT_FILE_NAME);
-        ontology.saveOntology(new TurtleDocumentFormat(), IRI.create(ontFile.toURI()));
+        try{
+            ontology.saveOntology(new TurtleDocumentFormat(), IRI.create(ontFile.toURI()));
+        }catch(OWLOntologyStorageException e){
+            throw new IOException("error saving Ontology to file: ", e);
+        }
 
         return importDir;
     }
 
-    private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws InterruptedException, IOException{
-        ProcessBuilder pb = new ProcessBuilder("./nmoNew", "-v", "-I", importDir, ruleFile,
+    private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws NemoExcecException{
+        ProcessBuilder pb = new ProcessBuilder("./nmoNew", "-I", importDir, ruleFile,
         "--trace-output", traceFile, "--trace", axiom)
             .inheritIO();
 
         pb.directory(new File(nemoExecDir));
-        Process p = pb.start();
+         
+        int exitCode;
+        try{
+            Process p = pb.start();
+            exitCode = p.waitFor();
+        }catch(Exception e){
+            throw new NemoExcecException("error running nemo: ", e);
+        }
 
-        return p.waitFor();
+        return exitCode;
     }
 }

@@ -1,34 +1,41 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+
 import com.google.common.collect.Sets;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 
-public class ELKAtomParser extends AbstractAtomParser{
+public class TextbookAtomParser extends AbstractAtomParser{
 
     private final String
-        EQUIVALENCE_MAIN = "mainEquivClass",
         SUBOF_MAIN = "mainSubClassOf",
         SUBOF_INF = "http://rulewerk.semantic-web.org/inferred/subClassOf",
         SUBOF_NF = "http://rulewerk.semantic-web.org/normalForm/subClassOf",
         SUBOF_PREPARE = "prepareSco",
 
-        SUBOF_EXIST = "http://rulewerk.semantic-web.org/inferred/ex",
-    
         SUBPROP = "http://rulewerk.semantic-web.org/normalForm/subProp",
         SUBPROP_DIR = "directSubProp",
-        
-        SUBPROP_CHAIN = "http://rulewerk.semantic-web.org/normalForm/subPropChain",
-        SUBPROP_CHAIN_AUX = "auxPropChain",
+
+        SUB_CONJ_NF = "http://rulewerk.semantic-web.org/normalForm/subClassConj",
+        SUB_CONJ_INF = "http://rulewerk.semantic-web.org/inferred/subClassConj",
+
+        SUB_EX_NF = "http://rulewerk.semantic-web.org/normalForm/subClassEx",
+        SUB_EX_INF = "http://rulewerk.semantic-web.org/inferred/subClassEx",
+
+        SUP_EX_NF = "http://rulewerk.semantic-web.org/normalForm/supClassEx",
+        SUP_EX_INF = "http://rulewerk.semantic-web.org/inferred/supClassEx",
+
+        CONJ_NF = "http://rulewerk.semantic-web.org/normalForm/conj",
 
         TRIPLE = "TRIPLE",
         EQUIV_TRIPLE = "<http://www.w3.org/2002/07/owl#equivalentClass>",
@@ -38,32 +45,33 @@ public class ELKAtomParser extends AbstractAtomParser{
         TRANSPROP_TRIPLE = "<http://www.w3.org/2002/07/owl#TransitiveProperty>",
         DISJOINT_TRIPLE = "<http://www.w3.org/2002/07/owl#disjointWith>";
         
+
+
     private final Set<String> subClassOfNames = Sets.newHashSet(SUBOF_MAIN, SUBOF_INF, SUBOF_NF, SUBOF_PREPARE);
 
-    private final PlaceholderParser placeholderParser;    
-    
-    public ELKAtomParser(){
+    private final PlaceholderParser placeholderParser;
+
+    public TextbookAtomParser(){
         placeholderParser = new PlaceholderParser();
     }
 
-    public void initFacts(List<IInference<String>> inferences){
-        placeholderParser.initParsingBase(inferences);
-    }
-
-    public OWLAxiom toOwlAxiom(String atom){
+    @Override
+    public OWLAxiom toOwlAxiom(String atom) {
         String predName = parsingHelper.getPredicateName(atom);
         List<String> args = parsingHelper.getPredicateArguments(atom);
-        
-        if(predName.equals(EQUIVALENCE_MAIN))
-            return parseEquivalenceClassesAxiom(args);
+
         if(subClassOfNames.contains(predName))
             return parseSubClassAxiom(args);
         else if(predName.equals(SUBPROP) || predName.equals(SUBPROP_DIR))
             return parseSubProperty(args);
-        else if(predName.equals(SUBOF_EXIST))
-            return parseSubOfExistential(args);
-        else if(predName.equals(SUBPROP_CHAIN) || predName.equals(SUBPROP_CHAIN_AUX))
-             return parsePropChain(args);
+        else if(/* predName.equals(SUB_CONJ_NF) || */ predName.equals(SUB_CONJ_INF))
+            return parseSubClassConjunction(args);
+        else if(predName.equals(SUB_EX_INF) || predName.equals(SUB_EX_NF))
+            return parseSubClassExistential(args);
+        else if(predName.equals(SUP_EX_INF) || predName.equals(SUP_EX_NF))
+            return parseSupClassExistential(args);
+        // else if(predName.equals(CONJ_NF))
+        //     return parseConjEqiv(args);
         else if(predName.equals(TRIPLE) && args.get(1).equals(EQUIV_TRIPLE))
             return parseEquivTriple(args);
         else if(predName.equals(TRIPLE) && args.get(1).equals(SUBOF_TRIPLE))
@@ -80,18 +88,84 @@ public class ELKAtomParser extends AbstractAtomParser{
         return defaultAxiom;
     }
 
-    private OWLAxiom parseEquivalenceClassesAxiom(List<String> args) {
-        OWLClassExpression cls1, cls2;
+    @Override
+    public void initFacts(List<IInference<String>> inferences) {
+        placeholderParser.initParsingBase(inferences);
+    }
+    
+    private OWLAxiom parseSubClassConjunction(List<String> args){
+        OWLClassExpression sup;
+        Set<OWLClassExpression> conjuncts = new HashSet<>();
 
-        try{
-            cls1 = placeholderParser.parseConceptOrPlaceholder(args.get(0));
-            cls2 = placeholderParser.parseConceptOrPlaceholder(args.get(1));
+        try {
+            sup = placeholderParser.parseConceptOrPlaceholder(args.get(2));
+            conjuncts.add(placeholderParser.parseConceptOrPlaceholder(args.get(0)));
+            conjuncts.add(placeholderParser.parseConceptOrPlaceholder(args.get(1)));
+        } catch (ConceptTranslationError e) {
+            return defaultAxiom;
+        }
+        
+        return owlHelper.getOWLSubClassOfAxiom(owlHelper.getOWLConjunction(conjuncts), sup);
+    }
+
+    private OWLAxiom parseConjEqiv(List<String> args){
+        OWLClassExpression eqClass;
+        Set<OWLClassExpression> conjuncts = new HashSet<>();
+
+        try {
+            eqClass = placeholderParser.parseConceptOrPlaceholder(args.get(0));
+            conjuncts.add(placeholderParser.parseConceptOrPlaceholder(args.get(1)));
+            conjuncts.add(placeholderParser.parseConceptOrPlaceholder(args.get(2)));
         } catch (ConceptTranslationError e) {
             return defaultAxiom;
         }
 
-        return owlHelper.getOWLEquivalenceAxiom(cls1, cls2);
+        String eqClassStr = eqClass.toString();
+        
+        OWLObjectIntersectionOf conj = owlHelper.getOWLConjunction(conjuncts);
+        String conjStr = conj.toString();
+
+        OWLAxiom res = owlHelper.getOWLEquivalenceAxiom(eqClass, conj);
+        String resStr = res.toString();
+        return res;
     }
+
+
+    private OWLAxiom parseSubClassExistential(List<String> args){
+        OWLClassExpression sup, existCls;
+        OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(0)));
+
+        try{
+            sup = placeholderParser.parseConceptOrPlaceholder(args.get(2));
+            existCls = placeholderParser.parseConceptOrPlaceholder(args.get(1));
+        } catch (ConceptTranslationError e) {
+            return defaultAxiom;
+        }
+
+        OWLClassExpression restriction = owlHelper.getOWLExistentialRestriction(prop, existCls);
+        
+        return owlHelper.getOWLSubClassOfAxiom(restriction, sup);
+    }
+
+    private OWLAxiom parseSupClassExistential(List<String> args){
+        OWLClassExpression sub, existCls;
+        OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(1)));
+        
+        try{
+            sub = placeholderParser.parseConceptOrPlaceholder(args.get(0));
+            existCls = placeholderParser.parseConceptOrPlaceholder(args.get(2));
+        } catch (ConceptTranslationError e) {
+            return defaultAxiom;
+        }
+
+        OWLClassExpression restriction = owlHelper.getOWLExistentialRestriction(prop, existCls);
+        
+        return owlHelper.getOWLSubClassOfAxiom(sub, restriction);
+    }
+
+    //////////////////////////////////////////////////
+    //TODO everything below copied from ELKAtomParser
+    /////////////////////////////////////////////////
 
     private OWLAxiom parseSubClassAxiom(List<String> args){
         OWLClassExpression sub, sup;
@@ -106,7 +180,6 @@ public class ELKAtomParser extends AbstractAtomParser{
        return owlHelper.getOWLSubClassOfAxiom(sub, sup);
     }
 
-    
     private OWLAxiom parseSubProperty(List<String> args) {
         String supStr = parsingHelper.format(args.get(1));
         if(parsingHelper.isPlaceholder(supStr)) // rolechains on right hand side not supported
@@ -117,46 +190,8 @@ public class ELKAtomParser extends AbstractAtomParser{
         
 		return owlHelper.getOWLSubObjectPropertyAxiom(sub, sup);
 	}
-    
-    private OWLAxiom parseSubOfExistential(List<String> args){
-        OWLClassExpression sub, existCls;
-        List<OWLObjectPropertyExpression> props; 
-        
-        try{
-            sub = placeholderParser.parseConceptOrPlaceholder(args.get(0));
-            existCls = placeholderParser.parseConceptOrPlaceholder(args.get(2));
-            props = placeholderParser.parseRoleOrPlaceholder(args.get(1));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
 
-        OWLClassExpression restriction = existCls;
-        for(int i=props.size()-1; i>=0; i--){ //dealing with role chains by nested Ex.Restrictions
-            restriction = owlHelper.getOWLExistentialRestriction(props.get(i), restriction);
-        }
-        
-        return owlHelper.getOWLSubClassOfAxiom(sub,restriction);
-    }
-
-    private OWLAxiom parsePropChain(List<String> args) {
-        String supStr = parsingHelper.format(args.get(2));
-        if(parsingHelper.isPlaceholder(supStr)) // rolechains on right hand side not supported
-            return defaultAxiom;
-        
-        OWLObjectPropertyExpression sup = parseProp(supStr);
-        List<OWLObjectPropertyExpression> chain = new ArrayList<>();
-        try {
-            chain.addAll(placeholderParser.parseRoleOrPlaceholder(args.get(0)));
-            chain.addAll(placeholderParser.parseRoleOrPlaceholder(args.get(1)));
-        } catch (Exception e) {
-            return defaultAxiom;
-        }
-    
-        return owlHelper.getOWLSubPropertyChainOfAxiom(chain, sup);
-    }
-
-    
-    private OWLAxiom parseEquivTriple(List<String> args){
+     private OWLAxiom parseEquivTriple(List<String> args){
         OWLClassExpression cls1, cls2;
     
         try{
@@ -203,6 +238,5 @@ public class ELKAtomParser extends AbstractAtomParser{
 
         return owlHelper.getOWLDisjointAxiom(cls1, cls2);
     }
-    
-        
+
 }

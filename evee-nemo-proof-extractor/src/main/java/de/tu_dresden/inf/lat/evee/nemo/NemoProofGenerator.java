@@ -3,6 +3,8 @@ package de.tu_dresden.inf.lat.evee.nemo;
 import org.semanticweb.owlapi.model.*;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.ELKAtomParser;
+import de.tu_dresden.inf.lat.evee.nemo.parser.EnvelopeAtomParser;
+import de.tu_dresden.inf.lat.evee.nemo.parser.TextbookAtomParser;
 import de.tu_dresden.inf.lat.evee.nemo.parser.NemoProofParser;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
@@ -12,7 +14,7 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     private NemoReasoner reasoner;
     private NemoProofParser parser;
-//    private OWLOntology ontology;
+    private ECalculus calculus;
 
     public NemoProofGenerator(OWLOntology ontology){
         reasoner = new NemoReasoner(ontology);
@@ -25,8 +27,11 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     @Override
     public void setOntology(OWLOntology ontology) {
-//        this.ontology = ontology;
         reasoner = new NemoReasoner(ontology);
+    }
+
+    public void setCalculus(ECalculus calc){ 
+        this.calculus = calc;
     }
 
     @Override
@@ -35,7 +40,7 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
         IProof<String> proof;
         try{
-            proof = reasoner.proof(nemoAxiom);
+            proof = reasoner.proof(nemoAxiom, calculus);
         }catch(Exception e) {
             throw new ProofGenerationException(e);
         }
@@ -43,9 +48,25 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
         if (proof.getFinalConclusion().isEmpty())
             throw new ProofGenerationException("axiom could not be derived");
 
-        parser.setAtomParser(new ELKAtomParser());
-        
+        setCalculusParser();
+
         return parser.toProofOWL(proof);   
+    }
+    
+    private void setCalculusParser(){
+        switch (calculus) {
+            case ELK:
+                parser.setAtomParser(new ELKAtomParser());
+                break;
+            case TEXTBOOK:
+                parser.setAtomParser(new TextbookAtomParser());
+                break;
+            case ENVELOPE:
+                parser.setAtomParser(new EnvelopeAtomParser());
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -64,7 +85,7 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
         return subClassValid && superClassValid;
     }
-
+    
     @Override
 	public void cancel() {
 		// do nothing, assuming that NEMO is fast enough
@@ -75,5 +96,6 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 		// return true, because we let NEMO run through to the end
 		return true;
 	}
+
     
 }

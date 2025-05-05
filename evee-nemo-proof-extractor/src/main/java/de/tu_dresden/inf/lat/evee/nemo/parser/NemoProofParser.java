@@ -22,10 +22,6 @@ public class NemoProofParser {
 
     public NemoProofParser(){}
 
-    public NemoProofParser(AbstractAtomParser atomParser){
-        this.atomParser = atomParser;
-    }
-
     public void setAtomParser(AbstractAtomParser atomParser){
         this.atomParser = atomParser;
     }

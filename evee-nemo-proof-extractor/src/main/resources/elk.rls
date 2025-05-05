@@ -11,7 +11,6 @@
 %
 % This ruleset normalises an EL ontology in OWL/RDF encoding.
 % Unsupported OWL EL features include: oneOf, allDisjoint.
-% The encoding used for property chains is also slightly antique.
 %
 % The ruleset computes facts for the following predicates:
 %  nf:isMainClass(?C): ?C is an "interesting" class (not just an auxiliary class expression)
@@ -113,8 +112,11 @@ nf:subClassOf(?RX,?RY), nf:isSubClass(?RX) :- prepareSco(?X,?Y), repOf(?X,?RX), 
 
 %%% Initialise disjointness:
 #[name("disjoint")]
-nf:subClassOf(!C,owl:Nothing), nf:conj(!C,?X,?Y), nf:isSubClass(!C), nf:isSubClass(?X), nf:isSubClass(?Y)
+TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
+TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
+TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
 	:- TRIPLE(?X,owl:disjointWith,?Y) .
+
 
 %%% Mark classes in subclass position recursively:
                      nf:isSubClass(?D) :- nf:exists(?C, ?P, ?D), nf:isSubClass(?C) .

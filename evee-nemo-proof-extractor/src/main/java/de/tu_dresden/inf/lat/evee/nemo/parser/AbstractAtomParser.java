@@ -8,12 +8,14 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
+import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 
 abstract class AbstractAtomParser {
     
     protected final OWLHelper owlHelper = OWLHelper.getInstance();
-    
+    protected final ParsingHelper parsingHelper = ParsingHelper.getInstance();
+
     protected final OWLSubClassOfAxiom defaultAxiom = owlHelper.getOWLSubClassOfAxiom(owlHelper.getOWLBot(), owlHelper.getOWLTop());
 
     public AbstractAtomParser(){}
