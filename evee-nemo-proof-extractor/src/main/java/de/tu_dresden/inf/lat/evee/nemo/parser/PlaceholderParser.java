@@ -40,7 +40,7 @@ public class PlaceholderParser {
 	private Map<String,String> equivalentPlaceholders;
 
 
-	// chaches already parsed placeholders. 
+	// caches already parsed placeholders.
 	// Key is the placeholder id and value the corresponding OWL concept 
 	private Map<String, OWLClassExpression> conceptCache = new HashMap<>();
 	private Map<String, List<OWLObjectPropertyExpression>> roleChainCache = new HashMap<>();
@@ -66,7 +66,7 @@ public class PlaceholderParser {
             }
             else if(parsingHelper.getPredicateName(conc).equals(REPOF) || parsingHelper.getPredicateName(conc).equals(REPOF_PROP)){
 				List<String> args = parsingHelper.getPredicateArguments(conc);         
-				equiv.put(args.get(1), args.get(0)); //second arg of repOf predicate is Placeholder intr by nemo
+				equiv.put(args.get(1), args.get(0)); //second arg of repOf predicate is Placeholder introduced by nemo
             }
         }
         

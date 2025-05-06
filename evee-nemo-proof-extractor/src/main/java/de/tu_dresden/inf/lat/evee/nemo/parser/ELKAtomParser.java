@@ -16,7 +16,7 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 
 public class ELKAtomParser extends AbstractAtomParser{
 
-    private final String
+    private static final String
         EQUIVALENCE_MAIN = "mainEquivClass",
         SUBOF_MAIN = "mainSubClassOf",
         SUBOF_INF = "http://rulewerk.semantic-web.org/inferred/subClassOf",
