@@ -11,7 +11,6 @@
 %
 % This ruleset normalises an EL ontology in OWL/RDF encoding.
 % Unsupported OWL EL features include: oneOf, allDisjoint.
-% The encoding used for property chains is also slightly antique.
 %
 % The ruleset computes facts for the following predicates:
 %  nf:isMainClass(?C): ?C is an "interesting" class (not just an auxiliary class expression)
@@ -64,6 +63,18 @@ firstProp(?L1)    :-  TRIPLE(?R,owl:propertyChainAxiom,?L1).
 nonfirstProp(?L2) :- firstProp(?L1), next(?L1,?L2) .
 nonfirstProp(?L2) :- nonfirstProp(?L1), next(?L1,?L2) .
 
+%% Initialise disjointness:
+#[name("disjoint")]
+TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
+TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
+TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
+	:- TRIPLE(?X,owl:disjointWith,?Y).
+
+%% Initialise domain:
+#[name("domain")]
+TRIPLE(!X, owl:someValuesFrom, owl:Thing), TRIPLE(!X, owl:onProperty, ?R), TRIPLE(!X, rdfs:subClassOf, ?C)
+	:- TRIPLE(?R,rdf:type,owl:ObjectProperty), TRIPLE(?R,rdfs:domain, ?C).
+
 % Mark conjunctions:
 synConj(?X,?C1,?C2), auxClass(?X) :-
 	TRIPLE(?X, owl:intersectionOf, ?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
@@ -111,11 +122,6 @@ nf:subPropChain(?S1,?S2,?S)   :- auxPropChain(?R1,?R2,?R), repOfProp(?R1,?S1), r
       prepareSco(?X,?Y), prepareSco(?Y,?X) :- TRIPLE(?X, owl:equivalentClass, ?Y) .
 nf:subClassOf(?RX,?RY), nf:isSubClass(?RX) :- prepareSco(?X,?Y), repOf(?X,?RX), repOf(?Y,?RY) .
 
-%%% Initialise disjointness:
-#[name("disjoint")]
-nf:subClassOf(!C,owl:Nothing), nf:conj(!C,?X,?Y), nf:isSubClass(!C), nf:isSubClass(?X), nf:isSubClass(?Y)
-	:- TRIPLE(?X,owl:disjointWith,?Y) .
-
 %%% Mark classes in subclass position recursively:
                      nf:isSubClass(?D) :- nf:exists(?C, ?P, ?D), nf:isSubClass(?C) .
 nf:isSubClass(?C1), nf:isSubClass(?C2) :- nf:conj(?X, ?C1, ?C2), nf:isSubClass(?X) .
@@ -137,10 +143,6 @@ nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 % inf:subClassOf(?B, ?A) :- nf:isMainClass(?A), inf:subClassOf(?B, owl:Nothing).
 %% Better looking proof
 nf:subClassOf(owl:Nothing, ?A) :- nf:isMainClass(?A).
-
-%%% Initialising role domain
-nf:subClassOf(!X,?D), nf:exists(!X,?R,owl:Thing), nf:isSubClass(!X), nf:isMainClass(?D)
-:- TRIPLE(?R,rdf:type,owl:ObjectProperty), TRIPLE(?R,rdfs:domain, ?D).
 
 %%% Start classification for all named classes:
 

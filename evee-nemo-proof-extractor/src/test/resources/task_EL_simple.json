@@ -1,0 +1,8 @@
+{
+    "finalConclusion" : "<http://www.w3.org/2002/07/A> <= <http://www.w3.org/2002/07/B>",
+    "inferences" : [ {
+      "conclusion" : "<http://www.w3.org/2002/07/A> <= <http://www.w3.org/2002/07/B>",
+      "ruleName" : "generic",
+      "premises" : [ "<http://www.w3.org/2002/07/A> <= (<http://www.w3.org/2002/07/C> n <http://www.w3.org/2002/07/D> n <http://www.w3.org/2002/07/E>)", "<http://www.w3.org/2002/07/E> <= <http://www.w3.org/2002/07/B>" ]
+    } ]
+  }

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.HashSet;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -23,21 +22,51 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.CorrectnessEvaluator;
 
 public class ProofTest {
 
+    private final String [] taskFiles = {
+        "task_EL.json",
+        "task_roleChain_concat.json",
+        "task_roleChain_simple.json",
+        "task_roleChain.json",
+        "task_roleInc.json",
+        "task_transProp.json"
+    };
+
     @Test
-    public void testAllTasks() throws OWLOntologyCreationException, ProofGenerationException{
-        String [] taskFiles = {
-            "task_EL.json",
-            "task_roleChain_concat.json",
-            "task_roleChain_simple.json",
-            "task_roleChain.json",
-            "task_roleInc.json",
-            "task_transProp.json"
-        };
+    public void testAllTasks_ELK() throws OWLOntologyCreationException, ProofGenerationException{
+ 
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
 
         for(String taskFile : taskFiles){
             IInference<OWLAxiom> task = readTask(taskFile);
-            IProof<OWLAxiom> proof = runTask(task);
+            IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
+            evaluator.setTask(task);
+
+            assertTrue(evaluator.evaluate(proof)==1d);
+        }
+    }
+
+    @Test
+    public void testAllTasks_ENVELOPE() throws OWLOntologyCreationException, ProofGenerationException{
+ 
+        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
+
+        for(String taskFile : taskFiles){
+            IInference<OWLAxiom> task = readTask(taskFile);
+            IProof<OWLAxiom> proof = runTask(task, ECalculus.ENVELOPE);
+            evaluator.setTask(task);
+
+            assertTrue(evaluator.evaluate(proof)==1d);
+        }
+    }
+
+    @Test
+    public void testAllTasks_TEXTBOOK() throws OWLOntologyCreationException, ProofGenerationException{
+ 
+        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
+
+        for(String taskFile : taskFiles){
+            IInference<OWLAxiom> task = readTask(taskFile);
+            IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
             evaluator.setTask(task);
 
             assertTrue(evaluator.evaluate(proof)==1d);
@@ -45,10 +74,11 @@ public class ProofTest {
     }
 
     //for dev purposes
-    @Ignore @Test
+    @Ignore("For dev purposes")
+    @Test
     public void testTask() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task_transProp.json");
-        IProof<OWLAxiom> proof = runTask(task);
+        IInference<OWLAxiom> task = readTask(  "task_roleInc.json");
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
@@ -62,7 +92,7 @@ public class ProofTest {
     @Test
     public void testTask2() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task00001.json");
-        IProof<OWLAxiom> proof = runTask(task);
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
@@ -72,11 +102,11 @@ public class ProofTest {
         assertEquals(1d, evaluator.evaluate(proof), 0.0);
     }
 
-
+    @Ignore("For dev purposes")
     @Test
     public void testTask3() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task00003.json");
-        IProof<OWLAxiom> proof = runTask(task);
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
@@ -114,11 +144,11 @@ public class ProofTest {
 
 
     //for dev purposes
-    //@Ignore
+    @Ignore
     @Test
     public void exportProofJson() throws Exception{
-        IInference<OWLAxiom> task = readTask(  "task_transProp.json");
-        IProof<OWLAxiom> proof = runTask(task);
+        IInference<OWLAxiom> task = readTask(  "task_roleInc.json");
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         JsonProofWriter<OWLAxiom> jsonWriter = new JsonProofWriter<>();
         try{
@@ -128,13 +158,14 @@ public class ProofTest {
         }
     }
 
-    private IProof<OWLAxiom> runTask(IInference<OWLAxiom> task) throws ProofGenerationException, OWLOntologyCreationException{
+    private IProof<OWLAxiom> runTask(IInference<OWLAxiom> task, ECalculus calculus) throws ProofGenerationException, OWLOntologyCreationException{
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
         OWLOntology ontology = manager.createOntology();
 		manager.addAxioms(ontology, new HashSet<OWLAxiom>(task.getPremises()));
 
         NemoProofGenerator generator = new NemoProofGenerator(ontology);
+        generator.setCalculus(calculus);
 
         return generator.getProof(task.getConclusion());
     }

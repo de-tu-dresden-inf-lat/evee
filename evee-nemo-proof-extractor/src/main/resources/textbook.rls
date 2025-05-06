@@ -5,8 +5,8 @@
 % (slightly extended for role hierarchies and bottom)
 %
 % First this ruleset normalises an EL ontology in OWL/RDF encoding.
-% Unsupported OWL EL features include: oneOf, allDisjoint.
-% The encoding used for property chains is also slightly antique.
+% The normalisation coincides with the normalisation of the calculus defined on p143, Fig. 6.1..
+% Most of this normalisation is inherent to the Turtle triple format. Only Rule NF4 is computed here explicitly.
 %
 % The ruleset computes facts for the following predicates:
 %  nf:isMainClass(?C): ?C is an "interesting" class (not just an auxiliary class expression)
@@ -19,6 +19,9 @@
 %  nf:supClassEx(?A,?R,?B): ?A is declared a subclass of ∃?R.?B
 %  nf:subPropChain(?S1,?S2,?R): there was a role chain axiom ?S1 o ?S2 -> ?R
 %  nf:subProp(?R,?S): ?R is a subproperty of ?S (directly or indirectly) 
+% 
+% Unsupported OWL EL features include: oneOf, allDisjoint.
+% The encoding used for property chains is also slightly antique.
 
 @prefix nf: <http://rulewerk.semantic-web.org/normalForm/> .
 @prefix inf: <http://rulewerk.semantic-web.org/inferred/> .
@@ -28,6 +31,9 @@
 @prefix sct: <http://www.ihtsdo.org/owlname#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix genid: <https://rulewerk.semantic-web.org/.well-known/genid/> .
+
+% Read data from Turtle file:
+@import TRIPLE :- rdf{resource="ont.ttl"} .
 
 %%% Mark classes:
 ClassObject(owl:someValuesFrom) .
@@ -44,8 +50,7 @@ class(?X) :- TRIPLE(?X, ?P, ?O), ClassSubject(?P) .
 %% Mark auxiliary existential role restrictions:
 synEx(?Y,?P,?X), auxClass(?X) :- TRIPLE(?X, owl:someValuesFrom, ?Y), TRIPLE(?X, owl:onProperty, ?P) .
 
-%% Mark auxiliary conjunctions:
-
+%% Mark auxiliary lists:
 next(?L1,?L2) :- TRIPLE(?L1,rdf:rest,?L2) .
    first(?L1) :- TRIPLE(?X, owl:intersectionOf, ?L1) .
 nonfirst(?L2) :- first(?L1), next(?L1,?L2) .
@@ -54,7 +59,15 @@ nonfirst(?L2) :- nonfirst(?L1), next(?L1,?L2) .
   nonlast(?L) :- next(?L,?Ln), last(?Ln) .
  nonlast(?L1) :- next(?L1,?L2), nonlast(?L2) .
     in(?L,?C) :- TRIPLE(?L,rdf:first,?C) .
-% Mark conjunctions:
+
+%% Initialise disjointness:
+#[name("disjoint")]
+TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
+TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
+TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
+	:- TRIPLE(?X,owl:disjointWith,?Y) .
+	
+%% Mark conjunctions:
 synConj(?X,?C1,?C2), auxClass(?X) :-
 	TRIPLE(?X, owl:intersectionOf, ?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
 synConj(?X,?C1,?L2), auxClass(?X) :-
@@ -68,52 +81,42 @@ synConj(?L1,?C1,?C2), auxClass(?L1) :-
 nf:isMainClass(?X) :- class(?X), ~auxClass(?X) .
 
 %%% Normalise auxiliary nested class expressions:
-           repOf(?X,?X) :- nf:isMainClass(?X) . % keep main classes unchanged
-   synExRep(?X,?P,?Rep) :- synEx(?Y,?P,?X), repOf(?Y,?Rep) .
-nf:exists(!New,?P,?Rep) :- synExRep(?X,?P,?Rep) .
-           repOf(?X,?N) :- synExRep(?X,?P,?Rep), nf:exists(?N,?P,?Rep) .
-		%  nf:exists(!New,?P,?Rep) :- synEx(?Y,?P,?X), repOf(?Y,?Rep) .
-		%         repOf(?X,?N) :- synEx(?Y,?P), repOf(?Y,?Rep), nf:exists(?N,?P,?Rep) .
-nf:conj(!New,?R1,?R2) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
-         repOf(?X,?N) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2), nf:conj(?N,?R1,?R2) .
-
-
-%%% Extract old-style property chains:
-nf:subPropChain(?S,?T,?R), nf:subProp(?R,?R) :-
-	TRIPLE(?L,rdfs:subPropertyOf,?R), TRIPLE(?L,owl:propertyChain,?L1),
-	in(?L1,?S), next(?L1,?L2), in(?L2,?T) .
+                        repOf(?X,?X) :- nf:isMainClass(?X) . % keep main classes unchanged
+                synExRep(?X,?P,?Rep) :- synEx(?Y,?P,?X), repOf(?Y,?Rep) .
+ nf:exists(!N,?P,?Rep), repOf(?X,!N) :- synExRep(?X,?P,?Rep) .
+   nf:conj(!N,?R1,?R2), repOf(?X,!N) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
 
 %%% Initialise subsumption axioms:
                          prepareSco(?X,?Y) :- TRIPLE(?X, rdfs:subClassOf, ?Y) .
+      #[name("equiv")]
       prepareSco(?X,?Y), prepareSco(?Y,?X) :- TRIPLE(?X, owl:equivalentClass, ?Y) .
-%%% New for textbook EL calculus: NF4 (p143, Fig. 6.1)
-   prepareSco(?Y, ?D), prepareSco(?Y, ?E), :- nf:conj(?Y,?D,?E) .
-nf:subClassOf(?RX,?RY), nf:isSubClass(?RX) :- prepareSco(?X,?Y), repOf(?X,?RX), repOf(?Y,?RY) .
+
+nf:subClassOf(?RX,?RY) :- prepareSco(?X,?Y), repOf(?X,?RX), repOf(?Y,?RY) .
 
 %%% new predicates to express different kinds of sequents (see also NF0-NF3 on p143, Fig. 6.1)
-nf:subClassConj(?RD,?RE,?RY) :- nf:conj(?Y,?D,?E), repOf(?Y,?RY), repOf(?D,?RD), repOf(?E,?RE) .
-nf:subClassEx(?R,?RB,?RY) :- nf:exists(?Y,?R,?B), repOf(?Y,?RY), repOf(?B,?RB) .
-nf:supClassEx(?RY,?R,?RB) :- nf:exists(?Y,?R,?B), repOf(?Y,?RY), repOf(?B,?RB) .
+nf:class(?C) :- nf:isMainClass(?C) .
+nf:subClassConj(?D,?E,?Y),  nf:class(?Y) :- nf:conj(?Y,?D,?E) .
+nf:subClassEx(?R,?B,?Y), nf:class(?Y)  :- nf:exists(?Y,?R,?B) . 
+nf:supClassEx(?Y,?R,?B), nf:class(?Y)  :- nf:exists(?Y,?R,?B) .
+% NF4
+#[name("taut")]
+nf:subClassOf(?X, ?C), nf:subClassOf(?X, ?D) :- nf:conj(?X,?C,?D). 
 
-%%% Initialise disjointness:
-nf:subClassOf(!C,owl:Nothing), nf:conj(!C,?X,?Y), nf:isSubClass(!C), nf:isSubClass(?X), nf:isSubClass(?Y)
-	:- TRIPLE(?X,owl:disjointWith,?Y) .
-
-%%% Mark classes in subclass position recursively:
-                     nf:isSubClass(?D) :- nf:exists(?C, ?P, ?D), nf:isSubClass(?C) .
-nf:isSubClass(?C1), nf:isSubClass(?C2) :- nf:conj(?X, ?C1, ?C2), nf:isSubClass(?X) .
-
-%%% Precompute role hierarchy:
+% Precompute role hierarchy: 
 directSubProp(?R,?S) :- TRIPLE(?R,rdfs:subPropertyOf,?S) .
 % Initialise role hierarchy only for roles in subclass positions:
-nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) . 
-nf:subProp(?R,?T) :- nf:subProp(?R,?S), directSubProp(?S,?T) .
+#[name("role_hierarchy")]
+nf:subProp(?P,?P) :- nf:supClassEx(_,?P,_) .
+#[name("role_hierarchy")]
+nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
+
 
 %% Initialize classification algorithm with input sequents
 
 % A ⊑ B
 inf:subClassOf(?A,?B) :- nf:subClassOf(?A,?B) .
 % A ⊓ B ⊑ C
+#[name("taut")]
 inf:subClassConj(?A,?B,?C) :- nf:subClassConj(?A,?B,?C) .
 % ∃R.A ⊑ B
 inf:subClassEx(?R,?A,?B) :- nf:subClassEx(?R,?A,?B) .
@@ -123,30 +126,41 @@ inf:supClassEx(?A,?R,?B) :- nf:supClassEx(?A,?R,?B) .
 %%% Inference rules, instantiated for all possible combinations of types of sequents
 
 % CR1
-inf:subClassOf(?A,?A) :- nf:isMainClass(?A) .
+#[name("CR1")]
+inf:subClassOf(?A,?A) :- nf:class(?A) .
 
 % CR2
-inf:subClassOf(?A,owl:Thing) :- nf:isMainClass(?A) .
-inf:subClassOf(?A,owl:Thing) :- nf:exists(?A,?R,?B) .
+#[name("CR2")]
+inf:subClassOf(?A,owl:Thing) :- nf:class(?A) .
 
 % CR3
+#[name("CR3")]
 inf:subClassOf(?A1,?A3) :- inf:subClassOf(?A1,?A2), inf:subClassOf(?A2,?A3) .
+#[name("CR3")]
 inf:subClassConj(?A1,?A2,?A4) :- inf:subClassConj(?A1,?A2,?A3), inf:subClassOf(?A3,?A4) .
-% I am not sure whether in the following two rules we need to take into account the role hierarchy.
+#[name("CR3")]
 inf:subClassEx(?R,?A1,?A3) :- inf:subClassEx(?R,?A1,?A2), inf:subClassOf(?A2,?A3) .
+#[name("CR3")]
 inf:supClassEx(?A1,?R,?A3) :- inf:subClassOf(?A1,?A2), inf:supClassEx(?A2,?R,?A3) .
-% this is actually a merger of CR3 and CR5 somehow
-inf:subClassOf(?A1,?A3) :- inf:supClassEx(?A1,?R,?A2), nf:subProp(?R,?S), inf:subClassEx(?S,?A2,?A3) .
+
+%these are CR5 if A2 is mainClass 
+% inf:subClassOf(?A1,?A3) :- inf:supClassEx(?A1,?R,?A2), inf:subClassEx(?R,?A2,?A3) .         
+% inf:subClassOf(?A1,?A3) :- inf:supClassEx(?A1,?R,?A2), nf:subProp(?R,?S), inf:subClassEx(?S,?A2,?A3) .
 
 % CR4
+#[name("CR4")]
 inf:subClassOf(?A,?B) :- inf:subClassOf(?A,?A1), inf:subClassOf(?A,?A2), inf:subClassConj(?A1,?A2,?B) .
+#[name("CR4")]
 inf:subClassConj(?A1,?A2,?B) :- inf:subClassConj(?A1,?A2,?A3), inf:subClassConj(?A1,?A2,?A4), inf:subClassConj(?A3,?A4,?B) .
+#[name("CR4")]
 inf:subClassEx(?R,?A,?B) :- inf:subClassEx(?R,?A,?A1), inf:subClassEx(?R,?A,?A2), inf:subClassConj(?A1,?A2,?B) .
 
 % CR5, extended for role hierarchies
+#[name("CR5")]
 inf:subClassOf(?A,?B) :- inf:supClassEx(?A,?R,?A1), inf:subClassOf(?A1,?B1), nf:subProp(?R,?S), inf:subClassEx(?S,?B1,?B) .
 
 % R_\bot from ELK
+#[name("R_⊥ (ELK)")]
 inf:subClassOf(?E,owl:Nothing) :-
 	inf:supClassEx(?E,?R,?C), inf:subClassOf(?C,owl:Nothing) .
 
