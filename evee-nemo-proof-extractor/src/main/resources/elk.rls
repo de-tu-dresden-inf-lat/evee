@@ -132,6 +132,15 @@ nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) .
 #[name("R_⊑")]
 nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 
+%%% Bottom Subclass Rule
+#[name("R_{\bot}^\sqsubseteq")]
+% inf:subClassOf(?B, ?A) :- nf:isMainClass(?A), inf:subClassOf(?B, owl:Nothing).
+%% Better looking proof
+nf:subClassOf(owl:Nothing, ?A) :- nf:isMainClass(?A).
+
+%%% Initialising role domain
+nf:subClassOf(!X,?D), nf:exists(!X,?R,owl:Thing), nf:isSubClass(!X), nf:isMainClass(?D)
+:- TRIPLE(?R,rdf:type,owl:ObjectProperty), TRIPLE(?R,rdfs:domain, ?D).
 
 %%% Start classification for all named classes:
 
@@ -195,4 +204,4 @@ mainSubClassOf(?A,?B) :-
 
 mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).
 
-@output mainSubClassOf, mainEquivClass.
+@output mainSubClassOf, mainEquivClass, <http://rulewerk.semantic-web.org/normalForm/subClassOf>.

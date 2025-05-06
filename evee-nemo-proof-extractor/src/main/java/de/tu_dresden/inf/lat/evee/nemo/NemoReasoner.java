@@ -1,16 +1,16 @@
 package de.tu_dresden.inf.lat.evee.nemo;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.*;
 
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.json.JsonStringProofParser;
@@ -24,7 +24,7 @@ public class NemoReasoner {
     private static final String ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
 
     //path to directory of nemo executable TODO: make configurable
-    private String nemoExecDir = System.getProperty("user.home");
+    private String nemoExecDir = System.getProperty("user.dir");
     private OWLOntology ontology;
     
     public NemoReasoner(OWLOntology ontology){
@@ -41,7 +41,7 @@ public class NemoReasoner {
 
         //create all needed files
         Path importDir = prepareImportDir(ontology);
-        File ruleFile = prepareRuleFile(ELK_RULE_FILE_NAME, NEMO_RULE_FILE_SUFFIX);
+        File ruleFile = prepareRuleFile();
         File traceFile = File.createTempFile("nemoTrace", ".json");
 
         logger.debug("running nemo");
@@ -61,15 +61,19 @@ public class NemoReasoner {
     }
 
     
-    private File prepareRuleFile(String resourceFileName, String resourceSuffix) throws IOException{
+    private File prepareRuleFile() throws IOException{
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        File ruleSrcFile = new File(classLoader.getResource(resourceFileName + resourceSuffix).getFile());
-        File ruleDstFile =  File.createTempFile(resourceFileName, resourceSuffix);
+        try(InputStream isSrcFile = classLoader.getResourceAsStream(ELK_RULE_FILE_NAME + NEMO_RULE_FILE_SUFFIX)){
+            if(isSrcFile == null)
+                throw new FileNotFoundException("Could not locate the rule file");
 
-        Files.copy(ruleSrcFile.toPath(), ruleDstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            File ruleDstFile =  File.createTempFile(ELK_RULE_FILE_NAME, NEMO_RULE_FILE_SUFFIX);
 
-        return ruleDstFile;
+            Files.copy(isSrcFile, ruleDstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            return ruleDstFile;
+        }
     }
 
     private Path prepareImportDir(OWLOntology ontology) throws IOException, OWLOntologyStorageException {
@@ -82,9 +86,9 @@ public class NemoReasoner {
     }
 
     private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws InterruptedException, IOException{
-        ProcessBuilder pb = new ProcessBuilder("./nmoNew", "-v", "-I", importDir, ruleFile,
-        "--trace-output", traceFile, "--trace", axiom)
-            .inheritIO();
+        ProcessBuilder pb = new ProcessBuilder( "./nmo", "-v", "-I", importDir, ruleFile, "--trace-output",
+                traceFile
+                , "--trace", axiom).inheritIO();
 
         pb.directory(new File(nemoExecDir));
         Process p = pb.start();
