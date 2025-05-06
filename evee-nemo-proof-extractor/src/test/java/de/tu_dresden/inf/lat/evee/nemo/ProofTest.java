@@ -119,7 +119,7 @@ public class ProofTest {
     @Test
     public void testTask4() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task00024.json");
-        IProof<OWLAxiom> proof = runTask(task);
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
@@ -132,7 +132,7 @@ public class ProofTest {
     @Test
     public void testTask5() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task00200.json");
-        IProof<OWLAxiom> proof = runTask(task);
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());

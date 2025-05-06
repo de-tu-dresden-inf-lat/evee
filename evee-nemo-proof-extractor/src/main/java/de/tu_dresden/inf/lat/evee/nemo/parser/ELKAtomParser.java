@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import com.google.common.collect.Sets;
 
@@ -36,7 +37,8 @@ public class ELKAtomParser extends AbstractAtomParser{
         SUBPROP_TRIPLE = "<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
         PROPCHAIN_TRIPLE = "<http://www.w3.org/2002/07/owl#propertyChainAxiom>",
         TRANSPROP_TRIPLE = "<http://www.w3.org/2002/07/owl#TransitiveProperty>",
-        DISJOINT_TRIPLE = "<http://www.w3.org/2002/07/owl#disjointWith>";
+        DISJOINT_TRIPLE = "<http://www.w3.org/2002/07/owl#disjointWith>",
+        DOMAIN_TRIPLE = "<http://www.w3.org/2000/01/rdf-schema#domain>";
         
     private final Set<String> subClassOfNames = Sets.newHashSet(SUBOF_MAIN, SUBOF_INF, SUBOF_NF, SUBOF_PREPARE);
 
@@ -76,6 +78,8 @@ public class ELKAtomParser extends AbstractAtomParser{
             return parseTransPropTriple(args);
         else if(predName.equals(TRIPLE) && args.get(1).equals(DISJOINT_TRIPLE))
             return parseDisjointTriple(args);
+        else if(predName.equals(TRIPLE) && args.get(1).equals(DOMAIN_TRIPLE))
+            return parseDisjointDomainTriple(args);
 
         return defaultAxiom;
     }
@@ -203,6 +207,11 @@ public class ELKAtomParser extends AbstractAtomParser{
 
         return owlHelper.getOWLDisjointAxiom(cls1, cls2);
     }
-    
-        
+
+    private OWLAxiom parseDisjointDomainTriple(List<String> args) {
+        OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(0)));
+        OWLClassExpression cls = parseCls(parsingHelper.format(args.get(2)));
+
+        return owlHelper.getOWLPropertyDomainAxiom(prop,cls);
+    }
 }

@@ -70,6 +70,16 @@ public class OWLHelper {
     public OWLDisjointClassesAxiom getOWLDisjointAxiom(OWLClassExpression... classExpressions){
         return factory.getOWLDisjointClassesAxiom(classExpressions);
     }
+
+    /**
+     * Return an OWL domain axiom
+     *
+     * @return getOWLPropertyDomainAxiom
+     */
+    public OWLObjectPropertyDomainAxiom getOWLPropertyDomainAxiom(OWLObjectPropertyExpression prop,
+                                                                  OWLClassExpression cls){
+        return factory.getOWLObjectPropertyDomainAxiom(prop, cls);
+    }
     
     /**
      * Returns a sub-property-chain axiom
