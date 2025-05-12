@@ -68,7 +68,12 @@ nonfirstProp(?L2) :- nonfirstProp(?L1), next(?L1,?L2) .
 TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
 TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
 TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
-	:- TRIPLE(?X,owl:disjointWith,?Y) .
+	:- TRIPLE(?X,owl:disjointWith,?Y).
+
+%% Initialise domain:
+#[name("domain")]
+TRIPLE(!X, owl:someValuesFrom, owl:Thing), TRIPLE(!X, owl:onProperty, ?R), TRIPLE(!X, rdfs:subClassOf, ?C)
+	:- TRIPLE(?R,rdf:type,owl:ObjectProperty), TRIPLE(?R,rdfs:domain, ?C).
 
 % Mark conjunctions:
 synConj(?X,?C1,?C2), auxClass(?X) :-
@@ -133,6 +138,11 @@ nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) .
 #[name("R_⊑")]
 nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 
+%%% Bottom Subclass Rule
+#[name("R_{\bot}^\sqsubseteq")]
+% inf:subClassOf(?B, ?A) :- nf:isMainClass(?A), inf:subClassOf(?B, owl:Nothing).
+%% Better looking proof
+nf:subClassOf(owl:Nothing, ?A) :- nf:isMainClass(?A).
 
 %%% Start classification for all named classes:
 
@@ -196,4 +206,4 @@ mainSubClassOf(?A,?B) :-
 
 mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).
 
-@output mainSubClassOf, mainEquivClass.
+@output mainSubClassOf, mainEquivClass, <http://rulewerk.semantic-web.org/normalForm/subClassOf>.

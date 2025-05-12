@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import com.google.common.collect.Sets;
 
@@ -13,7 +14,7 @@ import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError
 
 public class ELKAtomParser extends AbstractAtomParser{
 
-    private final String
+    private static final String
         EQUIVALENCE_MAIN = "mainEquivClass",
         SUBOF_MAIN = "mainSubClassOf",
         SUBOF_INF = "http://rulewerk.semantic-web.org/inferred/subClassOf",

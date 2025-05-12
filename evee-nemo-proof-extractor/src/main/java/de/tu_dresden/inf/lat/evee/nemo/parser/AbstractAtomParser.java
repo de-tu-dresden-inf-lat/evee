@@ -21,7 +21,8 @@ abstract class AbstractAtomParser {
         SUBPROP_TRIPLE = "<http://www.w3.org/2000/01/rdf-schema#subPropertyOf>",
         PROPCHAIN_TRIPLE = "<http://www.w3.org/2002/07/owl#propertyChainAxiom>",
         TRANSPROP_TRIPLE = "<http://www.w3.org/2002/07/owl#TransitiveProperty>",
-        DISJOINT_TRIPLE = "<http://www.w3.org/2002/07/owl#disjointWith>";
+        DISJOINT_TRIPLE = "<http://www.w3.org/2002/07/owl#disjointWith>",
+        DOMAIN_TRIPLE = "<http://www.w3.org/2000/01/rdf-schema#domain>";
     
     protected final OWLHelper owlHelper = OWLHelper.getInstance();
     protected final ParsingHelper parsingHelper = ParsingHelper.getInstance();
@@ -56,6 +57,8 @@ abstract class AbstractAtomParser {
             return parseTransPropTriple(args);
         else if(args.get(1).equals(DISJOINT_TRIPLE))
             return parseDisjointTriple(args);
+        else if(args.get(1).equals(DOMAIN_TRIPLE))
+            return parseDisjointDomainTriple(args);
 
         return defaultAxiom;
     }
@@ -134,12 +137,18 @@ abstract class AbstractAtomParser {
         return owlHelper.getOWOwlTransitivePropertyAxiom(prop);
     }
 
-
     private OWLAxiom parseDisjointTriple(List<String> args){
         OWLClassExpression cls1 = parseCls(parsingHelper.format(args.get(0)));
         OWLClassExpression cls2 = parseCls(parsingHelper.format(args.get(2)));
 
         return owlHelper.getOWLDisjointAxiom(cls1, cls2);
+    }
+
+    private OWLAxiom parseDisjointDomainTriple(List<String> args) {
+        OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(0)));
+        OWLClassExpression cls = parseCls(parsingHelper.format(args.get(2)));
+
+        return owlHelper.getOWLPropertyDomainAxiom(prop,cls);
     }
 
 }

@@ -117,6 +117,33 @@ public class ProofTest {
         assertEquals(1d, evaluator.evaluate(proof), 0.0);
     }
 
+    @Test
+    public void testTask4() throws OWLOntologyCreationException, ProofGenerationException{
+        IInference<OWLAxiom> task = readTask(  "task00024.json");
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
+
+        System.out.println(proof.toString());
+        System.out.println("final conclusion: " + proof.getFinalConclusion());
+
+        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
+        evaluator.setTask(task);
+        assertEquals(1d, evaluator.evaluate(proof), 0.0);
+    }
+
+    @Test
+    public void testTask5() throws OWLOntologyCreationException, ProofGenerationException{
+        IInference<OWLAxiom> task = readTask(  "task00200.json");
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
+
+        System.out.println(proof.toString());
+        System.out.println("final conclusion: " + proof.getFinalConclusion());
+
+        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
+        evaluator.setTask(task);
+        assertEquals(1d, evaluator.evaluate(proof), 0.0);
+    }
+
+
     //for dev purposes
     @Ignore
     @Test

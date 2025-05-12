@@ -1,0 +1,13 @@
+{
+    "finalConclusion": "<https://experimentTasks/A> <= <https://experimentTasks/B>",
+    "inferences": [
+        {
+            "conclusion": "<https://experimentTasks/A> <= <https://experimentTasks/B>",
+            "premises": [
+                "<https://experimentTasks/A> <= E<https://experimentTasks/r>.<https://experimentTasks/A>",
+                "domain(<https://experimentTasks/r>) = <https://experimentTasks/B>"
+            ],
+            "ruleName": "generic"
+        }
+    ]
+}
