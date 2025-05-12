@@ -28,7 +28,8 @@ public class ProofTest {
         "task_roleChain_simple.json",
         "task_roleChain.json",
         "task_roleInc.json",
-        "task_transProp.json"
+        "task_transProp.json",
+        "task00001.json"
     };
 
     @Test
@@ -77,7 +78,7 @@ public class ProofTest {
     @Ignore("For dev purposes")
     @Test
     public void testTask() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task_roleInc.json");
+        IInference<OWLAxiom> task = readTask(  "task_EL.json");
         IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
 
         System.out.println(proof.toString());

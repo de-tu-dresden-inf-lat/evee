@@ -9,28 +9,22 @@
 % Most of this normalisation is inherent to the Turtle triple format. Only Rule NF4 is computed here explicitly.
 %
 % The ruleset computes facts for the following predicates:
-%  nf:isMainClass(?C): ?C is an "interesting" class (not just an auxiliary class expression)
-%  nf:isSubClass(?C): ?C occurs in a subclass position (i.e., negatively) 
+%  nf:isMainClass(?C): ?C is an "interesting" class (not just an auxiliary class expression) i.e. named concept
 %  nf:conj(?C,?D1,?D2): ?C is the conjunction of ?D1 and ?D2
 %  nf:exists(?C,?P,?D): ?C is the existential restriction of property ?P with values from ?D
 %  nf:subClassOf(?C,?D): ?C is syntactically specified to be a subclass of ?D 
 %  nf:subClassConj(?A,?B,?C): The conjunction of ?A and ?B is declared a subclass of ?C.
 %  nf:subClassEx(?R,?A,?B): ∃?R.?A is declared a subclass of ?B
 %  nf:supClassEx(?A,?R,?B): ?A is declared a subclass of ∃?R.?B
-%  nf:subPropChain(?S1,?S2,?R): there was a role chain axiom ?S1 o ?S2 -> ?R
 %  nf:subProp(?R,?S): ?R is a subproperty of ?S (directly or indirectly) 
 % 
 % Unsupported OWL EL features include: oneOf, allDisjoint.
-% The encoding used for property chains is also slightly antique.
 
 @prefix nf: <http://rulewerk.semantic-web.org/normalForm/> .
 @prefix inf: <http://rulewerk.semantic-web.org/inferred/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix sct: <http://www.ihtsdo.org/owlname#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix genid: <https://rulewerk.semantic-web.org/.well-known/genid/> .
 
 % Read data from Turtle file:
 @import TRIPLE :- rdf{resource="ont.ttl"} .
@@ -99,7 +93,7 @@ nf:subClassConj(?D,?E,?Y),  nf:class(?Y) :- nf:conj(?Y,?D,?E) .
 nf:subClassEx(?R,?B,?Y), nf:class(?Y)  :- nf:exists(?Y,?R,?B) . 
 nf:supClassEx(?Y,?R,?B), nf:class(?Y)  :- nf:exists(?Y,?R,?B) .
 % NF4
-#[name("taut")]
+#[name("NF4")]
 nf:subClassOf(?X, ?C), nf:subClassOf(?X, ?D) :- nf:conj(?X,?C,?D). 
 
 % Precompute role hierarchy: 
@@ -119,8 +113,10 @@ inf:subClassOf(?A,?B) :- nf:subClassOf(?A,?B) .
 #[name("taut")]
 inf:subClassConj(?A,?B,?C) :- nf:subClassConj(?A,?B,?C) .
 % ∃R.A ⊑ B
+#[name("taut")]
 inf:subClassEx(?R,?A,?B) :- nf:subClassEx(?R,?A,?B) .
 % A ⊑ ∃R.B
+#[name("taut")]
 inf:supClassEx(?A,?R,?B) :- nf:supClassEx(?A,?R,?B) .
 
 %%% Inference rules, instantiated for all possible combinations of types of sequents
