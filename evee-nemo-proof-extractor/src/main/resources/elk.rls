@@ -94,8 +94,6 @@ nf:isMainClass(owl:Nothing) .
    synExRep(?X,?P,?Rep) :- synEx(?Y,?P,?X), repOf(?Y,?Rep) .
 nf:exists(!New,?P,?Rep) :- synExRep(?X,?P,?Rep) .
            repOf(?X,?N) :- synExRep(?X,?P,?Rep), nf:exists(?N,?P,?Rep) .
-		%  nf:exists(!New,?P,?Rep) :- synEx(?Y,?P,?X), repOf(?Y,?Rep) .
-		%         repOf(?X,?N) :- synEx(?Y,?P), repOf(?Y,?Rep), nf:exists(?N,?P,?Rep) .
 nf:conj(!New,?R1,?R2) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
          repOf(?X,?N) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2), nf:conj(?N,?R1,?R2) .
 
@@ -205,5 +203,3 @@ mainSubClassOf(?A,?B) :-
 	inf:subClassOf(?A,?B), nf:isMainClass(?A), nf:isMainClass(?B) .
 
 mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).
-
-@output mainSubClassOf, mainEquivClass, <http://rulewerk.semantic-web.org/normalForm/subClassOf>.

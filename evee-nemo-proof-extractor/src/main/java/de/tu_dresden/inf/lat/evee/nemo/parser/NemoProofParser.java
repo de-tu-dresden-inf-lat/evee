@@ -45,6 +45,7 @@ public class NemoProofParser {
             return subClassAxiomToNemoString((OWLSubClassOfAxiom) axiom);
         if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES))
             return EquivClassAxiomToNemString((OWLEquivalentClassesAxiom) axiom);
+            
         throw new ProofGenerationException("Axiom type is not supported by this proof generator!");
     }
 

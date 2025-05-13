@@ -98,7 +98,6 @@ nf:subClassOf(?X, ?C), nf:subClassOf(?X, ?D) :- nf:conj(?X,?C,?D).
 
 % Precompute role hierarchy: 
 directSubProp(?R,?S) :- TRIPLE(?R,rdfs:subPropertyOf,?S) .
-% Initialise role hierarchy only for roles in subclass positions:
 #[name("role_hierarchy")]
 nf:subProp(?P,?P) :- nf:supClassEx(_,?P,_) .
 #[name("role_hierarchy")]
@@ -139,10 +138,6 @@ inf:subClassEx(?R,?A1,?A3) :- inf:subClassEx(?R,?A1,?A2), inf:subClassOf(?A2,?A3
 #[name("CR3")]
 inf:supClassEx(?A1,?R,?A3) :- inf:subClassOf(?A1,?A2), inf:supClassEx(?A2,?R,?A3) .
 
-%these are CR5 if A2 is mainClass 
-% inf:subClassOf(?A1,?A3) :- inf:supClassEx(?A1,?R,?A2), inf:subClassEx(?R,?A2,?A3) .         
-% inf:subClassOf(?A1,?A3) :- inf:supClassEx(?A1,?R,?A2), nf:subProp(?R,?S), inf:subClassEx(?S,?A2,?A3) .
-
 % CR4
 #[name("CR4")]
 inf:subClassOf(?A,?B) :- inf:subClassOf(?A,?A1), inf:subClassOf(?A,?A2), inf:subClassConj(?A1,?A2,?B) .
@@ -164,3 +159,5 @@ inf:subClassOf(?E,owl:Nothing) :-
 
 mainSubClassOf(?A,?B) :-
 	inf:subClassOf(?A,?B), nf:isMainClass(?A), nf:isMainClass(?B) .
+
+mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).
