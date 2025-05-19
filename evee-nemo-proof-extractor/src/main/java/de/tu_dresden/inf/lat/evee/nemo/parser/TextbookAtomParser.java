@@ -15,6 +15,8 @@ import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError
 public class TextbookAtomParser extends AbstractAtomParser{
 
     private final String
+        EQUIVALENCE_MAIN = "mainEquivClass",
+
         SUBOF_MAIN = "mainSubClassOf",
         SUBOF_INF = "http://rulewerk.semantic-web.org/inferred/subClassOf",
         SUBOF_NF = "http://rulewerk.semantic-web.org/normalForm/subClassOf",
@@ -38,6 +40,8 @@ public class TextbookAtomParser extends AbstractAtomParser{
 
         if(subClassOfNames.contains(predName))
             return parseSubClassAxiom(args);
+        else if(predName.equals(EQUIVALENCE_MAIN))
+            return parseEquivalenceClassesAxiom(args);
         else if(predName.equals(SUBPROP) || predName.equals(SUBPROP_DIR))
             return parseSubProperty(args);
         else if(predName.equals(SUB_CONJ_INF))
@@ -50,6 +54,10 @@ public class TextbookAtomParser extends AbstractAtomParser{
             return parseTriple(args);
 
         return defaultAxiom;
+    }
+
+    private OWLAxiom parseEquivalenceClassesAxiom(List<String> args) {
+        return parseEquivalenceClassesAxiom(args.get(0), args.get(1));
     }
 
     private OWLAxiom parseSubClassAxiom(List<String> args){

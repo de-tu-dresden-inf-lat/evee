@@ -22,14 +22,29 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.CorrectnessEvaluator;
 
 public class ProofTest {
 
-    private final String [] taskFiles = {
+    private final String [] ELplusplusTaskFiles = {
+        "task_disjoint.json",
         "task_EL.json",
+        "task_EL_simple.json",
         "task_roleChain_concat.json",
         "task_roleChain_simple.json",
         "task_roleChain.json",
         "task_roleInc.json",
         "task_transProp.json",
-        "task00001.json"
+        "task00001.json",
+        "task00003.json",
+        "task00024.json",
+        "task00200.json"
+    };
+
+       private final String [] ELRTaskFiles = {
+        "task_disjoint.json",
+        "task_EL.json",
+        "task_EL_simple.json",
+        "task00001.json",
+        "task00003.json",
+        "task_roleInc.json",
+        "task00024.json"
     };
 
     @Test
@@ -37,7 +52,9 @@ public class ProofTest {
  
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
 
-        for(String taskFile : taskFiles){
+        for(String taskFile : ELplusplusTaskFiles){
+            System.out.println("-------- runnning task "+ taskFile+ " ---------");
+
             IInference<OWLAxiom> task = readTask(taskFile);
             IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
             evaluator.setTask(task);
@@ -46,12 +63,14 @@ public class ProofTest {
         }
     }
 
-    @Test
+    @Test // 24 not working
     public void testAllTasks_ENVELOPE() throws OWLOntologyCreationException, ProofGenerationException{
  
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
 
-        for(String taskFile : taskFiles){
+        for(String taskFile : ELplusplusTaskFiles){
+            System.out.println("-------- runnning task "+ taskFile+ " ---------");
+
             IInference<OWLAxiom> task = readTask(taskFile);
             IProof<OWLAxiom> proof = runTask(task, ECalculus.ENVELOPE);
             evaluator.setTask(task);
@@ -60,12 +79,14 @@ public class ProofTest {
         }
     }
 
-    @Test
+    @Test //24 not working
     public void testAllTasks_TEXTBOOK() throws OWLOntologyCreationException, ProofGenerationException{
  
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
 
-        for(String taskFile : taskFiles){
+        for(String taskFile : ELRTaskFiles){
+            System.out.println("-------- runnning task "+ taskFile+ " ---------");
+
             IInference<OWLAxiom> task = readTask(taskFile);
             IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
             evaluator.setTask(task);
@@ -75,11 +96,11 @@ public class ProofTest {
     }
 
     //for dev purposes
-    @Ignore("For dev purposes")
+    //@Ignore("For dev purposes")
     @Test
     public void testTask() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task_EL.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
+        IInference<OWLAxiom> task = readTask(  "task_disjoint.json");
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ENVELOPE);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());

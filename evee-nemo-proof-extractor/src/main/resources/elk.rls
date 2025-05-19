@@ -87,7 +87,6 @@ synConj(?L1,?C1,?C2), auxClass(?L1) :-
 
 %%% The other classes are "main classes" that are not normalised:
 nf:isMainClass(?X) :- class(?X), ~auxClass(?X) .
-nf:isMainClass(owl:Nothing) .
 
 %%% Normalise auxiliary nested class expressions:
            repOf(?X,?X) :- nf:isMainClass(?X) . % keep main classes unchanged
@@ -201,5 +200,5 @@ inf:init(?C) :- inf:ex(?E,?R,?C) .
 
 mainSubClassOf(?A,?B) :-
 	inf:subClassOf(?A,?B), nf:isMainClass(?A), nf:isMainClass(?B) .
-
+#[name("equiv")]
 mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).

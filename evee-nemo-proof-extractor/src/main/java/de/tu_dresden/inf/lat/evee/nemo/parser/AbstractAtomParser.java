@@ -89,6 +89,20 @@ abstract class AbstractAtomParser {
        return owlHelper.getOWLSubClassOfAxiom(sub, sup);
     }
 
+    protected OWLAxiom parseEquivalenceClassesAxiom(String equivClassLeft, String equivClassRight) {
+        OWLClassExpression cls1, cls2;
+
+        try{
+            cls1 = placeholderParser.parseConceptOrPlaceholder(equivClassLeft);
+            cls2 = placeholderParser.parseConceptOrPlaceholder(equivClassRight);
+        } catch (ConceptTranslationError e) {
+            return defaultAxiom;
+        }
+
+        return owlHelper.getOWLEquivalenceAxiom(cls1, cls2);
+    }
+   
+
     protected OWLAxiom parseSubProperty(String subProp, String superProp) {
 
         OWLObjectPropertyExpression sub = parseProp(parsingHelper.format(subProp));

@@ -32,6 +32,7 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     public void setCalculus(ECalculus calc){ 
         this.calculus = calc;
+        setCalculusParser(calc);
     }
 
     @Override
@@ -48,25 +49,7 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
         if (proof.getFinalConclusion().isEmpty())
             throw new ProofGenerationException("axiom could not be derived");
 
-        setCalculusParser();
-
         return parser.toProofOWL(proof);   
-    }
-    
-    private void setCalculusParser(){
-        switch (calculus) {
-            case ELK:
-                parser.setAtomParser(new ELKAtomParser());
-                break;
-            case TEXTBOOK:
-                parser.setAtomParser(new TextbookAtomParser());
-                break;
-            case ENVELOPE:
-                parser.setAtomParser(new EnvelopeAtomParser());
-                break;
-            default:
-                break;
-        }
     }
 
     @Override
@@ -97,5 +80,19 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 		return true;
 	}
 
-    
+    private void setCalculusParser(ECalculus calc){
+        switch (calc) {
+            case ELK:
+                parser.setAtomParser(new ELKAtomParser());
+                break;
+            case TEXTBOOK:
+                parser.setAtomParser(new TextbookAtomParser());
+                break;
+            case ENVELOPE:
+                parser.setAtomParser(new EnvelopeAtomParser());
+                break;
+            default:
+                break;
+        }
+    }
 }

@@ -26,7 +26,6 @@ public class NemoProofParser {
         this.atomParser = atomParser;
     }
 
-    // TODO move method somewhere else?
     public String subClassAxiomToNemoString(OWLSubClassOfAxiom axiom){
         String superClass = axiom.getSuperClass().asOWLClass().getIRI().toString();
         String subClass = axiom.getSubClass().asOWLClass().getIRI().toString();

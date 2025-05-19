@@ -18,6 +18,7 @@ public class EnvelopeAtomParser extends AbstractAtomParser {
 
     private final String 
         EQUIVALENCE_MAIN = "mainEquivClass",
+        
         SUBOF_MAIN = "mainSubClassOf",
         SUBOF_INF = "http://rulewerk.semantic-web.org/inferred/subClassOf",
         SUBOF_NF = "http://rulewerk.semantic-web.org/normalForm/subClassOf",
@@ -64,16 +65,7 @@ public class EnvelopeAtomParser extends AbstractAtomParser {
     }
 
     private OWLAxiom parseEquivalenceClassesAxiom(List<String> args) {
-        OWLClassExpression cls1, cls2;
-
-        try{
-            cls1 = placeholderParser.parseConceptOrPlaceholder(args.get(0));
-            cls2 = placeholderParser.parseConceptOrPlaceholder(args.get(1));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
-
-        return owlHelper.getOWLEquivalenceAxiom(cls1, cls2);
+        return parseEquivalenceClassesAxiom(args.get(0), args.get(1));
     }
 
     private OWLAxiom parseSubClassAxiom(List<String> args){
@@ -87,7 +79,6 @@ public class EnvelopeAtomParser extends AbstractAtomParser {
 		return parseSubProperty(args.get(0), args.get(1));
 	}
 
-    /////TODO just copied from textbookParser
     private OWLAxiom parseSubClassConjunction(List<String> args){
         OWLClassExpression sup;
         Set<OWLClassExpression> conjuncts = new HashSet<>();
@@ -138,7 +129,6 @@ public class EnvelopeAtomParser extends AbstractAtomParser {
         return owlHelper.getOWLSubClassOfAxiom(sub, restriction);
     } 
 
-    //TODO copied from ELK parser
     private OWLAxiom parsePropChain(List<String> args) {
         String supStr = parsingHelper.format(args.get(2));
         if(parsingHelper.isPlaceholder(supStr)) // rolechains on right hand side not supported

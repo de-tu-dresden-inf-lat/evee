@@ -53,16 +53,7 @@ public class ELKAtomParser extends AbstractAtomParser{
     }
 
     private OWLAxiom parseEquivalenceClassesAxiom(List<String> args) {
-        OWLClassExpression cls1, cls2;
-
-        try{
-            cls1 = placeholderParser.parseConceptOrPlaceholder(args.get(0));
-            cls2 = placeholderParser.parseConceptOrPlaceholder(args.get(1));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
-
-        return owlHelper.getOWLEquivalenceAxiom(cls1, cls2);
+        return parseEquivalenceClassesAxiom(args.get(0), args.get(1));
     }
 
     private OWLAxiom parseSubClassAxiom(List<String> args){
