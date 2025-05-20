@@ -142,11 +142,16 @@ nf:supClassEx(?Y,?R,?B), nf:class(?Y)  :- nf:exists(?Y,?R,?B) .
 #[name("NF4")]
 nf:subClassOf(?X, ?C), nf:subClassOf(?X, ?D) :- nf:conj(?X,?C,?D). 
 
+#[name("init")]
+nf:subClassOf(owl:Nothing, ?A) :- nf:isMainClass(?A).
+
 %%% Initialize 'S' sets; R sets are initially empty
 %% D ∈ S(C) is represented as S(C,D) [C ⊑ D]
 %% (C,D) ∈ R(r) is represented as R(C,r,D) [C ⊑ ∃r.D]
 
-       S(?A,?A) :- nf:class(?A) .
+#[name("init")]
+S(?A,?A) :- nf:class(?A) .
+#[name("init")]
 S(?A,owl:Thing) :- nf:class(?A) .
 
 %%% Inference rules

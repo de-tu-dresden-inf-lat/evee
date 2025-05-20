@@ -63,7 +63,7 @@ public class ProofTest {
         }
     }
 
-    @Test // 24 not working
+    @Test
     public void testAllTasks_ENVELOPE() throws OWLOntologyCreationException, ProofGenerationException{
  
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
@@ -79,7 +79,7 @@ public class ProofTest {
         }
     }
 
-    @Test //24 not working
+    @Test
     public void testAllTasks_TEXTBOOK() throws OWLOntologyCreationException, ProofGenerationException{
  
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
@@ -99,8 +99,8 @@ public class ProofTest {
     //@Ignore("For dev purposes")
     @Test
     public void testTask() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task_disjoint.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ENVELOPE);
+        IInference<OWLAxiom> task = readTask(  "task00024.json");
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());

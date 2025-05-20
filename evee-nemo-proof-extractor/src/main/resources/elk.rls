@@ -135,11 +135,9 @@ nf:subProp(?P,?P) :- nf:exists(?C,?P,?D), nf:isSubClass(?C) .
 #[name("R_⊑")]
 nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 
-%%% Bottom Subclass Rule
-#[name("R_{\bot}^\sqsubseteq")]
-% inf:subClassOf(?B, ?A) :- nf:isMainClass(?A), inf:subClassOf(?B, owl:Nothing).
-%% Better looking proof
-nf:subClassOf(owl:Nothing, ?A) :- nf:isMainClass(?A).
+%% Bottom Subclass Rule
+#[name("R_⊥⊑")]
+nf:subClassOf(owl:Nothing,?A) :- nf:isMainClass(?A) .
 
 %%% Start classification for all named classes:
 
