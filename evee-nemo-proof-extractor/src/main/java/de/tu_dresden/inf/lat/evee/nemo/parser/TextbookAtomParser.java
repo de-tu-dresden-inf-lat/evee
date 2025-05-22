@@ -37,10 +37,10 @@ public class TextbookAtomParser extends AbstractAtomParser{
         String predName = parsingHelper.getPredicateName(atom);
         List<String> args = parsingHelper.getPredicateArguments(atom);
 
-        if(predName.equals(EQUIVALENCE_MAIN))
-            return parseEquivalenceClassesAxiom(args);
         if(subClassOfNames.contains(predName))
             return parseSubClassAxiom(args);
+        else if(predName.equals(EQUIVALENCE_MAIN))
+            return parseEquivalenceClassesAxiom(args);
         else if(predName.equals(SUBPROP) || predName.equals(SUBPROP_DIR))
             return parseSubProperty(args);
         else if(predName.equals(SUB_CONJ_INF))
@@ -56,16 +56,7 @@ public class TextbookAtomParser extends AbstractAtomParser{
     }
 
     private OWLAxiom parseEquivalenceClassesAxiom(List<String> args) {
-        OWLClassExpression cls1, cls2;
-
-        try{
-            cls1 = placeholderParser.parseConceptOrPlaceholder(args.get(0));
-            cls2 = placeholderParser.parseConceptOrPlaceholder(args.get(1));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
-
-        return owlHelper.getOWLEquivalenceAxiom(cls1, cls2);
+        return parseEquivalenceClassesAxiom(args.get(0), args.get(1));
     }
 
     private OWLAxiom parseSubClassAxiom(List<String> args){

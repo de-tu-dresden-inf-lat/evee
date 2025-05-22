@@ -127,6 +127,9 @@ inf:subClassOf(?A,?A) :- nf:class(?A) .
 % CR2
 #[name("CR2")]
 inf:subClassOf(?A,owl:Thing) :- nf:class(?A) .
+#[name("CR2_⊥")]
+inf:subClassOf(owl:Nothing, ?A) :- nf:class(?A).
+
 
 % CR3
 #[name("CR3")]
@@ -159,5 +162,5 @@ inf:subClassOf(?E,owl:Nothing) :-
 
 mainSubClassOf(?A,?B) :-
 	inf:subClassOf(?A,?B), nf:isMainClass(?A), nf:isMainClass(?B) .
-
+#[name("equiv")]
 mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).

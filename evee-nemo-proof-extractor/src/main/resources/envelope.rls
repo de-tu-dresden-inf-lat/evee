@@ -142,11 +142,16 @@ nf:supClassEx(?Y,?R,?B), nf:class(?Y)  :- nf:exists(?Y,?R,?B) .
 #[name("NF4")]
 nf:subClassOf(?X, ?C), nf:subClassOf(?X, ?D) :- nf:conj(?X,?C,?D). 
 
+#[name("init")]
+nf:subClassOf(owl:Nothing, ?A) :- nf:isMainClass(?A).
+
 %%% Initialize 'S' sets; R sets are initially empty
 %% D ∈ S(C) is represented as S(C,D) [C ⊑ D]
 %% (C,D) ∈ R(r) is represented as R(C,r,D) [C ⊑ ∃r.D]
 
-       S(?A,?A) :- nf:class(?A) .
+#[name("init")]
+S(?A,?A) :- nf:class(?A) .
+#[name("init")]
 S(?A,owl:Thing) :- nf:class(?A) .
 
 %%% Inference rules
@@ -169,7 +174,7 @@ S(?C,?E) :- R(?C,?R,?D), S(?D,?Dp), nf:subClassEx(?R,?Dp,?E) .
 
 % CR5
 #[name("C5")]
-S(C,owl:Nothing) :- R(?C,?R,?D), S(?D,owl:Nothing) .
+S(?C,owl:Nothing) :- R(?C,?R,?D), S(?D,owl:Nothing) .
 
 % (CR6-9 are for nominals and concrete domains)
 
@@ -185,5 +190,5 @@ R(?C,?R3,?E) :- R(?C,?R1,?D), R(?D,?R2,?E), nf:subPropChain(?R1,?R2,?R3) .
 %%% Extract final results for main classes
 mainSubClassOf(?A,?B) :-
 	S(?A,?B), nf:isMainClass(?A), nf:isMainClass(?B) .
-
+#[name("equiv")]
 mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).

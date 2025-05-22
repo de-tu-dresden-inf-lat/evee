@@ -154,20 +154,15 @@ public class PlaceholderParser {
 		return owlHelper.getOWLExistentialRestriction(property, filler);
 	}
 
-	private OWLObjectIntersectionOf parseConjunction(String placeholder, Set<List<String>> relevantFacts) {
-
+	private OWLObjectIntersectionOf parseConjunction(String placeholder, Set<List<String>> relevantFacts) throws ConceptTranslationError {
 		logger.debug("Parsing a conjunction");
 		relevantFacts.addAll(getRelevantConjFacts(placeholder));
 
 		Set<OWLClassExpression> conjuncts = new HashSet<>();
-		relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_FIRST)).forEach(x -> {
-			try {
-				conjuncts.add(parseConceptOrPlaceholder(x.get(2)));
-			} catch (ConceptTranslationError e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+		relevantFacts = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_FIRST)).collect(Collectors.toSet());
+		for(List<String> fact: relevantFacts) {
+			conjuncts.add(parseConceptOrPlaceholder(fact.get(2)));
+		};
 
 		OWLObjectIntersectionOf result = owlHelper.getOWLConjunction(conjuncts);
 
