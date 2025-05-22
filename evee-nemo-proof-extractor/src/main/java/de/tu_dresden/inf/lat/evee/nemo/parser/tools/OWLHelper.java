@@ -1,8 +1,11 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser.tools;
 
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -146,6 +149,18 @@ public class OWLHelper {
      */
     public OWLClass getOWLConceptName(String string) {
         return factory.getOWLClass(IRI.create(string));
+    }
+
+    public Collection<OWLClassExpression> getTopLevelClassExpressions(OWLAxiom axiom) throws ProofGenerationException {
+        if (axiom.isOfType(AxiomType.SUBCLASS_OF)) {
+            OWLSubClassOfAxiom subClsOfAxiom = (OWLSubClassOfAxiom) axiom;
+            return Arrays.asList(subClsOfAxiom.getSubClass(), subClsOfAxiom.getSuperClass());
+        }
+        if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
+            OWLEquivalentClassesAxiom eqvClsAxiom = (OWLEquivalentClassesAxiom) axiom;
+            return eqvClsAxiom.getClassExpressions();
+        }
+        throw new ProofGenerationException("Axiom type is not supported by this proof generator!");
     }
 
 }

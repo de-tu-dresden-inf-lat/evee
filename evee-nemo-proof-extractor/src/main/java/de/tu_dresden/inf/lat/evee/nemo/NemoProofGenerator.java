@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.nemo;
 
+import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
 import org.semanticweb.owlapi.model.*;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.ELKAtomParser;
@@ -14,8 +15,8 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     private NemoReasoner reasoner;
     private NemoProofParser parser;
-    private ECalculus calculus;
-
+    //TODO I added a default calculus to be able to run the experiments
+    private ECalculus calculus = ECalculus.ENVELOPE;
     public NemoProofGenerator(OWLOntology ontology){
         reasoner = new NemoReasoner(ontology);
         parser = new NemoProofParser();
@@ -36,6 +37,9 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     @Override
     public IProof<OWLAxiom> getProof(OWLAxiom axiom) throws ProofGenerationException {
+        //Extend the ontology with the top level concepts in the input axiom
+        reasoner.setOptionalGoalExpressions(OWLHelper.getInstance().getTopLevelClassExpressions(axiom));
+
         String nemoAxiom = parser.axiomToNemoString(axiom);
 
         IProof<String> proof;

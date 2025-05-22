@@ -89,7 +89,7 @@ public class ProofTest {
         assertTrue(evaluator.evaluate(proof)==1d);
     }
 
-    @Ignore("For dev purposes")
+//    @Ignore("For dev purposes")
     @Test
     public void testTask2() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task00001.json");
@@ -103,7 +103,7 @@ public class ProofTest {
         assertEquals(1d, evaluator.evaluate(proof), 0.0);
     }
 
-    @Ignore("For dev purposes")
+//    @Ignore("For dev purposes")
     @Test
     public void testTask3() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task00003.json");

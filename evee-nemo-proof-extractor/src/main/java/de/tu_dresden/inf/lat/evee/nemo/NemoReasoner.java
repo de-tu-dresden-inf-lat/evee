@@ -7,8 +7,12 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.*;
+
+import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.*;
 
@@ -18,6 +22,7 @@ import de.tu_dresden.inf.lat.evee.proofs.json.JsonStringProofParser;
 public class NemoReasoner {
 
     private static final Logger logger = LogManager.getLogger(NemoReasoner.class);
+    private static final OWLHelper owlHelper= OWLHelper.getInstance();
 
     private final static String
             ELK_FILENAME = "elk",
@@ -29,13 +34,19 @@ public class NemoReasoner {
     //path to directory of nemo executable TODO: make configurable
     private String nemoExecDir = System.getProperty("user.dir");
     private OWLOntology ontology;
+    private Collection<OWLClassExpression> goalExpressions;
     
     public NemoReasoner(OWLOntology ontology){
         this.ontology = ontology;
+        this.goalExpressions = Collections.emptyList();
     }
 
     public void setNemoExecDir(String nemoExecDirPath){
         nemoExecDir = nemoExecDirPath;
+    }
+
+    public void setOptionalGoalExpressions(Collection<OWLClassExpression> expressions){
+        this.goalExpressions = new HashSet<>(expressions);
     }
 
     public IProof<String> proof(String axiom, ECalculus calculus) throws IOException, NemoExcecException {
@@ -43,7 +54,7 @@ public class NemoReasoner {
         logger.debug("generating proof");
 
         //create tmp files
-        Path importDir = prepareImportDir(ontology);
+        Path importDir = prepareImportDir(ontology, this.goalExpressions);
         File ruleFile = prepareRuleFile(getRuleFileName(calculus));
         File traceFile = File.createTempFile("nemoTrace", ".json");
 
@@ -88,7 +99,9 @@ public class NemoReasoner {
         }
     }
 
-    private Path prepareImportDir(OWLOntology ontology) throws IOException {
+    private Path prepareImportDir(OWLOntology ontology, Collection<OWLClassExpression> goalExpressions) throws IOException {
+        updateOntology(ontology, goalExpressions);
+
         Path importDir = Files.createTempDirectory("nemo_exec");
 
         File ontFile = new File(importDir + "/" + ONTOLOGY_EXPORT_FILE_NAME);
@@ -99,6 +112,13 @@ public class NemoReasoner {
         }
 
         return importDir;
+    }
+
+    private void updateOntology(OWLOntology ontology, Collection<OWLClassExpression> owlClassExpressions) {
+        OWLOntologyManager m = OWLManager.createOWLOntologyManager();
+        owlClassExpressions.forEach(expression->{
+            m.addAxiom(ontology,owlHelper.getOWLSubClassOfAxiom(expression, expression));
+        });
     }
 
     private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws NemoExcecException {
