@@ -27,16 +27,25 @@ public class NemoProofParser {
     }
 
     public String subClassAxiomToNemoString(OWLSubClassOfAxiom axiom){
-        String superClass = axiom.getSuperClass().asOWLClass().getIRI().toString();
-        String subClass = axiom.getSubClass().asOWLClass().getIRI().toString();
+        String superClass = formatTopAndBottom(axiom.getSuperClass().asOWLClass());
+        String subClass = formatTopAndBottom(axiom.getSubClass().asOWLClass());
 
-        return String.format("mainSubClassOf(<%s>,<%s>)", subClass, superClass);
+        return String.format("mainSubClassOf(%s,%s)", subClass, superClass);
     }
 
     private String EquivClassAxiomToNemString(OWLEquivalentClassesAxiom axiom) {
-        List<OWLClass> classes = new ArrayList<>(axiom.getNamedClasses());
+        List<OWLClassExpression> classes = axiom.getClassExpressionsAsList();
 
-        return String.format("mainEquivClass(%s,%s)", classes.get(0), classes.get(1));
+        return String.format("mainEquivClass(%s, %s)", formatTopAndBottom(classes.get(0)),
+                formatTopAndBottom(classes.get(1)));
+    }
+
+    private String formatTopAndBottom(OWLClassExpression clsExpression) {
+        if (clsExpression.isOWLNothing())
+            return "<http://www.w3.org/2002/07/owl#Nothing>";
+        if (clsExpression.isOWLThing())
+            return "<http://www.w3.org/2002/07/owl#Thing>";
+        return clsExpression.toString();
     }
 
     public String axiomToNemoString(OWLAxiom axiom) throws ProofGenerationException {

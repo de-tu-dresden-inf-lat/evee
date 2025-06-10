@@ -130,7 +130,7 @@ nf:subProp(?P,?P) :- nf:exists(_,?P,_) .
 nf:subProp(?R,?T) :- directSubProp(?R,?S), nf:subProp(?S,?T) .
 
 %%% new predicates to express different kinds of sequents 
-%% (see also "An Introduction to Description Logic" NF0-NF3 on p143, Fig. 6.1)
+%% (see also "An Introduction to Description Logic" NF0-NF3 on p143, Fig. 6.1)
 nf:class(?C) :- nf:isMainClass(?C) .
 #[name("taut")]
 nf:subClassConj(?D,?E,?Y),  nf:class(?Y) :- nf:conj(?Y,?D,?E) .
@@ -180,7 +180,7 @@ S(?C,owl:Nothing) :- R(?C,?R,?D), S(?D,owl:Nothing) .
 
 % CR10
 #[name("C10")]
-R(?C,?S,?D) :- R(?C,?R,?D), nf:subProp(?R,?S) .
+R(?C,?S,?D) :- R(?C,?R,?D), directSubProp(?R,?S) .
 
 % CR11
 #[name("C11")]

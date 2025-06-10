@@ -24,6 +24,8 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     public NemoProofGenerator(){
         parser = new NemoProofParser();
+        //TODO also this to get a parser for the default calculus
+        setCalculusParser(this.calculus);
     }
 
     @Override
