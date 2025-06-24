@@ -127,6 +127,7 @@
                 <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
                 <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-small-model-generator/evee-small-model-generator-owlapi4</module>
+                <module>evee-nemo-proof-extractor</module>
                 <module>evee-protege</module>
             </modules>
         </profile>
@@ -153,6 +154,7 @@
                 <module>evee-elk-proof-extractor</module>
                 <module>evee-relevant-counterexample</module>
                 <module>evee-small-model-generator</module>
+                <module>evee-nemo-proof-extractor</module>
                 <module>evee-protege</module>
                 <module>evee-libs</module>
             </modules>

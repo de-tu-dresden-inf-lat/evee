@@ -9,7 +9,7 @@ public class EveeNemoBasedEnvelopeProofService extends AbstractEveeProofService 
     private static final String identifier = EveeNemoBasedProofPreferencesManager.ENVELOPE;
 
 
-    protected EveeNemoBasedEnvelopeProofService() {
+    public EveeNemoBasedEnvelopeProofService() {
         super(new EveeNemoBasedDynamicProofAdapter(
             ECalculus.ENVELOPE, 
             new EveeNemoBasedProofPreferencesManager(), 

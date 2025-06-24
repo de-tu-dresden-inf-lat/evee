@@ -32,7 +32,7 @@ public class NemoReasoner {
             ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
     
     //path to directory of nemo executable TODO: make configurable
-    private String nemoExecDir = System.getProperty("user.dir");
+    private String nemoExecDir = System.getProperty("user.home");
     private OWLOntology ontology;
     private Collection<OWLClassExpression> goalExpressions;
     
@@ -122,7 +122,7 @@ public class NemoReasoner {
     }
 
     private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws NemoExcecException {
-        ProcessBuilder pb = new ProcessBuilder( "./nmo", "-v", "-I", importDir, ruleFile, "--trace-output",
+        ProcessBuilder pb = new ProcessBuilder( "./nmoNew", "-I", importDir, ruleFile, "--trace-output",
                 traceFile
                 , "--trace", axiom).inheritIO();
 

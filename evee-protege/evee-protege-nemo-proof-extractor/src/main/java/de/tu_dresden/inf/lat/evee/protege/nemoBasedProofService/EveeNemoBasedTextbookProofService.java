@@ -8,9 +8,9 @@ public class EveeNemoBasedTextbookProofService extends AbstractEveeProofService{
 
     private static final String identifier = EveeNemoBasedProofPreferencesManager.TEXTBOOK;
 
-    protected EveeNemoBasedTextbookProofService() {
+    public EveeNemoBasedTextbookProofService() {
         super(new EveeNemoBasedDynamicProofAdapter(
-            ECalculus.ELK, 
+            ECalculus.TEXTBOOK, 
             new EveeNemoBasedProofPreferencesManager(), 
             new EveeDynamicProofLoadingUI(identifier))
         );
