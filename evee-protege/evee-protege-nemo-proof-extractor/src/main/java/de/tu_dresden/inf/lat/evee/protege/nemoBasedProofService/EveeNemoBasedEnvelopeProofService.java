@@ -12,7 +12,7 @@ public class EveeNemoBasedEnvelopeProofService extends AbstractEveeProofService 
     public EveeNemoBasedEnvelopeProofService() {
         super(new EveeNemoBasedDynamicProofAdapter(
             ECalculus.ENVELOPE, 
-            new EveeNemoBasedProofPreferencesManager(), 
+            new EveeNemoBasedProofPreferencesManager(identifier), 
             new EveeDynamicProofLoadingUI(identifier))
         );
     }

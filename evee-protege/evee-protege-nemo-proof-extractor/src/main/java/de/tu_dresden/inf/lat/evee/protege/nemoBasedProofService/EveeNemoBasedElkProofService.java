@@ -13,7 +13,7 @@ public class EveeNemoBasedElkProofService extends AbstractEveeProofService{
     public EveeNemoBasedElkProofService() {
         super(new EveeNemoBasedDynamicProofAdapter(
             ECalculus.ELK, 
-            new EveeNemoBasedProofPreferencesManager(), 
+            new EveeNemoBasedProofPreferencesManager(identifier), 
             new EveeDynamicProofLoadingUI(identifier))
         );
     }

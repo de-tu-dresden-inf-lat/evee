@@ -44,12 +44,18 @@
 
     <build>
         <resources>
+             <!-- Local resources -->
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>plugin.xml</include>
                 </includes>
                 <filtering>true</filtering>
+            </resource>
+            <!-- Unpacked resources from dependency -->
+            <resource>
+                <directory>${project.build.directory}/unpacked-resources</directory>
+                <filtering>false</filtering>
             </resource>
         </resources>
         <plugins>
@@ -109,6 +115,33 @@
                         </Private-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+
+            <!-- Unpack dependency resources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>de.tu-dresden.inf.lat.evee</groupId>
+                                    <artifactId>evee-nemo-proof-extractor</artifactId>
+                                    <version>${project.version}</version>
+                                    <outputDirectory>${project.build.directory}/unpacked-resources</outputDirectory>
+                                    <includes>**/*.rls</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

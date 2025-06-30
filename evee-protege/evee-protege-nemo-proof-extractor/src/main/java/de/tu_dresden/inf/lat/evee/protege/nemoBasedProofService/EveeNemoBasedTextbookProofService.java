@@ -11,7 +11,7 @@ public class EveeNemoBasedTextbookProofService extends AbstractEveeProofService{
     public EveeNemoBasedTextbookProofService() {
         super(new EveeNemoBasedDynamicProofAdapter(
             ECalculus.TEXTBOOK, 
-            new EveeNemoBasedProofPreferencesManager(), 
+            new EveeNemoBasedProofPreferencesManager(identifier), 
             new EveeDynamicProofLoadingUI(identifier))
         );
     }

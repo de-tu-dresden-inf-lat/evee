@@ -85,9 +85,8 @@ public class NemoReasoner {
     }
 
     private File prepareRuleFile(String ruleFile) throws IOException{
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-            try(InputStream isSrcFile = classLoader.getResourceAsStream(ruleFile + NEMO_RULE_FILE_SUFFIX)){
+        
+            try(InputStream isSrcFile =  getClass().getClassLoader().getResourceAsStream(ruleFile + NEMO_RULE_FILE_SUFFIX)){
                 if(isSrcFile == null)
                     throw new FileNotFoundException("Could not locate the rule file");
 

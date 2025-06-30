@@ -19,7 +19,7 @@ public class EveeNemoBasedDynamicProofAdapter extends AbstractEveeDynamicProofAd
         setInnerProofGenerator(gen);
         
         //TODO needed?
-        //resetCachingProofGenerator();
+        resetCachingProofGenerator();
     }
     
 }
