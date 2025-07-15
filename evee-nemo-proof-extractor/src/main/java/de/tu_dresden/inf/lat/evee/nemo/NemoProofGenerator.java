@@ -15,27 +15,32 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
 
     private NemoReasoner reasoner;
     private NemoProofParser parser;
-    //TODO I added a default calculus to be able to run the experiments
     private ECalculus calculus = ECalculus.ENVELOPE;
+
     public NemoProofGenerator(OWLOntology ontology){
         reasoner = new NemoReasoner(ontology);
         parser = new NemoProofParser();
+        setCalculusParser(calculus);
     }
 
     public NemoProofGenerator(){
         parser = new NemoProofParser();
-        //TODO also this to get a parser for the default calculus
-        setCalculusParser(this.calculus);
+        reasoner = new NemoReasoner();
+        setCalculusParser(calculus);
     }
 
     @Override
     public void setOntology(OWLOntology ontology) {
-        reasoner = new NemoReasoner(ontology);
+        reasoner.setOntology(ontology);
     }
 
     public void setCalculus(ECalculus calc){ 
         this.calculus = calc;
         setCalculusParser(calc);
+    }
+
+    public void setNemoExecPath(String path){
+        reasoner.setNemoExecPath(path);
     }
 
     @Override

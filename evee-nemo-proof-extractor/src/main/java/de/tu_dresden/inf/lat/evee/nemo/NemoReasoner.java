@@ -22,27 +22,36 @@ import de.tu_dresden.inf.lat.evee.proofs.json.JsonStringProofParser;
 public class NemoReasoner {
 
     private static final Logger logger = LogManager.getLogger(NemoReasoner.class);
-    private static final OWLHelper owlHelper= OWLHelper.getInstance();
+    private final OWLHelper owlHelper= OWLHelper.getInstance();
 
-    private final static String
+    private final String
             ELK_FILENAME = "elk",
             ENVELOPE_FILENAME = "envelope",
             TEXTBOOK_FILENAME = "textbook",
             NEMO_RULE_FILE_SUFFIX = ".rls",
             ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
     
-    //path to directory of nemo executable TODO: make configurable
-    private String nemoExecDir = System.getProperty("user.home");
+    //path to directory of nemo executable with default path
+    private String nemoExecPath = System.getProperty("user.home") + "/nmoNew";
+
     private OWLOntology ontology;
     private Collection<OWLClassExpression> goalExpressions;
     
-    public NemoReasoner(OWLOntology ontology){
-        this.ontology = ontology;
+    public NemoReasoner(){
         this.goalExpressions = Collections.emptyList();
     }
 
-    public void setNemoExecDir(String nemoExecDirPath){
-        nemoExecDir = nemoExecDirPath;
+      public NemoReasoner(OWLOntology ontology){
+        this.goalExpressions = Collections.emptyList();
+        this.ontology = ontology;
+    }
+
+    public void setNemoExecPath(String nemoExecPath){
+        this.nemoExecPath = nemoExecPath;
+    }
+
+    public void setOntology(OWLOntology ontology){
+        this.ontology = ontology;
     }
 
     public void setOptionalGoalExpressions(Collection<OWLClassExpression> expressions){
@@ -50,8 +59,10 @@ public class NemoReasoner {
     }
 
     public IProof<String> proof(String axiom, ECalculus calculus) throws IOException, NemoExcecException {
-        
         logger.debug("generating proof");
+
+        if(ontology == null)
+            throw new NemoExcecException("no ontology found. call setOntology()");
 
         //create tmp files
         Path importDir = prepareImportDir(ontology, this.goalExpressions);
@@ -121,11 +132,11 @@ public class NemoReasoner {
     }
 
     private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws NemoExcecException {
-        ProcessBuilder pb = new ProcessBuilder( "./nmoNew", "-I", importDir, ruleFile, "--trace-output",
+        ProcessBuilder pb = new ProcessBuilder( "."+nemoExecPath, "-I", importDir, ruleFile, "--trace-output",
                 traceFile
                 , "--trace", axiom).inheritIO();
 
-        pb.directory(new File(nemoExecDir));
+        pb.directory(new File("/"));
          
         int exitCode;
         try{

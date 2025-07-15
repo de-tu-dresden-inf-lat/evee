@@ -1,7 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.AbstractEveeDynamicProofAdapter;
-import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicProofLoadingUI;
 import de.tu_dresden.inf.lat.evee.nemo.*;
 
@@ -9,16 +8,19 @@ public class EveeNemoBasedDynamicProofAdapter extends AbstractEveeDynamicProofAd
 
     public EveeNemoBasedDynamicProofAdapter(
             ECalculus calc, 
-            AbstractEveeProofPreferencesManager proofPreferencesManager,
+            EveeNemoBasedProofPreferencesManager proofPreferencesManager,
             EveeDynamicProofLoadingUI uiWindow) {
 
         super(proofPreferencesManager, uiWindow);
         
         NemoProofGenerator gen = new NemoProofGenerator();
         gen.setCalculus(calc);
+
+        String nemoPath = proofPreferencesManager.loadNemoPath();
+        gen.setNemoExecPath(nemoPath);
+
         setInnerProofGenerator(gen);
         
-        //TODO needed?
         resetCachingProofGenerator();
     }
     
