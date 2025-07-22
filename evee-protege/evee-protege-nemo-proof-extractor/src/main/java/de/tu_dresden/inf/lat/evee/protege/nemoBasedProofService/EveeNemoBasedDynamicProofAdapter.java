@@ -12,6 +12,7 @@ public class EveeNemoBasedDynamicProofAdapter extends AbstractEveeDynamicProofAd
 
     private NemoProofGenerator generator;
     private EveeNemoBasedProofPreferencesManager preferencesManager;
+    private String nemoPath;
 
     public EveeNemoBasedDynamicProofAdapter(
             ECalculus calc, 
@@ -20,26 +21,28 @@ public class EveeNemoBasedDynamicProofAdapter extends AbstractEveeDynamicProofAd
 
         super(proofPreferencesManager, uiWindow);
         this.preferencesManager = proofPreferencesManager;
-  
-        initGenerator(calc);
+
+        generator = new NemoProofGenerator();
+        generator.setCalculus(calc);
+        updateNemoPath();
+                
         setInnerProofGenerator(generator);
         resetCachingProofGenerator();
     }
 
     @Override
     public void start(OWLAxiom entailment, OWLEditorKit editorKit){
-        updateNemoPath();
+        if (!nemoPath.equals(preferencesManager.loadNemoPath())){
+            updateNemoPath();    
+            resetCachingProofGenerator();
+        }
+
         super.start(entailment, editorKit);
     }
 
-    private void initGenerator(ECalculus calc){
-        generator = new NemoProofGenerator();
-        generator.setCalculus(calc);
-        updateNemoPath();
-    }
-
     private void updateNemoPath(){
-        String nemoPath = preferencesManager.loadNemoPath();
-        generator.setNemoExecPath(nemoPath);
+        String newPath = preferencesManager.loadNemoPath();
+        nemoPath = newPath;
+        generator.setNemoExecPath(newPath);
     }
 }

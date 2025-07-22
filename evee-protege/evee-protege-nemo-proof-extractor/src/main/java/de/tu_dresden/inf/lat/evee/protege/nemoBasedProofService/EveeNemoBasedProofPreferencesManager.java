@@ -14,8 +14,6 @@ public class EveeNemoBasedProofPreferencesManager extends AbstractEveeProofPrefe
     protected static final String TEXTBOOK =  "NEMO Proof, based on TEXTBOOK";
     protected static final String ENVELOPE =  "NEMO Proof, based on ENVELOPE";
 
-
-
     public EveeNemoBasedProofPreferencesManager(String identifier) {
         super(SET_ID, PREFERENCE_ID, identifier);
     }
@@ -43,6 +41,5 @@ public class EveeNemoBasedProofPreferencesManager extends AbstractEveeProofPrefe
         Preferences preferences = getProtegePreferences();
         preferences.putString(NEMO_PATH, newPath);
     }
-
 }
 

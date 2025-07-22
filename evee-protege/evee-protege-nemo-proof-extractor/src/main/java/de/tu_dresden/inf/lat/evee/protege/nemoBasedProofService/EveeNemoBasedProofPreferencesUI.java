@@ -85,7 +85,7 @@ public class EveeNemoBasedProofPreferencesUI extends AbstractEveeProofPreference
 
     @Override
     public void actionPerformed(ActionEvent e) {
-           switch (e.getActionCommand()){
+        switch (e.getActionCommand()){
             case PATH_BROWSE_BUTTON_COMMAND:
                 changeNemoPath();
                 break;
