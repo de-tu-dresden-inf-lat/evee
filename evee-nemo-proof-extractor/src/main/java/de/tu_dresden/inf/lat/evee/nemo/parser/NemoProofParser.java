@@ -79,7 +79,7 @@ public class NemoProofParser {
                     .filter(x -> !(x == atomParser.getDefaultAxiom()))
                         .collect(Collectors.toList());
 
-            IInference<OWLAxiom> parsedInf = new Inference<>(conclusion, parseRuleName(infStr.getRuleName()), premises); 
+            IInference<OWLAxiom> parsedInf = new Inference<>(conclusion, infStr.getRuleName(), premises); 
             proof.addInference(parsedInf);
         }
 
@@ -92,13 +92,5 @@ public class NemoProofParser {
         }catch (Exception e){}
 
         return proof;
-    }
-
-    private String parseRuleName(String ruleStr){
-        String ruleName = parsingHelper.getRuleName(ruleStr);
-        if (ruleName.isEmpty())
-            return ruleStr;
-        
-        return ruleName;
     }
 }

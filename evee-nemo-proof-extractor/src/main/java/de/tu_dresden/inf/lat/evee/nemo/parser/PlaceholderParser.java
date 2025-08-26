@@ -28,6 +28,8 @@ public class PlaceholderParser {
 	private static final String PREDNAME_REST = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>";
 	private static final String PREDNAME_NIL = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>";
 
+	private static final String PREDNAME_NEG = "http://www.w3.org/2002/07/owl#complementOf";
+
 	public static final String REPOF = "repOf";
 	public static final String REPOF_PROP = "repOfProp";
 

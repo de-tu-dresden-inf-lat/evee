@@ -22,7 +22,7 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.CorrectnessEvaluator;
 
 public class ProofTest {
 
-    private final String nemoExcecPath = System.getProperty("user.home") + "/nmoNew";
+    private final String nemoExcecPath = System.getProperty("user.home") + "/nmo8";
 
     private final String [] ELplusplusTaskFiles = {
         "task_disjoint.json",

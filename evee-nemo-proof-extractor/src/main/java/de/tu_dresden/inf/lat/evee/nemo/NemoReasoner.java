@@ -68,12 +68,13 @@ public class NemoReasoner {
         Path importDir = prepareImportDir(ontology, this.goalExpressions);
         File ruleFile = prepareRuleFile(getRuleFileName(calculus));
         File traceFile = File.createTempFile("nemoTrace", ".json");
+        Path exportDir = Files.createTempDirectory("nemo_dump");
 
         //run nemo
         logger.debug("running nemo");
-        int exitCode = runNemo(importDir.toString(), ruleFile.getAbsolutePath(), traceFile.getAbsolutePath(), axiom);
+        int exitCode = runNemo(importDir.toString(), exportDir.toString(), ruleFile.getAbsolutePath(), traceFile.getAbsolutePath(), axiom);
         if (exitCode != 0)
-            throw new NemoExcecException("error running nemo. Exit code " + exitCode);
+           throw new NemoExcecException("error running nemo. Exit code " + exitCode);
 
         JsonStringProofParser proofParser = JsonStringProofParser.getInstance();
         IProof<String> proof = proofParser.fromFile(traceFile);
@@ -131,10 +132,9 @@ public class NemoReasoner {
         });
     }
 
-    private int runNemo(String importDir, String ruleFile, String traceFile, String axiom) throws NemoExcecException {
+    private int runNemo(String importDir, String exportDir,String ruleFile, String traceFile, String axiom) throws NemoExcecException {
         ProcessBuilder pb = new ProcessBuilder( "."+nemoExecPath, "-I", importDir, ruleFile, "--trace-output",
-                traceFile
-                , "--trace", axiom).inheritIO();
+                traceFile, "--trace", axiom, "-e", "all", "-D", exportDir).inheritIO();
 
         pb.directory(new File("/"));
          
