@@ -31,8 +31,8 @@ public class NemoReasoner {
             NEMO_RULE_FILE_SUFFIX = ".rls",
             ONTOLOGY_EXPORT_FILE_NAME = "ont.ttl";
     
-    //path to directory of nemo executable with default path
-    private String nemoExecPath = System.getProperty("user.home") + "/nmoNew";
+    //path to nemo executable
+    private String nemoExecPath;
 
     private OWLOntology ontology;
     private Collection<OWLClassExpression> goalExpressions;
@@ -142,8 +142,12 @@ public class NemoReasoner {
         try{
             Process p = pb.start();
             exitCode = p.waitFor();
-        }catch(Exception e){
-            throw new NemoExcecException("error running nemo: ", e);
+        }
+        catch(IOException i){
+            throw new NemoExcecException("No NEMO executable at " + nemoExecPath);
+        }
+        catch(Exception e){
+            throw new NemoExcecException("error running nemo: " + e, e);
         }
 
         return exitCode;

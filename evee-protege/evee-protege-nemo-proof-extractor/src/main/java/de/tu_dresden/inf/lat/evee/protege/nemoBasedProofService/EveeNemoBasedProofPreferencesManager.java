@@ -31,9 +31,8 @@ public class EveeNemoBasedProofPreferencesManager extends AbstractEveeProofPrefe
 
     public String loadNemoPath() {
         Preferences preferences = getProtegePreferences();
-
-        String nmoDefault = System.getProperty("user.home") + "/nmo";
-        String path = preferences.getString(NEMO_PATH, nmoDefault);
+        String path = preferences.getString(NEMO_PATH, "");
+        
         return path;
     }
 

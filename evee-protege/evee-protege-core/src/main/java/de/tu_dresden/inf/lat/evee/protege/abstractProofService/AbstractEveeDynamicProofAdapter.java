@@ -22,8 +22,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.util.*;
 
-import static org.junit.Assert.assertNotNull;
-
 public abstract class AbstractEveeDynamicProofAdapter implements DynamicProof<Inference<? extends OWLAxiom>>, IExplanationGenerationListener<ExplanationEvent<IExplanationGenerator<IProof<OWLAxiom>>>> {
 
     private IProof<OWLAxiom> iProof;

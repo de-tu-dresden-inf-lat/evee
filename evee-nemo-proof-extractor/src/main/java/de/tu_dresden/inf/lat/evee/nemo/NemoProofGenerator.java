@@ -7,7 +7,7 @@ import de.tu_dresden.inf.lat.evee.nemo.parser.ELKAtomParser;
 import de.tu_dresden.inf.lat.evee.nemo.parser.EnvelopeAtomParser;
 import de.tu_dresden.inf.lat.evee.nemo.parser.TextbookAtomParser;
 import de.tu_dresden.inf.lat.evee.nemo.parser.NemoProofParser;
-import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.*;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 
@@ -57,8 +57,9 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
             throw new ProofGenerationException(e);
         }
 
+        //TODO idealy checked in supportsProof
         if (proof.getFinalConclusion().isEmpty())
-            throw new ProofGenerationException("axiom could not be derived");
+            throw new ProofNotSupportedException("axiom could not be derived");
 
         return parser.toProofOWL(proof);   
     }
@@ -74,8 +75,8 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
         else
             return false;
 
-        boolean subClassValid = subAxiom.getSubClass().asOWLClass().isOWLClass();
-        boolean superClassValid = subAxiom.getSuperClass().asOWLClass().isOWLClass();
+        boolean subClassValid = subAxiom.getSubClass().isNamed();
+        boolean superClassValid = subAxiom.getSuperClass().isNamed();
 
         return subClassValid && superClassValid;
     }

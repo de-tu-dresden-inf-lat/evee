@@ -22,6 +22,8 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.CorrectnessEvaluator;
 
 public class ProofTest {
 
+    private final String nemoExcecPath = System.getProperty("user.home") + "/nmoNew";
+
     private final String [] ELplusplusTaskFiles = {
         "task_disjoint.json",
         "task_EL.json",
@@ -113,7 +115,7 @@ public class ProofTest {
 //    @Ignore("For dev purposes")
     @Test
     public void testTask2() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task00001.json");
+        IInference<OWLAxiom> task = readTask(  "task_EL.json");
         IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         System.out.println(proof.toString());
@@ -214,6 +216,7 @@ public class ProofTest {
 
         NemoProofGenerator generator = new NemoProofGenerator(ontology);
         generator.setCalculus(calculus);
+        generator.setNemoExecPath(nemoExcecPath);
 
         return generator.getProof(task.getConclusion());
     }

@@ -4,7 +4,6 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import org.liveontologies.puli.Inference;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
-import java.util.Collections;
 import java.util.List;
 
 public class EveeInferenceAdapter implements Inference<OWLAxiom> {
