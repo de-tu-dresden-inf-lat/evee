@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <artifactId>evee-protege</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>evee-protege-nemo-proof-extractor</artifactId>
+    <packaging>bundle</packaging>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>EveeLocalMavenRepository</id>
+            <name>EveeLocalMavenRepository</name>
+            <url>file:${project.basedir}/../../lib</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-protege-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <artifactId>evee-nemo-proof-extractor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <resources>
+             <!-- Local resources -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <!-- Unpacked resources from dependency -->
+            <resource>
+                <directory>${project.build.directory}/unpacked-resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.5.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
+                        <Import-Package>
+                            sun.misc.*;resolution:=optional,
+                            de.tu_dresden.inf.lat.evee.proofs.*,
+                            de.tu_dresden.inf.lat.evee.proofs.interfaces.*,
+                            de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
+                            com.conversantmedia.util.concurrent.*;resolution:=optional,
+                            javax.jms.*;resolution:=optional,
+                            com.fasterxml.jackson.dataformat.xml,
+                            com.fasterxml.jackson.dataformat.xml.annotation,
+                            com.fasterxml.jackson.dataformat.xml.util,
+                            com.lmax.disruptor.*;resolution:=optional,
+                            org.zeromq;resolution:=optional,
+                            org.jctools.queues;resolution:=optional,
+                            org.jspecify.annotations;resolution:=optional,
+                            org.fusesource.jansi;resolution:=optional,
+                            org.codehaus.stax2;resolution:=optional,
+                            org.apache.commons.compress.*;resolution:=optional,
+                            org.apache.commons.csv.*;resolution:=optional,
+                            org.apache.kafka.clients.producer;resolution:=optional,
+                            org.apache.kafka.common.serialization;resolution:=optional,
+                            org.apache.geronimo.osgi.registry.api.*;resolution:=optional,
+                            org.osgi.service.log.*;resolution:=optional,        
+                            *
+                        </Import-Package>
+                        <Private-Package>
+                            de.tu_dresden.inf.lat.evee.nemo.*,
+                            org.apache.logging.log4j.*;-split-package:=merge-last,
+                            javax.mail.*,
+                            javax.activation.*,
+                            javax.xml.stream.*,
+                            org.apache.geronimo.mail.*,
+                            org.apache.geronimo.osgi.locator.*;-split-package:=merge-last,
+                            com.google.common.collect.*;-split-package:=merge-last,
+                            com.google.common.base.*;-split-package:=merge-last,
+                            com.google.common.math.*;-split-package:=merge-last,
+                            com.google.common.primitives.*;-split-package:=merge-last,
+                        </Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <!-- Unpack dependency resources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>de.tu-dresden.inf.lat.evee</groupId>
+                                    <artifactId>evee-nemo-proof-extractor</artifactId>
+                                    <version>${project.version}</version>
+                                    <outputDirectory>${project.build.directory}/unpacked-resources</outputDirectory>
+                                    <includes>**/*.rls</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

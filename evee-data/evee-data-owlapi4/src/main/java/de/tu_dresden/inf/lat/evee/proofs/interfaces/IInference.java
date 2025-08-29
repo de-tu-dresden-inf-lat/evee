@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  */
 @JsonDeserialize(as = Inference.class)
-@JsonPropertyOrder({ "conclusion", "ruleName", "premises" })
+@JsonPropertyOrder({ "conclusion","ruleName", "premises" })
 public interface IInference<SENTENCE> {
 
 	@JsonSerialize(converter = JsonGeneric2StringConverter.class)

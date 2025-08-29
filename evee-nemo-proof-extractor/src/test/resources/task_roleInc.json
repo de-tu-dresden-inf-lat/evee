@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<http://www.example.com/test/A> <= <http://www.example.com/test/B>",
+  "inferences" : [ {
+    "conclusion" : "<http://www.example.com/test/A> <= <http://www.example.com/test/B>",
+    "ruleName" : "generic",
+    "premises" : [ "<http://www.example.com/test/C> <= <http://www.example.com/test/D>", "<http://www.example.com/test/D> <= <http://www.example.com/test/E>", "<http://www.example.com/test/E> <= <http://www.example.com/test/F>", "<http://www.example.com/test/F> <= <http://www.example.com/test/G>", "<http://www.example.com/test/G> <= <http://www.example.com/test/H>", "E<http://www.example.com/test/t>.<http://www.example.com/test/H> <= <http://www.example.com/test/B>", "<http://www.example.com/test/A> <= E<http://www.example.com/test/s>.<http://www.example.com/test/C>", "<http://www.example.com/test/s> <r <http://www.example.com/test/r>", "<http://www.example.com/test/r> <r <http://www.example.com/test/t>" ]
+  } ]
+}

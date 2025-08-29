@@ -17,12 +17,13 @@ public class ProofTools {
 
 	public static String ASSERTED_1 = "asserted";
 	public static String ASSERTED_2 = "Asserted Conclusion";
+	public static String ASSERTED_3 = "Asserted";
 
 	/**
 	 * TODO a bit unclean - it would be better to have this as property in the inference object (isAsserted)
 	 */
 	public static <S> boolean isAsserted(IInference<S> inf) {
-		return inf.getRuleName().equals(ASSERTED_1) || inf.getRuleName().equals(ASSERTED_2);
+		return inf.getRuleName().equals(ASSERTED_1) || inf.getRuleName().equals(ASSERTED_2) || inf.getRuleName().equals(ASSERTED_3);
 	}
 
 	public static boolean isCorrect(IInference<OWLAxiom> inf) {

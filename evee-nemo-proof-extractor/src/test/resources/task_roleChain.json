@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<http://snomed.info/id/A> <= <http://snomed.info/id/B>",
+  "inferences" : [ {
+    "conclusion" : "<http://snomed.info/id/A> <= <http://snomed.info/id/B>",
+    "ruleName" : "generic",
+    "premises" : [ "<http://snomed.info/id/B> = (E<http://snomed.info/id/r>.E<http://snomed.info/id/s>.<http://snomed.info/id/C> n E<http://snomed.info/id/t>.<http://snomed.info/id/D> n <http://snomed.info/id/E>)", "<http://snomed.info/id/A> = (E<http://snomed.info/id/u>.<http://snomed.info/id/F> n E<http://snomed.info/id/r>.(E<http://snomed.info/id/w>.<http://snomed.info/id/C> n E<http://snomed.info/id/v>.<http://snomed.info/id/F> n E<http://snomed.info/id/q>.<http://snomed.info/id/G> n E<http://snomed.info/id/p>.<http://snomed.info/id/H>) n <http://snomed.info/id/E> n E<http://snomed.info/id/t>.<http://snomed.info/id/J>)", "<http://snomed.info/id/s> o <http://snomed.info/id/o> <r <http://snomed.info/id/s>", "<http://snomed.info/id/D> = (E<http://snomed.info/id/m>.<http://snomed.info/id/K> n <http://snomed.info/id/L>)", "<http://snomed.info/id/H> <= (<http://snomed.info/id/M> n <http://snomed.info/id/N> n E<http://snomed.info/id/o>.<http://snomed.info/id/C> n E<http://snomed.info/id/g>.<http://snomed.info/id/P>)", "<http://snomed.info/id/p> <r <http://snomed.info/id/s>", "<http://snomed.info/id/J> = (E<http://snomed.info/id/m>.<http://snomed.info/id/K> n <http://snomed.info/id/L> n E<http://snomed.info/id/a>.<http://snomed.info/id/Q> n E<http://snomed.info/id/b>.<http://snomed.info/id/U> n E<http://snomed.info/id/c>.<http://snomed.info/id/V> n E<http://snomed.info/id/d>.<http://snomed.info/id/X>)" ]
+  } ]
+}
