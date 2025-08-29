@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<https://experimentTasks/A> <= <https://experimentTasks/B>",
+  "inferences" : [ {
+    "conclusion" : "<https://experimentTasks/A> <= <https://experimentTasks/B>",
+    "ruleName" : "generic",
+    "premises" : [ "<https://experimentTasks/A> <= <https://experimentTasks/C>", "<https://experimentTasks/C> <= <https://experimentTasks/D>", "<https://experimentTasks/E> = (<https://experimentTasks/C> n E<https://experimentTasks/r>.<https://experimentTasks/F>)", "<https://experimentTasks/A> <= E<https://experimentTasks/r>.<https://experimentTasks/F>", "disjoint(<https://experimentTasks/E>, <https://experimentTasks/G>)", "<https://experimentTasks/A> <= E<https://experimentTasks/r>.<https://experimentTasks/H>", "<https://experimentTasks/G> = (<https://experimentTasks/D> n E<https://experimentTasks/r>.<https://experimentTasks/H>)" ]
+  } ]
+}

@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<https://experimentTasks/A> = BOTTOM",
+  "inferences" : [ {
+    "conclusion" : "<https://experimentTasks/A> = BOTTOM",
+    "ruleName" : "generic",
+    "premises" : [ "disjoint(<https://experimentTasks/B>, TOP)", "<https://experimentTasks/A> <= <https://experimentTasks/B>" ]
+  } ]
+}

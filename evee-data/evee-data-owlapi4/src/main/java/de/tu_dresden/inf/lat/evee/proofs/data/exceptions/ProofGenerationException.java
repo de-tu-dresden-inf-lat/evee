@@ -6,4 +6,8 @@ public class ProofGenerationException extends Exception {
 		super(message);
 	}
 
+	public ProofGenerationException(Throwable cause){
+		super(cause);
+	}
+
 }

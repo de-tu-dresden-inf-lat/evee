@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<https://experimentTasks/A> = <https://experimentTasks/B>",
+  "inferences" : [ {
+    "conclusion" : "<https://experimentTasks/A> = <https://experimentTasks/B>",
+    "ruleName" : "generic",
+    "premises" : [ "<https://experimentTasks/C> <= <https://experimentTasks/D>", "<https://experimentTasks/D> <= <https://experimentTasks/A>", "<https://experimentTasks/A> <= <https://experimentTasks/E>", "<https://experimentTasks/E> <= <https://experimentTasks/F>", "<https://experimentTasks/F> <= <https://experimentTasks/G>", "<https://experimentTasks/G> <= <https://experimentTasks/C>", "<https://experimentTasks/C> <= <https://experimentTasks/H>", "<https://experimentTasks/H> <= <https://experimentTasks/I>", "<https://experimentTasks/I> <= <https://experimentTasks/B>", "<https://experimentTasks/B> <= <https://experimentTasks/I>", "<https://experimentTasks/I> <= <https://experimentTasks/H>", "<https://experimentTasks/H> <= <https://experimentTasks/F>" ]
+  } ]
+}

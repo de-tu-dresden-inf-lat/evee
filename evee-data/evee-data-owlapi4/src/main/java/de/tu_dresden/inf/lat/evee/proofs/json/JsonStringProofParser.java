@@ -52,7 +52,7 @@ public class JsonStringProofParser implements IProofParser<String> {
 
     private ObjectMapper getMapper(){
         abstract class IProofMixin {
-            @JsonDeserialize(as = String.class) abstract String getFinalConclusion();
+            @JsonDeserialize(using = JsonArrayOrString2StringDeserializer.class) abstract String getFinalConclusion();
         }
 
         abstract class IInferenceMixin {
