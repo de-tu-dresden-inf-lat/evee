@@ -1,0 +1,16 @@
+{
+    "finalConclusion": "<https://experimentTasks/A> = <https://experimentTasks/B>",
+    "inferences": [
+        {
+            "conclusion": "<https://experimentTasks/A> = <https://experimentTasks/B>",
+            "premises": [
+                "<https://experimentTasks/C> <= <https://experimentTasks/D>",
+                "<https://experimentTasks/D> <= <https://experimentTasks/B>",
+                "disjoint(<https://experimentTasks/B>, TOP)",
+                "<https://experimentTasks/C> = <https://experimentTasks/E>",
+                "<https://experimentTasks/A> = <https://experimentTasks/E>"
+            ],
+            "ruleName": "generic"
+        }
+    ]
+}

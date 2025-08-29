@@ -4,18 +4,15 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListe
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
-import org.protege.editor.owl.model.OWLModelManager;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationCancelledException;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationFailedException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofNotSupportedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -39,41 +36,49 @@ public class EveeProofGenerationThread extends Thread implements IExplanationGen
 	}
 
 	public void run() {
-		this.logger.info("Proof generation thread started");
+		logger.info("Proof generation thread started");
 		try {
-			if (this.proofGenerator.supportsProof(this.entailment)) {
-				this.logger.info("Proof supported for axiom {}", this.entailment);
-				this.result = proofGenerator.getProof(this.entailment);
-				assertNotNull(this.result);
-				if (proofGenerator.successful()){
-					this.logger.info("Proof generation completed successfully");
-					this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
-							this, ExplanationEventType.COMPUTATION_COMPLETE));
-				}
-				else{
-					this.logger.info("Proof generation cancelled, potentially suboptimal proof found");
-					this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
-							this, ExplanationEventType.COMPUTATION_CANCELLED));
-				}
-			} else {
-				this.logger.info("Proof NOT supported for axiom {}", this.entailment);
-				this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
+			if (!proofGenerator.supportsProof(entailment)) {
+				logger.info("Proof NOT supported for axiom {}", entailment);
+				explanationGenerationListener.handleEvent(new ExplanationEvent<>(
 						this, ExplanationEventType.NOT_SUPPORTED));
+				return;
 			}
+
+			logger.info("Proof supported for axiom {}", entailment);
+			result = proofGenerator.getProof(entailment);
+			assertNotNull(result);
+
+			if (!proofGenerator.successful()){
+				logger.info("Proof generation cancelled, potentially suboptimal proof found");
+				explanationGenerationListener.handleEvent(new ExplanationEvent<>(
+						this, ExplanationEventType.COMPUTATION_CANCELLED));
+				return;
+			}
+
+			logger.info("Proof generation completed successfully");
+			explanationGenerationListener.handleEvent(new ExplanationEvent<>(
+					this, ExplanationEventType.COMPUTATION_COMPLETE));
+			
+
+		} catch(ProofNotSupportedException e){
+			logger.info("Proof NOT supported for axiom {}. Axiom could not be derived", entailment);
+			explanationGenerationListener.handleEvent(new ExplanationEvent<>(
+						this, ExplanationEventType.NOT_SUPPORTED));
 		} catch (ProofGenerationCancelledException e) {
-			this.logger.info("Proof generation cancelled, no proof found: ", e);
-			this.errorMessage = "Proof generation cancelled, no proof found";
-			this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
+			logger.info("Proof generation cancelled, no proof found: ", e);
+			errorMessage = "Proof generation cancelled, no proof found";
+			explanationGenerationListener.handleEvent(new ExplanationEvent<>(
 					this, ExplanationEventType.ERROR));
 		} catch (ProofGenerationFailedException e) {
-			this.logger.error("Proof generation failed: ", e);
-			this.errorMessage = "Proof generation failed: " + e;
-			this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
+			logger.error("Proof generation failed: ", e);
+			errorMessage = "Proof generation failed: " + e;
+			explanationGenerationListener.handleEvent(new ExplanationEvent<>(
 					this, ExplanationEventType.ERROR));
 		} catch (Throwable e) {
-			this.logger.error("Proof generation failed with error: ", e);
-			this.errorMessage = "Error: " + e;
-			this.explanationGenerationListener.handleEvent(new ExplanationEvent<>(
+			logger.error("Proof generation failed with error: ", e);
+			errorMessage = "Error: " + e;
+			explanationGenerationListener.handleEvent(new ExplanationEvent<>(
 					this, ExplanationEventType.ERROR));
 		}
 
