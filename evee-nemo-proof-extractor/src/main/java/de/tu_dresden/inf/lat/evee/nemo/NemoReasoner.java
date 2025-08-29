@@ -134,7 +134,7 @@ public class NemoReasoner {
 
     private int runNemo(String importDir, String exportDir,String ruleFile, String traceFile, String axiom) throws NemoExcecException {
         ProcessBuilder pb = new ProcessBuilder( "."+nemoExecPath, "-I", importDir, ruleFile, "--trace-output",
-                traceFile, "--trace", axiom, "-e", "all", "-D", exportDir).inheritIO();
+                traceFile, "--trace", axiom, "-D", exportDir).inheritIO();
 
         pb.directory(new File("/"));
          

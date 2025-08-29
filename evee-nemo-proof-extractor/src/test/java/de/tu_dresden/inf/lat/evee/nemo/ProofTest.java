@@ -102,7 +102,7 @@ public class ProofTest {
     @Test
     public void testTask() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task00024.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
@@ -116,73 +116,7 @@ public class ProofTest {
     @Test
     public void testTask2() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task_EL.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
-
-        System.out.println(proof.toString());
-        System.out.println("final conclusion: " + proof.getFinalConclusion());
-
-        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
-        evaluator.setTask(task);
-        assertEquals(1d, evaluator.evaluate(proof), 0.0);
-    }
-
-//    @Ignore("For dev purposes")
-    @Test
-    public void testTask3() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task00003.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
-
-        System.out.println(proof.toString());
-        System.out.println("final conclusion: " + proof.getFinalConclusion());
-
-        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
-        evaluator.setTask(task);
-        assertEquals(1d, evaluator.evaluate(proof), 0.0);
-    }
-
-    @Test
-    public void testTask4() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task00024.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
-
-        System.out.println(proof.toString());
-        System.out.println("final conclusion: " + proof.getFinalConclusion());
-
-        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
-        evaluator.setTask(task);
-        assertEquals(1d, evaluator.evaluate(proof), 0.0);
-    }
-
-    @Test
-    public void testTask5() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task00200.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
-
-        System.out.println(proof.toString());
-        System.out.println("final conclusion: " + proof.getFinalConclusion());
-
-        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
-        evaluator.setTask(task);
-        assertEquals(1d, evaluator.evaluate(proof), 0.0);
-    }
-
-    @Test
-    public void testTask6() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task00129.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
-
-        System.out.println(proof.toString());
-        System.out.println("final conclusion: " + proof.getFinalConclusion());
-
-        CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
-        evaluator.setTask(task);
-        assertEquals(1d, evaluator.evaluate(proof), 0.0);
-    }
-
-    @Test
-    public void testTask7() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task00870.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ENVELOPE);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());

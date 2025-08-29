@@ -200,3 +200,7 @@ mainSubClassOf(?A,?B) :-
 	inf:subClassOf(?A,?B), nf:isMainClass(?A), nf:isMainClass(?B) .
 #[name("equiv")]
 mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).
+
+
+@export mainSubClassOf :- csv{resource="out1.csv.gz"} .
+@export mainEquivClass :- csv{resource="out2.csv.gz"} .
