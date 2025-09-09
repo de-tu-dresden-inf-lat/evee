@@ -1,0 +1,8 @@
+{
+  "finalConclusion" : "<thttp://test/A> <= <thttp://test/B>",
+  "inferences" : [ {
+    "conclusion" : "<thttp://test/A> <= <thttp://test/B>",
+    "ruleName" : "generic",
+    "premises" : [ "<thttp://test/C> <= <thttp://test/D>", "<thttp://test/A> <= <thttp://test/E>", "E<thttp://test/r>.<thttp://test/D> <= <thttp://test/B>", "<thttp://test/E> <= E<thttp://test/r>.<thttp://test/C>" ]
+  } ]
+}

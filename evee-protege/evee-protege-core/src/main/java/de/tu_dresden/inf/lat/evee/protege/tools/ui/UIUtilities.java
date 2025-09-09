@@ -91,7 +91,7 @@ public class UIUtilities {
     }
 
     public static void showWarning(String message, OWLEditorKit owlEditorKit){
-        logger.debug("Displaying warning message: {}", message);
+        logger.debug("Displaying warning message as *message*: *{}*", message);
         showMessage(message, JOptionPane.WARNING_MESSAGE, owlEditorKit);
     }
 

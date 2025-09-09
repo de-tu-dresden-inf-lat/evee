@@ -2,6 +2,13 @@ package de.tu_dresden.inf.lat.evee.concreteDomains
 
 import org.semanticweb.owlapi.model.OWLDataProperty
 
+/**
+ * The ConcreteDomain2 supports:
+ * - equality
+ * - greater than
+ * - x + q = y
+ **/
+
 trait CD2Predicate extends CDConstraint
 trait CD2UnaryPredicate extends CD2Predicate
 
