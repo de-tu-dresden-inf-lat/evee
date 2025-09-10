@@ -3,22 +3,22 @@
 <plugin>
 
     <extension id="eveeProofPreferencesNemo" point="org.liveontologies.protege.explanation.proof.preferences">
-        <label value="NEMO Proof"/>
+        <label value="Nemo Proof"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService.EveeNemoBasedProofPreferencesUI"/>
     </extension>
 
     <extension id="eveeProofNemoElk" point="org.liveontologies.protege.explanation.proof.service">
-        <name value="NEMO proof, based on ELK" />
+        <name value="ELK calculus proof (Nemo)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService.EveeNemoBasedElkProofService"/>
     </extension>
 
     <extension id="eveeProofNemoEnvelope" point="org.liveontologies.protege.explanation.proof.service">
-        <name value="NEMO proof, based on ENVELOPE" />
+        <name value="ENVELOPE calculus proof (Nemo)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService.EveeNemoBasedEnvelopeProofService"/>
     </extension>
 
     <extension id="eveeProofNemoTextbook" point="org.liveontologies.protege.explanation.proof.service">
-        <name value="NEMO proof, based on TEXTBOOK" />
+        <name value="TEXTBOOK calculus proof (Nemo)" />
         <class value="de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService.EveeNemoBasedTextbookProofService"/>
     </extension>
 

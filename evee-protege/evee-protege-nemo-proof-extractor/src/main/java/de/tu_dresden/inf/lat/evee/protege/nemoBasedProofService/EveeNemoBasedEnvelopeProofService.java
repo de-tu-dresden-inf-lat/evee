@@ -6,7 +6,7 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicPro
 
 public class EveeNemoBasedEnvelopeProofService extends AbstractEveeProofService {
 
-    private static final String identifier = EveeNemoBasedProofPreferencesManager.ENVELOPE;
+    private static final String identifier = EveeNemoBasedProofPreferencesManager.ENVELOPE_ID;
 
 
     public EveeNemoBasedEnvelopeProofService() {

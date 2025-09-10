@@ -6,7 +6,7 @@ import de.tu_dresden.inf.lat.evee.protege.abstractProofService.ui.EveeDynamicPro
 
 public class EveeNemoBasedTextbookProofService extends AbstractEveeProofService{
 
-    private static final String identifier = EveeNemoBasedProofPreferencesManager.TEXTBOOK;
+    private static final String identifier = EveeNemoBasedProofPreferencesManager.TEXTBOOK_ID;
 
     public EveeNemoBasedTextbookProofService() {
         super(new EveeNemoBasedDynamicProofAdapter(

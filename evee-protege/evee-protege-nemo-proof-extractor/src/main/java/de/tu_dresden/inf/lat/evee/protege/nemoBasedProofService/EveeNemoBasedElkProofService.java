@@ -8,7 +8,7 @@ import de.tu_dresden.inf.lat.evee.nemo.ECalculus;
 
 public class EveeNemoBasedElkProofService extends AbstractEveeProofService{
 
-    private static final String identifier = EveeNemoBasedProofPreferencesManager.ELK;
+    private static final String identifier = EveeNemoBasedProofPreferencesManager.ELK_ID;
 
     public EveeNemoBasedElkProofService() {
         super(new EveeNemoBasedDynamicProofAdapter(

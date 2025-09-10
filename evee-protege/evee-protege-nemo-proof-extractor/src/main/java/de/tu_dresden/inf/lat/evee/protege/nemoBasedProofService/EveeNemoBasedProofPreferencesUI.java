@@ -16,10 +16,10 @@ import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 
 public class EveeNemoBasedProofPreferencesUI extends AbstractEveeProofPreferencesUI implements ActionListener{
 
-    public final static String PATH_LABEL_TEXT = "Path to NEMO executable";
-    public final static String PATH_TEXT_FIELD_TOOL_TIP = "Currently used path to the NEMO executable";
+    public final static String PATH_LABEL_TEXT = "Path to Nemo executable";
+    public final static String PATH_TEXT_FIELD_TOOL_TIP = "Currently used path to the Nemo executable";
     public final static String PATH_BROWSE_BUTTON_COMMAND = "PATH_BROWSE_COMMAND";
-    public final static String PATH_BROWSE_BUTTON_TOOL_TIP = "Change path to the NEMO executable";
+    public final static String PATH_BROWSE_BUTTON_TOOL_TIP = "Change path to the Nemo executable";
 
     private JTextField nemoPathTextField;
     
@@ -47,7 +47,7 @@ public class EveeNemoBasedProofPreferencesUI extends AbstractEveeProofPreference
         //NEMO path
        SwingUtilities.invokeLater(() -> {
             holderPanel.addSeparator();
-            holderPanel.addGroup("NEMO:");
+            holderPanel.addGroup("Nemo:");
             JPanel nemoPathPanel = new JPanel(new GridBagLayout());
             JLabel nemoPathLabel = UIUtilities.createLabel(PATH_LABEL_TEXT);
             Insets insets = new Insets(0, 0, 0, 5);
