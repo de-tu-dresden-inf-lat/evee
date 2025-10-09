@@ -34,6 +34,9 @@
 @import TRIPLE :- rdf{resource="ont.ttl"} .
 %%% Mark classes:
 ClassObject(owl:someValuesFrom) .
+ClassObject(owl:allValuesFrom) .
+ClassObject(owl:onClass) .
+ClassObject(owl:complementOf) .
 ClassObject(rdf:first) .
 ClassObject(rdfs:subClassOf) .
 ClassObject(owl:equivalentClass) .
@@ -43,6 +46,22 @@ class(?O) :- TRIPLE(?X, ?P, ?O), ClassObject(?P) .
 class(?X) :- TRIPLE(?X, ?P, ?O), ClassSubject(?P) .
 
 %%% Distinguish auxiliary class expressions from primary classes:
+
+repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:complementOf, _) .
+repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:allValuesFrom, _), TRIPLE(?X, owl:onProperty, _).
+
+%% number restr. are encoded as union of one element
+numEq(!N,?INT,?R,?C), repOf(?X1,!N), auxClass(?X1),  auxClass(?X2) :- 
+    TRIPLE(?X1, owl:unionOf, ?L1), last(?L1), in(?L1,?X2), 
+    TRIPLE(?X2, owl:qualifiedCardinality, ?INT), TRIPLE(?X2, owl:onClass, ?C), TRIPLE(?X2, owl:onProperty, ?R) .
+
+numMax(!N,?INT,?R,?C), repOf(?X1,!N), auxClass(?X1),  auxClass(?X2) :- 
+    TRIPLE(?X1, owl:unionOf, ?L1), last(?L1), in(?L1,?X2), 
+    TRIPLE(?X2, owl:maxQualifiedCardinality, ?INT), TRIPLE(?X2, owl:onClass, ?C), TRIPLE(?X2, owl:onProperty, ?R) .
+
+numMin(!N,?INT,?R,?C), repOf(?X1,!N), auxClass(?X1),  auxClass(?X2) :- 
+    TRIPLE(?X1, owl:unionOf, ?L1), last(?L1), in(?L1,?X2), 
+    TRIPLE(?X2, owl:minQualifiedCardinality, ?INT), TRIPLE(?X2, owl:onClass, ?C), TRIPLE(?X2, owl:onProperty, ?R) .
 
 %% Mark auxiliary existential role restrictions:
 synEx(?Y,?P,?X), auxClass(?X) :- TRIPLE(?X, owl:someValuesFrom, ?Y), TRIPLE(?X, owl:onProperty, ?P) .
@@ -61,6 +80,10 @@ nonfirstCon(?L2)  :- nonfirstCon(?L1), next(?L1,?L2) .
 firstProp(?L1)    :-  TRIPLE(?R,owl:propertyChainAxiom,?L1).
 nonfirstProp(?L2) :- firstProp(?L1), next(?L1,?L2) .
 nonfirstProp(?L2) :- nonfirstProp(?L1), next(?L1,?L2) .
+
+firstDisj(?L1)     :- TRIPLE(?X, owl:unionOf, ?L1) .
+nonfirstDisj(?L2)  :- firstDisj(?L1), next(?L1,?L2) .
+nonfirstDisj(?L2)  :- nonfirstDisj(?L1), next(?L1,?L2) .
 
 %% Initialise disjointness:
 #[name("disjoint")]
@@ -84,14 +107,26 @@ synConj(?L1,?C1,?L2), auxClass(?L1) :-
 synConj(?L1,?C1,?C2), auxClass(?L1) :-
 	nonfirstCon(?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
 
+% mark disjunctions
+disj(?X,?C,?D), auxClass(?X) :- TRIPLE(?X, owl:unionOf, ?L1),  next(?L1,?L2), last(?L2), in(?L1,?C), in(?L2,?D) .
+disj(?X,?C,?L2), auxClass(?X) :- TRIPLE(?X, owl:unionOf, ?L1), in(?L1,?C), next(?L1,?L2), nonlast(?L2) .
+
+disj(!N,?C1,?L2), auxClass(?L1) :-
+	nonfirstDisj(?L1), next(?L1,?L2), nonlast(?L2), in(?L1,?C1) .
+disj(?L1,?C1,?C2), auxClass(?L1) :-
+	nonfirstDisj(?L1), next(?L1,?L2), last(?L2), in(?L1,?C1), in(?L2,?C2) .
+
 %%% The other classes are "main classes" that are not normalised:
 nf:isMainClass(?X) :- class(?X), ~auxClass(?X) .
 
 %%% Normalise auxiliary nested class expressions:
-                        repOf(?X,?X) :- nf:isMainClass(?X) . % keep main classes unchanged
-                synExRep(?X,?P,?Rep) :- synEx(?Y,?P,?X), repOf(?Y,?Rep) .
- nf:exists(!N,?P,?Rep), repOf(?X,!N) :- synExRep(?X,?P,?Rep) .
-   nf:conj(!N,?R1,?R2), repOf(?X,!N) :- synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
+repOf(?X,?X) :- nf:isMainClass(?X) . % keep main classes unchanged
+nf:exists(!N,?P,?RY), repOf(?X,!N) :- 
+        synEx(?Y,?P,?X), repOf(?Y,?RY) .
+nf:conj(!N,?R1,?R2), repOf(?X,!N) :- 
+        synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
+nf:disj(!N,?R1,?R2), repOf(?X,!N)  :- 
+        disj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
 
 %%% Initialise subsumption axioms:
                          prepareSco(?X,?Y) :- TRIPLE(?X, rdfs:subClassOf, ?Y) .

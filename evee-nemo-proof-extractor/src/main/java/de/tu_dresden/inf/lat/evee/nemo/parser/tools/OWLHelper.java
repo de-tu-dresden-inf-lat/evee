@@ -1,6 +1,8 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser.tools;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
+
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
@@ -125,6 +127,15 @@ public class OWLHelper {
     }
 
     /**
+     * Return an OWL value restriction
+     *
+     * @return OWLObjectAllValuesFrom
+     */
+    public OWLObjectAllValuesFrom getOWLUniversalRestriction(OWLObjectPropertyExpression property, OWLClassExpression concept){
+        return factory.getOWLObjectAllValuesFrom(property, concept);
+    }
+
+    /**
      * Return an OWL conjunction object
      *
      * @return OWLObjectIntersectionOf
@@ -132,6 +143,52 @@ public class OWLHelper {
     public OWLObjectIntersectionOf getOWLConjunction(Set<OWLClassExpression> conjuncts) {
         return factory.getOWLObjectIntersectionOf(conjuncts);
     }
+
+    /**
+     * Return an OWL disjunction object
+     *
+     * @return OWLObjectUnionOf
+     */
+    public OWLObjectUnionOf getOWLDisjunction(Set<OWLClassExpression> disjuncts) {
+        return factory.getOWLObjectUnionOf(disjuncts);
+    }
+
+    /**
+     * Returns an OWL ComplementOf object
+     *
+     * @return OWLObjectComplementOf
+     */
+    public OWLObjectComplementOf getOWLComplementOf(OWLClassExpression cls) {
+        return factory.getOWLObjectComplementOf(cls);
+    }
+
+    /**
+     * Return an OWL exact number restriction
+     *
+     * @return OWLObjectExactCardinality
+     */
+    public OWLObjectExactCardinality getOWLNumberRestrEqual(OWLObjectPropertyExpression role, OWLClassExpression concept, int cardinality){
+        return factory.getOWLObjectExactCardinality(cardinality, role, concept);
+    }
+
+    /**
+     * Return an OWL max number restriction
+     *
+     * @return OWLObjectMaxCardinality
+     */
+    public OWLObjectMaxCardinality getOWLNumberRestrMax(OWLObjectPropertyExpression role, OWLClassExpression concept, int cardinality){
+        return factory.getOWLObjectMaxCardinality(cardinality, role, concept);
+    }
+
+    /**
+     * Return an OWL min number restriction
+     *
+     * @return OWLObjectMinCardinality
+     */
+        public OWLObjectMinCardinality getOWLNumberRestrMin(OWLObjectPropertyExpression role, OWLClassExpression concept, int cardinality){
+        return factory.getOWLObjectMinCardinality(cardinality, role, concept);
+    }
+
 
     /**
      * Return an object property of the provided string

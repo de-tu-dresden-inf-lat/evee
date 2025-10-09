@@ -1,0 +1,16 @@
+{
+  "finalConclusion" : "<https://experimentTasks/A> <= <https://experimentTasks/B>",
+  "inferences" : [ {
+    "conclusion" : "<https://experimentTasks/A> <= <https://experimentTasks/B>",
+    "ruleName" : "R_⊓^-",
+    "premises" : [ "<https://experimentTasks/A> <= (A<https://experimentTasks/r>.<https://experimentTasks/C> n () n <https://experimentTasks/B>)" ]
+  }, {
+    "conclusion" : "<https://experimentTasks/A> <= (A<https://experimentTasks/r>.<https://experimentTasks/C> n () n <https://experimentTasks/B>)",
+    "ruleName" : "equiv",
+    "premises" : [ "<https://experimentTasks/A> = (A<https://experimentTasks/r>.<https://experimentTasks/C> n () n <https://experimentTasks/B>)" ]
+  }, {
+    "conclusion" : "<https://experimentTasks/A> = (A<https://experimentTasks/r>.<https://experimentTasks/C> n () n <https://experimentTasks/B>)",
+    "ruleName" : "Asserted",
+    "premises" : [ ]
+  } ]
+}

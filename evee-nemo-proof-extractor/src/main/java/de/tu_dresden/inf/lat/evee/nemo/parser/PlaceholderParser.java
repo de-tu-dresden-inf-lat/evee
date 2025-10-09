@@ -5,6 +5,8 @@ import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassExpressionImpl;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.semanticweb.owlapi.model.*;
@@ -20,7 +22,10 @@ public class PlaceholderParser {
 	private static final Logger logger = LogManager.getLogger(PlaceholderParser.class);
 
 	private static final String PREDNAME_EXISTS = "<http://www.w3.org/2002/07/owl#someValuesFrom>";
+	private static final String PREDNAME_FORALL = "<http://www.w3.org/2002/07/owl#allValuesFrom>";
+
 	private static final String PREDNAME_CONJ = "<http://www.w3.org/2002/07/owl#intersectionOf>";
+	private static final String PREDNAME_DISJ = "<http://www.w3.org/2002/07/owl#unionOf>";
 
 	private static final String PREDNAME_PROP = "<http://www.w3.org/2002/07/owl#onProperty>";
 
@@ -28,7 +33,13 @@ public class PlaceholderParser {
 	private static final String PREDNAME_REST = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>";
 	private static final String PREDNAME_NIL = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>";
 
-	private static final String PREDNAME_NEG = "http://www.w3.org/2002/07/owl#complementOf";
+	private static final String PREDNAME_NEG = "<http://www.w3.org/2002/07/owl#complementOf>";
+
+	private static final String PREDNAME_NUMRES_EQ = "<http://www.w3.org/2002/07/owl#qualifiedCardinality>";
+	private static final String PREDNAME_NUMRES_MAX = "<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>";
+	private static final String PREDNAME_NUMRES_MIN = "<http://www.w3.org/2002/07/owl#minQualifiedCardinality>";
+
+	private static final String PREDNAME_CLS = "<http://www.w3.org/2002/07/owl#onClass>";
 
 	public static final String REPOF = "repOf";
 	public static final String REPOF_PROP = "repOfProp";
@@ -97,130 +108,214 @@ public class PlaceholderParser {
 			parsedConcept = parseExistentialRestriction(relevantFacts);
 		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_CONJ) || x.get(1).equals(PREDNAME_REST))) // conjunction
 			parsedConcept = parseConjunction(placeholder, relevantFacts);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_NEG))) //negation
+			parsedConcept = parseNegation(relevantFacts);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_FORALL))) //universal restriction
+			parsedConcept = parseUniversalRestriction(relevantFacts);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_DISJ))) //disjunction
+			parsedConcept = parseDisjunction(placeholder, relevantFacts);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_NUMRES_EQ))) //number restriction eq
+			parsedConcept = parseNumberRestriction(relevantFacts, PREDNAME_NUMRES_EQ);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_NUMRES_MAX))) //number restriction max
+			parsedConcept = parseNumberRestriction(relevantFacts, PREDNAME_NUMRES_MAX);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_NUMRES_MIN))) //number restriction min
+			parsedConcept = parseNumberRestriction(relevantFacts, PREDNAME_NUMRES_MIN);
 		else // error
 			throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
 		
 		conceptCache.put(placeholder, parsedConcept);
 		return parsedConcept;
 	}
-
+    
 	public List<OWLObjectPropertyExpression> parseRoleOrPlaceholder(String roleName) throws ConceptTranslationError{
 		if (parsingHelper.isPlaceholder(roleName))
-			return getRoleChainFromPlaceholder(roleName);
+		return getRoleChainFromPlaceholder(roleName);
 		
 		OWLObjectPropertyExpression role = owlHelper.getPropertyName(parsingHelper.format(roleName));
 		return Collections.singletonList(role);
 	}
-
+	
 	public List<OWLObjectPropertyExpression> getRoleChainFromPlaceholder(String placeholder) throws ConceptTranslationError {
 		if(roleChainCache.get(placeholder) != null)
-			return roleChainCache.get(placeholder);
-
+		return roleChainCache.get(placeholder);
+		
 		Set<List<String>> relevantFacts = getListFacts(placeholder, PREDNAME_REST);
 		if (relevantFacts.isEmpty())
-			return parseRepresentativeOfProp(placeholder);
-
+		return parseRepresentativeOfProp(placeholder);
+		
 		return parseRoleChain(placeholder, relevantFacts);
 	}
-
+	
 	private OWLClassExpression parseRepresentativeOf(String placeholder) throws ConceptTranslationError{
 		String rep = equivalentPlaceholders.get(placeholder);
 		if (rep == null)
-			throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
+		throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
 		
 		return getConceptFromPlaceholder(rep);
 	}
-
+	
 	private List<OWLObjectPropertyExpression> parseRepresentativeOfProp(String placeholder)throws ConceptTranslationError{
 		String rep = equivalentPlaceholders.get(placeholder);
 		if (rep == null)
-			throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
+		throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
 		
 		return getRoleChainFromPlaceholder(rep);
 	}
-
+	
 	private OWLObjectSomeValuesFrom parseExistentialRestriction(Set<List<String>> relevantFacts)
-			throws ConceptTranslationError {
+	throws ConceptTranslationError {
 		logger.debug("Parsing an existential");
-
+		
 		String currentPropertyStr =
-				relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_PROP)).findFirst().get().get(2);
-
+		relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_PROP)).findFirst().get().get(2);
+		
 		OWLObjectProperty property = owlHelper.getPropertyName(parsingHelper.format(currentPropertyStr));
-
+		
 		String fillerConceptStr = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_EXISTS))
-				.findFirst().get().get(2);
+		.findFirst().get().get(2);
+		
+		OWLClassExpression filler = parseConceptOrPlaceholder(fillerConceptStr);
+		
+		return owlHelper.getOWLExistentialRestriction(property, filler);
+	}
 
+	private OWLObjectAllValuesFrom parseUniversalRestriction(Set<List<String>> relevantFacts) throws ConceptTranslationError{
+		String currentPropertyStr =
+		relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_PROP)).findFirst().get().get(2);
+		
+		OWLObjectProperty property = owlHelper.getPropertyName(parsingHelper.format(currentPropertyStr));
+		
+		String fillerConceptStr = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_FORALL))
+		.findFirst().get().get(2);
+		
+		OWLClassExpression filler = parseConceptOrPlaceholder(fillerConceptStr);
+		
+		return owlHelper.getOWLUniversalRestriction(property, filler);
+	}
+
+	private OWLObjectCardinalityRestriction parseNumberRestriction(Set<List<String>> relevantFacts, String predicate) throws ConceptTranslationError{
+		String propStr =
+		relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_PROP)).findFirst().get().get(2);
+		OWLObjectProperty prop = owlHelper.getPropertyName(parsingHelper.format(propStr));
+
+		String fillerConceptStr = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_CLS))
+		.findFirst().get().get(2);
 		OWLClassExpression filler = parseConceptOrPlaceholder(fillerConceptStr);
 
-		return owlHelper.getOWLExistentialRestriction(property, filler);
+		String cardStr = relevantFacts.stream().filter(x -> x.get(1).equals(predicate)).findFirst().get().get(2);
+		int card = Integer.parseInt(cardStr);
+
+		switch (predicate) {
+			case PREDNAME_NUMRES_EQ:
+				return owlHelper.getOWLNumberRestrEqual(prop, filler, card);
+			case PREDNAME_NUMRES_MAX:
+				return owlHelper.getOWLNumberRestrMax(prop, filler, card);
+			case PREDNAME_NUMRES_MIN:
+				return owlHelper.getOWLNumberRestrMin(prop, filler, card);
+			default:
+				throw new ConceptTranslationError("error parsing number restriction");
+		}
 	}
 
 	private OWLObjectIntersectionOf parseConjunction(String placeholder, Set<List<String>> relevantFacts) throws ConceptTranslationError {
 		logger.debug("Parsing a conjunction");
 		relevantFacts.addAll(getRelevantConjFacts(placeholder));
-
+		
 		Set<OWLClassExpression> conjuncts = new HashSet<>();
 		relevantFacts = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_FIRST)).collect(Collectors.toSet());
 		for(List<String> fact: relevantFacts) {
 			conjuncts.add(parseConceptOrPlaceholder(fact.get(2)));
 		};
-
+		
 		OWLObjectIntersectionOf result = owlHelper.getOWLConjunction(conjuncts);
-
+		
 		logger.debug("parse result -> " + result);
-
+		
 		return result;
 	}
 
+	private OWLClassExpression parseDisjunction(String placeholder, Set<List<String>> relevantFacts) throws ConceptTranslationError {
+		relevantFacts.addAll(getRelevantDisjFacts(placeholder));
+		
+		Set<OWLClassExpression> disjuncts = new HashSet<>();
+		relevantFacts = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_FIRST)).collect(Collectors.toSet());
+		for(List<String> fact: relevantFacts) {
+			disjuncts.add(parseConceptOrPlaceholder(fact.get(2)));
+		};
+		
+		// number restriction are encoded as disjunction of one element
+		if (disjuncts.size()==1)
+			return disjuncts.stream().findAny().get();
+
+		return owlHelper.getOWLDisjunction(disjuncts);
+	}
+
+
+	private OWLObjectComplementOf parseNegation(Set<List<String>> relevantFacts) throws ConceptTranslationError {
+
+		String clsStr = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_NEG)).findFirst().get().get(2);
+		OWLClassExpression cls = parseConceptOrPlaceholder(clsStr);
+
+		return owlHelper.getOWLComplementOf(cls);
+	}
+	
 	private List<OWLObjectPropertyExpression> parseRoleChain(String placeholder, Set<List<String>> relevantFacts){
 		List<OWLObjectPropertyExpression> chain = new ArrayList<>();
-
+		
 		String next = placeholder;
 		while(!next.equals(PREDNAME_NIL)){
 			String current = next;
 			String prop = relevantFacts.stream()
-								.filter(x -> x.get(0).equals(current) && x.get(1).equals(PREDNAME_FIRST))
-									.findFirst().get().get(2);
-
+			.filter(x -> x.get(0).equals(current) && x.get(1).equals(PREDNAME_FIRST))
+			.findFirst().get().get(2);
+			
 			chain.add(owlHelper.getPropertyName(parsingHelper.format(prop)));
-
+			
 			next = relevantFacts.stream()
-								.filter(x -> x.get(0).equals(current) && x.get(1).equals(PREDNAME_REST))
-									.findFirst().get().get(2);
+			.filter(x -> x.get(0).equals(current) && x.get(1).equals(PREDNAME_REST))
+			.findFirst().get().get(2);
 		}
-
+		
 		return chain;
 	}
-
+	
 	private Set<List<String>> getRelevantConjFacts(String placeholder) {
-		 return getListFacts(placeholder, PREDNAME_REST, PREDNAME_CONJ);
+		return getListFacts(placeholder, PREDNAME_REST, PREDNAME_CONJ);
 	}
 
+	private Set<List<String>> getRelevantDisjFacts(String placeholder) {
+		return getListFacts(placeholder, PREDNAME_REST, PREDNAME_DISJ);
+	}
+	
 	/**
 	 * @returns all facts in parsing base that are connected to @param placeholder by a Predicate in @param linkPredNames
 	 **/
 	private Set<List<String>> getListFacts(String placeholder, String... linkPredNames){
 		Set<List<String>> facts = new HashSet<>();
-
+		
 		getPlaceholderFacts(placeholder).forEach(atomArgs -> {
 			facts.add(atomArgs);
-
+			
 			String next = atomArgs.get(2);
 			if (parsingHelper.isPlaceholder(next) 
-					&& Arrays.stream(linkPredNames).anyMatch(atomArgs.get(1)::equals))
-				facts.addAll(getListFacts(next, linkPredNames));
+			&& Arrays.stream(linkPredNames).anyMatch(atomArgs.get(1)::equals))
+			facts.addAll(getListFacts(next, linkPredNames));
 		});
-
+		
 		return facts;
 	}
-
+	
 	private Set<List<String>> getPlaceholderFacts(String placeholder){
 		return this.parsingBase.stream()
-		   			.filter(x -> x.get(0).equals(placeholder))
-			   			.collect(Collectors.toSet());
+		.filter(x -> x.get(0).equals(placeholder))
+		.collect(Collectors.toSet());
 	}
 
+	private void parseOWL(OWLOntology ontology){
+		
+		ontology.getAxioms();
+	}
+	
 	//for manually setting parsingBase & equivalentPlaceholders i.e. for testing
 	public void setParsingBase(Set<List<String>> parsingBase){
 		this.parsingBase = Sets.newHashSet(parsingBase);
@@ -229,5 +324,5 @@ public class PlaceholderParser {
 	public void setEquivalentPlaceholders(Map<String, String> equiv){
 		equivalentPlaceholders = new HashMap<String, String>(equiv);
 	}
-
+	
 }

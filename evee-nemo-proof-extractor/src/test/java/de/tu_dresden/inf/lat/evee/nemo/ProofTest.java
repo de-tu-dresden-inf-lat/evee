@@ -115,8 +115,8 @@ public class ProofTest {
 //    @Ignore("For dev purposes")
     @Test
     public void testTask2() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task_EL.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ENVELOPE);
+        IInference<OWLAxiom> task = readTask(  "task_unsup02.json");
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
@@ -131,7 +131,7 @@ public class ProofTest {
     @Ignore
     @Test
     public void exportProofJson() throws Exception{
-        IInference<OWLAxiom> task = readTask(  "task_roleInc.json");
+        IInference<OWLAxiom> task = readTask(  "task_unsup02.json");
         IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         JsonProofWriter<OWLAxiom> jsonWriter = new JsonProofWriter<>();
