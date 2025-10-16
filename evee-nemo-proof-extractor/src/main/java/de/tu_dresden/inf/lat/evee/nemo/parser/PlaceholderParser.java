@@ -5,7 +5,6 @@ import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
-import uk.ac.manchester.cs.owl.owlapi.OWLClassExpressionImpl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +40,9 @@ public class PlaceholderParser {
 
 	private static final String PREDNAME_CLS = "<http://www.w3.org/2002/07/owl#onClass>";
 
+	private static final String PREDNAME_ONEOF = "<http://www.w3.org/2002/07/owl#oneOf>";
+	private static final String PREDNAME_HASSELF = "<http://www.w3.org/2002/07/owl#hasSelf>";
+	
 	public static final String REPOF = "repOf";
 	public static final String REPOF_PROP = "repOfProp";
 
@@ -120,6 +122,10 @@ public class PlaceholderParser {
 			parsedConcept = parseNumberRestriction(relevantFacts, PREDNAME_NUMRES_MAX);
 		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_NUMRES_MIN))) //number restriction min
 			parsedConcept = parseNumberRestriction(relevantFacts, PREDNAME_NUMRES_MIN);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_ONEOF))) //OneOf
+			parsedConcept = parseOneOf(placeholder, relevantFacts);
+		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_HASSELF))) //hasSelf restriction
+			parsedConcept = parseHasSelf(relevantFacts);
 		else // error
 			throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
 		
@@ -278,6 +284,30 @@ public class PlaceholderParser {
 		
 		return chain;
 	}
+
+	private OWLObjectOneOf parseOneOf(String placeholder, Set<List<String>> relevantFacts){
+		relevantFacts.addAll(getRelevantOneOfFacts(placeholder));
+
+		Set<OWLIndividual> individuals = new HashSet<>();
+
+		relevantFacts = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_FIRST)).collect(Collectors.toSet());
+		for(List<String> fact: relevantFacts) {
+			OWLIndividual ind = owlHelper.getNamedIndividual(parsingHelper.format(fact.get(2)));
+			individuals.add(ind);
+		};
+		
+		return owlHelper.getOWLOneOf(individuals.toArray(new OWLIndividual[0]));
+	}
+
+	private OWLObjectHasSelf parseHasSelf(Set<List<String>> relevantFacts){
+		String propStr = relevantFacts.stream()
+			.filter(x -> x.get(1).equals(PREDNAME_PROP))
+			.findFirst().get().get(2);
+		
+		OWLObjectProperty prop = owlHelper.getPropertyName(parsingHelper.format(propStr));
+
+		return owlHelper.getOWLHasSelf(prop);
+	}
 	
 	private Set<List<String>> getRelevantConjFacts(String placeholder) {
 		return getListFacts(placeholder, PREDNAME_REST, PREDNAME_CONJ);
@@ -285,6 +315,10 @@ public class PlaceholderParser {
 
 	private Set<List<String>> getRelevantDisjFacts(String placeholder) {
 		return getListFacts(placeholder, PREDNAME_REST, PREDNAME_DISJ);
+	}
+
+	private Set<List<String>> getRelevantOneOfFacts(String placeholder) {
+		return getListFacts(placeholder, PREDNAME_REST, PREDNAME_ONEOF);
 	}
 	
 	/**
@@ -309,11 +343,6 @@ public class PlaceholderParser {
 		return this.parsingBase.stream()
 		.filter(x -> x.get(0).equals(placeholder))
 		.collect(Collectors.toSet());
-	}
-
-	private void parseOWL(OWLOntology ontology){
-		
-		ontology.getAxioms();
 	}
 	
 	//for manually setting parsingBase & equivalentPlaceholders i.e. for testing

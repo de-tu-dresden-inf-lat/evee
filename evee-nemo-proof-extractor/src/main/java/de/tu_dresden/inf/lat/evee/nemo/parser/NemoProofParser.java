@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
 import org.semanticweb.owlapi.model.*;
 
-import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
@@ -16,7 +15,6 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
 
 public class NemoProofParser {
 
-    private final ParsingHelper parsingHelper = ParsingHelper.getInstance();
     private AbstractAtomParser atomParser;
 
     public NemoProofParser(){}

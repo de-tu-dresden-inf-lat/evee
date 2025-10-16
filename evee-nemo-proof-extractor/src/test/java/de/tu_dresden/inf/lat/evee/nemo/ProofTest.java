@@ -116,7 +116,7 @@ public class ProofTest {
     @Test
     public void testTask2() throws OWLOntologyCreationException, ProofGenerationException{
         IInference<OWLAxiom> task = readTask(  "task_unsup02.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.TEXTBOOK);
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());

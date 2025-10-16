@@ -1,7 +1,6 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser.tools;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectAllValuesFromImpl;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
@@ -167,8 +166,8 @@ public class OWLHelper {
      *
      * @return OWLObjectExactCardinality
      */
-    public OWLObjectExactCardinality getOWLNumberRestrEqual(OWLObjectPropertyExpression role, OWLClassExpression concept, int cardinality){
-        return factory.getOWLObjectExactCardinality(cardinality, role, concept);
+    public OWLObjectExactCardinality getOWLNumberRestrEqual(OWLObjectPropertyExpression prop, OWLClassExpression concept, int cardinality){
+        return factory.getOWLObjectExactCardinality(cardinality, prop, concept);
     }
 
     /**
@@ -176,8 +175,8 @@ public class OWLHelper {
      *
      * @return OWLObjectMaxCardinality
      */
-    public OWLObjectMaxCardinality getOWLNumberRestrMax(OWLObjectPropertyExpression role, OWLClassExpression concept, int cardinality){
-        return factory.getOWLObjectMaxCardinality(cardinality, role, concept);
+    public OWLObjectMaxCardinality getOWLNumberRestrMax(OWLObjectPropertyExpression prop, OWLClassExpression concept, int cardinality){
+        return factory.getOWLObjectMaxCardinality(cardinality, prop, concept);
     }
 
     /**
@@ -185,8 +184,22 @@ public class OWLHelper {
      *
      * @return OWLObjectMinCardinality
      */
-        public OWLObjectMinCardinality getOWLNumberRestrMin(OWLObjectPropertyExpression role, OWLClassExpression concept, int cardinality){
-        return factory.getOWLObjectMinCardinality(cardinality, role, concept);
+    public OWLObjectMinCardinality getOWLNumberRestrMin(OWLObjectPropertyExpression prop, OWLClassExpression concept, int cardinality){
+        return factory.getOWLObjectMinCardinality(cardinality, prop, concept);
+    }
+
+    /**
+     * Return an OWL hasSelf restriction
+     *
+     * @return OWLObjectHasSelf
+     */
+    public OWLObjectHasSelf getOWLHasSelf(OWLObjectPropertyExpression prop){
+        return factory.getOWLObjectHasSelf(prop);
+    }
+
+
+    public OWLObjectOneOf getOWLOneOf(OWLIndividual... individuals){
+        return factory.getOWLObjectOneOf(individuals);
     }
 
 
@@ -206,6 +219,15 @@ public class OWLHelper {
      */
     public OWLClass getOWLConceptName(String string) {
         return factory.getOWLClass(IRI.create(string));
+    }
+
+    /**
+     * Return a named individual of the provided string
+     *
+     * @return OWLNamedIndividual
+     */
+    public OWLNamedIndividual getNamedIndividual(String string){
+        return factory.getOWLNamedIndividual(IRI.create(string));
     }
 
     public Collection<OWLClassExpression> getTopLevelClassExpressions(OWLAxiom axiom) throws ProofGenerationException {
