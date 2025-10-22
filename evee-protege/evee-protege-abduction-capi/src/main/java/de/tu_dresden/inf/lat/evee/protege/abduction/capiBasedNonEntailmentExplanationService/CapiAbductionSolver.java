@@ -203,7 +203,7 @@ public class CapiAbductionSolver
                 this.runSpass(this.spassPath);
                 this.convertSpassOutputFile();
                 this.computationCompleted();
-            } catch (OWLOntologyCreationException | IOException | OWL2SpassConverter.EmptyOntologyException |
+            } catch (OWLOntologyCreationException | IOException | //OWL2SpassConverter.EmptyOntologyException |
                     OWL2SpassConverter.TranslationException | InterruptedException | OWLOntologyStorageException | NumberFormatException e) {
                 this.computationFailed("Error during computation: " + e.getMessage());
             } finally {
@@ -219,7 +219,8 @@ public class CapiAbductionSolver
     }
 
     private void createSpassInputFiles(OWLSubClassOfAxiom missingEntailment) throws OWLOntologyCreationException,
-            IOException, OWL2SpassConverter.TranslationException, OWL2SpassConverter.EmptyOntologyException, OWLOntologyStorageException,
+            IOException, OWL2SpassConverter.TranslationException, //OWL2SpassConverter.EmptyOntologyException,
+            OWLOntologyStorageException,
             NumberFormatException {
         this.logger.debug("Creating SPASS input files");
         this.progressTracker.setMessage("Creating SPASS input files");
@@ -265,11 +266,13 @@ public class CapiAbductionSolver
         } catch (OWL2SpassConverter.TranslationException e) {
             this.logger.error("Error when translating ontology to SPASS: ", e);
             throw e;
-        } catch (OWL2SpassConverter.EmptyOntologyException e) {
-            this.logger.error("Error when extracting module from ontology: ", e);
-            throw new RuntimeException(e.getMessage());//TODO OWL2SpassConverter.EmptyOntologyException(e.getMessage());
-//            throw new OWL2SpassConverter.EmptyOntologyException("Empty ontology computed during pre-processing, please change the observation.");
-        } catch (OWLOntologyStorageException e) {
+        }
+//        catch (OWL2SpassConverter.EmptyOntologyException e) {
+//            this.logger.error("Error when extracting module from ontology: ", e);
+//            throw new RuntimeException(e.getMessage());//TODO OWL2SpassConverter.EmptyOntologyException(e.getMessage());
+////            throw new OWL2SpassConverter.EmptyOntologyException("Empty ontology computed during pre-processing, please change the observation.");
+//        }
+        catch (OWLOntologyStorageException e) {
             this.logger.error("Error when creating temporary ontology file: ", e);
             throw e;
         } catch (IOException e) {
@@ -566,9 +569,9 @@ public class CapiAbductionSolver
             this.logger.debug("Destroying SPASS process");
             this.spassProcess.destroyForcibly();
         }
-        if (this.postProcessing != null){
-            this.postProcessing.cancel();
-        }
+//        if (this.postProcessing != null){
+//            this.postProcessing.cancel();
+//        }
         this.cancelled = true;
         super.cancel();
     }
