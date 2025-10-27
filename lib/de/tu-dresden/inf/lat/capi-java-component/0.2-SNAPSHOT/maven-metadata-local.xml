@@ -3,7 +3,7 @@
   <groupId>de.tu-dresden.inf.lat</groupId>
   <artifactId>capi-java-component</artifactId>
   <versioning>
-    <lastUpdated>20251027173911</lastUpdated>
+    <lastUpdated>20251027180944</lastUpdated>
     <snapshot>
       <localCopy>true</localCopy>
     </snapshot>
@@ -11,12 +11,12 @@
       <snapshotVersion>
         <extension>jar</extension>
         <value>0.2-SNAPSHOT</value>
-        <updated>20251027173911</updated>
+        <updated>20251027180944</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
         <value>0.2-SNAPSHOT</value>
-        <updated>20251027173911</updated>
+        <updated>20251027180944</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
