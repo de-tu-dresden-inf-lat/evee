@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser;
 
-import com.google.common.collect.Sets;
 import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
@@ -9,6 +8,8 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.semanticweb.owlapi.model.*;
+
+import com.google.common.collect.Sets;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,23 +27,28 @@ public class PlaceholderParser {
 	private static final String PREDNAME_CONJ = "<http://www.w3.org/2002/07/owl#intersectionOf>";
 	private static final String PREDNAME_DISJ = "<http://www.w3.org/2002/07/owl#unionOf>";
 
+	private static final String PREDNAME_NEG = "<http://www.w3.org/2002/07/owl#complementOf>";
+	
+	private static final String PREDNAME_NUMRES_EQ = "<http://www.w3.org/2002/07/owl#qualifiedCardinality>";
+	private static final String PREDNAME_NUMRES_MAX = "<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>";
+	private static final String PREDNAME_NUMRES_MIN = "<http://www.w3.org/2002/07/owl#minQualifiedCardinality>";
+	
+	private static final String PREDNAME_NUMRES_EQ_UNQUAL = "<http://www.w3.org/2002/07/owl#cardinality>";
+	private static final String PREDNAME_NUMRES_MAX_UNQUAL = "<http://www.w3.org/2002/07/owl#maxCardinality>";
+	private static final String PREDNAME_NUMRES_MIN_UNQUAL = "<http://www.w3.org/2002/07/owl#minCardinality>";
+
+	private final Set<String> numResNames = Sets.newHashSet(PREDNAME_NUMRES_EQ, PREDNAME_NUMRES_MAX, PREDNAME_NUMRES_MIN, PREDNAME_NUMRES_EQ_UNQUAL, PREDNAME_NUMRES_MAX_UNQUAL, PREDNAME_NUMRES_MIN_UNQUAL);
+
+	private static final String PREDNAME_ONEOF = "<http://www.w3.org/2002/07/owl#oneOf>";
+	private static final String PREDNAME_HASSELF = "<http://www.w3.org/2002/07/owl#hasSelf>";
+
 	private static final String PREDNAME_PROP = "<http://www.w3.org/2002/07/owl#onProperty>";
+	private static final String PREDNAME_CLS = "<http://www.w3.org/2002/07/owl#onClass>";
 
 	private static final String PREDNAME_FIRST = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>";
 	private static final String PREDNAME_REST = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>";
 	private static final String PREDNAME_NIL = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil>";
 
-	private static final String PREDNAME_NEG = "<http://www.w3.org/2002/07/owl#complementOf>";
-
-	private static final String PREDNAME_NUMRES_EQ = "<http://www.w3.org/2002/07/owl#qualifiedCardinality>";
-	private static final String PREDNAME_NUMRES_MAX = "<http://www.w3.org/2002/07/owl#maxQualifiedCardinality>";
-	private static final String PREDNAME_NUMRES_MIN = "<http://www.w3.org/2002/07/owl#minQualifiedCardinality>";
-
-	private static final String PREDNAME_CLS = "<http://www.w3.org/2002/07/owl#onClass>";
-
-	private static final String PREDNAME_ONEOF = "<http://www.w3.org/2002/07/owl#oneOf>";
-	private static final String PREDNAME_HASSELF = "<http://www.w3.org/2002/07/owl#hasSelf>";
-	
 	public static final String REPOF = "repOf";
 	public static final String REPOF_PROP = "repOfProp";
 
@@ -116,16 +122,12 @@ public class PlaceholderParser {
 			parsedConcept = parseUniversalRestriction(relevantFacts);
 		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_DISJ))) //disjunction
 			parsedConcept = parseDisjunction(placeholder, relevantFacts);
-		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_NUMRES_EQ))) //number restriction eq
-			parsedConcept = parseNumberRestriction(relevantFacts, PREDNAME_NUMRES_EQ);
-		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_NUMRES_MAX))) //number restriction max
-			parsedConcept = parseNumberRestriction(relevantFacts, PREDNAME_NUMRES_MAX);
-		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_NUMRES_MIN))) //number restriction min
-			parsedConcept = parseNumberRestriction(relevantFacts, PREDNAME_NUMRES_MIN);
 		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_ONEOF))) //OneOf
 			parsedConcept = parseOneOf(placeholder, relevantFacts);
 		else if (relevantFacts.stream().anyMatch(x -> x.get(1).equals(PREDNAME_HASSELF))) //hasSelf restriction
 			parsedConcept = parseHasSelf(relevantFacts);
+		else if (relevantFacts.stream().anyMatch(x -> numResNames.contains(x.get(1)))) //number restriction
+			parsedConcept = parseNumberRestriction(relevantFacts);
 		else // error
 			throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
 		
@@ -199,28 +201,42 @@ public class PlaceholderParser {
 		return owlHelper.getOWLUniversalRestriction(property, filler);
 	}
 
-	private OWLObjectCardinalityRestriction parseNumberRestriction(Set<List<String>> relevantFacts, String predicate) throws ConceptTranslationError{
+	private OWLObjectCardinalityRestriction parseNumberRestriction(Set<List<String>> relevantFacts) throws ConceptTranslationError{
+		String predicate = relevantFacts.stream().filter(x -> numResNames.contains(x.get(1))).findFirst().get().get(1);
+
 		String propStr =
 		relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_PROP)).findFirst().get().get(2);
 		OWLObjectProperty prop = owlHelper.getPropertyName(parsingHelper.format(propStr));
-
-		String fillerConceptStr = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_CLS))
-		.findFirst().get().get(2);
-		OWLClassExpression filler = parseConceptOrPlaceholder(fillerConceptStr);
-
+		
 		String cardStr = relevantFacts.stream().filter(x -> x.get(1).equals(predicate)).findFirst().get().get(2);
 		int card = Integer.parseInt(cardStr);
 
 		switch (predicate) {
 			case PREDNAME_NUMRES_EQ:
-				return owlHelper.getOWLNumberRestrEqual(prop, filler, card);
+				return owlHelper.getOWLNumberRestrExact(prop, card, getNumResFiller(relevantFacts));
+			case PREDNAME_NUMRES_EQ_UNQUAL:
+				return owlHelper.getOWLNumberRestrExact(prop, card);
 			case PREDNAME_NUMRES_MAX:
-				return owlHelper.getOWLNumberRestrMax(prop, filler, card);
+				return owlHelper.getOWLNumberRestrMax(prop, card, getNumResFiller(relevantFacts));
+			case PREDNAME_NUMRES_MAX_UNQUAL:
+				return owlHelper.getOWLNumberRestrMax(prop, card);
 			case PREDNAME_NUMRES_MIN:
-				return owlHelper.getOWLNumberRestrMin(prop, filler, card);
+				return owlHelper.getOWLNumberRestrMin(prop, card, getNumResFiller(relevantFacts));
+			case PREDNAME_NUMRES_MIN_UNQUAL:
+				return owlHelper.getOWLNumberRestrMin(prop, card);
 			default:
-				throw new ConceptTranslationError("error parsing number restriction");
+				throw new ConceptTranslationError("error parsing object number restriction");
 		}
+
+	}
+
+	private OWLClassExpression getNumResFiller(Set<List<String>> relevantFacts) throws ConceptTranslationError{
+		Optional<List<String>> fillerStr = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_CLS)).findFirst();
+					
+		if (!fillerStr.isPresent())
+			throw new ConceptTranslationError("no filler concept of qualified NumRes in parsing base");
+	
+		return parseConceptOrPlaceholder(fillerStr.get().get(2));
 	}
 
 	private OWLObjectIntersectionOf parseConjunction(String placeholder, Set<List<String>> relevantFacts) throws ConceptTranslationError {
@@ -248,10 +264,6 @@ public class PlaceholderParser {
 		for(List<String> fact: relevantFacts) {
 			disjuncts.add(parseConceptOrPlaceholder(fact.get(2)));
 		};
-		
-		// number restriction are encoded as disjunction of one element
-		if (disjuncts.size()==1)
-			return disjuncts.stream().findAny().get();
 
 		return owlHelper.getOWLDisjunction(disjuncts);
 	}
@@ -347,7 +359,7 @@ public class PlaceholderParser {
 	
 	//for manually setting parsingBase & equivalentPlaceholders i.e. for testing
 	public void setParsingBase(Set<List<String>> parsingBase){
-		this.parsingBase = Sets.newHashSet(parsingBase);
+		this.parsingBase = new HashSet<>(parsingBase);
 	}
 	
 	public void setEquivalentPlaceholders(Map<String, String> equiv){

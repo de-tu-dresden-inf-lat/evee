@@ -162,30 +162,58 @@ public class OWLHelper {
     }
 
     /**
-     * Return an OWL exact number restriction
+     * Return a qualified OWL exact number restriction
      *
      * @return OWLObjectExactCardinality
      */
-    public OWLObjectExactCardinality getOWLNumberRestrEqual(OWLObjectPropertyExpression prop, OWLClassExpression concept, int cardinality){
+    public OWLObjectExactCardinality getOWLNumberRestrExact(OWLObjectPropertyExpression prop, int cardinality, OWLClassExpression concept){
         return factory.getOWLObjectExactCardinality(cardinality, prop, concept);
     }
 
     /**
-     * Return an OWL max number restriction
+     * Return an unqualified OWL exact number restriction
+     *
+     * @return OWLObjectExactCardinality
+     */
+    public OWLObjectExactCardinality getOWLNumberRestrExact(OWLObjectPropertyExpression prop, int cardinality){
+        return factory.getOWLObjectExactCardinality(cardinality, prop);
+    }
+    
+
+    /**
+     * Return a qualified OWL max number restriction
      *
      * @return OWLObjectMaxCardinality
      */
-    public OWLObjectMaxCardinality getOWLNumberRestrMax(OWLObjectPropertyExpression prop, OWLClassExpression concept, int cardinality){
+    public OWLObjectMaxCardinality getOWLNumberRestrMax(OWLObjectPropertyExpression prop, int cardinality, OWLClassExpression concept){
         return factory.getOWLObjectMaxCardinality(cardinality, prop, concept);
     }
 
     /**
-     * Return an OWL min number restriction
+     * Return an unqualified OWL max number restriction
+     *
+     * @return OWLObjectMaxCardinality
+     */
+    public OWLObjectMaxCardinality getOWLNumberRestrMax(OWLObjectPropertyExpression prop, int cardinality){
+        return factory.getOWLObjectMaxCardinality(cardinality, prop);
+    }
+
+    /**
+     * Return a qualified OWL min number restriction
      *
      * @return OWLObjectMinCardinality
      */
-    public OWLObjectMinCardinality getOWLNumberRestrMin(OWLObjectPropertyExpression prop, OWLClassExpression concept, int cardinality){
+    public OWLObjectMinCardinality getOWLNumberRestrMin(OWLObjectPropertyExpression prop, int cardinality, OWLClassExpression concept){
         return factory.getOWLObjectMinCardinality(cardinality, prop, concept);
+    }
+
+    /**
+     * Return an unqualified OWL min number restriction
+     *
+     * @return OWLObjectMinCardinality
+     */
+    public OWLObjectMinCardinality getOWLNumberRestrMin(OWLObjectPropertyExpression prop, int cardinality){
+        return factory.getOWLObjectMinCardinality(cardinality, prop);
     }
 
     /**
@@ -197,11 +225,14 @@ public class OWLHelper {
         return factory.getOWLObjectHasSelf(prop);
     }
 
-
+    /**
+     * Return an OWL OneOf expression
+     *
+     * @return OWLObjectOneOf
+     */
     public OWLObjectOneOf getOWLOneOf(OWLIndividual... individuals){
         return factory.getOWLObjectOneOf(individuals);
     }
-
 
     /**
      * Return an object property of the provided string

@@ -52,18 +52,18 @@ repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:complementOf, _) .
 repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:allValuesFrom, _), TRIPLE(?X, owl:onProperty, _).
 repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:hasSelf, _), TRIPLE(?X, owl:onProperty, _).
 
-%% number restr. are encoded as union of one element
-numEq(!N,?INT,?R,?C), repOf(?X1,!N), auxClass(?X1),  auxClass(?X2) :- 
-    TRIPLE(?X1, owl:unionOf, ?L1), last(?L1), in(?L1,?X2), 
-    TRIPLE(?X2, owl:qualifiedCardinality, ?INT), TRIPLE(?X2, owl:onClass, ?C), TRIPLE(?X2, owl:onProperty, ?R) .
-
-numMax(!N,?INT,?R,?C), repOf(?X1,!N), auxClass(?X1),  auxClass(?X2) :- 
-    TRIPLE(?X1, owl:unionOf, ?L1), last(?L1), in(?L1,?X2), 
-    TRIPLE(?X2, owl:maxQualifiedCardinality, ?INT), TRIPLE(?X2, owl:onClass, ?C), TRIPLE(?X2, owl:onProperty, ?R) .
-
-numMin(!N,?INT,?R,?C), repOf(?X1,!N), auxClass(?X1),  auxClass(?X2) :- 
-    TRIPLE(?X1, owl:unionOf, ?L1), last(?L1), in(?L1,?X2), 
-    TRIPLE(?X2, owl:minQualifiedCardinality, ?INT), TRIPLE(?X2, owl:onClass, ?C), TRIPLE(?X2, owl:onProperty, ?R) .
+repOf(?X,!N), auxClass(?X), :- 
+    TRIPLE(?X, owl:qualifiedCardinality, _), TRIPLE(?X, owl:onClass, _), TRIPLE(?X, owl:onProperty, _) .
+ repOf(?X,!N), auxClass(?X) :- 
+    TRIPLE(?X, owl:maxQualifiedCardinality, _), TRIPLE(?X, owl:onClass, _), TRIPLE(?X, owl:onProperty, _) .
+ repOf(?X,!N), auxClass(?X) :- 
+    TRIPLE(?X, owl:minQualifiedCardinality, _), TRIPLE(?X, owl:onClass, _), TRIPLE(?X, owl:onProperty, _) .
+repOf(?X,!N), auxClass(?X), :- 
+    TRIPLE(?X, owl:cardinality, _), TRIPLE(?X, owl:onProperty, _) .
+ repOf(?X,!N), auxClass(?X) :- 
+    TRIPLE(?X, owl:maxCardinality, _), TRIPLE(?X, owl:onProperty, _) .
+ repOf(?X,!N), auxClass(?X) :- 
+    TRIPLE(?X, owl:minCardinality, _), TRIPLE(?X, owl:onProperty, _) .
 
 %% Mark auxiliary existential role restrictions:
 synEx(?Y,?P,?X), auxClass(?X) :- TRIPLE(?X, owl:someValuesFrom, ?Y), TRIPLE(?X, owl:onProperty, ?P) .
@@ -250,6 +250,5 @@ mainSubClassOf(?A,?B) :-
 #[name("equiv")]
 mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).
 
-@export TRIPLE :- csv{resource="triple.csv.gz"} .
 @export mainSubClassOf :- csv{resource="out1.csv.gz"} .
 @export mainEquivClass :- csv{resource="out2.csv.gz"} .

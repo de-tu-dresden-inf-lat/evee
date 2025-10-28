@@ -3,6 +3,6 @@
   "inferences" : [ {
     "conclusion" : "<https://experimentTasks/A> <= <https://experimentTasks/B>",
     "ruleName" : "generic",
-    "premises" : [ "<https://experimentTasks/A> = (<https://experimentTasks/B> n A<https://experimentTasks/r>.<https://experimentTasks/C> n (<https://experimentTasks/D> u <https://experimentTasks/E> u <https://experimentTasks/G>) n (=3<https://experimentTasks/r>.<https://experimentTasks/F>) n (=<4<https://experimentTasks/r>.<https://experimentTasks/G>) n (>=5<https://experimentTasks/r>.<https://experimentTasks/H>))"] 
+    "premises" : [ "<https://experimentTasks/A> = (<https://experimentTasks/B> n A<https://experimentTasks/r>.<https://experimentTasks/C> n (<https://experimentTasks/D> u <https://experimentTasks/E> u <https://experimentTasks/G>) n =3<https://experimentTasks/r>.<https://experimentTasks/F> n =<4<https://experimentTasks/r>.<https://experimentTasks/G> n >=5<https://experimentTasks/r>.<https://experimentTasks/H>)"] 
     } ]
 }
