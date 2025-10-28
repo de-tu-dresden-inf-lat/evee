@@ -11,7 +11,7 @@ case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDC
   override def toString() = {
     val l = lhs.keys.toList.sortWith(_.toString < _.toString).map{key => format(key, lhs(key))}
       .map(_.replaceAll("\\s","")).mkString(" + ").replaceAll("\\+ -","\u2212 ")//Works better with GraphViz
-    val r = " = " + rhs
+    val r = " = " + rhs.toString.replaceAll("\\s","")
     if (l.nonEmpty) l + r else 0 + r
   }
 
