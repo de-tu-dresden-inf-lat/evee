@@ -49,14 +49,21 @@ repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:complementOf, _) .
 repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:allValuesFrom, _), TRIPLE(?X, owl:onProperty, _) .
 repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:hasSelf, _), TRIPLE(?X, owl:onProperty, _) .
 
+qualifier(owl:onClass) .
+qualifier(owl:onDataRange) .
 repOf(?X,!N), auxClass(?X), :- 
-    TRIPLE(?X, owl:qualifiedCardinality, _), TRIPLE(?X, owl:onClass, _), TRIPLE(?X, owl:onProperty, _) .
-
+    TRIPLE(?X, owl:qualifiedCardinality, _), TRIPLE(?X, ?Q, _), TRIPLE(?X, owl:onProperty, _), qualifier(?Q).
  repOf(?X,!N), auxClass(?X) :- 
-    TRIPLE(?X, owl:maxQualifiedCardinality, _), TRIPLE(?X, owl:onClass, _), TRIPLE(?X, owl:onProperty, _) .
-
+    TRIPLE(?X, owl:maxQualifiedCardinality, _), TRIPLE(?X, ?Q, _), TRIPLE(?X, owl:onProperty, _), qualifier(?Q) .
  repOf(?X,!N), auxClass(?X) :- 
-    TRIPLE(?X, owl:minQualifiedCardinality, _), TRIPLE(?X, owl:onClass, _), TRIPLE(?X, owl:onProperty, _) .
+    TRIPLE(?X, owl:minQualifiedCardinality, _), TRIPLE(?X, ?Q, _), TRIPLE(?X, owl:onProperty, _), qualifier(?Q) .
+
+repOf(?X,!N), auxClass(?X), :- 
+    TRIPLE(?X, owl:cardinality, _), TRIPLE(?X, owl:onProperty, _) .
+ repOf(?X,!N), auxClass(?X) :- 
+    TRIPLE(?X, owl:maxCardinality, _), TRIPLE(?X, owl:onProperty, _) .
+ repOf(?X,!N), auxClass(?X) :- 
+    TRIPLE(?X, owl:minCardinality, _), TRIPLE(?X, owl:onProperty, _) .
 
 %% Mark auxiliary existential role restrictions:
 synEx(?Y,?P,?X), auxClass(?X) :- TRIPLE(?X, owl:someValuesFrom, ?Y), TRIPLE(?X, owl:onProperty, ?P) .

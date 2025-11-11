@@ -44,6 +44,7 @@ public class PlaceholderParser {
 
 	private static final String PREDNAME_PROP = "<http://www.w3.org/2002/07/owl#onProperty>";
 	private static final String PREDNAME_CLS = "<http://www.w3.org/2002/07/owl#onClass>";
+	private static final String PREDNAME_DATA = "<http://www.w3.org/2002/07/owl#onDataRange>";
 
 	private static final String PREDNAME_FIRST = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#first>";
 	private static final String PREDNAME_REST = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#rest>";
@@ -231,7 +232,9 @@ public class PlaceholderParser {
 	}
 
 	private OWLClassExpression getNumResFiller(Set<List<String>> relevantFacts) throws ConceptTranslationError{
-		Optional<List<String>> fillerStr = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_CLS)).findFirst();
+		Optional<List<String>> fillerStr = relevantFacts.stream()
+			.filter(x -> x.get(1).equals(PREDNAME_CLS) || x.get(1).equals(PREDNAME_DATA))
+				.findFirst();
 					
 		if (!fillerStr.isPresent())
 			throw new ConceptTranslationError("no filler concept of qualified NumRes in parsing base");
