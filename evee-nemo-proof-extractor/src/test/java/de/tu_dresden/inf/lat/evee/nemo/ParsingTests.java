@@ -3,6 +3,7 @@ package de.tu_dresden.inf.lat.evee.nemo;
 import de.tu_dresden.inf.lat.evee.nemo.parser.PlaceholderParser;
 import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofNotSupportedException;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -41,7 +42,7 @@ public class ParsingTests {
     // }
     
     @Test
-    public void TestTriplePlaceholderParsing() throws ConceptTranslationError{
+    public void TestTriplePlaceholderParsing() throws ConceptTranslationError, ProofNotSupportedException{
 
         Set<List<String>> parsingBase = new HashSet<>();
         Map<String, String> repOfs = new HashMap<>();

@@ -3,6 +3,7 @@ package de.tu_dresden.inf.lat.evee.nemo.parser;
 import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofNotSupportedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 
 import org.apache.logging.log4j.LogManager;
@@ -96,14 +97,14 @@ public class PlaceholderParser {
 		this.equivalentPlaceholders = equiv;
     }
 	
-	public OWLClassExpression parseConceptOrPlaceholder(String conceptName) throws ConceptTranslationError {
+	public OWLClassExpression parseConceptOrPlaceholder(String conceptName) throws ConceptTranslationError, ProofNotSupportedException {
 		if (parsingHelper.isPlaceholder(conceptName))
 			return getConceptFromPlaceholder(conceptName);
 
 		return owlHelper.getOWLConceptName(parsingHelper.format(conceptName));
 	}
 
-	public OWLClassExpression getConceptFromPlaceholder(String placeholder) throws ConceptTranslationError {
+	public OWLClassExpression getConceptFromPlaceholder(String placeholder) throws ConceptTranslationError, ProofNotSupportedException {
 		if (conceptCache.get(placeholder) != null){
 			return conceptCache.get(placeholder);
 		}
@@ -155,10 +156,13 @@ public class PlaceholderParser {
 		return parseRoleChain(placeholder, relevantFacts);
 	}
 	
-	private OWLClassExpression parseRepresentativeOf(String placeholder) throws ConceptTranslationError{
+	private OWLClassExpression parseRepresentativeOf(String placeholder) throws ConceptTranslationError, ProofNotSupportedException{
 		String rep = equivalentPlaceholders.get(placeholder);
 		if (rep == null)
-		throw new ConceptTranslationError("Failed to parse placeholder " + placeholder);
+			throw new ConceptTranslationError("error parsing placeholder " + placeholder);
+
+		if(rep.equals(placeholder))
+			throw new ProofNotSupportedException("constructor of " + placeholder + "not supported");
 		
 		return getConceptFromPlaceholder(rep);
 	}
@@ -172,7 +176,7 @@ public class PlaceholderParser {
 	}
 	
 	private OWLObjectSomeValuesFrom parseExistentialRestriction(Set<List<String>> relevantFacts)
-	throws ConceptTranslationError {
+	throws ConceptTranslationError, ProofNotSupportedException {
 		logger.debug("Parsing an existential");
 		
 		String currentPropertyStr =
@@ -188,7 +192,7 @@ public class PlaceholderParser {
 		return owlHelper.getOWLExistentialRestriction(property, filler);
 	}
 
-	private OWLObjectAllValuesFrom parseUniversalRestriction(Set<List<String>> relevantFacts) throws ConceptTranslationError{
+	private OWLObjectAllValuesFrom parseUniversalRestriction(Set<List<String>> relevantFacts) throws ConceptTranslationError, ProofNotSupportedException{
 		String currentPropertyStr =
 		relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_PROP)).findFirst().get().get(2);
 		
@@ -202,7 +206,7 @@ public class PlaceholderParser {
 		return owlHelper.getOWLUniversalRestriction(property, filler);
 	}
 
-	private OWLObjectCardinalityRestriction parseNumberRestriction(Set<List<String>> relevantFacts) throws ConceptTranslationError{
+	private OWLObjectCardinalityRestriction parseNumberRestriction(Set<List<String>> relevantFacts) throws ConceptTranslationError, ProofNotSupportedException{
 		String predicate = relevantFacts.stream().filter(x -> numResNames.contains(x.get(1))).findFirst().get().get(1);
 
 		String propStr =
@@ -231,7 +235,7 @@ public class PlaceholderParser {
 
 	}
 
-	private OWLClassExpression getNumResFiller(Set<List<String>> relevantFacts) throws ConceptTranslationError{
+	private OWLClassExpression getNumResFiller(Set<List<String>> relevantFacts) throws ConceptTranslationError, ProofNotSupportedException{
 		Optional<List<String>> fillerStr = relevantFacts.stream()
 			.filter(x -> x.get(1).equals(PREDNAME_CLS) || x.get(1).equals(PREDNAME_DATA))
 				.findFirst();
@@ -242,7 +246,7 @@ public class PlaceholderParser {
 		return parseConceptOrPlaceholder(fillerStr.get().get(2));
 	}
 
-	private OWLObjectIntersectionOf parseConjunction(String placeholder, Set<List<String>> relevantFacts) throws ConceptTranslationError {
+	private OWLObjectIntersectionOf parseConjunction(String placeholder, Set<List<String>> relevantFacts) throws ConceptTranslationError, ProofNotSupportedException {
 		logger.debug("Parsing a conjunction");
 		relevantFacts.addAll(getRelevantConjFacts(placeholder));
 		
@@ -259,7 +263,7 @@ public class PlaceholderParser {
 		return result;
 	}
 
-	private OWLClassExpression parseDisjunction(String placeholder, Set<List<String>> relevantFacts) throws ConceptTranslationError {
+	private OWLClassExpression parseDisjunction(String placeholder, Set<List<String>> relevantFacts) throws ConceptTranslationError, ProofNotSupportedException {
 		relevantFacts.addAll(getRelevantDisjFacts(placeholder));
 		
 		Set<OWLClassExpression> disjuncts = new HashSet<>();
@@ -272,7 +276,7 @@ public class PlaceholderParser {
 	}
 
 
-	private OWLObjectComplementOf parseNegation(Set<List<String>> relevantFacts) throws ConceptTranslationError {
+	private OWLObjectComplementOf parseNegation(Set<List<String>> relevantFacts) throws ConceptTranslationError, ProofNotSupportedException {
 
 		String clsStr = relevantFacts.stream().filter(x -> x.get(1).equals(PREDNAME_NEG)).findFirst().get().get(2);
 		OWLClassExpression cls = parseConceptOrPlaceholder(clsStr);

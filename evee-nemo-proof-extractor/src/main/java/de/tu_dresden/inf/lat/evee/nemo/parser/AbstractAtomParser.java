@@ -10,6 +10,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofNotSupportedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 
 abstract class AbstractAtomParser {
@@ -38,13 +39,13 @@ abstract class AbstractAtomParser {
         placeholderParser.initParsingBase(inferences);
     }
 
-    abstract public OWLAxiom toOwlAxiom(String axiom);
+    abstract public OWLAxiom toOwlAxiom(String axiom) throws ConceptTranslationError, ProofNotSupportedException;
     
     public OWLSubClassOfAxiom getDefaultAxiom() {
         return this.defaultAxiom;
     }
 
-    protected OWLAxiom parseTriple(List<String> args){
+    protected OWLAxiom parseTriple(List<String> args) throws ConceptTranslationError, ProofNotSupportedException{
         if(args.get(1).equals(EQUIV_TRIPLE))
             return parseEquivTriple(args);
         else if(args.get(1).equals(SUBOF_TRIPLE))
@@ -76,28 +77,20 @@ abstract class AbstractAtomParser {
 		return owlHelper.getPropertyName((String) o);
     }
 
-    protected OWLAxiom parseSubClassAxiom(String subClass, String superClass){
+    protected OWLAxiom parseSubClassAxiom(String subClass, String superClass) throws ConceptTranslationError, ProofNotSupportedException{
         OWLClassExpression sub, sup;
 
-        try{
-            sub = placeholderParser.parseConceptOrPlaceholder(subClass);
-            sup = placeholderParser.parseConceptOrPlaceholder(superClass);
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
+        sub = placeholderParser.parseConceptOrPlaceholder(subClass);
+        sup = placeholderParser.parseConceptOrPlaceholder(superClass);
 
        return owlHelper.getOWLSubClassOfAxiom(sub, sup);
     }
 
-    protected OWLAxiom parseEquivalenceClassesAxiom(String equivClassLeft, String equivClassRight) {
+    protected OWLAxiom parseEquivalenceClassesAxiom(String equivClassLeft, String equivClassRight) throws ConceptTranslationError, ProofNotSupportedException {
         OWLClassExpression cls1, cls2;
 
-        try{
-            cls1 = placeholderParser.parseConceptOrPlaceholder(equivClassLeft);
-            cls2 = placeholderParser.parseConceptOrPlaceholder(equivClassRight);
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
+        cls1 = placeholderParser.parseConceptOrPlaceholder(equivClassLeft);
+        cls2 = placeholderParser.parseConceptOrPlaceholder(equivClassRight);
 
         return owlHelper.getOWLEquivalenceAxiom(cls1, cls2);
     }
@@ -111,20 +104,16 @@ abstract class AbstractAtomParser {
 		return owlHelper.getOWLSubObjectPropertyAxiom(sub, sup);
 	}
 
-    private OWLAxiom parseEquivTriple(List<String> args){
+    private OWLAxiom parseEquivTriple(List<String> args) throws ConceptTranslationError, ProofNotSupportedException{
         OWLClassExpression cls1, cls2;
     
-        try{
-            cls1 = placeholderParser.parseConceptOrPlaceholder(args.get(0));
-            cls2 = placeholderParser.parseConceptOrPlaceholder(args.get(2));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
-    
+        cls1 = placeholderParser.parseConceptOrPlaceholder(args.get(0));
+        cls2 = placeholderParser.parseConceptOrPlaceholder(args.get(2));
+
        return owlHelper.getOWLEquivalenceAxiom(cls1, cls2);
     }
     
-    private OWLAxiom parseSubOfTriple(List<String> args){
+    private OWLAxiom parseSubOfTriple(List<String> args) throws ConceptTranslationError, ProofNotSupportedException{
         return parseSubClassAxiom(args.get(0), args.get(2));
     }
 
@@ -132,16 +121,12 @@ abstract class AbstractAtomParser {
         return parseSubProperty(args.get(0), args.get(2));
     }
 
-    private OWLAxiom parsePropChainTriple(List<String> args){
+    private OWLAxiom parsePropChainTriple(List<String> args) throws ConceptTranslationError{
         OWLObjectPropertyExpression sup = parseProp(parsingHelper.format(args.get(0)));
         List<OWLObjectPropertyExpression> chain;
 
-        try {
-            chain = placeholderParser.getRoleChainFromPlaceholder(args.get(2));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
-
+        chain = placeholderParser.getRoleChainFromPlaceholder(args.get(2));
+   
         return owlHelper.getOWLSubPropertyChainOfAxiom(chain, sup);     
     }
 

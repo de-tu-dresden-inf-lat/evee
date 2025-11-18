@@ -11,6 +11,7 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import com.google.common.collect.Sets;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofNotSupportedException;
 
 public class TextbookAtomParser extends AbstractAtomParser{
 
@@ -33,7 +34,7 @@ public class TextbookAtomParser extends AbstractAtomParser{
     public TextbookAtomParser(){}
 
     @Override
-    public OWLAxiom toOwlAxiom(String atom) {
+    public OWLAxiom toOwlAxiom(String atom) throws ProofNotSupportedException, ConceptTranslationError {
         String predName = parsingHelper.getPredicateName(atom);
         List<String> args = parsingHelper.getPredicateArguments(atom);
 
@@ -55,11 +56,11 @@ public class TextbookAtomParser extends AbstractAtomParser{
         return defaultAxiom;
     }
 
-    private OWLAxiom parseEquivalenceClassesAxiom(List<String> args) {
+    private OWLAxiom parseEquivalenceClassesAxiom(List<String> args) throws ProofNotSupportedException, ConceptTranslationError {
         return parseEquivalenceClassesAxiom(args.get(0), args.get(1));
     }
 
-    private OWLAxiom parseSubClassAxiom(List<String> args){
+    private OWLAxiom parseSubClassAxiom(List<String> args) throws ProofNotSupportedException, ConceptTranslationError{
         return parseSubClassAxiom(args.get(0), args.get(1));
     }
     
@@ -67,48 +68,36 @@ public class TextbookAtomParser extends AbstractAtomParser{
 		return parseSubProperty(args.get(0), args.get(1));
 	}
     
-    private OWLAxiom parseSubClassConjunction(List<String> args){
+    private OWLAxiom parseSubClassConjunction(List<String> args) throws ProofNotSupportedException, ConceptTranslationError{
         OWLClassExpression sup;
         Set<OWLClassExpression> conjuncts = new HashSet<>();
 
-        try {
-            sup = placeholderParser.parseConceptOrPlaceholder(args.get(2));
-            conjuncts.add(placeholderParser.parseConceptOrPlaceholder(args.get(0)));
-            conjuncts.add(placeholderParser.parseConceptOrPlaceholder(args.get(1)));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
-        
+        sup = placeholderParser.parseConceptOrPlaceholder(args.get(2));
+        conjuncts.add(placeholderParser.parseConceptOrPlaceholder(args.get(0)));
+        conjuncts.add(placeholderParser.parseConceptOrPlaceholder(args.get(1)));
+
         return owlHelper.getOWLSubClassOfAxiom(owlHelper.getOWLConjunction(conjuncts), sup);
     }
 
-    private OWLAxiom parseSubClassExistential(List<String> args){
+    private OWLAxiom parseSubClassExistential(List<String> args) throws ProofNotSupportedException, ConceptTranslationError{
         OWLClassExpression sup, existCls;
         OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(0)));
 
-        try{
-            sup = placeholderParser.parseConceptOrPlaceholder(args.get(2));
-            existCls = placeholderParser.parseConceptOrPlaceholder(args.get(1));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
+        sup = placeholderParser.parseConceptOrPlaceholder(args.get(2));
+        existCls = placeholderParser.parseConceptOrPlaceholder(args.get(1));
 
         OWLClassExpression restriction = owlHelper.getOWLExistentialRestriction(prop, existCls);
         
         return owlHelper.getOWLSubClassOfAxiom(restriction, sup);
     }
 
-    private OWLAxiom parseSupClassExistential(List<String> args){
+    private OWLAxiom parseSupClassExistential(List<String> args) throws ProofNotSupportedException, ConceptTranslationError{
         OWLClassExpression sub, existCls;
         OWLObjectPropertyExpression prop = parseProp(parsingHelper.format(args.get(1)));
-        
-        try{
-            sub = placeholderParser.parseConceptOrPlaceholder(args.get(0));
-            existCls = placeholderParser.parseConceptOrPlaceholder(args.get(2));
-        } catch (ConceptTranslationError e) {
-            return defaultAxiom;
-        }
 
+        sub = placeholderParser.parseConceptOrPlaceholder(args.get(0));
+        existCls = placeholderParser.parseConceptOrPlaceholder(args.get(2));
+   
         OWLClassExpression restriction = owlHelper.getOWLExistentialRestriction(prop, existCls);
         
         return owlHelper.getOWLSubClassOfAxiom(sub, restriction);

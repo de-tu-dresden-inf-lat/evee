@@ -1,11 +1,15 @@
 package de.tu_dresden.inf.lat.evee.nemo.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
+import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofNotSupportedException;
+
 import org.semanticweb.owlapi.model.*;
 
+import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
@@ -51,14 +55,14 @@ public class NemoProofParser {
         if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES))
             return EquivClassAxiomToNemString((OWLEquivalentClassesAxiom) axiom);
             
-        throw new ProofGenerationException("Axiom type is not supported by this proof generator!");
+        throw new ProofNotSupportedException("Axiom type is not supported by this proof generator!");
     }
 
     /*
      * parses IProof<String> to IProof<OWLAxiom>
      * a AtomParser needs to be set before calling this method (via constructor or setAtomParser())
      */
-    public IProof<OWLAxiom> toProofOWL(IProof<String> proofStr){
+    public IProof<OWLAxiom> toProofOWL(IProof<String> proofStr) throws ProofNotSupportedException, ConceptTranslationError{
         if (atomParser == null)
             throw new IllegalStateException("no AtomParser configured");
 
@@ -72,16 +76,26 @@ public class NemoProofParser {
             if (conclusion == atomParser.getDefaultAxiom())
                 continue;
 
-            List<OWLAxiom> premises = infStr.getPremises().stream()
-                .map(x->atomParser.toOwlAxiom(x))
-                    .filter(x -> !(x == atomParser.getDefaultAxiom()))
-                        .collect(Collectors.toList());
-
+            List<OWLAxiom> premises = parsePremises(infStr.getPremises());
+    
             IInference<OWLAxiom> parsedInf = new Inference<>(conclusion, infStr.getRuleName(), premises); 
             proof.addInference(parsedInf);
         }
 
         return mininmizeProof(proof);
+    }
+
+    private List<OWLAxiom> parsePremises(List<? extends String> premises) throws ProofNotSupportedException, ConceptTranslationError{
+        List<OWLAxiom> result = new ArrayList<>();
+        for(String p : premises) {
+            OWLAxiom parsed = atomParser.toOwlAxiom(p);
+            if (parsed == atomParser.getDefaultAxiom())
+                continue;
+            
+            result.add(parsed);
+        }
+        
+        return result;
     }
 
     private IProof<OWLAxiom> mininmizeProof(IProof<OWLAxiom> proof){
