@@ -35,6 +35,7 @@
             <version>${LatScalaDlTools.Version}</version>
         </dependency>
 
+      <!-- don't upgrade jackson version! owlapi5 package has indirect dependency to v2.9.8 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -46,6 +47,13 @@
             <artifactId>jackson-annotations</artifactId>
             <version>2.16.1</version>
         </dependency>
+
+
+        <!--<dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>-->
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -84,32 +92,9 @@
                     <execution>
                         <id>make-assembly</id>
                         <phase>package</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>create-source-jar</id>
-                        <phase>verify</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-test-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

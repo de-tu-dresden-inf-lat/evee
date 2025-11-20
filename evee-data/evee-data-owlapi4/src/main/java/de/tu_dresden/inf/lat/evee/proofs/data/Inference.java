@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -25,7 +26,7 @@ public class Inference<SENTENCE> implements IInference<SENTENCE> {
 	@JsonCreator
 	public Inference(
 			@JsonProperty("conclusion") SENTENCE conclusion,
-			@JsonProperty("ruleName") String ruleName,
+			@JsonProperty("ruleName") @JsonAlias("rule") String ruleName,
 			@JsonProperty("premises") List<? extends SENTENCE> premises) {
 		this.conclusion = conclusion;
 		this.ruleName = ruleName;

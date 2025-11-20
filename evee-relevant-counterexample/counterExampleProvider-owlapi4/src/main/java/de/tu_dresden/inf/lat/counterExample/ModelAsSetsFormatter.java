@@ -33,7 +33,6 @@ public class ModelAsSetsFormatter {
 	 * Print out the provided model as a set of sets
 	 * 
 	 * @param model
-	 * @throws UnsupportedEncodingException
 	 * @throws FileNotFoundException
 	 */
 	public static void writeAsSets(Set<Element> model, File outpuFile) throws FileNotFoundException {

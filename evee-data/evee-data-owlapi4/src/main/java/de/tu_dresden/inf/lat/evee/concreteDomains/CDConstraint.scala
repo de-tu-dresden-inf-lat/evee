@@ -6,6 +6,5 @@ trait CDConstraint {
   def getOWLDataProperties: Set[OWLDataProperty]
 
   def isInconsistent: Boolean
-
 }
 

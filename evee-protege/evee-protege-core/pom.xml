@@ -50,17 +50,17 @@
             <version>0.2.0-SNAPSHOT</version>
         </dependency>
         <!--		de.tu-dresden.inf.lat-->
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-data-owlapi4</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>de.tu-dresden.inf.lat.evee</groupId>-->
+<!--            <artifactId>evee-data-owlapi4</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>com.google.guava</groupId>-->
+<!--                    <artifactId>guava</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
@@ -175,11 +175,15 @@
                         </Import-Package>
                         <Export-Package>
                             com.fasterxml.jackson.*;-split-package:=merge-last,
+                            com.fasterxml.jackson.dataformat.xml,
+                            com.fasterxml.jackson.dataformat.xml.annotation,
+                            com.fasterxml.jackson.dataformat.xml.util,
                             de.tu_dresden.inf.lat.evee.general.data.exceptions.*,
                             de.tu_dresden.inf.lat.evee.general.interfaces.*,
                             de.tu_dresden.inf.lat.evee.general.tools.*,
                             de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.*,
                             de.tu_dresden.inf.lat.evee.proofs.*,
+                            de.tu_dresden.inf.lat.evee.proofs.interfaces.*,
                             de.tu_dresden.inf.lat.dltools.*,
                             de.tu_dresden.inf.lat.prettyPrinting.*,
                             de.tu_dresden.inf.lat.evee.protege.*,

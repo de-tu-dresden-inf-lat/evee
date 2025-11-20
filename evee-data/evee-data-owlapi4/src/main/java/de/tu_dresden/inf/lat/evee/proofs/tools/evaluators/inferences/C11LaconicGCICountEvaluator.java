@@ -73,11 +73,13 @@ public class C11LaconicGCICountEvaluator implements IInferenceEvaluator<OWLAxiom
 			Collection<OWLAxiom> replaced = new LinkedList<>();
 			for (OWLAxiom ax : j) {
 				Collection<? extends OWLAxiom> newAxioms = ax.accept(splitter);
-				if (newAxioms.isEmpty()) {
-					replaced.add(ax);
-				} else {
-					changed = true;
-					replaced.addAll(newAxioms);
+				if(newAxioms!=null){
+					if (newAxioms.isEmpty()) {
+						replaced.add(ax);
+					} else {
+						changed = true;
+						replaced.addAll(newAxioms);
+					}
 				}
 			}
 			j = replaced;

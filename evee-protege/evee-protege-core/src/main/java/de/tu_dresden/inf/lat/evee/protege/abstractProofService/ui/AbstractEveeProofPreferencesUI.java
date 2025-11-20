@@ -14,7 +14,7 @@ import java.util.TreeMap;
 
 public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel {
 
-    private AbstractEveeProofPreferencesManager abstractProofPreferencesManager;
+    protected AbstractEveeProofPreferencesManager abstractProofPreferencesManager;
     private final SortedMap<String, JCheckBox> activeServicesCheckBoxes;
     private final String ACTIVE_SERVICES = "Active Proof Services:";
     private final String MISC_OPTIONS = "Miscellaneous Options:";
@@ -69,7 +69,7 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
         });
     }
 
-    private void saveActiveProofServices(){
+    protected void saveActiveProofServices(){
         SwingUtilities.invokeLater(() -> {
             for (String identifier : this.activeServicesCheckBoxes.keySet()){
                 this.abstractProofPreferencesManager.saveIsActive(

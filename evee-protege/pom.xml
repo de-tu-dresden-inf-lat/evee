@@ -15,6 +15,7 @@
 
     <properties>
         <bundleName>${project.artifactId}</bundleName>
+        <excludeResourcesInSourceJar>false</excludeResourcesInSourceJar>
     </properties>
 
     <build>
@@ -41,6 +42,7 @@
         <module>evee-protege-abduction-lethe</module>
         <module>evee-protege-abduction-capi</module>
         <module>evee-protege-counterexample-ELKRelevant</module>
+        <module>evee-protege-nemo-proof-extractor</module>
     </modules>
 
 </project>

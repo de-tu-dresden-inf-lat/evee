@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+    <extension id="eveeProofPreferencesNemo" point="org.liveontologies.protege.explanation.proof.preferences">
+        <label value="Nemo Proof"/>
+        <class value="de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService.EveeNemoBasedProofPreferencesUI"/>
+    </extension>
+
+    <extension id="eveeProofNemoElk" point="org.liveontologies.protege.explanation.proof.service">
+        <name value="ELK calculus proof (Nemo)" />
+        <class value="de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService.EveeNemoBasedElkProofService"/>
+    </extension>
+
+    <extension id="eveeProofNemoEnvelope" point="org.liveontologies.protege.explanation.proof.service">
+        <name value="ENVELOPE calculus proof (Nemo)" />
+        <class value="de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService.EveeNemoBasedEnvelopeProofService"/>
+    </extension>
+
+    <extension id="eveeProofNemoTextbook" point="org.liveontologies.protege.explanation.proof.service">
+        <name value="TEXTBOOK calculus proof (Nemo)" />
+        <class value="de.tu_dresden.inf.lat.evee.protege.nemoBasedProofService.EveeNemoBasedTextbookProofService"/>
+    </extension>
+
+</plugin>

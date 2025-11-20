@@ -2,10 +2,7 @@ package de.tu_dresden.inf.lat.evee.data;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,6 +32,12 @@ public class RecursiveProof<SENTENCE> implements IProof<SENTENCE> {
 		}
 	}
 
+	private RecursiveProof(SENTENCE finalConclusion, List<RecursiveInference<SENTENCE>> inferences, MultiMap<SENTENCE, IInference<SENTENCE>> conclusions2inferences) {
+		this.finalConclusion = finalConclusion;
+		this.inferences = inferences;
+		this.conclusions2inferences = conclusions2inferences;
+	}
+
 	public RecursiveProof(SENTENCE finalConclusion) {
 		this.finalConclusion = finalConclusion;
 		inferences = new LinkedList<>();
@@ -54,6 +57,11 @@ public class RecursiveProof<SENTENCE> implements IProof<SENTENCE> {
 	@Override
 	public boolean hasInferenceFor(SENTENCE conclusion) {
 		return conclusions2inferences.hasKey(conclusion);
+	}
+
+	@Override
+	public IProof<SENTENCE> withoutDuplicateInferences() {
+		return new RecursiveProof<>(finalConclusion, new LinkedList<>(new LinkedHashSet<>(inferences)), conclusions2inferences);
 	}
 
 //	public RecursiveProof() {

@@ -309,7 +309,6 @@ public class ToOWLTools {
 	 * Return an empty OWLOntology object
 	 * 
 	 * @return
-	 * @throws OWLOntologyCreationException
 	 */
 	public OWLOntology getEmptyOntology() {
 		return emptyOntology;

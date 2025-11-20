@@ -40,11 +40,11 @@
             <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>
-            <version>${LatScalaDlTools.Version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>de.tu-dresden.inf.lat</groupId>-->
+<!--            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>-->
+<!--            <version>${LatScalaDlTools.Version}</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -56,32 +56,6 @@
                 <configuration>
                     <skipTests>${skipTests}</skipTests>
                 </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>create-source-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-test-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>

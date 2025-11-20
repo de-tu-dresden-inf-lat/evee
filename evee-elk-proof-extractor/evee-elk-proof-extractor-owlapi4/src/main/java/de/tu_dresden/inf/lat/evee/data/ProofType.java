@@ -10,28 +10,28 @@ public enum ProofType {
 	CondensedMinimalWeightedTreeSize, TreeUnravellingOfMinimalSizeGraph, MinimalSizeGraph;
 
 	public static ProofType getTypeValue(String str) {
-		if (str.equalsIgnoreCase("MinimalTreeSize"))
+		if (str.equalsIgnoreCase(MinimalTreeSize.toString()))
 			return ProofType.MinimalTreeSize;
 
-		if (str.equalsIgnoreCase("CondensedMinimalTreeSize"))
+		if (str.equalsIgnoreCase(CondensedMinimalTreeSize.toString()))
 			return ProofType.CondensedMinimalTreeSize;
 
-		if (str.equalsIgnoreCase("MinimalDepth"))
+		if (str.equalsIgnoreCase(MinimalDepth.toString()))
 			return ProofType.MinimalDepth;
 
-		if (str.equalsIgnoreCase("CondensedMinimalDepth"))
+		if (str.equalsIgnoreCase(CondensedMinimalDepth.toString()))
 			return ProofType.CondensedMinimalDepth;
 
-		if (str.equalsIgnoreCase("MinimalWeightedTreeSize"))
+		if (str.equalsIgnoreCase(MinimalWeightedTreeSize.toString()))
 			return ProofType.MinimalWeightedTreeSize;
 
-		if (str.equalsIgnoreCase("CondensedMinimalWeightedTreeSize"))
+		if (str.equalsIgnoreCase(CondensedMinimalWeightedTreeSize.toString()))
 			return ProofType.CondensedMinimalWeightedTreeSize;
 
-		if (str.equalsIgnoreCase("TreeUnravellingOfMinimalSizeGraph"))
+		if (str.equalsIgnoreCase(TreeUnravellingOfMinimalSizeGraph.toString()))
 			return ProofType.TreeUnravellingOfMinimalSizeGraph;
 
-		if (str.equalsIgnoreCase("MinimalSizeGraph"))
+		if (str.equalsIgnoreCase(MinimalSizeGraph.toString()))
 			return ProofType.MinimalSizeGraph;
 
 		throw new IllegalArgumentException("No TreeProofType value for \"" + str + "\"");

@@ -26,9 +26,9 @@
     </dependency>
 
     <dependency>
-      <groupId>io.github.liveontologies</groupId>
-      <artifactId>elk-owlapi</artifactId>
-      <version>0.6.0</version>
+        <groupId>io.github.liveontologies</groupId>
+        <artifactId>elk-owlapi</artifactId>
+        <version>0.6.0</version>
     </dependency>
   </dependencies>
 
@@ -52,32 +52,6 @@
           <execution>
             <id>make-assembly</id>
             <phase>package</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
-        <executions>
-          <execution>
-            <id>create-source-jar</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <excludeResources>true</excludeResources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>create-test-jar</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-            <configuration>
-              <excludeResources>true</excludeResources>
-            </configuration>
           </execution>
         </executions>
       </plugin>

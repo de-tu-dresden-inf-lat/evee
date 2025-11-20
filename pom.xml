@@ -8,11 +8,33 @@
     <artifactId>evee</artifactId>
     <version>${revision}</version>
 
+    <name>${project.groupId}.${project.artifactId}</name>
+    <description>A collection for explaining very expressive DL entailments and missing entailments.</description>
+    <url>https://github.com/de-tu-dresden-inf-lat/evee</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Stefan Borgwardt</name>
+            <email>stefan.borgwardt@tu-dresden.de</email>
+            <organization>${tempStefanDeveloperOrganization}</organization>
+            <organizationUrl>${tempStefanDeveloperOrganizationURL}</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/de-tu-dresden-inf-lat/evee</connection>
+        <developerConnection>scm:git:ssh://github.com/de-tu-dresden-inf-lat/evee</developerConnection>
+        <url>https://github.com/de-tu-dresden-inf-lat/evee</url>
+    </scm>
 
     <packaging>pom</packaging>
-<!--<modules>
-        <module>evee-small-model-generator</module>
-    </modules> -->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,11 +42,15 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <scala.version>2.12.17</scala.version>
-        <revision>0.3</revision>
+        <revision>0.4-SNAPSHOT</revision>
         <LatScalaDlTools.Version>0.4.1-SNAPSHOT</LatScalaDlTools.Version>
         <LETHE.Version>0.8-SNAPSHOT</LETHE.Version>
         <skipCompilation>false</skipCompilation>
         <skipTests>true</skipTests>
+        <excludeResourcesInSourceJar>true</excludeResourcesInSourceJar>
+        <!--    temporary variables-->
+        <tempStefanDeveloperOrganization>TU Dresden</tempStefanDeveloperOrganization>
+        <tempStefanDeveloperOrganizationURL>https://tu-dresden.de/ing/informatik/thi/lat</tempStefanDeveloperOrganizationURL>
     </properties>
 
     <build>
@@ -63,6 +89,73 @@
                     </execution>
                 </executions>
             </plugin>
+<!--            generating source files-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>create-source-files</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                        <configuration>
+                            <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-test-jar</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>test-jar-no-fork</goal>
+                        </goals>
+                        <configuration>
+                            <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+<!--            generating javadoc files-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.10.1</version>
+                <executions>
+                    <execution>
+                        <id>create-javadoc-files</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+<!--            signing with GPG-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.7</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+<!--                            <goal>sign</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+<!--            publishing to Maven Central-->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.6.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -85,6 +178,7 @@
                 <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-libs/evee-libs-owlapi4</module>
                 <module>evee-small-model-generator</module>
+                <module>evee-nemo-proof-extractor</module>
             </modules>
         </profile>
         <profile>
@@ -129,6 +223,7 @@
                 <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
                 <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
                 <module>evee-small-model-generator/evee-small-model-generator-owlapi4</module>
+                <module>evee-nemo-proof-extractor</module>
                 <module>evee-protege</module>
                 <module>evee-protege-release</module>
             </modules>
@@ -157,6 +252,7 @@
                 <module>evee-elk-proof-extractor</module>
                 <module>evee-relevant-counterexample</module>
                 <module>evee-small-model-generator</module>
+                <module>evee-nemo-proof-extractor</module>
                 <module>evee-protege</module>
                 <module>evee-protege-release</module>
                 <module>evee-libs</module>
@@ -168,11 +264,10 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <modules>
-                <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
-                <module>evee-data/evee-data-owlapi4</module>
-                <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
-                <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
-                <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
+                <module>lat-scala-dl-tools</module>
+                <module>evee-data</module>
+                <module>evee-elk-proof-extractor</module>
+                <module>evee-relevant-counterexample</module>
             </modules>
         </profile>
     </profiles>
