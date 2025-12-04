@@ -6,8 +6,8 @@ import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofNotSupportedException;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.*;
 
 import com.google.common.collect.Sets;
@@ -139,7 +139,7 @@ public class PlaceholderParser {
     
 	public List<OWLObjectPropertyExpression> parseRoleOrPlaceholder(String roleName) throws ConceptTranslationError{
 		if (parsingHelper.isPlaceholder(roleName))
-		return getRoleChainFromPlaceholder(roleName);
+			return getRoleChainFromPlaceholder(roleName);
 		
 		OWLObjectPropertyExpression role = owlHelper.getPropertyName(parsingHelper.format(roleName));
 		return Collections.singletonList(role);

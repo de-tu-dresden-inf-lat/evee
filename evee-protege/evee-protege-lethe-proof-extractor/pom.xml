@@ -66,6 +66,7 @@
                             de.tu_dresden.inf.lat.dltools.*,
                             scala.swing.*;resolution:=optional,
                             org.checkerframework.checker.nullness.qual.*;resolution:=optional,
+                            org.slf4j.*,
                             *
                         </Import-Package>
                         <Private-Package>

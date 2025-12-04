@@ -190,8 +190,8 @@
                             com.typesafe.scalalogging.*,
                             scala.*,
                             com.google.errorprone.annotations.*,
-                            <!-- com.google.common.*,
-                                 com.google.appengine.api,
+                            <!-- com.google.common.*, -->
+                            <!--     com.google.appengine.api,
                                  com.google.appengine.api.utils,
                                  com.google.apphosting.api,
                                  com.google.thirdparty.publicsuffix, -->

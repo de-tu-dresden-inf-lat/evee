@@ -74,8 +74,8 @@ public class EnvelopeAtomParser extends AbstractAtomParser {
     }
 
     private OWLAxiom parseSubProperty(List<String> args) throws ProofNotSupportedException {
-        if(parsingHelper.isPlaceholder(args.get(1))) 
-           throw new ProofNotSupportedException("role chains on right hand side not supported");
+        if(parsingHelper.isPlaceholder(args.get(1))) //skipping aux role chain inclusions (like r o s <r t o u )
+           return defaultAxiom;
         
 		return parseSubProperty(args.get(0), args.get(1));
 	}
@@ -120,8 +120,8 @@ public class EnvelopeAtomParser extends AbstractAtomParser {
 
     private OWLAxiom parsePropChain(List<String> args) throws ConceptTranslationError, ProofNotSupportedException {
         String supStr = parsingHelper.format(args.get(2));
-        if(parsingHelper.isPlaceholder(supStr))
-            throw new ProofNotSupportedException("role chains on right hand side not supported");
+        if(parsingHelper.isPlaceholder(supStr)) //skipping aux role chain inclusions (like r o s <r t o u )
+            return defaultAxiom;
 
         OWLObjectPropertyExpression sup = parseProp(supStr);
         List<OWLObjectPropertyExpression> chain = new ArrayList<>();

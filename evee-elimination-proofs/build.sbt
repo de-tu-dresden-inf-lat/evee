@@ -75,7 +75,7 @@ lazy val evee_elimination_proofs_fame_owlapi4 = Project(
     libraryDependencies ++= Seq(
 //        for FAME
       "org.apache.commons" % "commons-lang3" % "3.6",
-      "com.google.guava" % "guava" % "19.0-rc3",
+      "com.google.guava" % "guava" % "21.0",
     ))
   .dependsOn(evee_elimination_proofs_core_owlapi4)
 

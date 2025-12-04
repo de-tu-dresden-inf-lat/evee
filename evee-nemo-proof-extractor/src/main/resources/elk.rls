@@ -32,6 +32,18 @@
 % Read data from Turtle file:
 @import TRIPLE :- rdf{resource="ont.ttl"} .
 
+%% Initialise disjointness:
+#[name("disjoint")]
+TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
+TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
+TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
+	:- TRIPLE(?X,owl:disjointWith,?Y).
+
+%% Initialise domain:
+#[name("domain")]
+TRIPLE(!X, owl:someValuesFrom, owl:Thing), TRIPLE(!X, owl:onProperty, ?R), TRIPLE(!X, rdfs:subClassOf, ?C)
+	:- TRIPLE(?R,rdf:type,owl:ObjectProperty), TRIPLE(?R,rdfs:domain, ?C).
+
 %%% Mark classes:
 ClassObject(owl:someValuesFrom) .
 ClassObject(owl:allValuesFrom) .
@@ -48,17 +60,9 @@ class(?X) :- TRIPLE(?X, ?P, ?O), ClassSubject(?P) .
 
 %%% Distinguish auxiliary class expressions from primary classes:
 
-repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:complementOf, _) .
-repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:allValuesFrom, _), TRIPLE(?X, owl:onProperty, ?P), TRIPLE(?P,rdf:type,owl:ObjectProperty).
+% mark unested constructors (unused by calculus)
 repOf(?X,!N), auxClass(?X) :- TRIPLE(?X, owl:hasSelf, _), TRIPLE(?X, owl:onProperty, _).
 
-repOf(?X,!N), auxClass(?X), :- 
-    TRIPLE(?X, owl:qualifiedCardinality, _), TRIPLE(?X,owl:onClass, _), TRIPLE(?X,owl:onProperty, _) .
- repOf(?X,!N), auxClass(?X) :- 
-    TRIPLE(?X, owl:maxQualifiedCardinality, _), TRIPLE(?X,owl:onClass, _), TRIPLE(?X,owl:onProperty, _) .
- repOf(?X,!N), auxClass(?X) :- 
-    TRIPLE(?X, owl:minQualifiedCardinality, _), TRIPLE(?X,owl:onClass, _), TRIPLE(?X,owl:onProperty, _) .
-	
 repOf(?X,!N), auxClass(?X), :- 
     TRIPLE(?X, owl:cardinality,_), TRIPLE(?X,owl:onProperty,?P), TRIPLE(?P,rdf:type,owl:ObjectProperty) .
  repOf(?X,!N), auxClass(?X) :- 
@@ -66,11 +70,27 @@ repOf(?X,!N), auxClass(?X), :-
  repOf(?X,!N), auxClass(?X) :- 
     TRIPLE(?X, owl:minCardinality,_), TRIPLE(?X,owl:onProperty,?P), TRIPLE(?P,rdf:type,owl:ObjectProperty) .
 
-%% Mark auxiliary existential role restrictions:
-synEx(?Y,?P,?X), auxClass(?X) :- 
+
+% mark universal restrictions
+univ(?X,?P,?C), auxClass(?X) :- 
+    TRIPLE(?X, owl:allValuesFrom, ?C), TRIPLE(?X, owl:onProperty, ?P), TRIPLE(?P,rdf:type,owl:ObjectProperty).
+    
+%% Mark existential restrictions
+synEx(?X,?P,?Y), auxClass(?X) :- 
 	TRIPLE(?X, owl:someValuesFrom, ?Y), TRIPLE(?X, owl:onProperty, ?P), TRIPLE(?P,rdf:type,owl:ObjectProperty) .
 
-%% Mark auxiliary lists:
+% mark negations
+negOf(?X,?C), auxClass(?X) :- TRIPLE(?X, owl:complementOf,?C).
+
+% mark qualified number restrictions
+exactNum(?X,?P,?Q,?C), auxClass(?X), :- 
+    TRIPLE(?X, owl:qualifiedCardinality,?Q), TRIPLE(?X,owl:onClass,?C), TRIPLE(?X,owl:onProperty,?P) .
+maxNum(?X,?P,?Q,?C), auxClass(?X) :- 
+    TRIPLE(?X, owl:maxQualifiedCardinality,?Q), TRIPLE(?X,owl:onClass,?C), TRIPLE(?X,owl:onProperty,?P) .
+minNum(?X,?P,?Q,?C), auxClass(?X) :- 
+    TRIPLE(?X, owl:minQualifiedCardinality,?Q), TRIPLE(?X,owl:onClass,?C), TRIPLE(?X,owl:onProperty,?P) .
+	
+%% Mark auxiliary lists
 next(?L1,?L2) :- TRIPLE(?L1,rdf:rest,?L2) .
     last(?Ln) :- next(?Ln,rdf:nil) .
   nonlast(?L) :- next(?L,?Ln), last(?Ln) .
@@ -92,18 +112,6 @@ nonfirstDisj(?L2)  :- nonfirstDisj(?L1), next(?L1,?L2) .
 firstOneOf(?L1)     :- TRIPLE(?X,owl:oneOf, ?L1) .
 nonfirstOneOf(?L2)  :- firstOneOf(?L1), next(?L1,?L2) .
 nonfirstOneOf(?L2)  :- nonfirstOneOf(?L1), next(?L1,?L2) .
-
-%% Initialise disjointness:
-#[name("disjoint")]
-TRIPLE(!C, owl:intersectionOf, !L1), TRIPLE(!L1,rdf:first,?X), 
-TRIPLE(!L1,rdf:rest,!L2), TRIPLE(!L2,rdf:first,?Y), TRIPLE(!L2,rdf:rest,rdf:nil),
-TRIPLE(!C,rdfs:subClassOf, owl:Nothing)
-	:- TRIPLE(?X,owl:disjointWith,?Y).
-
-%% Initialise domain:
-#[name("domain")]
-TRIPLE(!X, owl:someValuesFrom, owl:Thing), TRIPLE(!X, owl:onProperty, ?R), TRIPLE(!X, rdfs:subClassOf, ?C)
-	:- TRIPLE(?R,rdf:type,owl:ObjectProperty), TRIPLE(?R,rdfs:domain, ?C).
 
 % Mark conjunctions:
 synConj(?X,?C1,?C2), auxClass(?X) :-
@@ -139,13 +147,23 @@ nf:isMainClass(?X) :- class(?X), ~auxClass(?X) .
 %%% Normalise auxiliary nested class expressions:
            repOf(?X,?X) :- nf:isMainClass(?X) . % keep main classes unchanged
 nf:exists(!N,?P,?RY), repOf(?X,!N) :- 
-	synEx(?Y,?P,?X), repOf(?Y,?RY) .
+	synEx(?X,?P,?Y), repOf(?Y,?RY) .
+nf:univ(!N,?P,?RY), repOf(?X,!N) :-
+    univ(?X,?P,?Y), repOf(?Y,?RY) .
+nf:negOf(!N,?RY), repOf(?X,!N) :-
+    negOf(?X,?Y), repOf(?Y,?RY) .
 nf:conj(!N,?R1,?R2), repOf(?X,!N) :- 
 	synConj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
 nf:disj(!N,?R1,?R2), repOf(?X,!N)  :- 
 	disj(?X,?C1,?C2), repOf(?C1,?R1), repOf(?C2,?R2) .
 nf:oneOf(!N,?R1,?R2), repOf(?X,!N) :-
     oneOf(?X,?a,?b), repOf(?a,?R1), repOf(?b,?R2) .
+nf:exactNum(!N,?P,?Q,?RY), repOf(?X,!N) :-
+    exactNum(?X,?P,?Q,?Y), repOf(?Y,?RY) .
+nf:maxNum(!N,?P,?Q,?RY), repOf(?X,!N) :-
+    maxNum(?X,?P,?Q,?Y), repOf(?Y,?RY) .
+nf:minNum(!N,?P,?Q,?RY), repOf(?X,!N) :-
+    minNum(?X,?P,?Q,?Y), repOf(?Y,?RY) .
 
 %%% normalise  property chains:
 #[name("trans")]
@@ -255,4 +273,4 @@ mainEquivClass(?A,?B) :- mainSubClassOf(?A,?B), mainSubClassOf(?B,?A).
 @export mainSubClassOf :- csv{resource="out1.csv.gz"} .
 @export mainEquivClass :- csv{resource="out2.csv.gz"} .
 
-@export TRIPLE :- csv{resource="outTriple.csv.gz"} .
+%@export TRIPLE :- csv{resource="outTriple.csv.gz"} .

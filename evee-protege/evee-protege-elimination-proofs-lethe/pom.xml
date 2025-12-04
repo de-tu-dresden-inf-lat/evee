@@ -43,6 +43,11 @@
             <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -84,6 +89,7 @@
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             scala.swing.*;resolution:=optional,
                             org.checkerframework.checker.nullness.qual.*;resolution:=optional,
+                            org.slf4j.*,
                             *
                         </Import-Package>
                         <Private-Package>

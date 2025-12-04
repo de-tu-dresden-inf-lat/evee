@@ -61,9 +61,9 @@ public class ELKAtomParser extends AbstractAtomParser{
         return parseSubClassAxiom(args.get(0), args.get(1));
     }
     
-    private OWLAxiom parseSubProperty(List<String> args) throws ProofNotSupportedException {
-        if(parsingHelper.isPlaceholder(args.get(1))) // rolechains on right hand side not supported
-            throw new ProofNotSupportedException("role chains on right hand side not supported");
+    private OWLAxiom parseSubProperty(List<String> args) throws ProofNotSupportedException{
+         if(parsingHelper.isPlaceholder(args.get(1))) //skipping aux role chain inclusions (like r o s <r t o u )
+            return defaultAxiom;
 
 		return parseSubProperty(args.get(0), args.get(1));
 	}
@@ -87,8 +87,8 @@ public class ELKAtomParser extends AbstractAtomParser{
 
     private OWLAxiom parsePropChain(List<String> args) throws ConceptTranslationError, ProofNotSupportedException {
         String supStr = parsingHelper.format(args.get(2));
-        if(parsingHelper.isPlaceholder(supStr))
-            throw new ProofNotSupportedException("role chains on right hand side not supported");
+        if(parsingHelper.isPlaceholder(supStr)) //skipping aux role chain inclusions (like r o s <r t o u )
+            return defaultAxiom;
 
         OWLObjectPropertyExpression sup = parseProp(supStr);
         List<OWLObjectPropertyExpression> chain = new ArrayList<>();

@@ -10,8 +10,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.OWLHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.*;
