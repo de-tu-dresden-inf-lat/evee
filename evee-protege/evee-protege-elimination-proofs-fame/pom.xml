@@ -31,18 +31,18 @@
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.tu-dresden.inf.lat.evee</groupId>
             <artifactId>evee-elimination-proofs-fame-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--&lt;!&ndash;        FamePlus&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>FamePlus</groupId>-->
-<!--            <artifactId>FamePlus</artifactId>-->
-<!--            <version>0.0.1-SNAPSHOT</version>-->
-<!--        </dependency>-->
     </dependencies>
 
 
