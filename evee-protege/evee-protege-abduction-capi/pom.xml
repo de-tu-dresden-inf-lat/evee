@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-protege</artifactId>
         <version>${revision}</version>
     </parent>
@@ -16,14 +16,6 @@
     <properties>
         <bundleName>${project.artifactId}</bundleName>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories>
 
     <dependencies>
 <!--        OWLAPI and protege basics-->
@@ -44,15 +36,15 @@
         </dependency>
 <!--        evee-related -->
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        further de.tu-dresden.inf.lat dependencies -->
+<!--        further io.github.de-tu-dresden-inf-lat dependencies -->
         <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>capi-java-component</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>capi</artifactId>
+            <version>0.2</version>
         </dependency>
 <!--        miscellaneous-->
         <dependency>

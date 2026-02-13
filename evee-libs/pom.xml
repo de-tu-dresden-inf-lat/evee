@@ -6,7 +6,7 @@
 
     <parent>
         <artifactId>evee</artifactId>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <version>${revision}</version>
     </parent>
     <packaging>pom</packaging>

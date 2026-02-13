@@ -9,7 +9,7 @@ For questions or feedback, you can contact Stefan Borgwardt ([stefan.borgwardt@t
 ## About Evee
 Evee is developed at the [Chair of Automata Theory at TU Dresden](https://tu-dresden.de/ing/informatik/thi/lat "https://tu-dresden.de/ing/informatik/thi/lat").
 Evee is a Java library and collection of Protégé plugins that support ontology engineers by explaining reasons for (missing) entailments in OWL ontologies.
-
+- Version 0.5 adds support for Protégé 5.6.0 and Java 11. It also introduces significantly easier to use build and release workflows.
 - Version 0.4 introduces new proof generators for fragments of OWL 2 EL using the graph reasoning engine [Nemo](https://github.com/knowsys/nemo), which are described in the paper
 
   C. Alrabbaa, S. Borgwardt, P. Herrmann, M. Krötzsch: **The shape of EL proofs: A tale of three calculi**, in: P. Koopmann, Y. Ibáñez-García, (Eds.), Proceedings of the 38th International Workshop on Description Logics (DL), CEUR Workshop Proceedings, Opole, Poland, 2025. To appear.
@@ -49,9 +49,9 @@ Evee is a Java library and collection of Protégé plugins that support ontology
   <img src="https://user-images.githubusercontent.com/8749392/183616469-05452593-ae9b-496a-a55d-4fda6d122f2a.png" width="40%" height="40%">
 
 ## Using the Evee plugins
-1. Install [Protégé](https://protege.stanford.edu/ "https://protege.stanford.edu/"). Evee was developed for and tested with Protégé version 5.5.0.
+1. Install [Protégé](https://protege.stanford.edu/ "https://protege.stanford.edu/"). Evee was developed for and tested with Protégé version 5.6.5
 2. Install both the [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin and the [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi.
-3. Copy the evee-protege-*.jar files from the Evee release to the directory "plugins" of your local Protégé installation.
+3. Copy the evee-protege-*.jar files from the [github release page](https://github.com/de-tu-dresden-inf-lat/evee/releases) to the directory "plugins" of your local Protégé installation.
 4. (Optional) Install [SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover"), which is required for the Connection-Minimal Abduction solver utilizing [CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/").
 For Linux and macOS, please refer to [the web page of CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/") for further information on how to install SPASS.
 For Windows, please refer to [the web page of SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover/download "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover/download").
@@ -65,30 +65,24 @@ Some of the Evee plugins require the OWL Reasoner [HermiT](http://www.hermit-rea
 ## Compiling and using Evee
 
 ### Requirements
-Evee requires the following software, which is included as a git-submodule:
-- The library [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools")
-- The library [LETHE-0.8](https://github.com/PKoopmann/LETHE-0.8.git "https://github.com/PKoopmann/LETHE-0.8.git")
 
 The Evee-Protégé plugins require the following other Protégé plugins:
 - The [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin
 - The [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi
-- The OWL Reasoner [HermiT](http://www.hermit-reasoner.com/index.html "http://www.hermit-reasoner.com/index.html"), which is already included as a plugin in Protégé version 5.5.0.
+- The OWL Reasoner [HermiT](http://www.hermit-reasoner.com/index.html "http://www.hermit-reasoner.com/index.html"), which is already included as a plugin in Protégé version 5.6.0.
 
 These plugins also need to be installed into Protégé in order to use the Evee Protégé plugins.
 
 ### Installation
 
 #### Getting the latest stable version of Evee
-1. If you have never downloaded this repository, use `git clone https://github.com/de-tu-dresden-inf-lat/evee --recurse-submodules`.
+1. If you have never downloaded this repository, use `git clone https://github.com/de-tu-dresden-inf-lat/evee`.
    If you have already cloned this repository in the past, use `git pull origin main` from the root directory.
-   These commands will create/update your local repository of Evee (including the submodules [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") and [LETHE-0.8](https://github.com/PKoopmann/LETHE-0.8.git "https://github.com/PKoopmann/LETHE-0.8.git")) to the latest commit.
+   These commands will create/update your local repository of Evee  to the latest commit.
 
-2. Currently, the latest stable version of Evee is tagged as `v04` (you can find previous stable versions by checking the *Releases* on GitHub).
-   To check out the commit of this version, use `git checkout tags/v0.4`.
+2. Currently, the latest stable version of Evee is tagged as `v0.5` (you can find previous stable versions by checking the [Releases](https://github.com/de-tu-dresden-inf-lat/evee/releases) on GitHub).
+   To check out the commit of this version, use `git checkout tags/v0.5`.
    This command will set your local Evee-repository to the commit of this release.
-   However, this does **not** change the submodules [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") or [LETHE-0.8](https://github.com/PKoopmann/LETHE-0.8.git "https://github.com/PKoopmann/LETHE-0.8.git") to the commit associated with the stable release.
-
-3. Use `git submodule update` to set the submodules [lat-scala-dl-tools](https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools "https://github.com/de-tu-dresden-inf-lat/lat-scala-dl-tools") and [LETHE-0.8](https://github.com/PKoopmann/LETHE-0.8.git "https://github.com/PKoopmann/LETHE-0.8.git") to the commit specified in the stable release you have just checked out.
 
 #### Compiling Evee with Maven
 
@@ -97,7 +91,7 @@ For easy compilation, we have created several Maven profiles:
 - owlapi4: This will compile all submodules of Evee except the Evee Protégé plugins. The resulting .jar files will have the OWL API version 4 as a dependency.
 - owlapi5: This will compile all submodules of Evee except the Evee Protégé plugins. The resulting .jar files will have the OWL API version 5 as a dependency.
 - protege: This will compile all submodules of Evee including the Evee Protégé plugins. As Protégé itself uses the OWL API version 4, every compiled .jar  file will have the OWL API version 4 as a dependency.
-- complete: This will compile all submodules of Evee. Every library except for evee-elimination-proofs-fame and the Protégé plugins will be compiled in 2 versions, one using the OWL API version 4, the other using the OWL API version 5.
+- complete: This will compile all submodules of Evee. Every library except for evee-elimination-proofs-fame and evee-nemo-proof-extractor and the Protégé plugins will be compiled in 2 versions, one using the OWL API version 4, the other using the OWL API version 5.
 
 The standard profile is "complete", which can be used via the command `mvn clean install` from the root directory.
 If you want to use any of the other profiles, use the command `mvn clean install -P profileName` instead, where *profileName* is one of the other 3 mentioned above.
@@ -105,33 +99,33 @@ If you want to use any of the other profiles, use the command `mvn clean install
 For easy reuse of Evee as a library, use [evee-libs-owlapi4](evee-libs/evee-libs-owlapi4/pom.xml) or [evee-libs-owlapi5](evee-libs/evee-libs-owlapi5/pom.xml) as a dependency, depending on the version of the OWL API that you need.
 These libraries contain all submodules of Evee except for the Evee Protégé plugins.
 
+### evee as library
+All modules of evee except the Protégé plugins are published on Maven Central under the namespace `io.github.de-tu-dresden-inf-lat`. The artifact `evee-libs` bundels all pblished modules except `evee-protege-core` into one jar. To use it simply add `evee-libs` as a dependency in your projects pom file:
+```
+<groupId>io.github.de-tu-dresden-inf-lat</groupId>
+<artifactId>evee-libs</artifactId>
+<version>0.5</version>
+```
+The above mentioned modules are also published separately on Maven Central. To use one of them use the respective dependency in your pom file.
+E.g. for `evee-elk-proof-extractor-owlapi4`:
+```
+<groupId>io.github.de-tu-dresden-inf-lat</groupId>
+<artifactId>evee-elk-proof-extractor-owlapi4</artifactId>
+<version>0.5</version>
+``` 
+
 ### Technical notes
 
-Evee was developed for and tested with Java version 8.
+Evee was developed for and tested with Java version 11.
 
 Any Scala code of this repository was written for Scala version 2.12.6.
 
-The Protégé plugins were developed for and tested with Protégé version 5.5.0.
+The Protégé plugins were developed for and tested with Protégé version 5.6.5.
 
 The Nemo-based proof generators were tested with Nemo version 0.8.0.
 
 On Windows, the Connection-Minimal Abduction solver was developed and tested with SPASS 3.5 for Windows.
 
-Evee internally relies on the libraries FamePlus and CAPI.
-These two libraries have been pre-installed to a maven-repository in the directory [lib](lib).
-If you only want to use the Evee plugins for Protégé, no further steps are required.
-However, if you want to use Evee anywhere else (e.g. as part of your own project), Fame and CAPI are required for some functionalities of Evee.
-In this case, please declare the directory [lib](lib) as a repository in your pom like this:
-
-```xml
-<repository>
-  <name>localRepository</name>
-  <id>localRepository</id>
-  <url>file:path/to/lib</url>
-</repository>
-```
-
-In this declaration, `path/to/lib` should be replaced by the path to the directory [lib](lib).
 
 ## Disclaimer
 

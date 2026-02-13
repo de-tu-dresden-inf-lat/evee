@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-protege</artifactId>
         <version>${revision}</version>
     </parent>
@@ -19,23 +19,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-<!-- 
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories> -->
 
     <dependencies>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-nemo-proof-extractor</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -131,7 +123,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>de.tu-dresden.inf.lat.evee</groupId>
+                                    <groupId>io.github.de-tu-dresden-inf-lat</groupId>
                                     <artifactId>evee-nemo-proof-extractor</artifactId>
                                     <version>${project.version}</version>
                                     <outputDirectory>${project.build.directory}/unpacked-resources</outputDirectory>

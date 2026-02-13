@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-protege</artifactId>
         <version>${revision}</version>
     </parent>
@@ -17,18 +17,10 @@
         <bundleName>${project.artifactId}</bundleName>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!--        de.tu-dresden.inf.lat-->
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -39,7 +31,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-elimination-proofs-fame-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -19,8 +19,9 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.*;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 public class GraphViewMouseListener extends DefaultMouseManager implements MouseWheelListener {
     private long curTime;

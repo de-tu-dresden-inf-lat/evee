@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.tu-dresden.inf.lat.evee</groupId>
+    <groupId>io.github.de-tu-dresden-inf-lat</groupId>
     <artifactId>evee</artifactId>
     <version>${revision}</version>
 
@@ -23,8 +23,8 @@
         <developer>
             <name>Stefan Borgwardt</name>
             <email>stefan.borgwardt@tu-dresden.de</email>
-            <organization>${tempStefanDeveloperOrganization}</organization>
-            <organizationUrl>${tempStefanDeveloperOrganizationURL}</organizationUrl>
+            <organization>TU Dresden</organization>
+            <organizationUrl>https://tu-dresden.de/ing/informatik/thi/lat</organizationUrl>
         </developer>
     </developers>
 
@@ -41,16 +41,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <revision>0.5</revision>
         <scala.version>2.12.17</scala.version>
-        <revision>0.4-SNAPSHOT</revision>
-        <LatScalaDlTools.Version>0.4.1-SNAPSHOT</LatScalaDlTools.Version>
-        <LETHE.Version>0.8-SNAPSHOT</LETHE.Version>
+        <LatScalaDlTools.Version>0.4.1</LatScalaDlTools.Version>
+        <LETHE.Version>0.8</LETHE.Version>
         <skipCompilation>false</skipCompilation>
         <skipTests>true</skipTests>
         <excludeResourcesInSourceJar>true</excludeResourcesInSourceJar>
-        <!--    temporary variables-->
-        <tempStefanDeveloperOrganization>TU Dresden</tempStefanDeveloperOrganization>
-        <tempStefanDeveloperOrganizationURL>https://tu-dresden.de/ing/informatik/thi/lat</tempStefanDeveloperOrganizationURL>
     </properties>
 
     <build>
@@ -89,85 +86,112 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            generating source files-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>create-source-files</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-test-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>test-jar-no-fork</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-<!--            generating javadoc files-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.10.1</version>
-                <executions>
-                    <execution>
-                        <id>create-javadoc-files</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-<!--            signing with GPG-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.7</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-<!--                            <goal>sign</goal>-->
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-<!--            publishing to Maven Central-->
-            <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.6.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <publishingServerId>central</publishingServerId>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
     <profiles>
+        <profile>
+             <!-- This profile has to be enabled when releasing the package. It will 
+                    enable the sign & publishing phase. -->
+            <id>sonartypeDeploy</id>
+            <build>
+               <plugins>
+                <!--            generating source files-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>create-source-files</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                            <configuration>
+                                <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>create-test-jar</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>test-jar-no-fork</goal>
+                            </goals>
+                            <configuration>
+                                <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                    <!--            generating javadoc files-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.10.1</version>
+                    <executions>
+                        <execution>
+                            <id>create-javadoc-files</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+    <!--            signing with GPG-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.2.7</version>
+                    <configuration>
+                        <gpgArguments>
+                            <arg>--pinentry-mode</arg>
+                            <arg>loopback</arg>
+                        </gpgArguments>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                              <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+    <!--            publishing to Maven Central-->
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.6.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <publishingServerId>central</publishingServerId>
+                        <tokenAuth>true</tokenAuth>
+                        <autoPublish>true</autoPublish>
+                        <waitUntil>published</waitUntil>
+                    </configuration>
+                </plugin>
+               </plugins>
+            </build>
+            <modules>
+                <module>evee-libs</module>
+                <module>evee-data</module>
+                <module>evee-elimination-proofs</module>
+                <module>evee-lethe-proof-extractor</module>
+                <module>evee-elk-proof-extractor</module>
+                <module>evee-relevant-counterexample</module>
+                <module>evee-small-model-generator</module>
+                <module>evee-nemo-proof-extractor</module>
+                <module>evee-protege/evee-protege-core</module>
+            </modules>
+        </profile>
         <profile>
             <id>owlapi4</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <modules>
-                <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
-                <module>LETHE-0.8</module>
                 <module>evee-data/evee-data-owlapi4</module>
                 <module>evee-elimination-proofs/evee-elimination-proofs-core-owlapi4</module>
                 <module>evee-elimination-proofs/evee-elimination-proofs-fame-owlapi4</module>
@@ -194,8 +218,6 @@
                 <skipCompilation>true</skipCompilation>
             </properties>
             <modules>
-                <module>lat-scala-dl-tools</module>
-                <module>LETHE-0.8</module>
                 <module>evee-data</module>
                 <module>evee-elimination-proofs</module>
                 <module>evee-lethe-proof-extractor</module>
@@ -212,8 +234,6 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <modules>
-                <module>lat-scala-dl-tools/lat-scala-dl-tools-owlapi4</module>
-                <module>LETHE-0.8</module>
                 <module>evee-data/evee-data-owlapi4</module>
                 <module>evee-elimination-proofs/evee-elimination-proofs-core-owlapi4</module>
                 <module>evee-elimination-proofs/evee-elimination-proofs-fame-owlapi4</module>
@@ -244,8 +264,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>lat-scala-dl-tools</module>
-                <module>LETHE-0.8</module>
                 <module>evee-data</module>
                 <module>evee-elimination-proofs</module>
                 <module>evee-lethe-proof-extractor</module>
@@ -264,7 +282,6 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <modules>
-                <module>lat-scala-dl-tools</module>
                 <module>evee-data</module>
                 <module>evee-elk-proof-extractor</module>
                 <module>evee-relevant-counterexample</module>

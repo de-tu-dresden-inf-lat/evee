@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-data</artifactId>
         <version>${revision}</version>
     </parent>
@@ -30,8 +30,8 @@
         </dependency>
 
         <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>lat-scala-dl-tools-owlapi4</artifactId>
             <version>${LatScalaDlTools.Version}</version>
         </dependency>
 

@@ -6,7 +6,7 @@
 
     <parent>
         <artifactId>evee-data</artifactId>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <version>${revision}</version>
     </parent>
 
@@ -37,8 +37,8 @@
         </dependency>
 
         <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>lat-scala-dl-tools-owlapi5</artifactId>
             <version>${LatScalaDlTools.Version}</version>
         </dependency>
 

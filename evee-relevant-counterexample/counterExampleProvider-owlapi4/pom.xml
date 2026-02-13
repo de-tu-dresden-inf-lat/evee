@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>de.tu-dresden.inf.lat.evee</groupId>
+    <groupId>io.github.de-tu-dresden-inf-lat</groupId>
     <artifactId>evee-relevant-counterexample</artifactId>
     <version>${revision}</version>
   </parent>
@@ -14,13 +14,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>de.tu-dresden.inf.lat.evee</groupId>
+      <groupId>io.github.de-tu-dresden-inf-lat</groupId>
       <artifactId>evee-data-owlapi4</artifactId>
       <version>${revision}</version>
     </dependency>
 
     <dependency>
-      <groupId>de.tu-dresden.inf.lat.evee</groupId>
+      <groupId>io.github.de-tu-dresden-inf-lat</groupId>
       <artifactId>model-datastructures-owlapi4</artifactId>
       <version>${revision}</version>
     </dependency>

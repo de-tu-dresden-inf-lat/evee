@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-protege</artifactId>
         <version>${revision}</version>
     </parent>
@@ -18,28 +18,18 @@
     </properties>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>de.tu-dresden.inf.lat</groupId>-->
-<!--            <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>-->
-<!--            <version>${LatScalaDlTools.Version}</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>de.tu-dresden.inf.lat.evee</groupId>-->
-<!--            <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-api</artifactId>
             <version>4.5.29</version>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
