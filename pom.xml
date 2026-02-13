@@ -249,7 +249,7 @@
             </modules>
         </profile>
         <profile>
-            <id>pluginDev</id>
+            <id>plugin</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
