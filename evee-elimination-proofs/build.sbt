@@ -1,6 +1,6 @@
 //general settings:
 ThisBuild / name := "evee-elimination-proofs"
-ThisBuild / organization := "de.tu-dresden.inf.lat.evee"
+ThisBuild / organization := "io.github.de-tu-dresden-inf-lat"
 ThisBuild / version := "0.1.1-SNAPSHOT"
 ThisBuild / scalaVersion := "2.12.6"
 ThisBuild / resolvers += Resolver.mavenLocal
@@ -39,7 +39,7 @@ lazy val evee_elimination_proofs_core_owlapi4 = Project(
     name := createString("core", 4),
     libraryDependencies ++= Seq(
 //      my own stuff:
-      "de.tu-dresden.inf.lat.evee" % "evee-data-owlapi4" % "0.1",
+      "io.github.de-tu-dresden-inf-lat" % "evee-data-owlapi4" % "0.1",
 //      reasoner:
       "net.sourceforge.owlapi" % "org.semanticweb.hermit" % "1.3.8.413",
     )
@@ -55,7 +55,7 @@ lazy val evee_elimination_proofs_core_owlapi5 = Project(
 //    target := file(file(createTargetDirString("core", 5)).getAbsolutePath),  //alternative to explicitly adding scalaSource
     libraryDependencies ++= Seq(
 //       my own stuff:
-      "de.tu-dresden.inf.lat.evee" % "evee-data-owlapi5" % "0.1",
+      "io.github.de-tu-dresden-inf-lat" % "evee-data-owlapi5" % "0.1",
 
 //      "net.sourceforge.owlapi" % "owlapi-distribution" % "3.5.2",
 //      "com.hermit-reasoner" % "org.semanticweb.hermit" % "1.3.8.4",
@@ -75,7 +75,7 @@ lazy val evee_elimination_proofs_fame_owlapi4 = Project(
     libraryDependencies ++= Seq(
 //        for FAME
       "org.apache.commons" % "commons-lang3" % "3.6",
-      "com.google.guava" % "guava" % "19.0-rc3",
+      "com.google.guava" % "guava" % "21.0",
     ))
   .dependsOn(evee_elimination_proofs_core_owlapi4)
 

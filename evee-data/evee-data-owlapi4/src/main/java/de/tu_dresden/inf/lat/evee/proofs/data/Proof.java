@@ -1,11 +1,6 @@
 package de.tu_dresden.inf.lat.evee.proofs.data;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,6 +33,12 @@ public class Proof<SENTENCE> implements IProof<SENTENCE> {
 		for (IInference<SENTENCE> inference : inferences) {
 			conclusions2inferences.put(inference.getConclusion(), inference);
 		}
+	}
+
+	private Proof(SENTENCE finalConclusion, List<IInference<SENTENCE>> inferences, SetMultimap<SENTENCE, IInference<SENTENCE>> conclusions2inferences) {
+		this.finalConclusion = finalConclusion;
+		this.inferences = inferences;
+		this.conclusions2inferences = conclusions2inferences;
 	}
 
 	public Proof(SENTENCE finalConclusion) {
@@ -75,6 +76,11 @@ public class Proof<SENTENCE> implements IProof<SENTENCE> {
 	@Override
 	public boolean hasInferenceFor(SENTENCE conclusion) {
 		return conclusions2inferences.containsKey(conclusion);
+	}
+
+	@Override
+	public IProof<SENTENCE> withoutDuplicateInferences() {
+		return new Proof<>(finalConclusion, new LinkedList<>(new LinkedHashSet<>(inferences)), conclusions2inferences);
 	}
 
 	@JsonIgnore

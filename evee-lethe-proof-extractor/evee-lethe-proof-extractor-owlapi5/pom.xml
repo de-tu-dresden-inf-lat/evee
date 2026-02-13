@@ -7,25 +7,14 @@
     <artifactId>evee-lethe-proof-extractor-owlapi5</artifactId>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-lethe-proof-extractor</artifactId>
         <version>${revision}</version>
     </parent>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <skipTests>true</skipTests>
         <skipCompilation>false</skipCompilation>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -44,21 +33,16 @@
             <artifactId>org.semanticweb.hermit</artifactId>
             <version>1.4.3.517</version>
         </dependency>
-        <!--        de.tu-dresden.inf.lat -->
+        <!--        io.github.de-tu-dresden-inf-lat -->
         <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lethe-owlapi5_2.12</artifactId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>lethe-owlapi5</artifactId>
             <version>${LETHE.Version}</version>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-data-owlapi5</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
-            <version>${LatScalaDlTools.Version}</version>
         </dependency>
 
     </dependencies>
@@ -106,7 +90,7 @@
                                     <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/main/java</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -114,7 +98,7 @@
                                     <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/test/java</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -122,7 +106,7 @@
                                     <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-resources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/test/resources</outputDirectory>
                                 </artifactItem>
                             </artifactItems>

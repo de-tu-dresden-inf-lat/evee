@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-elimination-proofs_2.12</artifactId>
         <version>${revision}</version>
     </parent>
@@ -18,7 +18,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-data-owlapi5</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -45,7 +45,7 @@
                                     <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/main/scala</outputDirectory>
                                 </artifactItem>
                                 <artifactItem>
@@ -53,7 +53,7 @@
                                     <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>main-resources</classifier>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/main/resources</outputDirectory>
                                 </artifactItem>
                             </artifactItems>

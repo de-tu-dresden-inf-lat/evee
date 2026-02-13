@@ -6,17 +6,12 @@
 
     <parent>
         <artifactId>evee</artifactId>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <version>${revision}</version>
     </parent>
     <packaging>pom</packaging>
 
     <artifactId>evee-libs</artifactId>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
 
     <modules>
         <module>evee-libs-owlapi4</module>

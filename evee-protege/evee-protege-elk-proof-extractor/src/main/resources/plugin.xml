@@ -3,7 +3,7 @@
 <plugin>
 
     <extension id="eveeProofPreferencesElkOptimized" point="org.liveontologies.protege.explanation.proof.preferences">
-        <label value="Optimized Elk Proof"/>
+        <label value="Optimized ELK Proof"/>
         <class value="de.tu_dresden.inf.lat.evee.protege.elkBasedProofService.EveeElkBasedExtractorPreferencesUI"/>
     </extension>
 

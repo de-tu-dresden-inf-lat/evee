@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>de.tu-dresden.inf.lat.evee</groupId>
+    <groupId>io.github.de-tu-dresden-inf-lat</groupId>
     <artifactId>evee-relevant-counterexample</artifactId>
     <version>${revision}</version>
   </parent>
@@ -14,9 +14,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>de.tu-dresden.inf.lat</groupId>
-      <artifactId>lat-scala-dl-tools-owlapi5_2.12</artifactId>
-      <version>0.4.1-SNAPSHOT</version>
+      <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+      <artifactId>lat-scala-dl-tools-owlapi5</artifactId>
+      <version>0.4.1</version>
     </dependency>
   </dependencies>
 
@@ -57,7 +57,7 @@
                   <artifactId>model-datastructures-owlapi4</artifactId>
                   <version>${project.version}</version>
                   <classifier>sources</classifier>
-                  <overWrite>false</overWrite>
+                  <overWrite>true</overWrite>
                   <outputDirectory>${project.basedir}/target/src/main/java</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -65,7 +65,7 @@
                   <artifactId>model-datastructures-owlapi4</artifactId>
                   <version>${project.version}</version>
                   <classifier>test-sources</classifier>
-                  <overWrite>false</overWrite>
+                  <overWrite>true</overWrite>
                   <outputDirectory>${project.basedir}/target/src/test/java</outputDirectory>
                 </artifactItem>
                 <artifactItem>
@@ -73,7 +73,7 @@
                   <artifactId>model-datastructures-owlapi4</artifactId>
                   <version>${project.version}</version>
                   <classifier>main-resources</classifier>
-                  <overWrite>false</overWrite>
+                  <overWrite>true</overWrite>
                   <outputDirectory>${project.basedir}/target/src/main/resources</outputDirectory>
                 </artifactItem>
               </artifactItems>

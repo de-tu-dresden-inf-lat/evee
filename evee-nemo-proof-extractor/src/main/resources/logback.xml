@@ -1,0 +1,4 @@
+<configuration>
+  <logger name="org.semanticweb.elk.reasoner" level="WARNING"/>
+  <logger name="org.semanticweb.owlapi.utilities" level="WARNING"/>
+</configuration>

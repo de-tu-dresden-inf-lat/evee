@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-protege</artifactId>
         <version>${revision}</version>
     </parent>
@@ -11,47 +11,16 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-<!--        bundleName needs to coincide with pluginId used in constructor of nonEntailment pluginLoader in order to correctly declare our extension point for protege-->
+<!--        bundleName needs to coincide with pluginId used in constructors of nonEntailment pluginLoader in order to correctly declare our extension point for protege-->
         <bundleName>de.tu_dresden.inf.lat.evee</bundleName>
-<!--        <bundleName>${artifactId}</bundleName>-->
     </properties>
-
 
     <dependencies>
         <!--		owlapi and protege bascis-->
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
-            <artifactId>owlapi-distribution</artifactId>
-            <version>4.5.20</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.stanford.protege</groupId>
-            <artifactId>protege-common</artifactId>
-            <version>5.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.stanford.protege</groupId>
-            <artifactId>protege-editor-core</artifactId>
-            <version>5.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.stanford.protege</groupId>
-            <artifactId>protege-editor-owl</artifactId>
-            <version>5.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.liveontologies</groupId>
-            <artifactId>protege-proof-explanation</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-        <!--		de.tu-dresden.inf.lat-->
-        <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
-            <artifactId>evee-data-owlapi4</artifactId>
-            <version>${project.version}</version>
+            <artifactId>owlapi-osgidistribution</artifactId>
+            <version>4.5.29</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -60,7 +29,29 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>edu.stanford.protege</groupId>
+            <artifactId>protege-common</artifactId>
+            <version>5.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.stanford.protege</groupId>
+            <artifactId>protege-editor-core</artifactId>
+            <version>5.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.stanford.protege</groupId>
+            <artifactId>protege-editor-owl</artifactId>
+            <version>5.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.liveontologies</groupId>
+            <artifactId>protege-proof-explanation</artifactId>
+           <version>0.2.0-SNAPSHOT</version>
+        </dependency>
+
+        <!--		de.tu-dresden.inf.lat-->
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -76,11 +67,11 @@
 <!--        todo: try version 1.8.0-beta1-SNAPSHOT to remove warning during compilation?-->
             <version>1.7.30</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.google.guava</groupId>-->
-<!--            <artifactId>guava</artifactId>-->
-<!--            <version>31.1-jre</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -108,14 +99,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.graphstream</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>gs-ui-swing</artifactId>
-            <version>2.0</version>
+            <version>2.2</version>
         </dependency>
         <dependency>
-            <groupId>org.graphstream</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>gs-core</artifactId>
-            <version>2.0</version>
+            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.swt.win32.win32</groupId>
@@ -149,16 +140,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>5.1.9</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -169,22 +160,17 @@
                             org.protege.editor.core.*;version="5.0",
                             sun.misc.*;resolution:=optional,
                             org.checkerframework.checker.nullness.qual.*;resolution:=optional,
-<!--                            org.apache.batik.transcoder.*;resolution:=optional,-->
-<!--                            org.apache.tools.ant.*;resolution:=optional,-->
-<!--                            org.graalvm.polyglot.*;resolution:=optional,-->
                             *
                         </Import-Package>
                         <Export-Package>
-                            com.fasterxml.jackson.*,
+                            com.fasterxml.jackson.*;-split-package:=merge-last,
                             com.fasterxml.jackson.dataformat.xml,
                             com.fasterxml.jackson.dataformat.xml.annotation,
                             com.fasterxml.jackson.dataformat.xml.util,
-<!--                            de.tu_dresden.inf.lat.evee.eliminationProofs.*;-split-package:=merge-last,-->
                             de.tu_dresden.inf.lat.evee.general.data.exceptions.*,
                             de.tu_dresden.inf.lat.evee.general.interfaces.*,
                             de.tu_dresden.inf.lat.evee.general.tools.*,
                             de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.*,
-<!--                            de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.*,-->
                             de.tu_dresden.inf.lat.evee.proofs.*,
                             de.tu_dresden.inf.lat.evee.proofs.interfaces.*,
                             de.tu_dresden.inf.lat.dltools.*,
@@ -193,6 +179,10 @@
                             com.typesafe.scalalogging.*,
                             scala.*,
                             com.google.errorprone.annotations.*,
+                            <!--     com.google.appengine.api,
+                                 com.google.appengine.api.utils,
+                                 com.google.apphosting.api,
+                                 com.google.thirdparty.publicsuffix, -->
                         </Export-Package>
                         <Private-Package>
                             org.yaml.snakeyaml.*,
@@ -201,21 +191,10 @@
                             junit.framework.*,
                             junit.runner.*,
                             org.hamcrest.*,
-
                             org.graphstream.*,
                             javax.xml.stream.*,
-                            org.miv.*
-<!--                            guru.nidi.graphviz.attribute.*,-->
-<!--                            guru.nidi.graphviz.engine.*,-->
-<!--                            guru.nidi.graphviz.model.*,-->
-<!--                            guru.nidi.graphviz.service.*,-->
-<!--                            com.eclipsesource.v8.*,-->
-<!--                            com.kitfox.svg.*,-->
-<!--                            com.google.common.collect.*;-split-package:=merge-last,-->
-<!--                            com.google.common.base.*;-split-package:=merge-last,-->
-<!--                            com.google.common.math.*;-split-package:=merge-last,-->
-<!--                            com.google.common.primitives.*;-split-package:=merge-last,-->
-<!--                            org.apache.commons.exec.*,-->
+                            org.miv.*,
+                            <!-- com.google.common.* -->
                         </Private-Package>
 <!--                        problem with embedding dependencies: adds import-package instruction for android.dalvik which cannot be resolved by protege
                             solution: try embedding only those dependencies currently mentioned in import/export/private-package-->
@@ -233,13 +212,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <artifactId>maven-eclipse-plugin</artifactId>-->
-<!--                <version>2.9</version>-->
-<!--                <configuration>-->
-<!--                    <pde>true</pde>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 

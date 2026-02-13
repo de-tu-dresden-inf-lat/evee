@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.abduction.capiBasedNonEntailmentExpla
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
+import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction.AbstractAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
@@ -16,8 +17,6 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.model.parameters.OntologyCopy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ch.qos.logback.classic.Logger;
-//import ch.qos.logback.core.Appender;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,9 +64,6 @@ public class CapiAbductionSolver
     private final CapiPreferencesManager preferencesManager;
     private static final String EMPTY_SPASS_PATH = "<html>No path to SPASS is set.<br>Please set a path to the SPASS executable and try again</html>";
 
-//    private Appender<ILoggingEvent> stdoutAppender = null;
-//    private Appender<ILoggingEvent> filesAppender = null;
-//    private final Logger logger = (Logger) LoggerFactory.getLogger(CapiAbductionSolver.class);
     private final Logger logger = LoggerFactory.getLogger(CapiAbductionSolver.class);
 
     private enum FileNames{
@@ -114,7 +110,7 @@ public class CapiAbductionSolver
         this.logger.debug("Input ontology filtered");
         this.logger.debug("Checking path to SPASS.");
         this.spassPath = this.preferencesManager.loadSpassPath();
-        if (this.spassPath.equals("")){
+        if (this.spassPath.isEmpty()){
             this.logger.debug("Path to SPASS not set, requesting user input");
             this.sendViewComponentEvent(ExplanationEventType.RESULT_RESET);
             this.showSpassPathDialog();
@@ -154,7 +150,7 @@ public class CapiAbductionSolver
                 this.sendViewComponentEvent(ExplanationEventType.RESULT_RESET);
                 return null;
             }
-            else if (this.solutions.size() != 0){
+            else if (!this.solutions.isEmpty()){
                 return Stream.generate(this);
             } else{
 //                error-branch, an error was thrown to the viewComponent earlier, leading to the loading screen being disposed
@@ -189,7 +185,7 @@ public class CapiAbductionSolver
     }
 
     private void computeNewExplanation() {
-        assert (this.missingEntailment.size() != 0);
+        assert (!this.missingEntailment.isEmpty());
         final ArrayList<OWLSubClassOfAxiom> missingEntailmentList = new ArrayList<>();
         this.missingEntailment.forEach(axiom -> {
             if (axiom instanceof OWLSubClassOfAxiom)
@@ -217,8 +213,14 @@ public class CapiAbductionSolver
 
     }
 
+    @Override
+    public IOWLAbductionSolver getInternalSolver() {
+        return this;
+    }
+
     private void createSpassInputFiles(OWLSubClassOfAxiom missingEntailment) throws OWLOntologyCreationException,
-            IOException, OWL2SpassConverter.TranslationException, OWL2SpassConverter.EmptyOntologyException, OWLOntologyStorageException,
+            IOException, OWL2SpassConverter.TranslationException, OWL2SpassConverter.EmptyOntologyException,
+            OWLOntologyStorageException,
             NumberFormatException {
         this.logger.debug("Creating SPASS input files");
         this.progressTracker.setMessage("Creating SPASS input files");
@@ -264,11 +266,13 @@ public class CapiAbductionSolver
         } catch (OWL2SpassConverter.TranslationException e) {
             this.logger.error("Error when translating ontology to SPASS: ", e);
             throw e;
-        } catch (OWL2SpassConverter.EmptyOntologyException e) {
+        }
+        catch (OWL2SpassConverter.EmptyOntologyException e) {
             this.logger.error("Error when extracting module from ontology: ", e);
             throw new RuntimeException(e.getMessage());//TODO OWL2SpassConverter.EmptyOntologyException(e.getMessage());
 //            throw new OWL2SpassConverter.EmptyOntologyException("Empty ontology computed during pre-processing, please change the observation.");
-        } catch (OWLOntologyStorageException e) {
+        }
+        catch (OWLOntologyStorageException e) {
             this.logger.error("Error when creating temporary ontology file: ", e);
             throw e;
         } catch (IOException e) {
@@ -327,7 +331,6 @@ public class CapiAbductionSolver
         if (! this.checkSpassOutputFileExistence()){
             this.computationFailed("Error when trying to read from SPASS output file: file not existing.");
         } else{
-//            this.disableLogging();
             this.progressTracker.setMessage("Parsing SPASS output");
             this.logger.debug("Parameters for parsing: remove redundancies={} - simplify conjunctions={} - " +
                             "semantically ordered={}",
@@ -373,20 +376,6 @@ public class CapiAbductionSolver
                         this.logger.debug("Postprocessing terminated after removing redundancies");
                         return;
                     }
-//                    generatedSolutions = generatedSolutions.stream()
-//                            .map(sol -> {
-//                                if(this.simplifyConjunctions) {
-//                                    this.logger.debug("Simplifying solution {}", sol);
-//                                    return postProcessing.simplifyAxioms(sol);
-//                                }
-//                                else { return sol;}
-//                            }).map(sol -> {
-//                                if(this.removeRedundancies) {
-//                                    this.logger.debug("Removing redundancy in {}", sol);
-//                                    return postProcessing.removeRedundantAxioms(sol);
-//                                }
-//                                else { return sol;}
-//                            }).collect(Collectors.toSet());
                     if(this.semanticallyOrdered) {
                         this.logger.debug("Postprocessing: ordering solutions");
                         generatedSolutions = this.postProcessing.sortBySemanticMinimality(generatedSolutions);
@@ -396,7 +385,7 @@ public class CapiAbductionSolver
                     }
                 }
                 this.solutions.addAll(generatedSolutions);
-                if (this.solutions.size() == 0){
+                if (this.solutions.isEmpty()){
                     this.emptySolutionFound = true;
                 }
                 this.logger.debug("Solutions successfully generated");
@@ -408,28 +397,9 @@ public class CapiAbductionSolver
             } catch (OWLOntologyCreationException e){
                 this.logger.error("Error when reading temporary ontology file: ", e);
                 throw e;
-            } finally{
-//                this.enableLogging();
             }
         }
     }
-
-//    todo: currently not compiling on local machine due to version mismatches, but might be solution disabling logging for postprocessing
-//    private void disableLogging(){
-//        this.logger.debug("Logging disabled");
-//        Logger rootLogger = ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME));
-//        this.stdoutAppender = rootLogger.getAppender("stdout");
-//        this.filesAppender = rootLogger.getAppender("files");
-//        ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).detachAppender("stdout");
-//        ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).detachAppender("files");
-//    }
-//
-//    private void enableLogging(){
-//        Logger rootLogger = ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME));
-//        rootLogger.addAppender(this.stdoutAppender);
-//        rootLogger.addAppender(this.filesAppender);
-//        this.logger.debug("Logging enabled");
-//    }
 
     private boolean checkSpassOutputFileExistence(){
         File modelFile = new File(this.concatFileName(FileNames.MODEL));

@@ -7,31 +7,31 @@ package de.tu_dresden.inf.lat.evee.data;
  */
 public enum ProofType {
 	MinimalTreeSize, CondensedMinimalTreeSize, MinimalDepth, CondensedMinimalDepth, MinimalWeightedTreeSize,
-	CondensedMinimalWeightedTreeSize, TreeUnravellingOFMinimalSizeGraph, MinimalSizeGraph;
+	CondensedMinimalWeightedTreeSize, TreeUnravellingOfMinimalSizeGraph, MinimalSizeGraph;
 
 	public static ProofType getTypeValue(String str) {
-		if (str.toLowerCase().equals("mintreesize"))
+		if (str.equalsIgnoreCase(MinimalTreeSize.toString()))
 			return ProofType.MinimalTreeSize;
 
-		if (str.toLowerCase().equals("conmintreesize"))
+		if (str.equalsIgnoreCase(CondensedMinimalTreeSize.toString()))
 			return ProofType.CondensedMinimalTreeSize;
 
-		if (str.toLowerCase().equals("mindepth"))
+		if (str.equalsIgnoreCase(MinimalDepth.toString()))
 			return ProofType.MinimalDepth;
 
-		if (str.toLowerCase().equals("conmindepth"))
+		if (str.equalsIgnoreCase(CondensedMinimalDepth.toString()))
 			return ProofType.CondensedMinimalDepth;
 
-		if (str.toLowerCase().equals("minwtreesize"))
+		if (str.equalsIgnoreCase(MinimalWeightedTreeSize.toString()))
 			return ProofType.MinimalWeightedTreeSize;
 
-		if (str.toLowerCase().equals("conminwtreesize"))
+		if (str.equalsIgnoreCase(CondensedMinimalWeightedTreeSize.toString()))
 			return ProofType.CondensedMinimalWeightedTreeSize;
 
-		if (str.toLowerCase().equals("unrgraph"))
-			return ProofType.TreeUnravellingOFMinimalSizeGraph;
+		if (str.equalsIgnoreCase(TreeUnravellingOfMinimalSizeGraph.toString()))
+			return ProofType.TreeUnravellingOfMinimalSizeGraph;
 
-		if (str.toLowerCase().equals("mingraph"))
+		if (str.equalsIgnoreCase(MinimalSizeGraph.toString()))
 			return ProofType.MinimalSizeGraph;
 
 		throw new IllegalArgumentException("No TreeProofType value for \"" + str + "\"");

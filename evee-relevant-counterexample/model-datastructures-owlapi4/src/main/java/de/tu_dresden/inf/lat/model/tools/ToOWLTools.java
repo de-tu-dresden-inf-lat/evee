@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -308,7 +309,6 @@ public class ToOWLTools {
 	 * Return an empty OWLOntology object
 	 * 
 	 * @return
-	 * @throws OWLOntologyCreationException
 	 */
 	public OWLOntology getEmptyOntology() {
 		return emptyOntology;
@@ -428,6 +428,20 @@ public class ToOWLTools {
 				getSubConcepts(((OWLObjectSomeValuesFrom) conjunct).getFiller(), expressions);
 			}
 		});
+	}
+
+	/**
+	 * Return a set of all sub-concepts that appear in the input axiom
+	 * @param axiom
+	 * @return
+	 */
+	public Set<OWLClass> getConceptNamesInAxiom(OWLSubClassOfAxiom axiom){
+		Set<OWLClassExpression> res = new HashSet<>();
+
+		res.addAll(getSubConcepts(axiom.getSubClass()));
+		res.addAll(getSubConcepts(axiom.getSuperClass()));
+
+		return res.stream().filter(x->x instanceof OWLClass).map(OWLClass.class::cast).collect(Collectors.toSet());
 	}
 
 	/**

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-elk-proof-extractor</artifactId>
         <version>${revision}</version>
     </parent>
@@ -13,54 +13,27 @@
     <artifactId>evee-elk-proof-extractor-owlapi4</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.semanticweb.elk</groupId>
-            <artifactId>elk-owlapi4</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
+            <groupId>io.github.liveontologies</groupId>
+            <artifactId>elk-owlapi</artifactId>
+            <version>0.6.0</version>
         </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>create-source-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-test-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

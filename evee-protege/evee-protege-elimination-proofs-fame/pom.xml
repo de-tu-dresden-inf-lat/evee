@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-protege</artifactId>
         <version>${revision}</version>
     </parent>
@@ -14,37 +14,26 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <bundleName>${project.artifactId}</bundleName>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <!--        de.tu-dresden.inf.lat-->
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-elimination-proofs-fame-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
-        </dependency>
-<!--        FamePlus-->
-        <dependency>
-            <groupId>FamePlus</groupId>
-            <artifactId>FamePlus</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -63,16 +52,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>5.1.9</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -116,6 +105,7 @@
                             com.google.common.base.*;-split-package:=merge-last,
                             com.google.common.math.*;-split-package:=merge-last,
                             com.google.common.primitives.*;-split-package:=merge-last,
+                            com.google.errorprone.annotations.*;-split-package:=merge-last,
                         </Private-Package>
                     </instructions>
                 </configuration>

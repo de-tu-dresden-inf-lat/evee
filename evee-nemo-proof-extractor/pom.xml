@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-          <groupId>de.tu-dresden.inf.lat.evee</groupId>
+          <groupId>io.github.de-tu-dresden-inf-lat</groupId>
           <artifactId>evee</artifactId>
           <version>${revision}</version>
     </parent>
@@ -12,21 +12,21 @@
     <artifactId>evee-nemo-proof-extractor</artifactId>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <skipTests>true</skipTests>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-data-owlapi4</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.24.2</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
     </dependencies>
 

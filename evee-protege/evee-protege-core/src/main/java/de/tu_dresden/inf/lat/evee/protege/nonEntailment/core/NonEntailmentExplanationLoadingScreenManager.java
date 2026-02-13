@@ -160,9 +160,9 @@ public class NonEntailmentExplanationLoadingScreenManager implements
     public void handleUIEvent(ExplanationLoadingScreenEvent event) {
         SwingUtilities.invokeLater(() -> {
             if (event == null){
-                logger.debug("event is null");
+                this.logger.debug("event is null");
             } else if (event.getType() == null){
-                this.logger.debug("eventyType is null");
+                this.logger.debug("eventType is null");
             }
             switch (event.getType()){
                 case UPDATE_LOADING_MESSAGE:
@@ -327,7 +327,7 @@ public class NonEntailmentExplanationLoadingScreenManager implements
     }
 
 
-    public void activeLoadingUI(){
+    public void activateLoadingUI(){
 //        SwingUtilities.invokeLater(() -> {
             this.computationRunning = true;
             this.showLoadingScreen();

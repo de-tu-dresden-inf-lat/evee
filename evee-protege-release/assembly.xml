@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <id>evee-protege-release-${revision}</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <baseDirectory>evee_protege_v_${revision}</baseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/..</directory>
+            <includes>
+                <include>LICENSE.txt</include>
+                <include>README.md</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <includes>
+<!--                left empty to include ALL dependencies declared in the pom.xml of evee-protege-release -->
+            </includes>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+<!--            exclude artifact for THIS project -->
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+    </dependencySets>
+</assembly>

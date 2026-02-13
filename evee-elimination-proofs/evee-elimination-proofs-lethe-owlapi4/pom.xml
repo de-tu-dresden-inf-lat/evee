@@ -5,29 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-elimination-proofs_2.12</artifactId>
         <version>${revision}</version>
     </parent>
 
     <artifactId>evee-elimination-proofs-lethe-owlapi4_2.12</artifactId>
 
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat</groupId>
-            <artifactId>lethe-owlapi4_2.12</artifactId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>lethe-owlapi4</artifactId>
             <version>${LETHE.Version}</version>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -38,38 +30,11 @@
         <testSourceDirectory>${project.basedir}/src/test</testSourceDirectory>
         <plugins>
             <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>create-source-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-test-jar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                        <configuration>
-                            <excludeResources>true</excludeResources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.2</version>
                 <executions>
                     <execution>
                         <id>create-test-resources-jar</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>

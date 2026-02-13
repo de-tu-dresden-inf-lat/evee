@@ -24,7 +24,7 @@ public class ProofTest {
 
     private final String nemoExcecPath = System.getProperty("user.home") + "/nmo8";
 
-    private final String [] ELplusplusTaskFiles = {
+    private final String [] taskFiles = {
         "task_disjoint.json",
         "task_EL.json",
         "task_EL_simple.json",
@@ -39,14 +39,18 @@ public class ProofTest {
         "task00200.json"
     };
 
-       private final String [] ELRTaskFiles = {
+       private final String [] taskFilesTextbook = {
         "task_disjoint.json",
         "task_EL.json",
         "task_EL_simple.json",
         "task00001.json",
         "task00003.json",
         "task_roleInc.json",
-        "task00024.json"
+        "task00024.json",
+        "task00001.json",
+        "task00003.json",
+        "task00024.json",
+        "task00200.json"
     };
 
     @Test
@@ -54,7 +58,7 @@ public class ProofTest {
  
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
 
-        for(String taskFile : ELplusplusTaskFiles){
+        for(String taskFile : taskFiles){
             System.out.println("-------- runnning task "+ taskFile+ " ---------");
 
             IInference<OWLAxiom> task = readTask(taskFile);
@@ -70,7 +74,7 @@ public class ProofTest {
  
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
 
-        for(String taskFile : ELplusplusTaskFiles){
+        for(String taskFile : taskFiles){
             System.out.println("-------- runnning task "+ taskFile+ " ---------");
 
             IInference<OWLAxiom> task = readTask(taskFile);
@@ -86,7 +90,7 @@ public class ProofTest {
  
         CorrectnessEvaluator evaluator = new CorrectnessEvaluator();
 
-        for(String taskFile : ELRTaskFiles){
+        for(String taskFile : taskFilesTextbook){
             System.out.println("-------- runnning task "+ taskFile+ " ---------");
 
             IInference<OWLAxiom> task = readTask(taskFile);
@@ -115,8 +119,8 @@ public class ProofTest {
 //    @Ignore("For dev purposes")
     @Test
     public void testTask2() throws OWLOntologyCreationException, ProofGenerationException{
-        IInference<OWLAxiom> task = readTask(  "task_EL.json");
-        IProof<OWLAxiom> proof = runTask(task, ECalculus.ENVELOPE);
+        IInference<OWLAxiom> task = readTask(  "task_unsup01.json");
+        IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         System.out.println(proof.toString());
         System.out.println("final conclusion: " + proof.getFinalConclusion());
@@ -131,7 +135,7 @@ public class ProofTest {
     @Ignore
     @Test
     public void exportProofJson() throws Exception{
-        IInference<OWLAxiom> task = readTask(  "task_roleInc.json");
+        IInference<OWLAxiom> task = readTask(  "task_unsup02.json");
         IProof<OWLAxiom> proof = runTask(task, ECalculus.ELK);
 
         JsonProofWriter<OWLAxiom> jsonWriter = new JsonProofWriter<>();

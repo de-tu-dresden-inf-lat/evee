@@ -5,19 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee</artifactId>
         <version>${revision}</version>
     </parent>
 
     <artifactId>evee-elimination-proofs_2.12</artifactId>
     <packaging>pom</packaging>
-
-    <properties>
-        <scala.version>2.12.6</scala.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <skipTests>true</skipTests>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -54,7 +48,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId> <!-- standard maven compile plugin turned off-->
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <skipMain>true</skipMain>
                     <skip>true</skip>
@@ -102,6 +96,19 @@
                 <configuration>
                     <skipTests>${skipTests}</skipTests>
                 </configuration>
+            </plugin>
+             <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>4.9.9</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>doc-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
             </plugin>
         </plugins>
     </build>

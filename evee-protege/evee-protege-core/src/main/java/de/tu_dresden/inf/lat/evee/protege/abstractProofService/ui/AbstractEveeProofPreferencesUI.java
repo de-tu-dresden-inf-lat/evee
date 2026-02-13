@@ -46,7 +46,8 @@ public abstract class AbstractEveeProofPreferencesUI extends OWLPreferencesPanel
 
     protected void createUiElements(){
         SwingUtilities.invokeLater(() -> {
-            for (String identifier : this.abstractProofPreferencesManager.getProofServiceNameSet()){
+            for (String identifier : this.abstractProofPreferencesManager.getProofServiceIDs()){
+                logger.debug("ID: {}\nUI-label: {}\nToolTip: {}", identifier, this.abstractProofPreferencesManager.getIsActiveUILabel(identifier), this.abstractProofPreferencesManager.getIsActiveToolTip(identifier));
                 JCheckBox checkBox = new JCheckBox(
                         this.abstractProofPreferencesManager.getIsActiveUILabel(identifier),
                         this.abstractProofPreferencesManager.loadIsActive(identifier));

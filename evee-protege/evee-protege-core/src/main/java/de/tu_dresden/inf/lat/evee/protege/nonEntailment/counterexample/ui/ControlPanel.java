@@ -17,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,13 +34,13 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
     private final int LABELS_INIT = 2;
     final int BIG_SPACE = 30;
     final int SMALL_SPACE = 20;
-    private final DefaultListModel<OWLClass> classListModel = new DefaultListModel();
-    private final DefaultListModel<OWLAxiom> disjAxiomsListModel = new DefaultListModel();
+    private final DefaultListModel<OWLClass> classListModel = new DefaultListModel<>();
+    private final DefaultListModel<OWLAxiom> disjAxiomsListModel = new DefaultListModel<>();
     private final Logger logger = Logger.getLogger(ControlPanel.class);
     private final OWLDataFactory df = OWLManager.getOWLDataFactory();
     private int currentlabelsNum = 2;
-    JList classList;
-    private JList disjAxiomsList;
+    JList<OWLClass> classList;
+    private JList<OWLAxiom> disjAxiomsList;
     OWLEditorKit owlEditorKit;
     ControlPanelEventListener controlPanelEventListener;
     private ICounterexampleGenerationEventListener counterexampleGenerationEventListener;
@@ -223,13 +222,13 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         return labelNumSliderPanel;
     }
     void createClassList() {
-        this.classList = new JList(this.classListModel);
+        this.classList = new JList<>(this.classListModel);
         this.classList.setSelectionMode(2);
         this.classList.setCellRenderer(new OWLCellRenderer(this.owlEditorKit));
     }
 
     private void createDisjAxiomsList() {
-        this.disjAxiomsList = new JList(this.disjAxiomsListModel);
+        this.disjAxiomsList = new JList<>(this.disjAxiomsListModel);
         this.disjAxiomsList.setSelectionMode(2);
         this.disjAxiomsList.setCellRenderer(new OWLCellRenderer(this.owlEditorKit));
     }
@@ -274,11 +273,11 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
     }
 
     private void addDisjointnesses() {
-        if (classList.getSelectedValues().length < 2) {
+        if (classList.getSelectedValuesList().size() < 2) {
             JOptionPane.showMessageDialog(new JPanel(), "Please select at least 2 classes", "Error", 0);
         } else {
             disjAxiomsListModel.addElement(
-                    df.getOWLDisjointClassesAxiom(Arrays.stream(classList.getSelectedValues())
+                    df.getOWLDisjointClassesAxiom(classList.getSelectedValuesList().stream()
                             .map(ax -> (OWLClassExpression) ax)
                             .collect(Collectors.toSet())));
         }
@@ -290,7 +289,7 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
 
     }
     private void removeDisjointnesses() {
-        Arrays.stream(disjAxiomsList.getSelectedValues()).map((ax) -> (OWLAxiom) ax).forEach((ax) -> {
+        disjAxiomsList.getSelectedValuesList().stream().map((ax) -> (OWLAxiom) ax).forEach((ax) -> {
             disjAxiomsListModel.removeElement(ax);
         });
     }

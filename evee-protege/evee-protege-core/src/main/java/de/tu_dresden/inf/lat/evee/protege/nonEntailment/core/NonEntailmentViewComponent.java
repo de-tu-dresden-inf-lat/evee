@@ -29,6 +29,7 @@ import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserImpl;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ParserException;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -51,7 +50,6 @@ import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
 
 import static java.lang.Math.ceil;
 import static java.util.Collections.max;
-import static java.util.Collections.min;
 import static org.junit.Assert.assertNotNull;
 
 public class NonEntailmentViewComponent extends AbstractOWLViewComponent
@@ -63,10 +61,13 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 ExplanationEvent<
                         INonEntailmentExplanationService<?>>> {
 
+//    non-UI-related
     private final NonEntailmentExplainerManager nonEntailmentExplainerManager;
     private final NonEntailmentGeneralPreferencesManager preferencesManager;
     private final ViewComponentOntologyChangeListener changeListener;
+    private boolean ignoreOntologyChangeEvent;
 
+//    UI-elements
     private NonEntailmentVocabularySelectionUI signatureSelectionUI;
     private final Insets STANDARD_INSETS = new Insets(5, 5, 5, 5);
     private ExpressionEditor<OWLAxiom> missingEntailmentTextEditor;
@@ -82,12 +83,13 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private JPanel missingEntailmentManagementPanel;
     private JPanel nonEntailmentExplanationServiceComponent;
     private JSplitPane horizontalSplitPane;
-//    private JPanel splitPaneHolderComponent;
     private JComboBox<String> serviceNamesComboBox;
     private JLabel computeMessageLabel;
     private JLabel filterWarningLabel;
     protected NonEntailmentExplanationLoadingScreenManager loadingUI;
     private final List<Dimension> wideComponentDimensionList;
+
+//    Action-Commands, button-labels, button-tooltips
     private static final String COMPUTE_COMMAND = "COMPUTE_NON_ENTAILMENT";
     private static final String COMPUTE_NAME = "Generate explanation";
     private static final String COMPUTE_TOOLTIP = "Generate non-entailment explanation using selected vocabulary and missing entailment";
@@ -115,15 +117,18 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 
     private final Logger logger = LoggerFactory.getLogger(NonEntailmentViewComponent.class);
 
+//****************************************************************************
 //    Constructor, Init, Dispose:
+//****************************************************************************
     public NonEntailmentViewComponent(){
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
         this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
-        this.preferencesManager.registerPreferencesChangeListener(this);
+        this.preferencesManager.registerPreferencesChangeEventListener(this);
         this.changeListener = new ViewComponentOntologyChangeListener();
         this.loadingUI = new NonEntailmentExplanationLoadingScreenManager(DEFAULT_UI_TITLE);
         this.loadingUI.registerLoadingUIListener(this);
         this.wideComponentDimensionList = new ArrayList<>();
+        this.ignoreOntologyChangeEvent = false;
         this.logger.debug("Object NonEntailmentViewComponent created");
     }
 
@@ -177,7 +182,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         return new ArrayList<>(this.selectedMissingEntailmentListModel.getOwlObjects());
     }
 
+//****************************************************************************
 //        Methods to create and reset main UI:
+//****************************************************************************
     private void resetMainComponent(){
         this.logger.debug("Resetting entire view component");
         this.resetSignatureSelectionComponent();
@@ -246,17 +253,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             if (explainer != null){
                 this.logger.debug("Explainer available");
-                if (explainer.getSettingsComponent() != null){
-                    this.logger.debug("Adding settings to explanationServiceComponent");
-                    JSplitPane serviceSettingsAndResultSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                            explainer.getSettingsComponent(), this.resultHolderComponent);
-                    serviceSettingsAndResultSplitPane.setDividerLocation(0.3);
-                    this.nonEntailmentExplanationServiceComponent.add(serviceSettingsAndResultSplitPane);
-                }
-                else {
-                    this.logger.debug("No settings available");
-                    this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
-                }
+                this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
             }
             else {
                 this.logger.debug("No explainer available");
@@ -272,7 +269,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.horizontalSplitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
                 propertyChangeEvent -> {
                     if (nonEntailmentExplainerManager.getCurrentExplainer() != null &&
-                            nonEntailmentExplanationServiceComponent != null){
+                            nonEntailmentExplanationServiceComponent != null &&
+                    resultHolderComponent.getComponentCount() != 0){
                         logger.debug("Movement of horizontal divider detected");
                         nonEntailmentExplainerManager.getCurrentExplainer().repaintResultComponent();
                     }
@@ -336,11 +334,13 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private void resetResultComponent(){
-        resetExplanationServiceComponent();
-        resetHorizontalSplitPane();
-        resetHolderPanel();
-        addHolderPanel();
-        repaintComponents();
+        JComponent oldExplanationServiceComponent = this.nonEntailmentExplanationServiceComponent;
+        this.resetExplanationServiceComponent();
+        JComponent newExplanationServiceComponent = this.nonEntailmentExplanationServiceComponent;
+        this.horizontalSplitPane.remove(oldExplanationServiceComponent);
+        this.horizontalSplitPane.add(newExplanationServiceComponent);
+        this.resultHolderComponent.removeAll();
+        this.repaintComponents();
     }
 
     private void resetSignatureSelectionComponent(){
@@ -532,13 +532,16 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JComboBox){
+            this.logger.debug("Selected <Missing Entailment Explanation Service> changed");
             JComboBox comboBox = (JComboBox) e.getSource();
             String serviceName = (String) comboBox.getSelectedItem();
-            this.nonEntailmentExplainerManager.setExplanationService(serviceName);
-            this.filterWarningLabel.setText("");
-            this.resetResultComponent();
-            this.checkComputeButtonAndWarningLabelStatus();
-            this.signatureSelectionUI.resetSelectedSignature();
+            if (! this.nonEntailmentExplainerManager.isCurrentExplanationService(serviceName)){
+                this.nonEntailmentExplainerManager.setExplanationService(serviceName);
+                this.filterWarningLabel.setText("");
+                this.resetResultComponent();
+                this.checkComputeButtonAndWarningLabelStatus();
+                this.signatureSelectionUI.resetSelectedSignature();
+            }
         }
         else{
             switch (e.getActionCommand()){
@@ -612,7 +615,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                         this.filterWarningLabel.setText("");
                         SwingUtilities.invokeLater(() -> {
                             this.loadingUI.resetLoadingUI();
-                            this.loadingUI.activeLoadingUI();
+                            this.loadingUI.activateLoadingUI();
                         });
                         this.logger.debug("loading UI is activated");
                         INonEntailmentExplanationService<?> explainer =
@@ -621,6 +624,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                                 new NonEntailmentExplanationProgressTracker();
                         progressTracker.registerLoadingUIListener(this.loadingUI);
                         explainer.addProgressTracker(progressTracker);
+                    break;
+                case IGNORE_ONTOLOGY_CHANGE:
+                    this.ignoreOntologyChangeEvent = true;
                     break;
             }
         } else{
@@ -676,7 +682,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.filterWarningLabel.setText("");
         SwingUtilities.invokeLater(() -> {
             this.loadingUI.resetLoadingUI();
-            this.loadingUI.activeLoadingUI();
+            this.loadingUI.activateLoadingUI();
         });
         this.logger.debug("loading UI is activated");
         INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
@@ -704,7 +710,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             AtomicBoolean signatureContainedInOntology = new AtomicBoolean(true);
             OWLOntology activeOntology = this.getOWLModelManager().getActiveOntology();
             axiomToAdd.getSignature().forEach(entity -> {
-                if (! activeOntology.getSignature().contains(entity)){
+                if (! activeOntology.getSignature(Imports.INCLUDED).contains(entity)){
                     signatureContainedInOntology.set(false);
                 }
             });
@@ -877,8 +883,9 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             this.loadingUI.resetLoadingUI();
         }
     }
-
-    //    Ontology-Change Listeners:
+//****************************************************************************
+//    Ontology-Change Listeners:
+//****************************************************************************
     private class ViewComponentOntologyChangeListener implements OWLModelManagerListener, OWLOntologyChangeListener {
 
         @Override
@@ -894,11 +901,24 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         @Override
         public void ontologiesChanged(@Nonnull List<? extends OWLOntologyChange> list) {
             logger.debug("Change to ontology detected");
-            for (OWLOntologyChange change: list){
-                if (change.getOntology().equals(getOWLEditorKit().getOWLModelManager().getActiveOntology())){
-                    logger.debug("Change made to active ontology");
-                    change();
-                    break;
+            if (ignoreOntologyChangeEvent){
+                logger.debug("Change ignored due to previous IGNORE_ONTOLOGY_CHANGE-event");
+                ignoreOntologyChangeEvent = false;
+            } else {
+                for (OWLOntologyChange change: list){
+                    if (change.getOntology().equals(getOWLEditorKit().getOWLModelManager().getActiveOntology())){
+                        logger.debug("Change made to active ontology");
+                        for (OWLOntologyChange ontoChanges : list){
+                            Set<OWLEntity> entities = ontoChanges.getSignature();
+                            for (OWLAxiom axiom : selectedMissingEntailmentListModel.getOwlObjects()){
+                                if (axiom.getSignature().stream().anyMatch(entities::contains)){
+                                    selectedMissingEntailmentListModel.removeElement(axiom);
+                                }
+                            }
+                        }
+                        change();
+                        break;
+                    }
                 }
             }
         }
@@ -906,17 +926,21 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         private void change(){
             INonEntailmentExplanationService<?> explainer = nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(getOWLModelManager().getActiveOntology());
+            resetResultComponent();
 //            resetExplanationServiceComponent();
 //            resetHorizontalSplitPane();
 //            resetHolderPanel();
 //            addHolderPanel();
 //            repaintComponents();
             checkComputeButtonAndWarningLabelStatus();
+            computeMessageLabel.setText("");
             filterWarningLabel.setText("");
         }
     }
 
+//****************************************************************************
 //    TextEditor Input Checker:
+//****************************************************************************
     private static class OWLLogicalAxiomChecker implements OWLExpressionChecker<OWLAxiom>{
 
         private final OWLModelManager manager;

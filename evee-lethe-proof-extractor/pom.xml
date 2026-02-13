@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee</artifactId>
         <version>${revision}</version>
     </parent>
@@ -13,12 +13,6 @@
     <artifactId>evee-lethe-proof-extractor</artifactId>
 
     <packaging>pom</packaging>
-
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
 
     <modules>
         <module>evee-lethe-proof-extractor-owlapi4</module>

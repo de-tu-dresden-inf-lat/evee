@@ -5,20 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.tu-dresden.inf.lat.evee</groupId>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee-elimination-proofs_2.12</artifactId>
         <version>${revision}</version>
     </parent>
 
     <artifactId>evee-elimination-proofs-fame-owlapi4_2.12</artifactId>
-
-    <repositories>
-        <repository>
-            <id>EveeLocalMavenRepository</id>
-            <name>EveeLocalMavenRepository</name>
-            <url>file:${project.basedir}/../../lib</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -29,15 +21,15 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
+            <version>21.0</version>
         </dependency>
         <dependency>
-            <groupId>FamePlus</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>FamePlus</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
-            <groupId>de.tu-dresden.inf.lat.evee</groupId>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>

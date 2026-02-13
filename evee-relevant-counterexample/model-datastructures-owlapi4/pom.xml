@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>de.tu-dresden.inf.lat.evee</groupId>
+    <groupId>io.github.de-tu-dresden-inf-lat</groupId>
     <artifactId>evee-relevant-counterexample</artifactId>
     <version>${revision}</version>
   </parent>
@@ -14,9 +14,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>de.tu-dresden.inf.lat</groupId>
-      <artifactId>lat-scala-dl-tools-owlapi4_2.12</artifactId>
-      <version>0.4.1-SNAPSHOT</version>
+      <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+      <artifactId>lat-scala-dl-tools-owlapi4</artifactId>
+      <version>0.4.1</version>
     </dependency>
   </dependencies>
 
@@ -40,32 +40,6 @@
           <execution>
             <id>make-assembly</id>
             <phase>package</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
-        <executions>
-          <execution>
-            <id>create-source-jar</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <excludeResources>true</excludeResources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>create-test-jar</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-            <configuration>
-              <excludeResources>true</excludeResources>
-            </configuration>
           </execution>
         </executions>
       </plugin>

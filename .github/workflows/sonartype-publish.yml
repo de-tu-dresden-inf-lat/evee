@@ -1,0 +1,36 @@
+name: Maven Library Publish
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 11 for deploy to Sonatype
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: 11
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Build with Maven
+        run: mvn -B install --file pom.xml
+
+      - name: Prepare Maven environnement with Java 11 for deployment to Sonatype
+        run: export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
+
+      - name: Publish to Apache Maven Central
+        run: mvn deploy -PsonartypeDeploy
+        env:
+          MAVEN_USERNAME: ${{ secrets.SONAR_USER }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONAR_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
