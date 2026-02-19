@@ -61,6 +61,34 @@
                     <skip>${skipCompilation}</skip>
                 </configuration>
             </plugin>
+            <!--            generating source files-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>create-source-files</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                            <configuration>
+                                <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>create-test-jar</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>test-jar-no-fork</goal>
+                            </goals>
+                            <configuration>
+                                <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
@@ -96,34 +124,6 @@
             <id>sonartypeDeploy</id>
             <build>
                <plugins>
-                <!--            generating source files-->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <executions>
-                        <execution>
-                            <id>create-source-files</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                            <configuration>
-                                <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>create-test-jar</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>test-jar-no-fork</goal>
-                            </goals>
-                            <configuration>
-                                <excludeResources>${excludeResourcesInSourceJar}</excludeResources>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
                     <!--            generating javadoc files-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
