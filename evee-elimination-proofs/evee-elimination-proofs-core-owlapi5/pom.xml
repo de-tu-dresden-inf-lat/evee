@@ -49,14 +49,6 @@
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.basedir}/target/src/main/scala</outputDirectory>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
-                                    <version>${project.version}</version>
-                                    <classifier>main-resources</classifier>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.basedir}/target/src/main/resources</outputDirectory>
-                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
