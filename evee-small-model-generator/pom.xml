@@ -6,8 +6,9 @@
         <artifactId>evee</artifactId>
         <version>${revision}</version>
     </parent>
-    <artifactId>evee-small-model-generator</artifactId>
 
+    <artifactId>evee-small-model-generator</artifactId>
+    <name>evee-small-model-generator</name>
     <packaging>pom</packaging>
 
     <modules>

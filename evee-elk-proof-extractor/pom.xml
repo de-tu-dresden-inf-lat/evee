@@ -10,14 +10,13 @@
     </parent>
 
     <artifactId>evee-elk-proof-extractor</artifactId>
+    <name>evee-elk-proof-extractor</name>
+    <packaging>pom</packaging>
 
     <modules>
         <module>evee-elk-proof-extractor-owlapi4</module>
         <module>evee-elk-proof-extractor-owlapi5</module>
     </modules>
-    <packaging>pom</packaging>
-
-    <name>evee-elk-proof-extractor</name>
 
     <dependencies>
         <dependency>

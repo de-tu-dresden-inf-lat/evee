@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-protege-abduction-lethe</artifactId>
+    <name>evee-protege-abduction-lethe</name>
     <packaging>bundle</packaging>
 
     <properties>

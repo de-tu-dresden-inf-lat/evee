@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>evee-small-model-generator-owlapi5</artifactId>
+    <name>evee-small-model-generator-owlapi5</name>
     <packaging>bundle</packaging>
 
     <properties>

@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>evee-elimination-proofs-lethe-owlapi5_2.12</artifactId>
+    <name>evee-elimination-proofs-lethe-owlapi5_2.12</name>
 
     <properties>
         <skipCompilation>false</skipCompilation>

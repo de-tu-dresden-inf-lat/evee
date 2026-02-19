@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>evee-lethe-proof-extractor</artifactId>
-
+    <name>evee-lethe-proof-extractor</name>
     <packaging>pom</packaging>
 
     <modules>

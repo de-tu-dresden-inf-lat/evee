@@ -5,6 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>evee-lethe-proof-extractor-owlapi4</artifactId>
+    <name>evee-lethe-proof-extractor-owlapi4</name>
 
     <parent>
         <groupId>io.github.de-tu-dresden-inf-lat</groupId>
@@ -58,7 +59,6 @@
                 <executions>
                     <execution>
                         <id>create-test-resources-jar</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>

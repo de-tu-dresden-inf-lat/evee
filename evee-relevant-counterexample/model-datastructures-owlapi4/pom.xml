@@ -50,7 +50,6 @@
         <executions>
           <execution>
             <id>create-source-resources-jar</id>
-            <phase>verify</phase>
             <goals>
               <goal>jar</goal>
             </goals>

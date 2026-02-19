@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-elk-proof-extractor-owlapi5</artifactId>
+    <name>evee-elk-proof-extractor-owlapi5</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

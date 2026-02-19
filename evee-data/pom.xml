@@ -12,6 +12,7 @@
     </parent>
 
     <artifactId>evee-data</artifactId>
+    <name>evee-data</name>
     <packaging>pom</packaging>
 
     <dependencies>

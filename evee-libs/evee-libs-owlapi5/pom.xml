@@ -11,6 +11,8 @@
     </parent>
 
     <artifactId>evee-libs-owlapi5</artifactId>
+    <name>evee-libs-owlapi5</name>
+
 
     <dependencies>
         <dependency>

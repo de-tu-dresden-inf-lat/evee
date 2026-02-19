@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-protege-nemo-proof-extractor</artifactId>
+    <name>evee-protege-nemo-proof-extractor</name>
     <packaging>bundle</packaging>
 
     <properties>

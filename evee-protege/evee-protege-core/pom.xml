@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>evee-protege-core</artifactId>
+    <name>evee-protege-core</name>
     <packaging>bundle</packaging>
 
     <properties>

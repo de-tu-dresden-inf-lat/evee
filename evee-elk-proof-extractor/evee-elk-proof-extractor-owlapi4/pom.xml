@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-elk-proof-extractor-owlapi4</artifactId>
+    <name>evee-elk-proof-extractor-owlapi4</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -41,7 +42,6 @@
                 <executions>
                     <execution>
                         <id>create-source-resources-jar</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -52,7 +52,6 @@
                     </execution>
                     <execution>
                         <id>create-test-resources-jar</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>

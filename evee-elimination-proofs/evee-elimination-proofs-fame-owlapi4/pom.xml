@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-elimination-proofs-fame-owlapi4_2.12</artifactId>
+    <name>evee-elimination-proofs-fame-owlapi4_2.12</name>
 
     <dependencies>
         <dependency>

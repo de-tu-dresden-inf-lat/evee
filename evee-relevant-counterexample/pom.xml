@@ -10,6 +10,8 @@
     </parent>
 
     <artifactId>evee-relevant-counterexample</artifactId>
+    <name>evee-relevant-counterexample</name>
+    <packaging>pom</packaging>
 
     <modules>
         <module>model-datastructures-owlapi4</module>
@@ -17,9 +19,6 @@
         <module>counterExampleProvider-owlapi4</module>
         <module>counterExampleProvider-owlapi5</module>
     </modules>
-    <packaging>pom</packaging>
-
-    <name>evee-relevant-counterexample</name>
 
     <dependencies>
     <dependency>

@@ -9,9 +9,10 @@
         <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <version>${revision}</version>
     </parent>
-    <packaging>pom</packaging>
-
+    
     <artifactId>evee-libs</artifactId>
+    <name>evee-libs</name>
+    <packaging>pom</packaging>
 
     <modules>
         <module>evee-libs-owlapi4</module>

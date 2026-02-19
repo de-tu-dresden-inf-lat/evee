@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-data-owlapi5</artifactId>
+    <name>evee-data-owlapi5</name>
     <packaging>jar</packaging>
 
     <properties>

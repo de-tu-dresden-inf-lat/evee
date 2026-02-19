@@ -9,8 +9,8 @@
   </parent>
 
   <artifactId>counterExampleProvider-owlapi4</artifactId>
-  <packaging>jar</packaging>
   <name>counterExampleProvider-owlapi4</name>
+  <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
@@ -62,7 +62,6 @@
         <executions>
           <execution>
             <id>create-source-resources-jar</id>
-            <phase>verify</phase>
             <goals>
               <goal>jar</goal>
             </goals>

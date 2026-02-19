@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-protege-elk-proof-extractor</artifactId>
+    <name>evee-protege-elk-proof-extractor</name>
     <packaging>bundle</packaging>
 
     <properties>
