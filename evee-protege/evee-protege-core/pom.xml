@@ -13,7 +13,7 @@
 
     <properties>
 <!--        bundleName needs to coincide with pluginId used in constructors of nonEntailment pluginLoader in order to correctly declare our extension point for protege-->
-        <bundleName>de.tu_dresden.inf.lat.evee</bundleName>
+        <bundleName>evee-protege-core</bundleName>
     </properties>
 
     <dependencies>
