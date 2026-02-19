@@ -15,7 +15,7 @@ public class NonEntailmentExplanationPlugin extends AbstractProtegePlugin<INonEn
 
     public static final String NAME_PARAM = "name";
 //    PLUGIN_ID needs to be bundle-id from pom in order to correctly define extension points
-    public static final String PLUGIN_ID = "evee-protege-core";
+    public static final String PLUGIN_ID = "io.github.de-tu-dresden-inf-lat";
     public static final String EXTENSION_POINT_ID = "nonEntailment_explanation_service";
 
     protected NonEntailmentExplanationPlugin(OWLEditorKit editorKit, IExtension extension) {

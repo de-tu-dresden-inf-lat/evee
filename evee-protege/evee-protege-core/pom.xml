@@ -11,9 +11,34 @@
     <name>evee-protege-core</name>
     <packaging>bundle</packaging>
 
+    <description>Base module for the evee protege plugins</description>
+    <url>https://github.com/de-tu-dresden-inf-lat/evee</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Stefan Borgwardt</name>
+            <email>stefan.borgwardt@tu-dresden.de</email>
+            <organization>TU Dresden</organization>
+            <organizationUrl>https://tu-dresden.de/ing/informatik/thi/lat</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/de-tu-dresden-inf-lat/evee</connection>
+        <developerConnection>scm:git:ssh://github.com/de-tu-dresden-inf-lat/evee</developerConnection>
+        <url>https://github.com/de-tu-dresden-inf-lat/evee</url>
+    </scm>
+
     <properties>
 <!--        bundleName needs to coincide with pluginId used in constructors of nonEntailment pluginLoader in order to correctly declare our extension point for protege-->
-        <bundleName>evee-protege-core</bundleName>
+        <bundleName>io.github.de-tu-dresden-inf-lat</bundleName>
     </properties>
 
     <dependencies>
