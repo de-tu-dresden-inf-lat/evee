@@ -52,8 +52,14 @@
         <!--		de.tu-dresden.inf.lat-->
         <dependency>
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-            <artifactId>evee-elimination-proofs-core-owlapi4_2.12</artifactId>
+            <artifactId>evee-elimination-proofs-core_2.12</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-distribution</artifactId>
+				</exclusion>
+            </exclusions>
         </dependency>
         <!--		included to resolve various version mismatches-->
         <dependency>

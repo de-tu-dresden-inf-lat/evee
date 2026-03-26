@@ -17,7 +17,6 @@ import uk.ac.man.cs.lethe.internal.tools.CanceledException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -214,7 +213,7 @@ public class LetheAbductionSolver
             this.maxLevel = 0;
             this.currentResultAdapterIndex = 0;
             this.hypothesesAdapterList.clear();
-            ((DisjunctiveDLStatement) hypotheses).statements().foreach(statement -> {
+            ((DisjunctiveDLStatement) hypotheses).statements().foreach((DLStatement statement) -> {
                 this.hypothesesAdapterList.add(new DLStatementAdapter(statement, this.abducer));
                 return null;
             });

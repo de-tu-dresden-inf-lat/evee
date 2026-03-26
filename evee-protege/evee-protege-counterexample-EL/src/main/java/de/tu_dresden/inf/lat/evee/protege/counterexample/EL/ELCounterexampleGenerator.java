@@ -47,13 +47,30 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
         OWLOntology workingCopy = null;
         ELNormaliser normaliser = new ELNormaliser();
         try {
+            logger.info("ELCounterexampleGenerator line 50");
+
             workingCopy = man.createOntology(TBoxAxioms);
+
+            logger.info("ELCounterexampleGenerator line 54");
+
             man.addAxiom(workingCopy, superClassInTarget);
             normaliser.setOntology(workingCopy);
+
+            logger.info("ELCounterexampleGenerator line 59");
+
             workingCopy = normaliser.normalise();
+
+            logger.info("ELCounterexampleGenerator line 63");
+
         } catch (OWLOntologyCreationException e) {
+                    
+            logger.info("ELCounterexampleGenerator in catch");
+
             throw new ModelGenerationException("Working Copy cannot be created");
         }
+
+        logger.info("ELCounterexampleGenerator line 72");
+
         man.addAxiom(workingCopy, rootInSubClass);
 //        this.removedAxioms = normaliser.getNumRemoved();
         return workingCopy;
@@ -97,25 +114,35 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
 
     @Override
     public Set<OWLIndividualAxiom> generateModel() throws ModelGenerationException {
+        logger.info("ELCounterGen l 100");
+         
         OWLAxiom observation = this.observation.iterator().next();
         subClassExpr = ((OWLSubClassOfAxiom) observation).getSubClass();
         superClassExpr = ((OWLSubClassOfAxiom) observation).getSuperClass();
         rootInSubClass = df.getOWLClassAssertionAxiom(subClassExpr, rootInd);
         superClassInTarget = df.getOWLSubClassOfAxiom(superClassExpr, freshClass);
 
+        logger.info("ELCounterGenerator l. 106");
+
         checkClassExpressions();
-        logger.debug("provided observation is checked");
+        logger.info("provided observation is checked");
 
         workingCopy = getWorkingCopy();
-        logger.debug("working copy is created");
+        logger.info("working copy is created");
 
 //        if(progressTracker != null) {
 //            progressTracker.setMessage("Generating counterexample");
 //        }
         Set<OWLIndividualAxiom> avoidedEnt = new HashSet<>();
         avoidedEnt.add(df.getOWLClassAssertionAxiom(freshClass, rootInd));
+
+        logger.info("ELCounterGenerator l. 122");
+
         IOWLModelGenerator modelGenerator = new ELSmallModelGenerator(treeModel,avoidedEnt,progressTracker);
         modelGenerator.setOntology(workingCopy);
+
+        logger.info("ELCounterGenerator l. 127");
+
         Set<OWLIndividualAxiom> model = modelGenerator.generateModel();
         logger.info("model is generated");
         model = this.filterAxioms(model);

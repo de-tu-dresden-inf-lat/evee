@@ -63,8 +63,14 @@
         </dependency>
         <dependency>
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-            <artifactId>counterExampleProvider-owlapi4</artifactId>
+            <artifactId>counterExampleProvider</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-distribution</artifactId>
+				</exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

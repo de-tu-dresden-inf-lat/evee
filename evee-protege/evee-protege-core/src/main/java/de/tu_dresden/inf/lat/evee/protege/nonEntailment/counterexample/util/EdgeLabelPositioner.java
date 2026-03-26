@@ -6,8 +6,6 @@ import org.graphstream.ui.graphicGraph.GraphicEdge;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
 import org.graphstream.ui.graphicGraph.GraphicNode;
 
-import java.util.HashMap;
-import java.util.Set;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,6 +39,9 @@ public class EdgeLabelPositioner {
                                          double oldPositionX,
                                          double newPositionX) {
 
+        System.out.println("nodes : " + node);                     
+                                    
+        System.out.println("nodes edges: " + node.edges());                     
         Set<GraphicEdge> curvedEdges = node.edges()
                 .map(e -> (GraphicEdge) e)
                 .filter(e -> e.getGroup()!=null)

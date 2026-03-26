@@ -43,9 +43,15 @@
         </dependency>
         <dependency>
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-            <artifactId>evee-small-model-generator-owlapi4</artifactId>
+            <artifactId>evee-small-model-generator</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+            <exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-distribution</artifactId>
+				</exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

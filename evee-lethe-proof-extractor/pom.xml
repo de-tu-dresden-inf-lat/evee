@@ -4,19 +4,93 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    
     <parent>
         <groupId>io.github.de-tu-dresden-inf-lat</groupId>
         <artifactId>evee</artifactId>
         <version>${revision}</version>
     </parent>
-
+        
     <artifactId>evee-lethe-proof-extractor</artifactId>
 
-    <packaging>pom</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.2</version>
+        </dependency>
+        <!--        owlapi + hermit-->
+            <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-distribution</artifactId>
+            <version>5.1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>org.semanticweb.hermit</artifactId>
+            <version>1.4.3.517</version>
+        </dependency>
+        <!--        io.github.de-tu-dresden-inf-lat -->
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>lethe-owlapi5</artifactId>
+            <version>${LETHE.Version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>evee-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
-    <modules>
-        <module>evee-lethe-proof-extractor-owlapi4</module>
-        <module>evee-lethe-proof-extractor-owlapi5</module>
-    </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M6</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <id>create-test-resources-jar</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classesDirectory>${project.basedir}/src/test/resources</classesDirectory>
+                            <classifier>test-resources</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>de.tu_dresden.inf.lat.proofs.data.ProofGeneratorMain</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

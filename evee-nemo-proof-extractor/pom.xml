@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-            <artifactId>evee-data-owlapi4</artifactId>
+            <artifactId>evee-data</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
