@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,32 +16,12 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.expression.OWLEntityChecker;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
-import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 
 import com.google.common.collect.Sets;
 
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 import de.tu_dresden.inf.lat.exceptions.EntityCheckerException;
 
 /**
@@ -167,24 +148,20 @@ public class ToOWLTools {
 	 * Get the equivalent OWl SubClassOf Axiom(s) of the provided axiom
 	 */
 	public Set<OWLSubClassOfAxiom> getAsSubClassOf(OWLAxiom generalAxiom) {
-
 		if (generalAxiom.getAxiomType() == AxiomType.SUBCLASS_OF)
 			return Sets.newHashSet((OWLSubClassOfAxiom) generalAxiom);
 
 		if (generalAxiom.getAxiomType() == AxiomType.OBJECT_PROPERTY_DOMAIN)
-			return Sets.newHashSet(((OWLObjectPropertyDomainAxiom) generalAxiom).asOWLSubClassOfAxiom());
+			return OWLTools.domainToSubOf((OWLObjectPropertyDomainAxiom) generalAxiom);
 
 		if (generalAxiom.getAxiomType() == AxiomType.OBJECT_PROPERTY_RANGE)
-			return Sets.newHashSet(((OWLObjectPropertyRangeAxiom) generalAxiom).asOWLSubClassOfAxiom());
-
+			return OWLTools.rangeToSubOf((OWLObjectPropertyRangeAxiom) generalAxiom);
+				
 		if (generalAxiom.getAxiomType() == AxiomType.DISJOINT_CLASSES)
-			return Sets.newHashSet(((OWLDisjointClassesAxiom) generalAxiom).asOWLSubClassOfAxioms());
+			return OWLTools.disjToSubOf((OWLDisjointClassesAxiom) generalAxiom);
 
 		if (generalAxiom.getAxiomType() == AxiomType.EQUIVALENT_CLASSES)
-			return Sets.newHashSet(((OWLEquivalentClassesAxiom) generalAxiom).asOWLSubClassOfAxioms());
-
-//		if (generalAxiom.getAxiomType() == AxiomType.DECLARATION)
-//			return Sets.newHashSet(((OWLDeclarationAxiom) generalAxiom)..asOWLSubClassOfAxioms());
+			return OWLTools.equivToSubOf((OWLEquivalentClassesAxiom) generalAxiom);
 
 		return new HashSet<>();
 	}
@@ -273,7 +250,7 @@ public class ToOWLTools {
 	 */
 	public OWLClassExpression getOWLConjunction(Set<OWLClassExpression> conjuncts) {
 
-		return factory.getOWLObjectIntersectionOf(conjuncts.toArray(new OWLClassExpression[conjuncts.size()]));
+		return factory.getOWLObjectIntersectionOf(conjuncts.toArray(OWLClassExpression[]::new));
 	}
 
 	/**

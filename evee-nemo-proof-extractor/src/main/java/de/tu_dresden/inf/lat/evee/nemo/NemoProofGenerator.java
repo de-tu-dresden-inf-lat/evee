@@ -75,16 +75,22 @@ public class NemoProofGenerator implements IProofGenerator<OWLAxiom, OWLOntology
     @Override
     public boolean supportsProof(OWLAxiom axiom) {
         OWLSubClassOfAxiom subAxiom;
+        OWLClassExpression cls1;
+        OWLClassExpression cls2;
 
-        if (axiom instanceof OWLSubClassOfAxiom)
-            subAxiom = (OWLSubClassOfAxiom) axiom;
-        else if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES))
-            subAxiom = ((OWLEquivalentClassesAxiom) axiom).asOWLSubClassOfAxioms().iterator().next();
+        if (axiom instanceof OWLSubClassOfAxiom){
+            cls1 = ((OWLSubClassOfAxiom) axiom).getSubClass();
+            cls2 = ((OWLSubClassOfAxiom) axiom).getSuperClass();
+        }
+        else if (axiom.isOfType(AxiomType.EQUIVALENT_CLASSES)){
+            cls1 = ((OWLEquivalentClassesAxiom) axiom).getClassExpressionsAsList().get(0);
+            cls2 = ((OWLEquivalentClassesAxiom) axiom).getClassExpressionsAsList().get(1);
+        }
         else
             return false;
 
-        boolean subClassValid = subAxiom.getSubClass().isNamed();
-        boolean superClassValid = subAxiom.getSuperClass().isNamed();
+        boolean subClassValid = cls1.isNamed();
+        boolean superClassValid = cls2.isNamed();
 
         return subClassValid && superClassValid;
     }

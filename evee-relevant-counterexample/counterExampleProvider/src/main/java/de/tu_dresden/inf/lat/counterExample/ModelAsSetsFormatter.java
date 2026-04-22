@@ -3,7 +3,6 @@ package de.tu_dresden.inf.lat.counterExample;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

@@ -12,6 +12,7 @@ import uk.ac.man.cs.lethe.abduction.OWLAbducer;
 import uk.ac.man.cs.lethe.abduction.ObservationEntailedException;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.DLStatement;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.DisjunctiveDLStatement;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.ConjunctiveDLStatement;
 import uk.ac.man.cs.lethe.internal.tools.CanceledException;
 
 import java.io.PrintWriter;
@@ -85,47 +86,50 @@ public class LetheAbductionSolver
         DLStatement result;
         AtomicBoolean filtered = new AtomicBoolean();
         this.canceled = false;
+
         if (this.checkResultInCache()){
             this.logger.debug("Cached result found, re-displaying cached result");
             result = this.loadResultFromCache();
             filtered.set(this.cachedFilterWarnings.get(this.activeOntology).
                     getResult(this.missingEntailment, this.vocabulary).get());
+                    
             return this.explanationComputationCompleted(result, filtered);
-        } else{
-            this.logger.debug("No cached result found, trying to compute new explanation");
-            try{
-                this.abducer.setBackgroundOntology(this.activeOntology);
-                this.abducer.setAbducibles(this.vocabulary);
-                this.computationRunning = true;
-                this.timerThread = new TimerThread();
-                this.timerThread.start();
-                result = this.abducer.abduce(this.missingEntailment);
-                filtered.set(this.abducer.getUnsupportedAxiomsEncountered());
-                this.timerThread = null;
-                this.computationRunning = false;
-                this.logger.debug("Computation completed");
-                return this.explanationComputationCompleted(result, filtered);
-            }
-            catch (ObservationEntailedException oe){
-                this.logger.error("Exception caught during abduction: ", oe);
-                this.explanationComputationFailed(ALREADY_ENTAILED_WARNING);
-                return null;
-            }
-            catch (CanceledException ce){
-                String message = "Computation cancelled.";
-                this.explanationComputationFailed(message);
-                this.logger.debug("Exception caught during abduction: ", ce);
-                return null;
-            }
-            catch (Throwable e) {
-                this.explanationComputationFailed("Error during abduction generation: " + e);
-                StringWriter stringWriter = new StringWriter();
-                e.printStackTrace(new PrintWriter(stringWriter));
-                String loggingString = stringWriter.toString();
-                this.logger.error(loggingString);
-                return null;
-            }
         }
+
+        this.logger.debug("No cached result found, trying to compute new explanation");
+        try{
+            this.abducer.setBackgroundOntology(this.activeOntology);
+            this.abducer.setAbducibles(this.vocabulary);
+            this.computationRunning = true;
+            this.timerThread = new TimerThread();
+            this.timerThread.start();
+            result = this.abducer.abduce(this.missingEntailment);
+            filtered.set(this.abducer.getUnsupportedAxiomsEncountered());
+            this.timerThread = null;
+            this.computationRunning = false;
+            this.logger.debug("Computation completed");
+            return this.explanationComputationCompleted(result, filtered);
+        }
+        catch (ObservationEntailedException oe){
+            this.logger.error("Exception caught during abduction: ", oe);
+            this.explanationComputationFailed(ALREADY_ENTAILED_WARNING);
+            return null;
+        }
+        catch (CanceledException ce){
+            String message = "Computation cancelled.";
+            this.explanationComputationFailed(message);
+            this.logger.debug("Exception caught during abduction: ", ce);
+            return null;
+        }
+        catch (Throwable e) {
+            this.explanationComputationFailed("Error during abduction generation: " + e);
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            String loggingString = stringWriter.toString();
+            this.logger.error(loggingString);
+            return null;
+        }
+        
     }
 
     @Override
@@ -191,34 +195,38 @@ public class LetheAbductionSolver
 
     private Stream<Set<OWLAxiom>> explanationComputationCompleted(DLStatement hypotheses, AtomicBoolean filtered){
         previousHypotheses=new HashSet<>();
-        if (((DisjunctiveDLStatement) hypotheses).statements().size() == 0){
+        logger.info("statement: " + hypotheses);
+        
+        if (((ConjunctiveDLStatement) hypotheses).statements().size() == 0){
             this.logger.debug("No result found for input parameters");
             this.explanationComputationFailed("No result found, please adjust the vocabulary");
+
             return null;
         }
-        else if (this.canceled) {
+        if (this.canceled) {
             this.logger.debug("Computation was cancelled, cannot show result");
             this.explanationComputationFailed("Last computation was cancelled");
+
             return null;
         }
-        else {
-            this.logger.debug("Computation was not cancelled and returned some non-empty hypotheses, preparing to show result");
-            this.saveResultToCache(hypotheses);
-            this.cachedFilterWarnings.get(this.activeOntology).
-                    putResult(this.missingEntailment, this.vocabulary, filtered);
-            this.logger.debug("Filter-information saved to cached result");
-            this.filtered = filtered.get();
-            this.computationSuccessful = true;
-            this.setActiveOntologyEditedExternally(false);
-            this.maxLevel = 0;
-            this.currentResultAdapterIndex = 0;
-            this.hypothesesAdapterList.clear();
-            ((DisjunctiveDLStatement) hypotheses).statements().foreach((DLStatement statement) -> {
-                this.hypothesesAdapterList.add(new DLStatementAdapter(statement, this.abducer));
-                return null;
-            });
-            return Stream.generate(this);
-        }
+        
+        this.logger.debug("Computation was not cancelled and returned some non-empty hypotheses, preparing to show result");
+        this.saveResultToCache(hypotheses);
+        this.cachedFilterWarnings.get(this.activeOntology).
+                putResult(this.missingEntailment, this.vocabulary, filtered);
+        this.logger.debug("Filter-information saved to cached result");
+        this.filtered = filtered.get();
+        this.computationSuccessful = true;
+        this.setActiveOntologyEditedExternally(false);
+        this.maxLevel = 0;
+        this.currentResultAdapterIndex = 0;
+        this.hypothesesAdapterList.clear();
+        ((ConjunctiveDLStatement) hypotheses).statements().foreach((DLStatement statement) -> {
+            this.hypothesesAdapterList.add(new DLStatementAdapter(statement, this.abducer));
+            return null;
+        });
+
+        return Stream.generate(this);
     }
 
     private void explanationComputationFailed(String errorMessage){

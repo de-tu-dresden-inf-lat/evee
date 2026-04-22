@@ -25,8 +25,6 @@ public class BetaRelevantGenerator extends RelevantCounterExampleGenerator {
 
 	public BetaRelevantGenerator(ELKModelGenerator elkCounterModelGenerator) throws OWLOntologyCreationException {
 		super(elkCounterModelGenerator);
-		logger.info("line 28");
-
 	}
 
 	public Set<Element> generate() {

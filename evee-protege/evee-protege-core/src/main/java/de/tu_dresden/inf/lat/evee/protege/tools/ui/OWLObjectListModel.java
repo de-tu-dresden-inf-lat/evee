@@ -5,8 +5,6 @@ import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerChangeEvent;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.semanticweb.owlapi.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.*;
@@ -17,7 +15,6 @@ public class OWLObjectListModel<O extends OWLObject>
     private final List<O> owlObjects;
     private final OWLEditorKit owlEditorKit;
     private final ListElementRenderingChangeListener renderingChangeListener;
-    private final Logger logger = LoggerFactory.getLogger(OWLObjectListModel.class);
 
     public OWLObjectListModel(OWLEditorKit owlEditorKit){
         this.owlObjects = new ArrayList<>();

@@ -1,13 +1,11 @@
 package de.tu_dresden.inf.lat.evee.proofs.lethe;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;

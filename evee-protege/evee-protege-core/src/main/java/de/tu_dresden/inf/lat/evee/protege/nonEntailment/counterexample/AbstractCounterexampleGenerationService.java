@@ -59,7 +59,6 @@ abstract public class AbstractCounterexampleGenerationService
 
     public void computeExplanation() {
         worker = new InteractiveModelGenerationSwingWorker(this);
-        logger.info("before execute");
         worker.execute();
     }
 
@@ -158,19 +157,9 @@ abstract public class AbstractCounterexampleGenerationService
         @Override
         protected Void doInBackground() {
             computationSuccessful = false;
-            logger.info("before try");
-
             try {
-                        
- 
-                logger.info("in try");
-
                 IGraphViewService graphViewGenerator = new GraphViewGenerator(GraphStyleSheets.PROTEGE,2000);
-                logger.info("abstractService line 169");
-
                 OWLSubClassOfAxiom observationAxiom = (OWLSubClassOfAxiom) observation.stream().findFirst().get();
-                logger.info(" abstractService line 172");
-
                 interactiveGraphModel = new InteractiveGraphModel(counterexampleGenerator,
                         graphViewGenerator,
                         workingCopy,
@@ -180,10 +169,7 @@ abstract public class AbstractCounterexampleGenerationService
                         simpleMode
                         );
 
-                logger.info("before true");
-
                 computationSuccessful = true;
-
             } catch (Exception e) {
                 if (computationSuccessful) {
                     logger.info("Counterexample generation is canceled");

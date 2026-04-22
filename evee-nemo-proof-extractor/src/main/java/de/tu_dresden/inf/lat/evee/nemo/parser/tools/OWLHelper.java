@@ -140,7 +140,7 @@ public class OWLHelper {
      * @return OWLObjectIntersectionOf
      */
     public OWLObjectIntersectionOf getOWLConjunction(Set<OWLClassExpression> conjuncts) {
-        return factory.getOWLObjectIntersectionOf(conjuncts.toArray(new OWLClassExpression[conjuncts.size()]));
+        return factory.getOWLObjectIntersectionOf(conjuncts.toArray(OWLClassExpression[]::new));
     }
 
     /**
@@ -149,7 +149,7 @@ public class OWLHelper {
      * @return OWLObjectUnionOf
      */
     public OWLObjectUnionOf getOWLDisjunction(Set<OWLClassExpression> disjuncts) {
-        return factory.getOWLObjectUnionOf(disjuncts.toArray(new OWLClassExpression[disjuncts.size()]));
+        return factory.getOWLObjectUnionOf(disjuncts.toArray(OWLClassExpression[]::new));
     }
 
     /**

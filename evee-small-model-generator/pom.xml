@@ -19,7 +19,7 @@
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-distribution</artifactId>
-            <version>5.1.18</version>
+            <version>${owl5version}</version>
         </dependency>
 
         <!--        logging related-->

@@ -9,7 +9,6 @@ import uk.ac.man.cs.lethe.internal.dl.forgetting.direct.ALCFormulaPreparations;
 import uk.ac.man.cs.lethe.internal.dl.forgetting.direct.DefinerFactory;
 import uk.ac.man.cs.lethe.internal.dl.owlapi.OWLExporter;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,7 @@ public class DefinerTranslatingVisitor implements OWLClassExpressionVisitorEx<OW
                         definedConcepts.add(
                                 owlExporter.toOwl(ontology, definerMap.get(definer))
                                         .accept(this)));
-                translation = dataFactory.getOWLObjectIntersectionOf(definedConcepts.toArray(new OWLClassExpression[definedConcepts.size()]));
+                translation = dataFactory.getOWLObjectIntersectionOf(definedConcepts.toArray( OWLClassExpression[]::new));
                 // System.out.println("    " + definedConcepts + " → " + translation);
             } else {
                 // Just 1 definer, it has to be a definer standing for an atomic concept
@@ -94,13 +93,13 @@ public class DefinerTranslatingVisitor implements OWLClassExpressionVisitorEx<OW
     public OWLObjectUnionOf visit(OWLObjectUnionOf expression) {
         Set<OWLClassExpression> expressions = new HashSet<>();
         expression.asDisjunctSet().forEach(disjunct -> expressions.add(disjunct.accept(this)));
-        return dataFactory.getOWLObjectUnionOf(expressions.toArray(new OWLClassExpression[expressions.size()]));
+        return dataFactory.getOWLObjectUnionOf(expressions.toArray(OWLClassExpression[]::new));
     }
 
     public OWLObjectIntersectionOf visit(OWLObjectIntersectionOf expression) {
         Set<OWLClassExpression> expressions = new HashSet<>();
         expression.asConjunctSet().forEach(conjunct -> expressions.add(conjunct.accept(this)));
-        return dataFactory.getOWLObjectIntersectionOf(expressions.toArray(new OWLClassExpression[expressions.size()]));
+        return dataFactory.getOWLObjectIntersectionOf(expressions.toArray(OWLClassExpression[]::new));
     }
 
     @Override

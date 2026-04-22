@@ -47,17 +47,13 @@ public class ELKModelGenerator {
 	 * @throws OWLOntologyCreationException
 	 */
 	public ELKModelGenerator(OWLOntology ontology, OWLAxiom conclusion) throws OWLOntologyCreationException {
-		logger.info("line 48");
 		this.originalAxioms = new HashSet<>();
 		this.originalOntology = ontology;
 		this.ontology = ontology;
 		this.conclusion = conclusion;
-		logger.info("line 53");
 
 		this.mapper = new Mapper(owlTools.getLHS(conclusion), owlTools.getRHS(conclusion));
-		logger.info("line 53");
 		finishInit();
-
 	}
 
 	private void finishInit() throws OWLOntologyCreationException {
@@ -68,13 +64,11 @@ public class ELKModelGenerator {
 					mapper.getOriginalLHS());
 			addAxiom(newAxiom);
 		}
-		logger.info("line 66");
 		if (!mapper.getAliasRHS().equals(mapper.getOriginalRHS())) {
 			OWLEquivalentClassesAxiom newAxiom = owlTools.getOWLEquivalenceAxiom(mapper.getAliasRHS(),
 					mapper.getOriginalRHS());
 			addAxiom(newAxiom);
 		}
-		logger.info("line 72");
 		this.ontology = Segmenter.getSegmentAsOntology(this.ontology,
 				Sets.newHashSet(this.mapper.getAliasLHS(), this.mapper.getAliasRHS()), IRI.create("http://ModuleExtraction"));
 	}
@@ -176,9 +170,7 @@ public class ELKModelGenerator {
 		logger.info(GeneralTools.getDuration(start, finish));
 
 		// classify
-		logger.info("Classifying");
 		start = Instant.now();
-
 		OWLReasoner reasoner = classify();
 
 		finish = Instant.now();
@@ -341,7 +333,6 @@ public class ELKModelGenerator {
 	 * @return{@code Set<OWLClassExpression>}
 	 */
 	private Set<OWLClassExpression> getAllSubConcepts() {
-
 		Set<OWLClassExpression> res = new HashSet<>();
 
 		this.ontology.getAxioms().forEach(axiom -> {
@@ -350,7 +341,6 @@ public class ELKModelGenerator {
 				res.addAll(owlTools.getSubConcepts(subClassOf.getSuperClass()));
 			});
 		});
-
 		Set<OWLObjectSomeValuesFrom> tmp = new HashSet<>();
 		res.stream().filter(x-> x instanceof OWLObjectSomeValuesFrom).forEach(x->
 				tmp.add((OWLObjectSomeValuesFrom) owlTools.getOWLExistentialRestriction(((OWLObjectSomeValuesFrom) x).getProperty(),

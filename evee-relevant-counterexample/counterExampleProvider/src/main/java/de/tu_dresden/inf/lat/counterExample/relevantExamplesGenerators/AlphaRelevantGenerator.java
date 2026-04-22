@@ -26,8 +26,6 @@ public class AlphaRelevantGenerator extends RelevantCounterExampleGenerator {
 
 	public AlphaRelevantGenerator(ELKModelGenerator elkCounterModelGenerator) throws OWLOntologyCreationException {
 		super(elkCounterModelGenerator);
-		logger.info("line 29");
-
 	}
 
 	public Set<Element> generate() {

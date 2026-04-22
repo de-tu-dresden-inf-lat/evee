@@ -1,7 +1,6 @@
 package de.tu_dresden.inf.lat.evee.proofs.lethe;
 
 import com.clarkparsia.owlapi.explanation.util.SilentExplanationProgressMonitor;
-import de.tu_dresden.inf.lat.dltools.ALCHTBoxFilter;
 import de.tu_dresden.inf.lat.evee.general.tools.OWLOntologyFilterTool;
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
 import de.tu_dresden.inf.lat.evee.proofs.data.AbstractSimpleOWLProofGenerator;

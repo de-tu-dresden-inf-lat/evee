@@ -10,6 +10,8 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.model.data.Element;
 import de.tu_dresden.inf.lat.model.data.Relation;
+
+import org.apache.log4j.Logger;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -20,8 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Stefan Borgwardt
@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
 
 public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGenerator {
 
-    private final Logger logger = LoggerFactory.getLogger(ELKRelevantCounterexampleGenerator.class);    
+    	private final Logger logger = Logger.getLogger(ELKRelevantCounterexampleGenerator.class);
+
 
     private ModelType type;
     private Set<OWLAxiom> observation;
@@ -81,15 +82,11 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             OWLSubClassOfAxiom subClsOf;
             OWLAxiom axiom = this.observation.iterator().next();
 
-            logger.info("line 84");
-
             if (axiom instanceof OWLSubClassOfAxiom)
                 subClsOf = (OWLSubClassOfAxiom) axiom;
             else
                 throw new ModelGenerationException("Observation is not an instance of SubClassOf");
-
-            logger.info("line 91");
-
+            
             ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
             ElkReasoner reasoner = reasonerFactory.createReasoner(this.ontology);
 
@@ -100,18 +97,14 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
             if(!reasoner.isSatisfiable(subClsOf.getSuperClass())){
                 modelTypeReverted = type != ModelType.Alpha;
                 type = ModelType.Alpha;
-            }else
+            }else {
                 modelTypeReverted = false;
-            logger.info("line 105");
-            ELKModelGenerator elkModelGenerator = new ELKModelGenerator(ontology, subClsOf); //?????
-            logger.info("line 107");
+            }
+
+            ELKModelGenerator elkModelGenerator = new ELKModelGenerator(ontology, subClsOf);
             RelevantCounterExampleGenerator generator = getRelevantGenerator(type, elkModelGenerator);
 
-            logger.info("line 109");
-
             Set<Element> model = generator.generate();
-            logger.info("line 112");
-
 
             setProgressTrackerMessage("Filtering the generated counterexample.");
             incrementProgressTracker();
@@ -129,6 +122,7 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
                 this.hint = asOWLHint(HintFinder.getHint(model,generator));
             else
                 this.hint = new HashSet<>();
+
 
             Set<OWLIndividualAxiom> owlModel = new HashSet<>();
             for (Element element : model) {
@@ -213,7 +207,6 @@ public class ELKRelevantCounterexampleGenerator implements IOWLCounterexampleGen
      */
     private RelevantCounterExampleGenerator getRelevantGenerator(ModelType type, ELKModelGenerator elkModelGenerator)
             throws OWLOntologyCreationException {
-        logger.info("line 215");
         switch (type) {
             case Alpha: return new AlphaRelevantGenerator(elkModelGenerator);
             case Diff: return new DiffRelevantGenerator(elkModelGenerator);

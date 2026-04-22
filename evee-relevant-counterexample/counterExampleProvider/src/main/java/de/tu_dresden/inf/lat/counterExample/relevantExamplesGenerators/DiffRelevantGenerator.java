@@ -27,9 +27,7 @@ public class DiffRelevantGenerator extends RelevantCounterExampleGenerator {
 	protected final Logger logger = Logger.getLogger(DiffRelevantGenerator.class);
 
 	public DiffRelevantGenerator(ELKModelGenerator elkCounterModelGenerator) throws OWLOntologyCreationException {
-		super(elkCounterModelGenerator);
-		logger.info("line 32");
-
+		super(elkCounterModelGenerator);;
 	}
 
 	public Set<Element> generate() {

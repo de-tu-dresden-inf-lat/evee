@@ -315,7 +315,7 @@ public class PlaceholderParser {
 			individuals.add(ind);
 		};
 		
-		return owlHelper.getOWLOneOf(individuals.toArray(new OWLIndividual[0]));
+		return owlHelper.getOWLOneOf(individuals.toArray(OWLIndividual[]::new));
 	}
 
 	private OWLObjectHasSelf parseHasSelf(Set<List<String>> relevantFacts){

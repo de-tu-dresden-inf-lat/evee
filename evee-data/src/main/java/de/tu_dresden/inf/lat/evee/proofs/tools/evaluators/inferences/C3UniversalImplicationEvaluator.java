@@ -3,6 +3,7 @@
  */
 package de.tu_dresden.inf.lat.evee.proofs.tools.evaluators.inferences;
 
+import de.tu_dresden.inf.lat.evee.general.tools.OWLTools;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class C3UniversalImplicationEvaluator implements IInferenceEvaluator<OWLA
 				axioms.add((OWLSubClassOfAxiom) ax);
 			}
 			if (ax instanceof OWLEquivalentClassesAxiom) {
-				axioms.addAll(((OWLEquivalentClassesAxiom) ax).asOWLSubClassOfAxioms());
+				axioms.addAll(OWLTools.equivToSubOf((OWLEquivalentClassesAxiom) ax));
 			}
 		}
 		for (OWLSubClassOfAxiom sco : axioms) {

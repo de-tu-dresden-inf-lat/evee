@@ -6,21 +6,18 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.List;
 
 import org.semanticweb.HermiT.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.ClassExpressionType;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+
 
 import com.clarkparsia.owlapi.explanation.DefaultExplanationGenerator;
 import com.clarkparsia.owlapi.explanation.util.SilentExplanationProgressMonitor;
+
+import com.google.common.collect.Sets;
 
 public class OWLTools {
 
@@ -142,6 +139,55 @@ public class OWLTools {
 		DefaultExplanationGenerator explainer = new DefaultExplanationGenerator(OWLTools.manager, new ReasonerFactory(),
 				reasoner.getRootOntology(), reasoner, new SilentExplanationProgressMonitor());
 		return explainer.getExplanations(conclusion);
+	}
+
+	public static Set<OWLSubClassOfAxiom> equivToSubOf(OWLEquivalentClassesAxiom axiom){
+		Set<OWLSubClassOfAxiom> result = new HashSet<>();
+		List<OWLClassExpression> expressions = axiom.getClassExpressions().stream().collect(Collectors.toList());
+
+		for (int i = 0; i < expressions.size()-1; i++) {
+			OWLClassExpression ex1 = expressions.get(i);
+			OWLClassExpression ex2 = expressions.get(i+1);
+			result.add(odf.getOWLSubClassOfAxiom(ex1, ex2));
+			result.add(odf.getOWLSubClassOfAxiom(ex2, ex1));
+		}
+
+		return result;
+	}
+
+	public static Set<OWLSubClassOfAxiom> disjToSubOf(OWLDisjointClassesAxiom axiom){
+		Set<OWLSubClassOfAxiom> result = new HashSet<>();
+		List<OWLClassExpression> expressions = axiom.getClassExpressions().stream().collect(Collectors.toList());
+
+		for(int i=0; i<expressions.size()-1; i++){
+			OWLClassExpression cls1 = expressions.get(i);
+			for (int j=i+1; j<expressions.size(); j++){
+				OWLClassExpression cls2 = expressions.get(j);
+				result.add(odf.getOWLSubClassOfAxiom(odf.getOWLObjectIntersectionOf(cls1, cls2), odf.getOWLNothing()));
+			}
+		}
+
+		return result;
+	}
+
+	public static Set<OWLSubClassOfAxiom> domainToSubOf(OWLObjectPropertyDomainAxiom axiom){
+		OWLObjectPropertyExpression property = axiom.getProperty();
+		OWLClassExpression domain = axiom.getDomain();
+
+		OWLSubClassOfAxiom sub = 
+			odf.getOWLSubClassOfAxiom(odf.getOWLObjectSomeValuesFrom(property, odf.getOWLThing()), domain);
+
+		return Sets.newHashSet(sub);
+	}
+
+	public static Set<OWLSubClassOfAxiom> rangeToSubOf(OWLObjectPropertyRangeAxiom axiom){
+		OWLObjectPropertyExpression property = axiom.getProperty();
+		OWLClassExpression range = axiom.getRange();
+
+		OWLSubClassOfAxiom sub = 
+			odf.getOWLSubClassOfAxiom(odf.getOWLThing(), odf.getOWLObjectAllValuesFrom(property, range));
+
+		return Sets.newHashSet(sub);
 	}
 
 }

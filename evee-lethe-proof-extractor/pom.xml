@@ -20,10 +20,10 @@
             <version>5.8.2</version>
         </dependency>
         <!--        owlapi + hermit-->
-            <dependency>
+        <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-distribution</artifactId>
-            <version>5.1.19</version>
+            <version>${owl5version}</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>

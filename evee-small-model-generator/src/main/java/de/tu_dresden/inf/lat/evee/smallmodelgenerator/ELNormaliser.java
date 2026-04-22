@@ -77,16 +77,9 @@ public class ELNormaliser {
         rhsAxiomAdded = new HashSet<>();
         mappedConceptNames = new HashMap<>();
 
-        logger.info("ELNormaliser line 81");
         normalisedOntology = manager.createOntology();
-
-        // ----------------- PROBLEM -----------------
-       Set<OWLLogicalAxiom> logicalAxioms = ontology.getLogicalAxioms(Imports.INCLUDED);
-        logger.info("ELNormaliser line 86");
-
+        Set<OWLLogicalAxiom> logicalAxioms = ontology.getLogicalAxioms(Imports.INCLUDED);
         logicalAxioms.stream().forEach(this::addNormalised);
-
-        logger.info("ELNormaliser line 90");
 
         return normalisedOntology;
     }
@@ -97,14 +90,10 @@ public class ELNormaliser {
 
 
     private void addNormalised(OWLAxiom axiom) {
-        logger.info("Process: "+axiom);
-
         if (axiom instanceof OWLSubObjectPropertyOfAxiom) {
             manager.addAxiom(normalisedOntology, axiom);
 
         } else if (axiom instanceof OWLSubClassOfAxiom) {
-
-            logger.info("line 108: in OWLSubClassOfAxiom");
 
             OWLSubClassOfAxiom subAxiom = (OWLSubClassOfAxiom) axiom;
             OWLClassExpression lhs = subAxiom.getSubClass();
@@ -189,10 +178,7 @@ public class ELNormaliser {
             addNormalised(shortCut.asOWLSubClassOfAxiom());
 
         } else if (axiom instanceof OWLEquivalentClassesAxiom) {
-
-            logger.info("line 188");            
             OWLEquivalentClassesAxiom equiv = (OWLEquivalentClassesAxiom) axiom;
-            logger.info("line 191"); 
 
             List<OWLClassExpression> expressions = equiv.getClassExpressionsAsList();
             for (int i = 0; i < expressions.size()-1; i++) {
@@ -206,7 +192,6 @@ public class ELNormaliser {
             logger.warn("Not supported: "+axiom);
             this.numRemoved = this.numRemoved + 1;
         }
-        logger.info("Finished processing: "+axiom);
     }
 
     private OWLClass toOWLClassLHS(OWLClassExpression owlClassExpression) {
