@@ -100,10 +100,10 @@ For easy reuse of Evee as a library, use [evee-libs-owlapi4](evee-libs/evee-libs
 These libraries contain all submodules of Evee except for the Evee Protégé plugins.
 
 ### evee as library
-All modules of evee except the Protégé plugins are published on Maven Central under the namespace `io.github.de-tu-dresden-inf-lat`. The artifact `evee-libs` depends on all published modules except `evee-protege-core`. To use it, simply add `evee-libs` as a dependency in your project's pom file:
+All modules of evee except the Protégé plugins are published on Maven Central under the namespace `io.github.de-tu-dresden-inf-lat`. The artifact `evee-libs` depends on all published modules except `evee-protege-core`. To use it, simply add `evee-libs-owlapiX` (with `X` being either `4` or `5`) as a dependency in your project's pom file:
 ```
 <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-<artifactId>evee-libs</artifactId>
+<artifactId>evee-libs-owlapiX</artifactId>
 <version>0.5</version>
 ```
 To use a single Evee module, add the respective dependency in your pom file,
