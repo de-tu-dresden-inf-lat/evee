@@ -12,10 +12,8 @@
     <artifactId>evee-relevant-counterexample</artifactId>
 
     <modules>
-        <module>model-datastructures-owlapi4</module>
-        <module>model-datastructures-owlapi5</module>
-        <module>counterExampleProvider-owlapi4</module>
-        <module>counterExampleProvider-owlapi5</module>
+        <module>model-datastructures</module>
+        <module>counterExampleProvider</module>
     </modules>
     <packaging>pom</packaging>
 

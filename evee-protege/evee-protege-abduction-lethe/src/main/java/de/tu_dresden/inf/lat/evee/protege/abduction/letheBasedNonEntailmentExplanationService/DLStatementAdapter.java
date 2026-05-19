@@ -5,9 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
 import uk.ac.man.cs.lethe.abduction.OWLAbducer;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.Concept;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.DLStatement;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.Substitution;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.BottomConcept$;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.TopConcept$;
+import uk.ac.man.cs.lethe.internal.dl.datatypes.CheapSimplifier$;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.GreatestFixpoint;
 import uk.ac.man.cs.lethe.internal.dl.datatypes.extended.LeastFixpoint;
-import uk.ac.man.cs.lethe.internal.dl.datatypes.*;
 import uk.ac.man.cs.lethe.internal.dl.owlapi.OWLExporter;
 
 import java.util.*;

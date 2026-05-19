@@ -6,14 +6,71 @@
         <artifactId>evee</artifactId>
         <version>${revision}</version>
     </parent>
+
     <artifactId>evee-small-model-generator</artifactId>
+    <packaging>bundle</packaging>
 
-    <packaging>pom</packaging>
+    <properties>
+        <bundleName>${project.artifactId}</bundleName>
+    </properties>
 
-    <modules>
-        <module>evee-small-model-generator-owlapi4</module>
-        <module>evee-small-model-generator-owlapi5</module>
-    </modules>
+    <dependencies>
+        <!--        OWLApi and Protege basics-->
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-distribution</artifactId>
+            <version>${owl5version}</version>
+        </dependency>
 
+        <!--        logging related-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <!--        evee-related-->
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>evee-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.9</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${bundleName};singleton:=true</Bundle-SymbolicName>
+                  
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -157,7 +157,6 @@ abstract public class AbstractCounterexampleGenerationService
         @Override
         protected Void doInBackground() {
             computationSuccessful = false;
-
             try {
                 IGraphViewService graphViewGenerator = new GraphViewGenerator(GraphStyleSheets.PROTEGE,2000);
                 OWLSubClassOfAxiom observationAxiom = (OWLSubClassOfAxiom) observation.stream().findFirst().get();
@@ -169,8 +168,8 @@ abstract public class AbstractCounterexampleGenerationService
                         viewComponentListener,
                         simpleMode
                         );
-                computationSuccessful = true;
 
+                computationSuccessful = true;
             } catch (Exception e) {
                 if (computationSuccessful) {
                     logger.info("Counterexample generation is canceled");
