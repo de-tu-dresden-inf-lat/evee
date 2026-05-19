@@ -4,13 +4,12 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Sets;
 import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
 import de.tu_dresden.inf.lat.counterExample.data.Tracker;
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-
-import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
 
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter;
 import de.tu_dresden.inf.lat.model.data.Element;

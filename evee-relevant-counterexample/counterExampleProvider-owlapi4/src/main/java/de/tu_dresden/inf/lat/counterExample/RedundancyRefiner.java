@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.counterExample;
 
-import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
+
+import com.google.common.collect.Sets;
 import de.tu_dresden.inf.lat.counterExample.relevantExamplesGenerators.RelevantCounterExampleGenerator;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.model.data.Element;

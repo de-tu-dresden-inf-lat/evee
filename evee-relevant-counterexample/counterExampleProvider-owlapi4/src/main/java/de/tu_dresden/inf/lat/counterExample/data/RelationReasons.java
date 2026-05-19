@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
 
+import com.google.common.collect.Sets;
 import de.tu_dresden.inf.lat.model.data.Relation;
 
 /**
