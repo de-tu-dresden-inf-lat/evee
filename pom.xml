@@ -37,11 +37,11 @@
     <packaging>pom</packaging>
 
     <properties>
+        <revision>0.5.1-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <revision>0.5.1-SNAPSHOT</revision>
         <scala.version>2.12.17</scala.version>
         <LatScalaDlTools.Version>0.4.1</LatScalaDlTools.Version>
         <LETHE.Version>0.8.1</LETHE.Version>

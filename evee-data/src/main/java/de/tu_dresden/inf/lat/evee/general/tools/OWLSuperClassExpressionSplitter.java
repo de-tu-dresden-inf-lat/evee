@@ -6,7 +6,6 @@ package de.tu_dresden.inf.lat.evee.general.tools;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
