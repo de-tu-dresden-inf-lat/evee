@@ -1,7 +1,6 @@
 package de.tu_dresden.inf.lat.evee.protege.elkBasedProofService;
 
 import de.tu_dresden.inf.lat.evee.protege.abstractProofService.preferences.AbstractEveeProofPreferencesManager;
-import org.protege.editor.core.prefs.Preferences;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
