@@ -170,7 +170,7 @@ abstract public class AbstractCounterexampleGenerationService
                         );
 
                 computationSuccessful = true;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 if (computationSuccessful) {
                     logger.info("Counterexample generation is canceled");
                 } else {

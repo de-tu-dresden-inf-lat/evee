@@ -80,12 +80,14 @@ public class InteractiveGraphModel implements IInteractiveComponent,
         } else {
             this.controlPanel = new ControlPanel(owlEditorKit);
         }
-
+        logger.warn("line 83"); //debugLog
         this.controlPanel.addCounterexampleGenerationEventListener(this);
+         logger.warn("line 85"); //debugLog
         this.graphView = graphViewService.computeView(model,
                 ontology,
                 modelGenerator.getMarkedIndividuals(),
                 DEFAULT_LABELS_NUM);
+        logger.warn("line 90"); //debugLog
         this.graphModelComponent = new GraphModelComponent(graphView,controlPanel);
     }
 

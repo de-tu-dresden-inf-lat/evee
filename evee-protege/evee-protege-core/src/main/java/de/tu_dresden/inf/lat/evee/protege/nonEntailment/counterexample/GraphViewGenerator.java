@@ -13,7 +13,7 @@ import org.graphstream.ui.graphicGraph.GraphicGraph;
 import org.graphstream.ui.graphicGraph.GraphicNode;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
-import org.graphstream.ui.swing_viewer.SwingViewer;
+import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -37,7 +37,7 @@ public class GraphViewGenerator implements IGraphViewService {
     private OWLOntology ont;
     private final Logger logger = Logger.getLogger(GraphViewGenerator.class);
     private Set<IRI> markedIndividuals;
-    private SwingViewer graphModelViewer;
+    private FxViewer graphModelViewer;
     private String edgeLabelGrouping = LINE;
 
     public GraphViewGenerator(String styleSheet,int autoLayoutTimeMs) {
@@ -58,7 +58,7 @@ public class GraphViewGenerator implements IGraphViewService {
         this.markedIndividuals = markedIndividuals;
         this.maxLabelNum = labelsNum;
 
-        System.setProperty("org.graphstream.ui", "swing");
+        System.setProperty("org.graphstream.ui", "javafx");
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graphModel = new GraphicGraph("model");
         createStyleSheet();
@@ -207,22 +207,39 @@ public class GraphViewGenerator implements IGraphViewService {
                                       OWLOntology ontology,
                                       Set<IRI> markedIndividuals,
                                       int labelsNum) {
+        logger.warn("line 210"); //debugLog
         OWLObjectCollectionSorter sorter = new OWLObjectCollectionSorter(ontology);
         individualsToClassesMap = sorter.sortOWLObjectMap(MappingUtils.toIndividualsToClassesMap(model));
         pairsToObjectPropertiesMap = sorter.sortOWLObjectMap(MappingUtils.toPairsToObjectPropertiesMap(model));
         logger.debug(individualsToClassesMap);
+        
+        logger.warn("line 216"); //debugLog
 
         generateGraphModel(individualsToClassesMap,
                 pairsToObjectPropertiesMap,
                 ontology,
                 markedIndividuals,
                 labelsNum);
+
+        logger.warn("line 224"); //debugLog
+
         GraphViewMouseListener graphViewMouseListener = new GraphViewMouseListener(individualsToClassesMap,
                 pairsToObjectPropertiesMap);
-        graphModelViewer = new SwingViewer(graphModel,
+
+        logger.warn("line 229"); //debugLog
+
+        graphModelViewer = new FxViewer(graphModel,
                 Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
+
+        logger.warn("line 234"); //debugLog
+
         graphModelViewer.enableAutoLayout();
+
+        logger.warn("line 238"); //debugLog
+
         View view = graphModelViewer.addDefaultView(false);
+
+        logger.warn("line 242"); //debugLog
 
         GraphModelView graphView = new GraphModelView(view,graphViewMouseListener);
         return graphView;

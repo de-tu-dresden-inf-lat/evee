@@ -103,11 +103,10 @@
             <artifactId>jackson-core</artifactId>
             <version>2.13.3</version>
         </dependency>
-
         <dependency>
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-            <artifactId>gs-ui-swing</artifactId>
-            <version>2.2</version>
+            <artifactId>gs-ui-javafx</artifactId>
+            <version>2.1</version>
         </dependency>
         <dependency>
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
@@ -118,10 +117,7 @@
             <groupId>org.eclipse.swt.win32.win32</groupId>
             <artifactId>x86</artifactId>
             <version>3.3.0-v3346</version>
-            <scope>compile</scope>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -166,6 +162,10 @@
                             org.protege.editor.core.*;version="5.0",
                             sun.misc.*;resolution:=optional,
                             org.checkerframework.checker.nullness.qual.*;resolution:=optional,
+                            jdk.swing.interop.*;resolution:=optional,
+                            com.sun.xml.fastinfoset.*;resolution:=optional,
+                            org.glassfish.corba.org.omg.*;resolution:=optional,
+                            org.jvnet.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Export-Package>
@@ -185,10 +185,6 @@
                             com.typesafe.scalalogging.*,
                             scala.*,
                             com.google.errorprone.annotations.*,
-                            <!--     com.google.appengine.api,
-                                 com.google.appengine.api.utils,
-                                 com.google.apphosting.api,
-                                 com.google.thirdparty.publicsuffix, -->
                         </Export-Package>
                         <Private-Package>
                             org.yaml.snakeyaml.*,
@@ -196,16 +192,18 @@
                             junit.extensions.*,
                             junit.framework.*,
                             junit.runner.*,
+                            javafx.*,
                             org.hamcrest.*,
                             org.graphstream.*,
                             javax.xml.stream.*,
                             org.miv.*,
-                            <!-- com.google.common.* -->
+                            com.sun.*,
+                            com.sun.javafx.tk.*,
                         </Private-Package>
 <!--                        problem with embedding dependencies: adds import-package instruction for android.dalvik which cannot be resolved by protege
                             solution: try embedding only those dependencies currently mentioned in import/export/private-package-->
-<!--                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>-->
-<!--                        <Embed-Transitive>true</Embed-Transitive>-->
+<!--                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency> -->
+<!--                        <Embed-Transitive>true</Embed-Transitive> -->
                     </instructions>
                 </configuration>
                 <executions>
