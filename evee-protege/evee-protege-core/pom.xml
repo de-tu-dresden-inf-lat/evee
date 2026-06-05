@@ -166,7 +166,7 @@
                             com.sun.xml.fastinfoset.*;resolution:=optional,
                             org.glassfish.corba.org.omg.*;resolution:=optional,
                             org.jvnet.*;resolution:=optional,
-                            *
+                            *;resolution:=optional,
                         </Import-Package>
                         <Export-Package>
                             com.fasterxml.jackson.*;-split-package:=merge-last,
@@ -192,18 +192,28 @@
                             junit.extensions.*,
                             junit.framework.*,
                             junit.runner.*,
-                            javafx.*,
                             org.hamcrest.*,
-                            org.graphstream.*,
                             javax.xml.stream.*,
                             org.miv.*,
-                            com.sun.*,
-                            com.sun.javafx.tk.*,
                         </Private-Package>
 <!--                        problem with embedding dependencies: adds import-package instruction for android.dalvik which cannot be resolved by protege
                             solution: try embedding only those dependencies currently mentioned in import/export/private-package-->
 <!--                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency> -->
 <!--                        <Embed-Transitive>true</Embed-Transitive> -->
+                            <Embed-Dependency>
+                                gs-ui-javafx;scope=compile;inline=true,
+                                gs-core;scope=compile;inline=true
+                                gs-ui-javafx,
+                                gs-core,
+                                javafx-base,
+                                javafx-graphics,
+                                javafx-controls,
+                                javafx-swing
+                            </Embed-Dependency>                                    
+                            <Embed-Transitive>true</Embed-Transitive>
+                            <DynamicImport-Package>
+                                 javafx.*
+                            </DynamicImport-Package>
                     </instructions>
                 </configuration>
                 <executions>

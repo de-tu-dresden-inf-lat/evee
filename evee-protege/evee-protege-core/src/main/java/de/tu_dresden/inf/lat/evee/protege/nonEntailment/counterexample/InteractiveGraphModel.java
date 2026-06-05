@@ -13,6 +13,9 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.Reas
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.*;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+
 import org.apache.log4j.Logger;
 import org.protege.editor.owl.OWLEditorKit;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -33,6 +36,9 @@ public class InteractiveGraphModel implements IInteractiveComponent,
     private final GraphModelComponent graphModelComponent;
     private final Logger logger = Logger.getLogger(InteractiveGraphModel.class);
     private final IGraphModelControlPanel controlPanel;
+
+    private boolean fxInitialized = false;
+
     private OWLSubClassOfAxiom observation;
     private static final int DEFAULT_LABELS_NUM = 2;
     private final OWLEditorKit owlEditorKit;
@@ -82,13 +88,18 @@ public class InteractiveGraphModel implements IInteractiveComponent,
         }
         logger.warn("line 83"); //debugLog
         this.controlPanel.addCounterexampleGenerationEventListener(this);
-         logger.warn("line 85"); //debugLog
+         
+        logger.warn("line 85"); //debugLog
+
+        initToolkit();
         this.graphView = graphViewService.computeView(model,
                 ontology,
                 modelGenerator.getMarkedIndividuals(),
                 DEFAULT_LABELS_NUM);
         logger.warn("line 90"); //debugLog
-        this.graphModelComponent = new GraphModelComponent(graphView,controlPanel);
+
+
+        this.graphModelComponent = new GraphModelComponent(graphView, controlPanel);
     }
 
 
@@ -96,7 +107,7 @@ public class InteractiveGraphModel implements IInteractiveComponent,
     @Override
     public void onModelRefreshed(IGraphModelControlPanel source) {
         currentLabelsNum = source.getCurrentLabelsNum();
-        SwingWorker modelRefreshWorker = new SwingWorker() {
+       SwingWorker<Void, Void> modelRefreshWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 recomputeGraphView();
@@ -107,14 +118,14 @@ public class InteractiveGraphModel implements IInteractiveComponent,
         };
         modelRefreshWorker.execute();
     }
+
     @Override
     public void onModelRecomputed(IGraphModelControlPanel source) {
         Set<OWLAxiom> additionalAxioms = source.getAdditionalAxioms();
         currentLabelsNum = source.getCurrentLabelsNum();
-        SwingWorker modelRecomputeWorker = new SwingWorker() {
-
+        SwingWorker<Void, Void> modelRecomputeWorker = new SwingWorker<Void, Void>() {
             @Override
-            protected Void doInBackground(){
+            protected Void doInBackground() throws Exception {
                 try {
 
                     recomputeModel(additionalAxioms);
@@ -127,8 +138,10 @@ public class InteractiveGraphModel implements IInteractiveComponent,
                 return null;
             }
         };
+
         modelRecomputeWorker.execute();
     }
+
     @Override
     public void onDisjointnessesAddedToOntology(IGraphModelControlPanel source) {
         logger.debug("additional axioms to add: " +source.getAdditionalAxioms());
@@ -177,12 +190,57 @@ public class InteractiveGraphModel implements IInteractiveComponent,
                 currentLabelsNum);
         logger.info("View is recomputed");
     }
+    
     public Set<OWLIndividualAxiom> getModel() {
         return model;
     }
-    @Override
+
+    // /**
+    //  * Get the JavaFX component representation of this interactive model.
+    //  * The returned node should be wrapped in a JFXPanel when integrating with Swing UI.
+    //  *
+    //  * @return A JavaFX Node representing the graph model component
+    //  */
+    // public javafx.scene.Node getGraphModelComponentFx() {
+    //     SwingWorker<Void, Void> postprocessingWorker = new SwingWorker<Void, Void>() {
+    //         @Override
+    //         protected Void doInBackground() throws Exception {
+    //             graphViewService.doPostProcessing();
+    //             return null;
+    //         }
+    //     };
+    //     postprocessingWorker.execute();
+
+    //     return graphModelComponent.toNode();
+    // }
+
+    private synchronized void initToolkit() {
+        if (fxInitialized) 
+            return;
+
+        try {
+            Platform.startup(() -> {
+                System.out.println("JavaFX started");
+            });
+
+            fxInitialized = true;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            logger.error("Failed to initialize JavaFX toolkit", e);
+        }
+
+
+    Platform.runLater(() -> {
+        System.out.println("JavaFX thread works");
+
+        Timeline t = new Timeline();
+        System.out.println("Timeline created");
+});
+    }
+
+@Override
     public GraphModelComponent toComponent() {
-        SwingWorker postprocessingWorker = new SwingWorker() {
+        SwingWorker<Void, Void> postprocessingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 graphViewService.doPostProcessing();

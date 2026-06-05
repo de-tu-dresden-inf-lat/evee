@@ -26,8 +26,10 @@ public class GraphModelComponent extends JPanel implements IInteractiveGraphMode
         this.modelViewPanel.add(graphView.toComponent());
         this.add(this.modelViewPanel);
         this.add(this.controlPanel.toComponent());
+        
         updateUI();
     }
+
 
     @Override
     public void update(IGraphView graphView) {

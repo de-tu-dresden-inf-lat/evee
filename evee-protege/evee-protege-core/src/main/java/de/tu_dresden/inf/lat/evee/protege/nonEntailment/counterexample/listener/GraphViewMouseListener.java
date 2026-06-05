@@ -5,14 +5,15 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexampl
 import org.apache.log4j.Logger;
 import org.graphstream.ui.geom.Point2;
 import org.graphstream.ui.geom.Point3;
+import org.graphstream.ui.graphicGraph.GraphicElement;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
 import org.graphstream.ui.graphicGraph.GraphicNode;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
-import org.graphstream.ui.fx_viewer.util.FxMouseManager;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.camera.Camera;
 import org.graphstream.ui.view.util.InteractiveElement;
+import org.graphstream.ui.view.util.MouseManager;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
@@ -20,13 +21,19 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+// import java.awt.event.MouseWheelEvent;
+// import java.awt.event.MouseWheelListener;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-public class GraphViewMouseListener extends FxMouseManager implements MouseWheelListener {
+public class GraphViewMouseListener implements MouseManager {
+
+    private View view;
+    private GraphicGraph graph;
+
+    private GraphicElement curElement;
+
     private long curTime;
 
     private Map<String, List<OWLClass>> individualClassMap;
@@ -64,7 +71,7 @@ public class GraphViewMouseListener extends FxMouseManager implements MouseWheel
         view.addListener(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
         view.addListener(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
         view.addListener(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
-        view.addListener(ScrollEvent.SCROLL, this);
+        // view.addListener(ScrollEvent.SCROLL, this);
         this.createSelectionSprite();
     }
 
@@ -73,29 +80,48 @@ public class GraphViewMouseListener extends FxMouseManager implements MouseWheel
         view.removeListener(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
         view.removeListener(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
         view.removeListener(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
-        view.removeListener(ScrollEvent.SCROLL, this);
-    }
+        // view.removeListener(ScrollEvent.SCROLL, this);
+    }   
 
-    private EventHandler<MouseEvent> mousePressedHandler = new EventHandler<MouseEvent>(){
+    private final EventHandler<MouseEvent> mousePressedHandler = new EventHandler<MouseEvent>() {
         @Override
-        public void handle(MouseEvent event) {
-            curElement = view.findGraphicElementAt(interactiveEliments,event.getX(), event.getY());
-
-            curTime = System.currentTimeMillis();
-            if (curElement != null) {
-                    elementMoving= true;
-                    curNode = (GraphicNode) graph.getNode(curElement.getId());
-            }
-            if(isFirstClick) {
-                isFirstClick = false;
-            }
+        public void handle(MouseEvent e) {
+            onPress(e);
         }
     };
 
-
-    private EventHandler<MouseEvent> mouseReleasedHandler = new EventHandler<MouseEvent>(){
+    private final EventHandler<MouseEvent> mouseDraggedHandler = new EventHandler<MouseEvent>() {
         @Override
-        public void handle(MouseEvent event) {
+        public void handle(MouseEvent e) {
+            onDrag(e);
+        }
+    };
+
+    private final EventHandler<MouseEvent> mouseReleasedHandler = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent e) {
+            onRelease(e);
+        }
+    };
+
+    
+    private void onPress(MouseEvent event) {
+
+        curElement = view.findGraphicElementAt(interactiveEliments,event.getX(), event.getY());
+
+        curTime = System.currentTimeMillis();
+        if (curElement != null) {
+                elementMoving= true;
+                curNode = (GraphicNode) graph.getNode(curElement.getId());
+        }
+        if(isFirstClick) {
+            isFirstClick = false;
+        }
+    }
+
+
+
+    private void onRelease(MouseEvent event) {
 
             logger.debug("mouse released");
             last = null;
@@ -110,11 +136,9 @@ public class GraphViewMouseListener extends FxMouseManager implements MouseWheel
                 elementMoving = false;
             }
         }
-    };
+ 
 
-    private EventHandler<MouseEvent> mouseDraggedHandler = new EventHandler<MouseEvent>(){
-        @Override
-        public void handle(MouseEvent event) {
+    private void onDrag(MouseEvent event) {
             if(elementMoving) {
                 double oldPositionX = curNode.getX();
 
@@ -127,24 +151,29 @@ public class GraphViewMouseListener extends FxMouseManager implements MouseWheel
                 cameraMoving(event);
             }
         }
-    };
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        e.consume();
-        int i = e.getWheelRotation();
-        double factor = Math.pow(1.25, i);
-        Camera cam = view.getCamera();
-        double zoom = cam.getViewPercent() * factor;
-        Point2 pxCenter  = cam.transformGuToPx(cam.getViewCenter().x, cam.getViewCenter().y, 0);
-        Point3 guClicked = cam.transformPxToGu(e.getX(), e.getY());
-        double newRatioPx2Gu = cam.getMetrics().ratioPx2Gu/factor;
-        double x = guClicked.x + (pxCenter.x - e.getX())/newRatioPx2Gu;
-        double y = guClicked.y - (pxCenter.y - e.getY())/newRatioPx2Gu;
-        cam.setViewCenter(x, y, 0);
-        cam.setViewPercent(zoom);
+    
+    protected void elementMoving(GraphicElement element, MouseEvent event) {
+		view.moveElementAtPx(element, event.getX(), event.getY());
+	}
 
-    }
+    // @Override
+    // public void mouseWheelMoved(MouseWheelEvent e) {
+    //     e.consume();
+    //     int i = e.getWheelRotation();
+    //     double factor = Math.pow(1.25, i);
+    //     Camera cam = view.getCamera();
+    //     double zoom = cam.getViewPercent() * factor;
+    //     Point2 pxCenter  = cam.transformGuToPx(cam.getViewCenter().x, cam.getViewCenter().y, 0);
+    //     Point3 guClicked = cam.transformPxToGu(e.getX(), e.getY());
+    //     double newRatioPx2Gu = cam.getMetrics().ratioPx2Gu/factor;
+    //     double x = guClicked.x + (pxCenter.x - e.getX())/newRatioPx2Gu;
+    //     double y = guClicked.y - (pxCenter.y - e.getY())/newRatioPx2Gu;
+    //     cam.setViewCenter(x, y, 0);
+    //     cam.setViewPercent(zoom);
+
+    // }
+
     public void selectNewNode(String nodeID) {
         logger.debug("button is released");
         if (individualClassMap.containsKey(nodeID)) {
@@ -192,6 +221,11 @@ public class GraphViewMouseListener extends FxMouseManager implements MouseWheel
         }
         last = event;
         logger.debug("new last: "+last.getX()+", "+last.getY());
+    }
+
+    @Override
+    public EnumSet<InteractiveElement> getManagedTypes() {
+       return interactiveEliments;
     }
 
 }

@@ -230,18 +230,12 @@ public class GraphViewGenerator implements IGraphViewService {
 
         graphModelViewer = new FxViewer(graphModel,
                 Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-
         logger.warn("line 234"); //debugLog
-
         graphModelViewer.enableAutoLayout();
-
         logger.warn("line 238"); //debugLog
-
-        View view = graphModelViewer.addDefaultView(false);
-
+        View view = graphModelViewer.addDefaultView(true);
         logger.warn("line 242"); //debugLog
-
-        GraphModelView graphView = new GraphModelView(view,graphViewMouseListener);
+        GraphModelView graphView = new GraphModelView(view, graphViewMouseListener);
         return graphView;
     }
 

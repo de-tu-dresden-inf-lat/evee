@@ -2,12 +2,8 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.core;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPlugin;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.NonEntailmentExplanationPluginLoader;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IExplanationLoadingScreenEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.ISignatureModificationEventListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.service.*;
+import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.*;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.*;
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.UIUtilities;
 import org.apache.commons.io.FilenameUtils;
@@ -34,6 +30,7 @@ import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.embed.swing.JFXPanel;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -47,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import de.tu_dresden.inf.lat.evee.protege.tools.ui.OWLObjectListModel;
+
 
 import static java.lang.Math.ceil;
 import static java.util.Collections.max;
@@ -121,6 +119,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //    Constructor, Init, Dispose:
 //****************************************************************************
     public NonEntailmentViewComponent(){
+        logger.warn("in constructor"); //debugLog
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
         this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
         this.preferencesManager.registerPreferencesChangeEventListener(this);
@@ -129,7 +128,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.loadingUI.registerLoadingUIListener(this);
         this.wideComponentDimensionList = new ArrayList<>();
         this.ignoreOntologyChangeEvent = false;
-        this.logger.debug("Object NonEntailmentViewComponent created");
+        this.logger.warn("Object NonEntailmentViewComponent created");
     }
 
     @Override
@@ -575,16 +574,16 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     public void handleEvent(ExplanationEvent<INonEntailmentExplanationService<?>> event){
         this.logger.debug("Handling explanationEvent: {} of source: {}",
                 event.getType(), event.getSource().getClass());
-        INonEntailmentExplanationService<?> currentExplaier =
+        INonEntailmentExplanationService<?> currentExplainer =
                 this.nonEntailmentExplainerManager.getCurrentExplainer();
-        if (event.getSource().equals(currentExplaier)){
+        if (event.getSource().equals(currentExplainer)){
             switch (event.getType()){
                 case COMPUTATION_COMPLETE :
                     SwingUtilities.invokeLater(() ->{
                         this.disposeLoadingScreen();
                         this.showResult(event.getSource().getResult());
-                        if (currentExplaier.ignoresPartsOfOntology()){
-                            this.filterWarningLabel.setText(currentExplaier.getFilterWarningMessage());
+                        if (currentExplainer.ignoresPartsOfOntology()){
+                            this.filterWarningLabel.setText(currentExplainer.getFilterWarningMessage());
                             if (this.preferencesManager.loadShowFilterWarningMessage()){
                                 this.showFilterPopupWarning();
                             }

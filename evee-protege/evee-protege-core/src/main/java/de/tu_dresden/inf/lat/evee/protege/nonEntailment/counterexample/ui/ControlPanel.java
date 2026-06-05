@@ -64,25 +64,6 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         this.add(getAxiomListPanel());
     }
 
-//    public ControlPanel() {
-//        this.controlPanelEventListener = new ControlPanelEventListener();
-//
-//        this.createClassList();
-//        this.createDisjAxiomsList();
-//        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-//        this.setAlignmentX(0.5F);
-//        this.setBorder(new EmptyBorder(new Insets(15, 15, 15, 15)));
-//        this.setMaximumSize(new Dimension(200,  2000));
-//        this.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
-//        this.add(getLabelNumSliderPanel());
-//        this.add(Box.createRigidArea(new Dimension(0, SMALL_SPACE)));
-//        this.add(getRefreshButton());
-//        this.add(Box.createRigidArea(new Dimension(0, BIG_SPACE)));
-//        this.add(getClassListPanel());
-//        this.add(Box.createRigidArea(new Dimension(0, BIG_SPACE)));
-//        this.add(getAxiomListPanel());
-//    }
-
     @Override
     public void addCounterexampleGenerationEventListener(ICounterexampleGenerationEventListener listener) {
         this.counterexampleGenerationEventListener = listener;
@@ -140,6 +121,7 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         axiomListPanel.add(Box.createRigidArea(new Dimension(0, BIG_SPACE)));
         return axiomListPanel;
     }
+
     private JPanel getClassListPanel() {
         JPanel classListPanel = new JPanel();
         classListPanel.setLayout(new BoxLayout(classListPanel, BoxLayout.Y_AXIS));
@@ -171,6 +153,7 @@ public class ControlPanel extends  JPanel implements IGraphModelControlPanel {
         buttonPanel.add(this.getAddToOntologyButton());
         return buttonPanel;
     }
+
     private JButton getRemoveAxiomsButton() {
         JButton removeAxiomsButton = new JButton(REMOVE_DISJ);
         removeAxiomsButton.addActionListener(controlPanelEventListener);
