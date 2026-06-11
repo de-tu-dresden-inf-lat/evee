@@ -38,6 +38,7 @@ public class GraphModelView implements IGraphView {
         this.view.setMouseManager(listener);
         //this.viewComponent.addMouseWheelListener(listener);
     }
+    
     public GraphModelView(View view) {
         this.mouseListener = null;
         this.view = view;
@@ -67,6 +68,7 @@ public class GraphModelView implements IGraphView {
         
         
         if (!(view instanceof Node)) {
+            logger.warn("View is not a Node"); //debugLog
             return null;
         }
 

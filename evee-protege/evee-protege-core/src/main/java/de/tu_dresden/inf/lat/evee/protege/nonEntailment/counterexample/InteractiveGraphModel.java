@@ -4,21 +4,14 @@ import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationExcepti
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.SubsumptionHoldsException;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
-import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.ControlPanel;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.GraphModelComponent;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.SimpleControlPanel;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.MappingUtils;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.ReasoningUtils;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.*;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
 
 import org.apache.log4j.Logger;
-import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 
@@ -30,24 +23,20 @@ import java.util.Set;
  */
 public class InteractiveGraphModel implements IInteractiveComponent,
         ICounterexampleGenerationEventListener, IExplanationGenerator<Void> {
-    private final OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-    private final OWLOntology ontology;
-    private final IOWLCounterexampleGenerator modelGenerator;
-    private final GraphModelComponent graphModelComponent;
-    private final Logger logger = Logger.getLogger(InteractiveGraphModel.class);
-    private final IGraphModelControlPanel controlPanel;
-
-    private boolean fxInitialized = false;
-
-    private OWLSubClassOfAxiom observation;
+            
     private static final int DEFAULT_LABELS_NUM = 2;
-    private final OWLEditorKit owlEditorKit;
+
+    private final Logger logger = Logger.getLogger(InteractiveGraphModel.class);
+    
+    private final GraphModelComponent graphModelComponent;
+    private final IGraphModelControlPanel controlPanel;
     private final IGraphViewService graphViewService;
-    private boolean requiersSubsumptionCheck = true;
+
     private  IGraphView graphView;
     private IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     private int currentLabelsNum = DEFAULT_LABELS_NUM;
-    private Set<OWLIndividualAxiom> model;
+    private CounterexampleModel model;
+
     /**
      * Constructor for the `InteractiveGraphModel` class.
      *
@@ -60,42 +49,32 @@ public class InteractiveGraphModel implements IInteractiveComponent,
      * @throws SubsumptionHoldsException An exception thrown if subsumption holds.
      */
 
-    public InteractiveGraphModel(IOWLCounterexampleGenerator modelGenerator,
+    public InteractiveGraphModel(CounterexampleModel model,
                                  IGraphViewService graphViewService,
-                                 OWLOntology ontology,
-                                 OWLSubClassOfAxiom observation,
-                                 OWLEditorKit owlEditorKit,
                                  IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener,
                                  boolean simpleMode)
             throws ModelGenerationException, SubsumptionHoldsException {
-        this.owlEditorKit = owlEditorKit;
-        this.ontology = ontology;
-        this.viewComponentListener = viewComponentListener;
-        if(observation == null) {
-            this.requiersSubsumptionCheck = false;
-        } else {
-            this.observation = observation;
-        }
 
-        this.modelGenerator = modelGenerator;
+        this.viewComponentListener = viewComponentListener;
         this.graphViewService = graphViewService;
-        computeModel();
+        this.model = model;
 
         if(simpleMode) {
-            this.controlPanel = new SimpleControlPanel(owlEditorKit);
+            this.controlPanel = new SimpleControlPanel(model.getOWLEditorKit());
         } else {
-            this.controlPanel = new ControlPanel(owlEditorKit);
+            this.controlPanel = new ControlPanel(model.getOWLEditorKit());
         }
+
         logger.warn("line 83"); //debugLog
         this.controlPanel.addCounterexampleGenerationEventListener(this);
          
         logger.warn("line 85"); //debugLog
 
-        initToolkit();
-        this.graphView = graphViewService.computeView(model,
-                ontology,
-                modelGenerator.getMarkedIndividuals(),
+        this.graphView = graphViewService.computeView(model.getModel(),
+                model.getOntology(),
+                model.getMarkedInds(),
                 DEFAULT_LABELS_NUM);
+
         logger.warn("line 90"); //debugLog
 
 
@@ -123,19 +102,35 @@ public class InteractiveGraphModel implements IInteractiveComponent,
     public void onModelRecomputed(IGraphModelControlPanel source) {
         Set<OWLAxiom> additionalAxioms = source.getAdditionalAxioms();
         currentLabelsNum = source.getCurrentLabelsNum();
+ 
         SwingWorker<Void, Void> modelRecomputeWorker = new SwingWorker<Void, Void>() {
+            boolean recomputed = false;
+            Exception error;
+
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-
-                    recomputeModel(additionalAxioms);
-                    recomputeGraphView();
-                    graphModelComponent.update(graphView);
-                    graphViewService.doPostProcessing();
+                    model.recomputeModel(additionalAxioms);
+                    recomputed = true;
                 } catch (ModelGenerationException | InconsistentOntologyException e) {
-                    JOptionPane.showMessageDialog(new JPanel(), "Adding disjointnesses causes the following problem: "+e.getMessage(), "Error", 0);
+                    logger.error(e);
+                    error = e;
                 }
+                
                 return null;
+            }
+
+            @Override
+            protected void done(){
+                if (!recomputed) {
+                    JOptionPane.showMessageDialog(new JPanel(), "model recomputation failed: "+error.getMessage(), "Error", 0);
+                    return;
+                }
+
+                recomputeGraphView();
+                graphModelComponent.update(graphView);
+                graphViewService.doPostProcessing();
+            
             }
         };
 
@@ -144,101 +139,19 @@ public class InteractiveGraphModel implements IInteractiveComponent,
 
     @Override
     public void onDisjointnessesAddedToOntology(IGraphModelControlPanel source) {
-        logger.debug("additional axioms to add: " +source.getAdditionalAxioms());
-        man.addAxioms(ontology,source.getAdditionalAxioms());
-        man.addAxioms(owlEditorKit.getModelManager().getActiveOntology(), source.getAdditionalAxioms());
-    }
-
-    private void computeModel()
-            throws SubsumptionHoldsException, ModelGenerationException, InconsistentOntologyException {
-        if(!ReasoningUtils.isConsistent(ontology, observation)) {
-            throw new InconsistentOntologyException();
-        }
-
-        if(requiersSubsumptionCheck) {
-            if(ReasoningUtils.subsumptionHolds(ontology, observation)) {
-                throw new SubsumptionHoldsException();
-            }
-        }
-
-        model = modelGenerator.generateModel();
-        logger.info("Model is computed");
-    }
-
-    private void recomputeModel(Set<OWLAxiom> additionalAxioms)
-            throws ModelGenerationException, InconsistentOntologyException {
-
-        Set<OWLSubClassOfAxiom> subClassOfAxioms = MappingUtils.disjToSubclassOfAx(additionalAxioms);
-        man.addAxioms(ontology, subClassOfAxioms);
-        try {
-            if(!ReasoningUtils.isConsistent(ontology, observation)) {
-                throw new InconsistentOntologyException();
-            }
-            model = modelGenerator.generateModel();
-            man.removeAxioms(ontology, subClassOfAxioms);
-        } catch ( InconsistentOntologyException | ModelGenerationException e) {
-            man.removeAxioms(ontology, subClassOfAxioms);
-            throw  e;
-        }
-        logger.info("Model is recomputed");
+        Set<OWLAxiom> additionalAxioms = source.getAdditionalAxioms();
+        model.addToOntology(additionalAxioms);
     }
 
     private void recomputeGraphView() {
-        graphView = graphViewService.computeView(model,
-                ontology,
-                modelGenerator.getMarkedIndividuals(),
+        graphView = graphViewService.computeView(model.getModel(),
+                model.getOntology(),
+                model.getMarkedInds(),
                 currentLabelsNum);
         logger.info("View is recomputed");
     }
-    
-    public Set<OWLIndividualAxiom> getModel() {
-        return model;
-    }
 
-    // /**
-    //  * Get the JavaFX component representation of this interactive model.
-    //  * The returned node should be wrapped in a JFXPanel when integrating with Swing UI.
-    //  *
-    //  * @return A JavaFX Node representing the graph model component
-    //  */
-    // public javafx.scene.Node getGraphModelComponentFx() {
-    //     SwingWorker<Void, Void> postprocessingWorker = new SwingWorker<Void, Void>() {
-    //         @Override
-    //         protected Void doInBackground() throws Exception {
-    //             graphViewService.doPostProcessing();
-    //             return null;
-    //         }
-    //     };
-    //     postprocessingWorker.execute();
-
-    //     return graphModelComponent.toNode();
-    // }
-
-    private synchronized void initToolkit() {
-        if (fxInitialized) 
-            return;
-
-        try {
-            Platform.startup(() -> {
-                System.out.println("JavaFX started");
-            });
-
-            fxInitialized = true;
-        } catch (Throwable e) {
-            e.printStackTrace();
-            logger.error("Failed to initialize JavaFX toolkit", e);
-        }
-
-
-    Platform.runLater(() -> {
-        System.out.println("JavaFX thread works");
-
-        Timeline t = new Timeline();
-        System.out.println("Timeline created");
-});
-    }
-
-@Override
+    @Override
     public GraphModelComponent toComponent() {
         SwingWorker<Void, Void> postprocessingWorker = new SwingWorker<Void, Void>() {
             @Override

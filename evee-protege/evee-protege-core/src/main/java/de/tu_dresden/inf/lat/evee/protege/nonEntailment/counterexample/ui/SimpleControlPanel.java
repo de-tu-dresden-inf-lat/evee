@@ -7,9 +7,6 @@ import java.awt.*;
 
 public class SimpleControlPanel extends ControlPanel{
 
-
-
-
     public SimpleControlPanel(OWLEditorKit owlEditorKit) {
         super(owlEditorKit);
         this.removeAll();

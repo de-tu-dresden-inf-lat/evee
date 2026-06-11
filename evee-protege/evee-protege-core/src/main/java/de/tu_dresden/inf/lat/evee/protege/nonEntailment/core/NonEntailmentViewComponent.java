@@ -30,7 +30,6 @@ import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.embed.swing.JFXPanel;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

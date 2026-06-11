@@ -23,28 +23,33 @@ import org.semanticweb.owlapi.search.EntitySearcher;
 import java.util.*;
 
 public class GraphViewGenerator implements IGraphViewService {
+    private final Logger logger = Logger.getLogger(GraphViewGenerator.class);
+
     private final int BASE_LABEL_DISTANCE = -20;
     private final int autoLayoutTimeMs;
-    private int maxLabelNum;
-
+    
     private final String COLUMN = "column";
     private final String LINE = "line";
     private final String styleSheet;
+    
     private final OWLDataFactory df;
+    
+    private OWLOntology ont;
+    
     private Map<String, List<OWLClass>> individualsToClassesMap;
     private Map<String[],List<OWLObjectProperty>> pairsToObjectPropertiesMap;
+    
     private GraphicGraph graphModel;
-    private OWLOntology ont;
-    private final Logger logger = Logger.getLogger(GraphViewGenerator.class);
     private Set<IRI> markedIndividuals;
     private FxViewer graphModelViewer;
+
     private String edgeLabelGrouping = LINE;
+    private int maxLabelNum;
 
     public GraphViewGenerator(String styleSheet,int autoLayoutTimeMs) {
         this.autoLayoutTimeMs = autoLayoutTimeMs;
         this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
         this.styleSheet = styleSheet;
-
     }
 
     public GraphicGraph generateGraphModel(Map<String, List<OWLClass>> individualsToClassesMap, Map<String[],
@@ -233,7 +238,7 @@ public class GraphViewGenerator implements IGraphViewService {
         logger.warn("line 234"); //debugLog
         graphModelViewer.enableAutoLayout();
         logger.warn("line 238"); //debugLog
-        View view = graphModelViewer.addDefaultView(true);
+        View view = graphModelViewer.addDefaultView(false);
         logger.warn("line 242"); //debugLog
         GraphModelView graphView = new GraphModelView(view, graphViewMouseListener);
         return graphView;
