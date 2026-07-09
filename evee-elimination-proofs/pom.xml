@@ -115,11 +115,9 @@
     </build>
 
     <modules>
-        <module>evee-elimination-proofs-core-owlapi4</module>
-        <module>evee-elimination-proofs-core-owlapi5</module>
-        <module>evee-elimination-proofs-fame-owlapi4</module>
-        <module>evee-elimination-proofs-lethe-owlapi4</module>
-        <module>evee-elimination-proofs-lethe-owlapi5</module>
+        <module>evee-elimination-proofs-core_2.12</module>
+        <module>evee-elimination-proofs-fame_2.12</module>
+        <module>evee-elimination-proofs-lethe_2.12</module>
     </modules>
 
 </project>

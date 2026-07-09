@@ -37,17 +37,19 @@
     <packaging>pom</packaging>
 
     <properties>
+        <revision>0.6.0</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <revision>0.5</revision>
         <scala.version>2.12.17</scala.version>
         <LatScalaDlTools.Version>0.4.1</LatScalaDlTools.Version>
-        <LETHE.Version>0.8</LETHE.Version>
+        <LETHE.Version>0.8.1</LETHE.Version>
         <skipCompilation>false</skipCompilation>
         <skipTests>true</skipTests>
         <excludeResourcesInSourceJar>true</excludeResourcesInSourceJar>
+        <owl4version>4.5.29</owl4version>
+        <owl5version>5.1.19</owl5version>
     </properties>
 
     <build>
@@ -187,62 +189,20 @@
             </modules>
         </profile>
         <profile>
-            <id>owlapi4</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <modules>
-                <module>evee-data/evee-data-owlapi4</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-core-owlapi4</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-fame-owlapi4</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-lethe-owlapi4</module>
-                <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
-                <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
-                <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
-                <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
-                <module>evee-libs/evee-libs-owlapi4</module>
-                <module>evee-small-model-generator</module>
-                <module>evee-nemo-proof-extractor</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>owlapi5</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-<!--
-                overwritten in owlapi5-modules to be always false,
-                thus effectively turning off compilation of owlapi4-modules only
--->
-                <skipCompilation>true</skipCompilation>
-            </properties>
-            <modules>
-                <module>evee-data</module>
-                <module>evee-elimination-proofs</module>
-                <module>evee-lethe-proof-extractor</module>
-                <module>evee-elk-proof-extractor</module>
-                <module>evee-relevant-counterexample</module>
-                <module>evee-libs/evee-libs-owlapi5</module>
-                <!--TODO-->
-                <!--<module>evee-small-model-generator-owlapi5</module>-->
-            </modules>
-        </profile>
-        <profile>
             <id>protege</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <modules>
-                <module>evee-data/evee-data-owlapi4</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-core-owlapi4</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-fame-owlapi4</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-lethe-owlapi4</module>
-                <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor-owlapi4</module>
-                <module>evee-elk-proof-extractor/evee-elk-proof-extractor-owlapi4</module>
-                <module>evee-relevant-counterexample/model-datastructures-owlapi4</module>
-                <module>evee-relevant-counterexample/counterExampleProvider-owlapi4</module>
-                <module>evee-small-model-generator/evee-small-model-generator-owlapi4</module>
+                <module>evee-data/evee-data</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-core</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-fame</module>
+                <module>evee-elimination-proofs/evee-elimination-proofs-lethe</module>
+                <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor</module>
+                <module>evee-elk-proof-extractor/evee-elk-proof-extractor</module>
+                <module>evee-relevant-counterexample/model-datastructures</module>
+                <module>evee-relevant-counterexample/counterExampleProvider</module>
+                <module>evee-small-model-generator/evee-small-model-generator</module>
                 <module>evee-nemo-proof-extractor</module>
                 <module>evee-protege</module>
                 <module>evee-protege-release</module>

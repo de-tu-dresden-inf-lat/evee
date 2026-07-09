@@ -23,7 +23,7 @@
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-distribution</artifactId>
-            <version>4.5.29</version>
+            <version>${owl4version}</version>
         </dependency>
         <dependency>
             <groupId>edu.stanford.protege</groupId>
@@ -44,9 +44,15 @@
         </dependency>
         <dependency>
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-            <artifactId>evee-small-model-generator-owlapi4</artifactId>
+            <artifactId>evee-small-model-generator</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+            <exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-distribution</artifactId>
+				</exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

@@ -31,6 +31,12 @@
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
             <artifactId>evee-nemo-proof-extractor</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-distribution</artifactId>
+				</exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

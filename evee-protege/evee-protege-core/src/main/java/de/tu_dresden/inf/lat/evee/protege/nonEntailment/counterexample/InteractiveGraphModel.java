@@ -70,15 +70,17 @@ public class InteractiveGraphModel implements IInteractiveComponent,
         } else {
             this.observation = observation;
         }
+
         this.modelGenerator = modelGenerator;
         this.graphViewService = graphViewService;
         computeModel();
-        logger.debug("model: "+ this.model);
+
         if(simpleMode) {
             this.controlPanel = new SimpleControlPanel(owlEditorKit);
         } else {
             this.controlPanel = new ControlPanel(owlEditorKit);
         }
+
         this.controlPanel.addCounterexampleGenerationEventListener(this);
         this.graphView = graphViewService.computeView(model,
                 ontology,
@@ -137,11 +139,13 @@ public class InteractiveGraphModel implements IInteractiveComponent,
         if(!ReasoningUtils.isConsistent(ontology, observation)) {
             throw new InconsistentOntologyException();
         }
+
         if(requiersSubsumptionCheck) {
             if(ReasoningUtils.subsumptionHolds(ontology, observation)) {
                 throw new SubsumptionHoldsException();
             }
         }
+
         model = modelGenerator.generateModel();
         logger.info("Model is computed");
     }

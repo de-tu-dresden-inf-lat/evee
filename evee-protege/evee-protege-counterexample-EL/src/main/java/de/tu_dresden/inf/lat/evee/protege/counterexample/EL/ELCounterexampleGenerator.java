@@ -51,11 +51,11 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
             man.addAxiom(workingCopy, superClassInTarget);
             normaliser.setOntology(workingCopy);
             workingCopy = normaliser.normalise();
+
         } catch (OWLOntologyCreationException e) {
             throw new ModelGenerationException("Working Copy cannot be created");
         }
         man.addAxiom(workingCopy, rootInSubClass);
-//        this.removedAxioms = normaliser.getNumRemoved();
         return workingCopy;
     }
 
@@ -104,20 +104,17 @@ public class ELCounterexampleGenerator implements IOWLCounterexampleGenerator {
         superClassInTarget = df.getOWLSubClassOfAxiom(superClassExpr, freshClass);
 
         checkClassExpressions();
-        logger.debug("provided observation is checked");
+        logger.info("provided observation is checked");
 
         workingCopy = getWorkingCopy();
-        logger.debug("working copy is created");
-
-//        if(progressTracker != null) {
-//            progressTracker.setMessage("Generating counterexample");
-//        }
         Set<OWLIndividualAxiom> avoidedEnt = new HashSet<>();
         avoidedEnt.add(df.getOWLClassAssertionAxiom(freshClass, rootInd));
         IOWLModelGenerator modelGenerator = new ELSmallModelGenerator(treeModel,avoidedEnt,progressTracker);
         modelGenerator.setOntology(workingCopy);
+
         Set<OWLIndividualAxiom> model = modelGenerator.generateModel();
         logger.info("model is generated");
+        
         model = this.filterAxioms(model);
         return model;
     }

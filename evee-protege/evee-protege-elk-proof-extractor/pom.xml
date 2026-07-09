@@ -26,8 +26,14 @@
         </dependency>
         <dependency>
             <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-            <artifactId>evee-elk-proof-extractor-owlapi4</artifactId>
+            <artifactId>evee-elk-proof-extractor</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-distribution</artifactId>
+				</exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -67,6 +73,7 @@
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             com.ibm.uvm.tools.*;resolution:=optional,
                             com.sun.jdmk.comm.*;resolution:=optional,
+                            com.sun.activation.registries.*;resolution:=optional,
                             javax.jmdns.*;resolution:=optional,
                             javax.jms.*;resolution:=optional,
                             org.apache.geronimo.osgi.registry.api.*;resolution:=optional,

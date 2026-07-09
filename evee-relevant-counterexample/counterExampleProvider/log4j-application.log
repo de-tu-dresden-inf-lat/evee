@@ -1,0 +1,17 @@
+2026-02-26 13:31:52 INFO  ELKModelGenerator:164 - Normalising the TBox
+2026-02-26 13:31:52 INFO  ELKModelGenerator:171 - Elapsed Time = PT0.01266S
+2026-02-26 13:31:52 INFO  ELKModelGenerator:174 - Classifying
+2026-02-26 13:31:52 INFO  ELKModelGenerator:180 - Elapsed Time = PT0.001187S
+2026-02-26 13:31:52 INFO  ELKModelGenerator:183 - Asserting elements to Concepts
+2026-02-26 13:31:52 INFO  ELKModelGenerator:189 - Elapsed Time = PT0.038114S
+2026-02-26 13:31:52 INFO  ELKModelGenerator:192 - Propagating classification effect
+2026-02-26 13:31:52 INFO  ELKModelGenerator:198 - Elapsed Time = PT0.004365S
+2026-02-26 13:31:52 INFO  ELKModelGenerator:199 - Total Elapsed Time = PT0.061827S
+2026-02-26 13:31:52 INFO  ELKModelGenerator:122 - Full canonical model has been generated! total number of model elements = 21
+2026-02-26 13:31:52 INFO  ElkModel:171 - Instantiating relations
+2026-02-26 13:31:52 INFO  ElkModel:189 - Elapsed Time = PT0.004769S
+2026-02-26 13:31:53 INFO  DiffRelevantGenerator:34 - Extracting diff relevant counter example for A ⊑ B
+2026-02-26 13:31:53 INFO  DiffRelevantGenerator:77 - Total Elapsed Time = PT0.021562S
+2026-02-26 13:31:53 INFO  DiffRelevantGenerator:78 - Coarse Diff model has been generated!
+Total number of domain elements = 13
+Total number of edges = 28
