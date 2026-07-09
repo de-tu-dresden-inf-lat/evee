@@ -11,6 +11,8 @@
     </parent>
 
     <artifactId>evee-elk-proof-extractor</artifactId>
+    <name>evee-elk-proof-extractor</name>
+    <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

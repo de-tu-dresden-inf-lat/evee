@@ -10,14 +10,13 @@
     </parent>
 
     <artifactId>evee-relevant-counterexample</artifactId>
+    <name>evee-relevant-counterexample</name>
+    <packaging>pom</packaging>
 
     <modules>
         <module>model-datastructures</module>
         <module>counterExampleProvider</module>
     </modules>
-    <packaging>pom</packaging>
-
-    <name>evee-relevant-counterexample</name>
 
     <dependencies>
     <dependency>

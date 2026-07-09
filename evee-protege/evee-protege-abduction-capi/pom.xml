@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-protege-abduction-capi</artifactId>
+    <name>evee-protege-abduction-capi</name>
     <packaging>bundle</packaging>
 
     <properties>

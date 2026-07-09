@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-protege-counterexample-ELKRelevant</artifactId>
+    <name>evee-protege-counterexample-ELKRelevant</name>
     <packaging>bundle</packaging>
 
     <properties>

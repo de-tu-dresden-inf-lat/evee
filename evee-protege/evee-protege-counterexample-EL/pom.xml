@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-protege-counterexample-small-model</artifactId>
+    <name>evee-protege-counterexample-small-model</name>
     <packaging>bundle</packaging>
 
     <properties>

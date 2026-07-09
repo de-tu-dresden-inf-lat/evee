@@ -50,7 +50,7 @@ Evee is a Java library and collection of Protégé plugins that support ontology
 
 ## Using the Evee plugins
 1. Install [Protégé](https://protege.stanford.edu/ "https://protege.stanford.edu/"). Evee was developed for and tested with Protégé version 5.6.5
-2. Install both the [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin and the [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi.
+2. Install both the [protege-proof-explanation](https://github.com/liveontologies/protege-proof-explanation "https://github.com/liveontologies/protege-proof-explanation") plugin [version 0.1.0](https://repo1.maven.org/maven2/org/liveontologies/protege-proof-explanation/0.1.0/) and the [proof utility library](https://github.com/liveontologies/puli "https://github.com/liveontologies/puli") PULi [version 0.1.0](https://repo1.maven.org/maven2/org/liveontologies/puli/0.1.0/).
 3. Copy the evee-protege-*.jar files from the [github release page](https://github.com/de-tu-dresden-inf-lat/evee/releases) to the directory "plugins" of your local Protégé installation.
 4. (Optional) Install [SPASS](https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover "https://www.mpi-inf.mpg.de/departments/automation-of-logic/software/spass-workbench/classic-spass-theorem-prover"), which is required for the Connection-Minimal Abduction solver utilizing [CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/").
 For Linux and macOS, please refer to [the web page of CAPI](https://lat.inf.tu-dresden.de/~koopmann/CAPI/ "https://lat.inf.tu-dresden.de/~koopmann/CAPI/") for further information on how to install SPASS.
@@ -100,14 +100,14 @@ For easy reuse of Evee as a library, use [evee-libs-owlapi4](evee-libs/evee-libs
 These libraries contain all submodules of Evee except for the Evee Protégé plugins.
 
 ### evee as library
-All modules of evee except the Protégé plugins are published on Maven Central under the namespace `io.github.de-tu-dresden-inf-lat`. The artifact `evee-libs` bundels all pblished modules except `evee-protege-core` into one jar. To use it simply add `evee-libs` as a dependency in your projects pom file:
+All modules of evee except the Protégé plugins are published on Maven Central under the namespace `io.github.de-tu-dresden-inf-lat`. The artifact `evee-libs` depends on all published modules except `evee-protege-core`. To use it, simply add `evee-libs-owlapiX` (with `X` being either `4` or `5`) as a dependency in your project's pom file:
 ```
 <groupId>io.github.de-tu-dresden-inf-lat</groupId>
-<artifactId>evee-libs</artifactId>
+<artifactId>evee-libs-owlapiX</artifactId>
 <version>0.5</version>
 ```
-The above mentioned modules are also published separately on Maven Central. To use one of them use the respective dependency in your pom file.
-E.g. for `evee-elk-proof-extractor-owlapi4`:
+To use a single Evee module, add the respective dependency in your pom file,
+e.g., for `evee-elk-proof-extractor-owlapi4`:
 ```
 <groupId>io.github.de-tu-dresden-inf-lat</groupId>
 <artifactId>evee-elk-proof-extractor-owlapi4</artifactId>
