@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.counterExample;
 
-import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
+import com.google.common.collect.Sets;
 import de.tu_dresden.inf.lat.model.data.Element;
 import de.tu_dresden.inf.lat.model.data.Relation;
 import org.semanticweb.owlapi.model.OWLObjectProperty;

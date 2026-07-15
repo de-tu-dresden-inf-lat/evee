@@ -12,7 +12,7 @@
     </parent>
         
     <artifactId>evee-lethe-proof-extractor</artifactId>
-
+    <name>evee-lethe-proof-extractor</name>
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

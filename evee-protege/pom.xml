@@ -10,7 +10,6 @@
 
     <artifactId>evee-protege</artifactId>
     <name>evee-protege</name>
-
     <packaging>pom</packaging>
 
     <properties>

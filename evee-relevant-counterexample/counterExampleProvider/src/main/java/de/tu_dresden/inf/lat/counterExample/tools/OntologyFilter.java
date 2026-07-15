@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.counterExample.tools;
 
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
 /**

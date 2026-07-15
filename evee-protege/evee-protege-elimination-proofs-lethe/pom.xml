@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-protege-elimination-proofs-lethe</artifactId>
+    <name>evee-protege-elimination-proofs-lethe</name>
     <packaging>bundle</packaging>
 
     <properties>

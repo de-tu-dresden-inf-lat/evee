@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-elimination-proofs_2.12</artifactId>
+    <name>evee-elimination-proofs_2.12</name>
     <packaging>pom</packaging>
 
     <dependencies>

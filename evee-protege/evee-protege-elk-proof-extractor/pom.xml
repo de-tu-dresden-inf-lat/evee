@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-protege-elk-proof-extractor</artifactId>
+    <name>evee-protege-elk-proof-extractor</name>
     <packaging>bundle</packaging>
 
     <properties>
@@ -72,6 +73,7 @@
                             de.tu_dresden.inf.lat.evee.protege.abstractProofService.*,
                             com.ibm.uvm.tools.*;resolution:=optional,
                             com.sun.jdmk.comm.*;resolution:=optional,
+                            com.sun.activation.registries.*;resolution:=optional,
                             javax.jmdns.*;resolution:=optional,
                             javax.jms.*;resolution:=optional,
                             org.apache.geronimo.osgi.registry.api.*;resolution:=optional,

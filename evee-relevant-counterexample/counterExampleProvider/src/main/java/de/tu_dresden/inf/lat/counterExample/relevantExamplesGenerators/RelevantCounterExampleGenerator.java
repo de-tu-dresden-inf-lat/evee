@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Sets;
 import de.tu_dresden.inf.lat.counterExample.ELKModelGenerator;
 import de.tu_dresden.inf.lat.counterExample.data.RelationReasons;
 import org.apache.log4j.Logger;
@@ -14,8 +15,6 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-
-import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
 
 import de.tu_dresden.inf.lat.model.data.Element;
 import de.tu_dresden.inf.lat.model.data.ElkModel;
