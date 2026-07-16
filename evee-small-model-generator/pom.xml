@@ -9,6 +9,7 @@
 
 
     <artifactId>evee-small-model-generator</artifactId>
+    <name>evee-small-model-generator</name>
     <packaging>bundle</packaging>
 
     <properties>

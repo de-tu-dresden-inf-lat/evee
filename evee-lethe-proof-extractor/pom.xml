@@ -59,7 +59,7 @@
                 <executions>
                     <execution>
                         <id>create-test-resources-jar</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
