@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>evee-libs</artifactId>
+    <name>evee-libs</name>
 
     <dependencies>
         <dependency>
