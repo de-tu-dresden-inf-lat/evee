@@ -2,27 +2,18 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample;
 
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.SubsumptionHoldsException;
-import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.ControlPanel;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.GraphModelComponent;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.ui.SimpleControlPanel;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.*;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
-
 import org.apache.log4j.Logger;
-import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 
-import javax.swing.*;
-import java.util.Set;
 
 /**
  * The `InteractiveGraphModel` class represents a model of an ontology that is interactive, meaning it can be displayed to the user, and the user can interact with it. This class is used for ontology analysis as well as visualizing counterexamples.
  */
-public class InteractiveGraphModel implements IInteractiveComponent,
-        ICounterexampleGenerationEventListener, IExplanationGenerator<Void> {
+public class InteractiveGraphModel implements IInteractiveComponent, IExplanationGenerator<Void> {
             
     private static final int DEFAULT_LABELS_NUM = 2;
 
@@ -30,10 +21,9 @@ public class InteractiveGraphModel implements IInteractiveComponent,
     
     private final GraphModelComponent graphModelComponent;
     private final IGraphModelControlPanel controlPanel;
-    private final IGraphViewService graphViewService;
+    private final IGraphViewService graphGenerator;
 
     private  IGraphView graphView;
-    private IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
     private int currentLabelsNum = DEFAULT_LABELS_NUM;
     private CounterexampleModel model;
 
@@ -41,7 +31,7 @@ public class InteractiveGraphModel implements IInteractiveComponent,
      * Constructor for the `InteractiveGraphModel` class.
      *
      * @param modelGenerator The model generator for ontology analysis.
-     * @param graphViewService The service providing graphical representation functionality for the model.
+     * @param graphGenerator The service providing graphical representation functionality for the model.
      * @param ontology The ontology being analyzed.
      * @param observation The subclass axiom for counterexample generation (if available, or set to null if not required).
      * @param owlEditorKit The OWL editor interface.
@@ -50,13 +40,12 @@ public class InteractiveGraphModel implements IInteractiveComponent,
      */
 
     public InteractiveGraphModel(CounterexampleModel model,
-                                 IGraphViewService graphViewService,
-                                 IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener,
+                                 IGraphViewService graphGenerator,
+                                 ICounterexampleGenerationEventListener generationEventListener,
                                  boolean simpleMode)
             throws ModelGenerationException, SubsumptionHoldsException {
 
-        this.viewComponentListener = viewComponentListener;
-        this.graphViewService = graphViewService;
+        this.graphGenerator = graphGenerator;
         this.model = model;
 
         if(simpleMode) {
@@ -66,11 +55,11 @@ public class InteractiveGraphModel implements IInteractiveComponent,
         }
 
         logger.warn("line 83"); //debugLog
-        this.controlPanel.addCounterexampleGenerationEventListener(this);
+        this.controlPanel.addCounterexampleGenerationEventListener(generationEventListener);
          
         logger.warn("line 85"); //debugLog
 
-        this.graphView = graphViewService.computeView(model.getModel(),
+        this.graphView = graphGenerator.computeView(model.getModel(),
                 model.getOntology(),
                 model.getMarkedInds(),
                 DEFAULT_LABELS_NUM);
@@ -82,85 +71,19 @@ public class InteractiveGraphModel implements IInteractiveComponent,
     }
 
 
-
-    @Override
-    public void onModelRefreshed(IGraphModelControlPanel source) {
-        currentLabelsNum = source.getCurrentLabelsNum();
-       SwingWorker<Void, Void> modelRefreshWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                recomputeGraphView();
-                graphModelComponent.update(graphView);
-                graphViewService.doPostProcessing();
-                return null;
-            }
-        };
-        modelRefreshWorker.execute();
-    }
-
-    @Override
-    public void onModelRecomputed(IGraphModelControlPanel source) {
-        Set<OWLAxiom> additionalAxioms = source.getAdditionalAxioms();
-        currentLabelsNum = source.getCurrentLabelsNum();
- 
-        SwingWorker<Void, Void> modelRecomputeWorker = new SwingWorker<Void, Void>() {
-            boolean recomputed = false;
-            Exception error;
-
-            @Override
-            protected Void doInBackground() throws Exception {
-                try {
-                    model.recomputeModel(additionalAxioms);
-                    recomputed = true;
-                } catch (ModelGenerationException | InconsistentOntologyException e) {
-                    logger.error(e);
-                    error = e;
-                }
-                
-                return null;
-            }
-
-            @Override
-            protected void done(){
-                if (!recomputed) {
-                    JOptionPane.showMessageDialog(new JPanel(), "model recomputation failed: "+error.getMessage(), "Error", 0);
-                    return;
-                }
-
-                recomputeGraphView();
-                graphModelComponent.update(graphView);
-                graphViewService.doPostProcessing();
-            
-            }
-        };
-
-        modelRecomputeWorker.execute();
-    }
-
-    @Override
-    public void onDisjointnessesAddedToOntology(IGraphModelControlPanel source) {
-        Set<OWLAxiom> additionalAxioms = source.getAdditionalAxioms();
-        model.addToOntology(additionalAxioms);
-    }
-
-    private void recomputeGraphView() {
-        graphView = graphViewService.computeView(model.getModel(),
+    public void recomputeGraphView(int labelsNum) {
+        currentLabelsNum = labelsNum;
+        graphView = graphGenerator.computeView(model.getModel(),
                 model.getOntology(),
                 model.getMarkedInds(),
                 currentLabelsNum);
+
+        graphModelComponent.update(graphView);
         logger.info("View is recomputed");
     }
 
     @Override
     public GraphModelComponent toComponent() {
-        SwingWorker<Void, Void> postprocessingWorker = new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                graphViewService.doPostProcessing();
-                return null;
-            }
-        };
-        postprocessingWorker.execute();
         return graphModelComponent;
     }
 

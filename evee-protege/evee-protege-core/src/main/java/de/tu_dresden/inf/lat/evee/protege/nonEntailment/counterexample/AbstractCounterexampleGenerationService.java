@@ -4,13 +4,9 @@ import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListe
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLCounterexampleGenerator;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.core.preferences.NonEntailmentGeneralPreferencesManager;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.GraphStyleSheets;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.IPreferencesChangeListener;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphViewService;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.INonEntailmentExplanationService;
-import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IInteractiveComponent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
-import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.GeneralPreferencesChangeEventType;
 import javafx.application.Platform;
@@ -18,7 +14,6 @@ import javafx.application.Platform;
 import org.apache.log4j.Logger;
 import javax.swing.SwingWorker;
 import org.protege.editor.owl.OWLEditorKit;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
 import java.awt.*;
@@ -27,8 +22,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import static org.semanticweb.owlapi.model.parameters.OntologyCopy.DEEP;
-
 abstract public class AbstractCounterexampleGenerationService
         implements INonEntailmentExplanationService<OWLIndividualAxiom>,
         IPreferencesChangeListener {
@@ -36,7 +29,7 @@ abstract public class AbstractCounterexampleGenerationService
     // javafx runtime has to be initialized exactly once
     private static final Object FX_LOCK = new Object();
     private static AtomicBoolean INITIALIZED_FX = new AtomicBoolean(false);
-    private final static Logger loggerStatic = Logger.getLogger(AbstractCounterexampleGenerationService.class);
+    private static final Logger loggerStatic = Logger.getLogger(AbstractCounterexampleGenerationService.class);
 
 
     private final Logger logger = Logger.getLogger(AbstractCounterexampleGenerationService.class);
@@ -45,18 +38,14 @@ abstract public class AbstractCounterexampleGenerationService
             .getInstance();
 
     protected String supportsExplanationMessage = "Please enter some observation containing a single OWLSubClassOfAxiom";
-    protected String errorMessage = "";
 
-    protected OWLOntology activeOntology;
-    protected OWLEditorKit owlEditorKit;
-    protected OWLOntologyManager man;
+    protected OWLOntology activeOntology; //TODO not needed here?
 
     protected SwingWorker<Void, Void> generationTask;
-    protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
-    protected IInteractiveComponent interactiveGraphModel;
-    protected IProgressTracker progressTracker;
 
-    protected CounterexampleModel counterexampleModel;
+   // protected IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewComponentListener;
+    protected IProgressTracker progressTracker;
+    protected CounterexampleController controller;
 
     protected boolean simpleMode;
     protected boolean computationSuccessful = false;
@@ -64,36 +53,29 @@ abstract public class AbstractCounterexampleGenerationService
     public AbstractCounterexampleGenerationService() {
         logger.warn("in constructor"); // debugLog
 
-        this.man = OWLManager.createOWLOntologyManager();
         this.simpleMode = preferencesManager.loadUseSimpleMode();
-        this.counterexampleModel = new CounterexampleModel();
+        this.controller = new CounterexampleController(this, simpleMode);
 
         logger.warn("finished constructor"); // debugLog
     }
 
     public void setup(OWLEditorKit editorKit) {
-        this.owlEditorKit = editorKit;
-        this.counterexampleModel.setOWLEditorKit(editorKit);
+        this.controller.setOWLEditorKit(editorKit);
         this.preferencesManager.registerPreferencesChangeEventListener(this);
     }
 
     public void computeExplanation() {
         logger.warn("computeExplanation is called"); // debugLog
-        generationTask = new InteractiveModelGenerationWorker(this);
-        logger.warn("starting generation task thread"); // debugLog
-        generationTask.execute();
+
+        controller.computeCounterexampleGraph();
     }
 
     public Component getResult() {
-        if (interactiveGraphModel == null) {
-            return null;
-        }
-
-        return interactiveGraphModel.toComponent();
+      return controller.getGraphComponent();
     }
 
     public boolean supportsExplanation() {
-        return this.counterexampleModel.supportsExplanation();
+        return this.controller.supportsExplanation();
     }
 
     @Override
@@ -105,33 +87,34 @@ abstract public class AbstractCounterexampleGenerationService
     public void handlePreferenceChange(GeneralPreferencesChangeEvent event) {
         if (event.isType(GeneralPreferencesChangeEventType.SIMPLE_MODE_CHANGE)) {
             simpleMode = preferencesManager.loadUseSimpleMode();
+            controller.setSimpleMode(simpleMode);
         }
     }
 
     @Override
     public void setObservation(Set<OWLAxiom> observation) {
-        this.counterexampleModel.setObservation(observation);
+        this.controller.setObservation(observation);
     }
-
     @Override
     public void setSignature(Collection<OWLEntity> signature) {
-        this.counterexampleModel.setSignature(signature);
+        this.controller.setSignature(signature);
     }
 
     @Override
     public String getErrorMessage() {
-        return this.errorMessage;
+        return controller.getErrorMessage();
     }
 
     @Override
     public void registerListener(
             IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
-        this.viewComponentListener = listener;
+      //  this.viewComponentListener = listener;
+        controller.setViewListener(listener);
     }
 
     @Override
     public Stream<Set<OWLIndividualAxiom>> generateExplanations() {
-        return counterexampleModel.generateExplanations();
+        return controller.generateExplanations();
     }
 
     @Override
@@ -146,7 +129,7 @@ abstract public class AbstractCounterexampleGenerationService
 
     @Override
     public void addProgressTracker(IProgressTracker tracker) {
-        this.counterexampleModel.addProgressTracker(tracker);
+        this.controller.setProgressTracker(tracker);
         this.progressTracker = tracker;
     }
 
@@ -176,16 +159,11 @@ abstract public class AbstractCounterexampleGenerationService
 
     public void setOntology(OWLOntology ontology) {
         this.activeOntology = ontology;
-        try {
-            OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-            this.counterexampleModel.setOntology(man.copyOntology(activeOntology, DEEP));
-        } catch (OWLOntologyCreationException e) {
-            throw new RuntimeException(e);
-        }
+        controller.setOntology(ontology);
     }
 
     protected void setCounterexampleGenerator(IOWLCounterexampleGenerator counterexampleGenerator) {
-        this.counterexampleModel.setCounterexampleGenerator(counterexampleGenerator);
+        this.controller.setCounterexampleGenerator(counterexampleGenerator);
     }
 
     protected void setSupportsExplanationMessage(String supportsExplanationMessage) {
@@ -208,49 +186,5 @@ abstract public class AbstractCounterexampleGenerationService
         }
     }
 
-    private class InteractiveModelGenerationWorker extends SwingWorker<Void, Void> {
-
-        private final INonEntailmentExplanationService<OWLIndividualAxiom> service;
-        private final Logger loggerThread = Logger.getLogger(InteractiveModelGenerationWorker.class);
-
-        private IGraphViewService graphViewGenerator;
-
-        public InteractiveModelGenerationWorker(INonEntailmentExplanationService<OWLIndividualAxiom> service) {
-            this.service = service;
-        }
-
-        @Override
-        protected Void doInBackground() throws Exception {
-            loggerThread.warn("model generation task background thread tarted"); //debugLog
-            computationSuccessful = false;
-            counterexampleModel.computeModel();
-            graphViewGenerator = new GraphViewGenerator(GraphStyleSheets.PROTEGE, 2000);
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            try {
-                interactiveGraphModel = new InteractiveGraphModel(
-                        counterexampleModel,
-                        graphViewGenerator,
-                        viewComponentListener,
-                        simpleMode);
-
-                viewComponentListener.handleEvent(new ExplanationEvent<>(this.service, ExplanationEventType.COMPUTATION_COMPLETE));
-
-            } catch (Throwable e) {
-                if (computationSuccessful) {
-                    loggerThread.info("Counterexample generation is canceled");
-                    return;
-                }
-
-                loggerThread.error("Model generation error", e);
-                errorMessage = "Model generation error:\n" + e.getMessage();
-                viewComponentListener.handleEvent(new ExplanationEvent<>(this.service, ExplanationEventType.ERROR));    
-            }
-            
-        }
-
-    }
+ 
 }

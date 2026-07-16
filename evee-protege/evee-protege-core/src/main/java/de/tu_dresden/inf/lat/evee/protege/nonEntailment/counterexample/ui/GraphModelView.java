@@ -36,7 +36,7 @@ public class GraphModelView implements IGraphView {
         this.mouseListener = listener;
         this.view = view;
         this.view.setMouseManager(listener);
-        //this.viewComponent.addMouseWheelListener(listener);
+        //this.viewComponent.addMouseWheelListener(listener); //TODO
     }
     
     public GraphModelView(View view) {

@@ -26,7 +26,7 @@ public class GraphViewGenerator implements IGraphViewService {
     private final Logger logger = Logger.getLogger(GraphViewGenerator.class);
 
     private final int BASE_LABEL_DISTANCE = -20;
-    private final int autoLayoutTimeMs;
+    private final int autoLayoutTimeMs = 2000;
     
     private final String COLUMN = "column";
     private final String LINE = "line";
@@ -46,8 +46,7 @@ public class GraphViewGenerator implements IGraphViewService {
     private String edgeLabelGrouping = LINE;
     private int maxLabelNum;
 
-    public GraphViewGenerator(String styleSheet,int autoLayoutTimeMs) {
-        this.autoLayoutTimeMs = autoLayoutTimeMs;
+    public GraphViewGenerator(String styleSheet) {
         this.df = OWLManager.createOWLOntologyManager().getOWLDataFactory();
         this.styleSheet = styleSheet;
     }

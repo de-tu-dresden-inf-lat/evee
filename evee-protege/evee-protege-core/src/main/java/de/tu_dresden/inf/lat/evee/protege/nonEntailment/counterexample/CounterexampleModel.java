@@ -11,9 +11,13 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
 import org.semanticweb.owlapi.model.IRI;
+
+import static org.semanticweb.owlapi.model.parameters.OntologyCopy.DEEP;
 
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException;
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.SubsumptionHoldsException;
@@ -25,18 +29,20 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.Reas
 
 public class CounterexampleModel {
     private final Logger logger = Logger.getLogger(CounterexampleModel.class);
-
-    private IProgressTracker progressTracker;
  
     private OWLEditorKit owlEditorKit;
     private OWLOntology ontology;
-    private Set<OWLAxiom> observation;
-    private OWLSubClassOfAxiom currentObservationAxiom;
+    private OWLOntologyManager man;
 
     private IOWLCounterexampleGenerator modelGenerator;
 
+    private Set<OWLAxiom> observation;
+    private OWLSubClassOfAxiom currentObservationAxiom;
     private Set<OWLIndividualAxiom> model;
+
     private boolean requiresSubsumptionCheck = true;
+    
+    public CounterexampleModel() {}
 
     public CounterexampleModel(OWLEditorKit editorKit, OWLOntology ontology, Set<OWLAxiom> observation, IOWLCounterexampleGenerator modelGenerator) {
         this.owlEditorKit = editorKit;
@@ -45,8 +51,6 @@ public class CounterexampleModel {
         this.modelGenerator = modelGenerator;
         ((IOWLNonEntailmentExplainer<OWLIndividualAxiom>)modelGenerator).setOntology(ontology);
     }
-
-    public CounterexampleModel() {}
 
     public boolean supportsExplanation() {
         return modelGenerator.supportsExplanation();
@@ -57,8 +61,7 @@ public class CounterexampleModel {
     }
     
     public void addProgressTracker(IProgressTracker tracker) {
-        this.modelGenerator.addProgressTracker(tracker);
-        this.progressTracker = tracker;
+        this.modelGenerator.addProgressTracker(tracker); //TODO
     }
 
     public void setSignature(Collection<OWLEntity> signature) {
@@ -78,9 +81,14 @@ public class CounterexampleModel {
         this.model = null;
     }
 
-    public void setOntology(OWLOntology ontology) {
-        this.ontology = ontology;
-        ((IOWLNonEntailmentExplainer<OWLIndividualAxiom>)modelGenerator).setOntology(ontology);
+    //the ontology may be modified, so is copied to keep ownership coherent
+    public void setOntology(OWLOntology ontology) { //TODO exception handling
+        try {
+            this.ontology = man.copyOntology(ontology, DEEP);
+        } catch (OWLOntologyCreationException e) {
+            throw new RuntimeException(e);
+        }
+        ((IOWLNonEntailmentExplainer<OWLIndividualAxiom>)modelGenerator).setOntology(this.ontology);
         this.model = null;
     }
 
