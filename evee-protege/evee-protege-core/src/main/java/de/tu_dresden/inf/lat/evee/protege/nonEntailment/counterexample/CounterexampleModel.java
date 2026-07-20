@@ -15,6 +15,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 
 import static org.semanticweb.owlapi.model.parameters.OntologyCopy.DEEP;
@@ -46,10 +47,10 @@ public class CounterexampleModel {
 
     public CounterexampleModel(OWLEditorKit editorKit, OWLOntology ontology, Set<OWLAxiom> observation, IOWLCounterexampleGenerator modelGenerator) {
         this.owlEditorKit = editorKit;
-        this.ontology = ontology;
         this.observation = observation;
         this.modelGenerator = modelGenerator;
-        ((IOWLNonEntailmentExplainer<OWLIndividualAxiom>)modelGenerator).setOntology(ontology);
+
+        setOntology(ontology);
     }
 
     public boolean supportsExplanation() {
@@ -81,13 +82,16 @@ public class CounterexampleModel {
         this.model = null;
     }
 
-    //the ontology may be modified, so is copied to keep ownership coherent
+    //the ontology may be modified, so it is copied to keep ownership coherent
     public void setOntology(OWLOntology ontology) { //TODO exception handling
+        man = OWLManager.createOWLOntologyManager();
+
         try {
             this.ontology = man.copyOntology(ontology, DEEP);
         } catch (OWLOntologyCreationException e) {
             throw new RuntimeException(e);
         }
+
         ((IOWLNonEntailmentExplainer<OWLIndividualAxiom>)modelGenerator).setOntology(this.ontology);
         this.model = null;
     }
@@ -100,7 +104,7 @@ public class CounterexampleModel {
      * Get the computed model. 
      * Make sure computeModel() is called at least once or check for returned null.
      *
-     * @return Returns current model. May return null, it's not checked wether a model is present.
+     * @return Returns current model. May return null; it is not checked wether a model is present!
      *  
      */
     public Set<OWLIndividualAxiom> getModel(){

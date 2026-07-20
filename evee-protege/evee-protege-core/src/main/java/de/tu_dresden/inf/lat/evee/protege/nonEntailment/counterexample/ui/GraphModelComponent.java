@@ -4,6 +4,8 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexampl
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphModelControlPanel;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphView;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IInteractiveGraphModelComponent;
+
+import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.*;
 
 import javax.swing.*;
@@ -12,11 +14,14 @@ import java.util.*;
 
 
 public class GraphModelComponent extends JPanel implements IInteractiveGraphModelComponent {
+    private final Logger logger = Logger.getLogger(GraphModelComponent.class);
+
     private final JPanel modelViewPanel;
     private final IGraphModelControlPanel controlPanel;
 
     public GraphModelComponent(IGraphView graphView,
                                IGraphModelControlPanel controlPanel) {
+        logger.warn("NEW GraphModelComponent " + this.hashCode()); //debug log 
         this.controlPanel = controlPanel;
         graphView.setControlPanel(this.controlPanel);
         this.setLayout(new BoxLayout(this, 0));

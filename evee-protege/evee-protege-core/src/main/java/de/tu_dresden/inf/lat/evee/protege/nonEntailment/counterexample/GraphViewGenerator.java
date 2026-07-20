@@ -7,6 +7,8 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.Edge
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.MappingUtils;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.counterexample.util.OWLObjectCollectionSorter;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphViewService;
+import javafx.application.Platform;
+
 import org.apache.log4j.Logger;
 import org.graphstream.ui.graphicGraph.GraphicEdge;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
@@ -62,8 +64,8 @@ public class GraphViewGenerator implements IGraphViewService {
         this.markedIndividuals = markedIndividuals;
         this.maxLabelNum = labelsNum;
 
-        System.setProperty("org.graphstream.ui", "javafx");
-        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+        // System.setProperty("org.graphstream.ui", "javafx");
+        // System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graphModel = new GraphicGraph("model");
         createStyleSheet();
         createNodes();
@@ -224,9 +226,7 @@ public class GraphViewGenerator implements IGraphViewService {
                 ontology,
                 markedIndividuals,
                 labelsNum);
-
-        logger.warn("line 224"); //debugLog
-
+    
         GraphViewMouseListener graphViewMouseListener = new GraphViewMouseListener(individualsToClassesMap,
                 pairsToObjectPropertiesMap);
 
@@ -239,6 +239,10 @@ public class GraphViewGenerator implements IGraphViewService {
         logger.warn("line 238"); //debugLog
         View view = graphModelViewer.addDefaultView(false);
         logger.warn("line 242"); //debugLog
+
+         logger.warn("creating new GraphicGraph " + graphModel.hashCode()); //debugLog
+        logger.warn("creating new FxViewer " + graphModelViewer.hashCode()); //debugLog
+
         GraphModelView graphView = new GraphModelView(view, graphViewMouseListener);
         return graphView;
     }
@@ -253,5 +257,20 @@ public class GraphViewGenerator implements IGraphViewService {
         } catch (InterruptedException e) {
             logger.error("postprocessing failed",e);
         }
+    }
+
+    @Override
+    public void dispose() {
+        logger.warn("in dispose of GraphViewGenerator"); //debugLog
+        if(graphModelViewer != null) {
+           Platform.runLater(() -> {
+                graphModelViewer.disableAutoLayout();
+                graphModelViewer.close(); 
+                graphModelViewer = null;
+           });
+        }
+
+        if (graphModel != null) 
+            graphModel.clear();        
     }
 }

@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import org.apache.log4j.Logger;
 import java.lang.ModuleLayer;
+import java.util.concurrent.CountDownLatch;
 
 import org.graphstream.ui.view.View;
 
@@ -55,6 +56,7 @@ public class GraphModelView implements IGraphView {
 
     @Override
     public Component toComponent() {
+        logger.warn("GraphModelView.toComponent");
         logger.warn(System.getProperty("java.vendor")); //debugLog
         logger.warn(System.getProperty("java.version"));//debugLog
 
@@ -63,7 +65,7 @@ public class GraphModelView implements IGraphView {
             logger.warn(ClassLoader.getSystemClassLoader().loadClass("jdk.swing.interop.SwingInterOpUtils"));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            logger.warn("Could not find class jdk.swing.interop.SwingInterOpUtils. This may cause issues with JavaFX integration.");
+            logger.warn("Could not find class jdk.swing.interop.SwingInterOpUtils");
         }
         
         
@@ -74,11 +76,30 @@ public class GraphModelView implements IGraphView {
 
         JFXPanel panel = new JFXPanel();
 
+        logger.warn("isFxThread = " + Platform.isFxApplicationThread()); //debugLog
+
+      CountDownLatch latch = new CountDownLatch(1);
+
         Platform.runLater(() -> {
-            Scene scene = new Scene((Parent) view);
-            panel.setScene(scene);
+            panel.setScene(new Scene((Parent) view));
+            logger.warn("scene set"); //debugLog
+            latch.countDown();
         });
 
+        Thread.getAllStackTraces().forEach((t, stack) -> {
+            logger.warn(t.getName() + " in " + t.getState());
+        
+            for (StackTraceElement e : stack) {
+                logger.warn(e.toString());
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            logger.warn("Interrupted while waiting for FX thread"); //TODO
+        }
+     
         return panel;
     }
     

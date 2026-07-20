@@ -66,7 +66,6 @@ public class InteractiveGraphModel implements IInteractiveComponent, IExplanatio
 
         logger.warn("line 90"); //debugLog
 
-
         this.graphModelComponent = new GraphModelComponent(graphView, controlPanel);
     }
 
@@ -84,6 +83,7 @@ public class InteractiveGraphModel implements IInteractiveComponent, IExplanatio
 
     @Override
     public GraphModelComponent toComponent() {
+        logger.warn("InteractiveGraphModel.toComponent");
         return graphModelComponent;
     }
 

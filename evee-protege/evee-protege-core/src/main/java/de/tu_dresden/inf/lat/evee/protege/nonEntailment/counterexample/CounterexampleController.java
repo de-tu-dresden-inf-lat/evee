@@ -33,13 +33,13 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
 
     private final Logger logger = Logger.getLogger(CounterexampleController.class);
 
-    private final IGraphViewService graphGenerator;
     private final CounterexampleModel model;
     
     private IProgressTracker progressTracker; //TODO
     private IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> viewListener;
     private INonEntailmentExplanationService<OWLIndividualAxiom> parentService;
-
+    
+    private IGraphViewService graphGenerator;
     private InteractiveGraphModel graphModel;
     private GraphGenerationWorker generationWorker;
     
@@ -51,7 +51,7 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
         this.parentService = parentService;
         this.simpleMode = simpleMode;
         this.model = new CounterexampleModel();
-        this.graphGenerator = new GraphViewGenerator(GraphStyleSheets.PROTEGE);
+        
     }
 
     @Override
@@ -117,6 +117,7 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
     }
 
     public void computeCounterexampleGraph(){
+        this.graphGenerator = new GraphViewGenerator(GraphStyleSheets.PROTEGE);
         generationWorker = new GraphGenerationWorker(parentService, this);
 
         logger.warn("starting generation task thread"); // debugLog
@@ -138,6 +139,7 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
     }
 
     public Component getGraphComponent() {
+        logger.warn("CounterexampleController.getGraphComponent");
         return graphModel.toComponent();
     }
 
@@ -176,6 +178,15 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
     public void setProgressTracker(IProgressTracker tracker) {
         this.progressTracker = tracker;
         this.model.addProgressTracker(tracker);
+    }
+
+    public void dispose() {
+        logger.warn("in dispose of CounterexampleController"); //debugLog
+
+        if (graphGenerator != null) {
+            graphGenerator.dispose();
+        }
+        graphModel = null;
     }
 
     {

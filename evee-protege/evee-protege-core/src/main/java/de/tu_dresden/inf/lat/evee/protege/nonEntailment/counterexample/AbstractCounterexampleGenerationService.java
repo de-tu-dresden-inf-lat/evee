@@ -71,6 +71,8 @@ abstract public class AbstractCounterexampleGenerationService
     }
 
     public Component getResult() {
+         logger.warn("returning graph component " + 
+                controller.getGraphComponent().hashCode()); //debug log
       return controller.getGraphComponent();
     }
 
@@ -108,7 +110,6 @@ abstract public class AbstractCounterexampleGenerationService
     @Override
     public void registerListener(
             IExplanationGenerationListener<ExplanationEvent<INonEntailmentExplanationService<?>>> listener) {
-      //  this.viewComponentListener = listener;
         controller.setViewListener(listener);
     }
 
@@ -119,6 +120,8 @@ abstract public class AbstractCounterexampleGenerationService
 
     @Override
     public void initialise() throws Exception {
+        System.setProperty("org.graphstream.ui", "javafx");
+        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         initFx();
     }
 
@@ -155,6 +158,8 @@ abstract public class AbstractCounterexampleGenerationService
     }
 
     public void dispose() throws Exception {
+        logger.warn("in dispose of AbstractCounterexampleGenerationService"); //debugLog
+        controller.dispose();
     }
 
     public void setOntology(OWLOntology ontology) {
@@ -173,6 +178,7 @@ abstract public class AbstractCounterexampleGenerationService
     private static void initFx() {
         synchronized (FX_LOCK){
             if (INITIALIZED_FX.compareAndSet(false, true)) {
+                Platform.setImplicitExit(false);
                 try {
                     Platform.startup(() -> {
                         loggerStatic.info("starting JavaFX runtime");
@@ -183,7 +189,9 @@ abstract public class AbstractCounterexampleGenerationService
                     loggerStatic.error("Failed to initialize JavaFX runtime", e);
                 }
             } 
+            loggerStatic.warn("implicitExit = " + Platform.isImplicitExit()); //debugLog
         }
+
     }
 
  

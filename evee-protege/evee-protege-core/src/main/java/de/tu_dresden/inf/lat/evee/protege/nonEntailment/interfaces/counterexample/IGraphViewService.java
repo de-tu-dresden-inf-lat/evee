@@ -14,4 +14,6 @@ public interface IGraphViewService {
                   int labelsNum);
 
     default void doPostProcessing() {};
+
+    default void dispose() {};
 }
