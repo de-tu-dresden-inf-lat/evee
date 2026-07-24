@@ -37,6 +37,7 @@ public class GraphViewMouseListener implements MouseManager {
     private long curTime;
 
     private Map<String, List<OWLClass>> individualClassMap;
+    private Map<String[],List<OWLObjectProperty>> objectPropertyMap;
     private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(
             InteractiveElement.NODE);
     private final Logger logger = Logger.getLogger(GraphViewMouseListener.class);
