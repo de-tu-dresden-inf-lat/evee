@@ -14,14 +14,12 @@ import java.util.*;
 
 
 public class GraphModelComponent extends JPanel implements IInteractiveGraphModelComponent {
-    private final Logger logger = Logger.getLogger(GraphModelComponent.class);
 
     private final JPanel modelViewPanel;
     private final IGraphModelControlPanel controlPanel;
 
     public GraphModelComponent(IGraphView graphView,
                                IGraphModelControlPanel controlPanel) {
-        logger.warn("NEW GraphModelComponent " + this.hashCode()); //debug log 
         this.controlPanel = controlPanel;
         graphView.setControlPanel(this.controlPanel);
         this.setLayout(new BoxLayout(this, 0));

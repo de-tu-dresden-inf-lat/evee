@@ -213,14 +213,11 @@ public class GraphViewGenerator implements IGraphViewService {
                                       OWLOntology ontology,
                                       Set<IRI> markedIndividuals,
                                       int labelsNum) {
-        logger.warn("line 210"); //debugLog
         OWLObjectCollectionSorter sorter = new OWLObjectCollectionSorter(ontology);
         individualsToClassesMap = sorter.sortOWLObjectMap(MappingUtils.toIndividualsToClassesMap(model));
         pairsToObjectPropertiesMap = sorter.sortOWLObjectMap(MappingUtils.toPairsToObjectPropertiesMap(model));
         logger.debug(individualsToClassesMap);
         
-        logger.warn("line 216"); //debugLog
-
         generateGraphModel(individualsToClassesMap,
                 pairsToObjectPropertiesMap,
                 ontology,
@@ -229,21 +226,13 @@ public class GraphViewGenerator implements IGraphViewService {
     
         GraphViewMouseListener graphViewMouseListener = new GraphViewMouseListener(individualsToClassesMap,
                 pairsToObjectPropertiesMap);
-
-        logger.warn("line 229"); //debugLog
-
         graphModelViewer = new FxViewer(graphModel,
                 Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
-        logger.warn("line 234"); //debugLog
+
         graphModelViewer.enableAutoLayout();
-        logger.warn("line 238"); //debugLog
         View view = graphModelViewer.addDefaultView(false);
-        logger.warn("line 242"); //debugLog
-
-         logger.warn("creating new GraphicGraph " + graphModel.hashCode()); //debugLog
-        logger.warn("creating new FxViewer " + graphModelViewer.hashCode()); //debugLog
-
         GraphModelView graphView = new GraphModelView(view, graphViewMouseListener);
+
         return graphView;
     }
 
@@ -261,7 +250,6 @@ public class GraphViewGenerator implements IGraphViewService {
 
     @Override
     public void dispose() {
-        logger.warn("in dispose of GraphViewGenerator"); //debugLog
         if(graphModelViewer != null) {
            Platform.runLater(() -> {
                 graphModelViewer.disableAutoLayout();

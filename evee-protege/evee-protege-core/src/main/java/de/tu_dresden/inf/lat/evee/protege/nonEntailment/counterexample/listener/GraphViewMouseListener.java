@@ -52,9 +52,7 @@ public class GraphViewMouseListener implements MouseManager {
 
     public GraphViewMouseListener(Map<String, List<OWLClass>> classMap,
                                   Map<String[],List<OWLObjectProperty>> objectPropertyMap) {
-        
-        logger.warn("line 49"); //debugLog
-                            
+                                    
         this.individualClassMap = classMap;
         this.objectPropertyMap = objectPropertyMap;
         this.isFirstClick = true;

@@ -51,12 +51,8 @@ abstract public class AbstractCounterexampleGenerationService
     protected boolean computationSuccessful = false;
 
     public AbstractCounterexampleGenerationService() {
-        logger.warn("in constructor"); // debugLog
-
         this.simpleMode = preferencesManager.loadUseSimpleMode();
         this.controller = new CounterexampleController(this, simpleMode);
-
-        logger.warn("finished constructor"); // debugLog
     }
 
     public void setup(OWLEditorKit editorKit) {
@@ -65,14 +61,10 @@ abstract public class AbstractCounterexampleGenerationService
     }
 
     public void computeExplanation() {
-        logger.warn("computeExplanation is called"); // debugLog
-
         controller.computeCounterexampleGraph();
     }
 
     public Component getResult() {
-         logger.warn("returning graph component " + 
-                controller.getGraphComponent().hashCode()); //debug log
       return controller.getGraphComponent();
     }
 
@@ -158,7 +150,6 @@ abstract public class AbstractCounterexampleGenerationService
     }
 
     public void dispose() throws Exception {
-        logger.warn("in dispose of AbstractCounterexampleGenerationService"); //debugLog
         controller.dispose();
     }
 
@@ -189,7 +180,6 @@ abstract public class AbstractCounterexampleGenerationService
                     loggerStatic.error("Failed to initialize JavaFX runtime", e);
                 }
             } 
-            loggerStatic.warn("implicitExit = " + Platform.isImplicitExit()); //debugLog
         }
 
     }

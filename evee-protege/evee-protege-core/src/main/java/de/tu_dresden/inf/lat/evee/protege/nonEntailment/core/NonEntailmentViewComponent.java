@@ -118,7 +118,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
 //    Constructor, Init, Dispose:
 //****************************************************************************
     public NonEntailmentViewComponent(){
-        logger.warn("in constructor"); //debugLog
         this.nonEntailmentExplainerManager = new NonEntailmentExplainerManager();
         this.preferencesManager = NonEntailmentGeneralPreferencesManager.getInstance();
         this.preferencesManager.registerPreferencesChangeEventListener(this);
@@ -127,7 +126,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
         this.loadingUI.registerLoadingUIListener(this);
         this.wideComponentDimensionList = new ArrayList<>();
         this.ignoreOntologyChangeEvent = false;
-        this.logger.warn("Object NonEntailmentViewComponent created");
     }
 
     @Override

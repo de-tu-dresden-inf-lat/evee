@@ -120,7 +120,6 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
         this.graphGenerator = new GraphViewGenerator(GraphStyleSheets.PROTEGE);
         generationWorker = new GraphGenerationWorker(parentService, this);
 
-        logger.warn("starting generation task thread"); // debugLog
         generationCancelled = false;
         generationWorker.execute();
 
@@ -139,7 +138,6 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
     }
 
     public Component getGraphComponent() {
-        logger.warn("CounterexampleController.getGraphComponent");
         return graphModel.toComponent();
     }
 
@@ -181,8 +179,6 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
     }
 
     public void dispose() {
-        logger.warn("in dispose of CounterexampleController"); //debugLog
-
         if (graphGenerator != null) {
             graphGenerator.dispose();
         }
@@ -214,7 +210,6 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
 
         @Override
         protected Void doInBackground() throws Exception {
-            loggerThread.warn("model generation task background thread tarted"); //debugLog
             model.computeModel();
             return null;
         }

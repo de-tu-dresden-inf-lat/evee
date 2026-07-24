@@ -54,17 +54,12 @@ public class InteractiveGraphModel implements IInteractiveComponent, IExplanatio
             this.controlPanel = new ControlPanel(model.getOWLEditorKit());
         }
 
-        logger.warn("line 83"); //debugLog
         this.controlPanel.addCounterexampleGenerationEventListener(generationEventListener);
-         
-        logger.warn("line 85"); //debugLog
 
         this.graphView = graphGenerator.computeView(model.getModel(),
                 model.getOntology(),
                 model.getMarkedInds(),
                 DEFAULT_LABELS_NUM);
-
-        logger.warn("line 90"); //debugLog
 
         this.graphModelComponent = new GraphModelComponent(graphView, controlPanel);
     }
@@ -83,7 +78,6 @@ public class InteractiveGraphModel implements IInteractiveComponent, IExplanatio
 
     @Override
     public GraphModelComponent toComponent() {
-        logger.warn("InteractiveGraphModel.toComponent");
         return graphModelComponent;
     }
 
