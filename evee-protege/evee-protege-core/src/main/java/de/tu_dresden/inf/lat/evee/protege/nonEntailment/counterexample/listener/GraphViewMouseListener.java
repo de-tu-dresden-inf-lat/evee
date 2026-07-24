@@ -37,7 +37,6 @@ public class GraphViewMouseListener implements MouseManager {
     private long curTime;
 
     private Map<String, List<OWLClass>> individualClassMap;
-    private Map<String[],List<OWLObjectProperty>> objectPropertyMap;
     private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(
             InteractiveElement.NODE);
     private final Logger logger = Logger.getLogger(GraphViewMouseListener.class);
@@ -71,7 +70,7 @@ public class GraphViewMouseListener implements MouseManager {
         view.addListener(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
         view.addListener(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
         view.addListener(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
-        // view.addListener(ScrollEvent.SCROLL, this);
+        view.addListener(ScrollEvent.SCROLL, mouseWheelHandler);
         this.createSelectionSprite();
     }
 
@@ -80,7 +79,7 @@ public class GraphViewMouseListener implements MouseManager {
         view.removeListener(MouseEvent.MOUSE_PRESSED, mousePressedHandler);
         view.removeListener(MouseEvent.MOUSE_RELEASED, mouseReleasedHandler);
         view.removeListener(MouseEvent.MOUSE_DRAGGED, mouseDraggedHandler);
-        // view.removeListener(ScrollEvent.SCROLL, this);
+        view.removeListener(ScrollEvent.SCROLL, mouseWheelHandler);
     }   
 
     private final EventHandler<MouseEvent> mousePressedHandler = new EventHandler<MouseEvent>() {
@@ -104,6 +103,13 @@ public class GraphViewMouseListener implements MouseManager {
         }
     };
 
+    private final EventHandler<ScrollEvent> mouseWheelHandler = new EventHandler<ScrollEvent>() {
+        @Override
+        public void handle(ScrollEvent e) {
+            onScroll(e);
+        }
+    };
+
     
     private void onPress(MouseEvent event) {
 
@@ -123,56 +129,57 @@ public class GraphViewMouseListener implements MouseManager {
 
     private void onRelease(MouseEvent event) {
 
-            logger.debug("mouse released");
-            last = null;
-            if (curElement != null) {
-                if(System.currentTimeMillis()-curTime <300) {
-                    logger.info( curElement.getId() +" is clicked");
+        logger.debug("mouse released");
+        last = null;
+        if (curElement != null) {
+            if(System.currentTimeMillis()-curTime <300) {
+                logger.info( curElement.getId() +" is clicked");
 
-                    selectNewNode(curElement.getId());
-                }
-                curElement = null;
-                curNode = null;
-                elementMoving = false;
+                selectNewNode(curElement.getId());
             }
+            curElement = null;
+            curNode = null;
+            elementMoving = false;
         }
+    }
  
 
     private void onDrag(MouseEvent event) {
-            if(elementMoving) {
-                double oldPositionX = curNode.getX();
+        if(elementMoving) {
+            double oldPositionX = curNode.getX();
 
-                elementMoving(curElement, event);
-                double newPositionX = curNode.getX();
-                EdgeLabelPositioner.positionLabelsOnNodeMove(curNode,
-                        oldPositionX,
-                        newPositionX);
-            } else {
-                cameraMoving(event);
-            }
+            elementMoving(curElement, event);
+            double newPositionX = curNode.getX();
+            EdgeLabelPositioner.positionLabelsOnNodeMove(curNode,
+                    oldPositionX,
+                    newPositionX);
+        } else {
+            cameraMoving(event);
         }
+    }
+
 
     
     protected void elementMoving(GraphicElement element, MouseEvent event) {
 		view.moveElementAtPx(element, event.getX(), event.getY());
 	}
 
-    // @Override
-    // public void mouseWheelMoved(MouseWheelEvent e) {
-    //     e.consume();
-    //     int i = e.getWheelRotation();
-    //     double factor = Math.pow(1.25, i);
-    //     Camera cam = view.getCamera();
-    //     double zoom = cam.getViewPercent() * factor;
-    //     Point2 pxCenter  = cam.transformGuToPx(cam.getViewCenter().x, cam.getViewCenter().y, 0);
-    //     Point3 guClicked = cam.transformPxToGu(e.getX(), e.getY());
-    //     double newRatioPx2Gu = cam.getMetrics().ratioPx2Gu/factor;
-    //     double x = guClicked.x + (pxCenter.x - e.getX())/newRatioPx2Gu;
-    //     double y = guClicked.y - (pxCenter.y - e.getY())/newRatioPx2Gu;
-    //     cam.setViewCenter(x, y, 0);
-    //     cam.setViewPercent(zoom);
+    
+    private void onScroll(ScrollEvent e) {
+        e.consume();
+        double i = e.getDeltaY();
+        double factor = Math.pow(1.05, i);
+        Camera cam = view.getCamera();
+        double zoom = cam.getViewPercent() * factor;
+        Point2 pxCenter  = cam.transformGuToPx(cam.getViewCenter().x, cam.getViewCenter().y, 0);
+        Point3 guClicked = cam.transformPxToGu(e.getX(), e.getY());
+        double newRatioPx2Gu = cam.getMetrics().ratioPx2Gu/factor;
+        double x = guClicked.x + (pxCenter.x - e.getX())/newRatioPx2Gu;
+        double y = guClicked.y - (pxCenter.y - e.getY())/newRatioPx2Gu;
+        cam.setViewCenter(x, y, 0);
+        cam.setViewPercent(zoom);
 
-    // }
+    }
 
     public void selectNewNode(String nodeID) {
         logger.debug("button is released");
