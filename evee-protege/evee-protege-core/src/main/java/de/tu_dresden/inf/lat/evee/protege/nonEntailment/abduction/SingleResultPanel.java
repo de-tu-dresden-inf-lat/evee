@@ -290,7 +290,7 @@ public class SingleResultPanel extends JPanel
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            this.missingEntailment = (OWLAxiom) ((JComboBox) e.getSource()).getSelectedItem();
+            this.missingEntailment = (OWLAxiom) ((JComboBox<?>) e.getSource()).getSelectedItem();
             this.logger.debug("Selected missing entailment: {}", this.missingEntailment);
             this.refreshPanel();
         }

@@ -22,16 +22,6 @@ public class GraphModelComponent extends JPanel implements IInteractiveGraphMode
         this.controlPanel = controlPanel;
         graphView.setControlPanel(this.controlPanel);
 
-
-        // this.setLayout(new BoxLayout(this, 0));
-        // this.modelViewPanel = new JPanel();
-        // this.modelViewPanel.setLayout(new BoxLayout(this.modelViewPanel, 0));
-        // this.modelViewPanel.setMinimumSize(new Dimension(500, 500));
-        // this.modelViewPanel.add(graphView.toComponent());
-        // this.add(this.modelViewPanel);
-        // this.add(this.controlPanel.toComponent());
-
-                
         this.setLayout(new BorderLayout());
         this.modelViewPanel = new JPanel(new BorderLayout());
         this.modelViewPanel.setMinimumSize(new Dimension(500, 500));

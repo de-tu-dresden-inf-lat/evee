@@ -64,8 +64,6 @@ public class GraphViewGenerator implements IGraphViewService {
         this.markedIndividuals = markedIndividuals;
         this.maxLabelNum = labelsNum;
 
-        // System.setProperty("org.graphstream.ui", "javafx");
-        // System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graphModel = new GraphicGraph("model");
         createStyleSheet();
         createNodes();
@@ -128,12 +126,10 @@ public class GraphViewGenerator implements IGraphViewService {
 
         GraphicEdge edge = (GraphicEdge) graphModel.addEdge("edge"+subjId + objId+edgeNum, subjId, objId, true);
         edge.setAttribute("ui.label", label);
-//        edge.setAttribute("properties",prop);
         edge.setAttribute("ui.style","text-color: "+textColor+
                 "text-offset: 0, "+labelDistance+";"+
                 "fill-color: "+fillColor+
                 "text-alignment: "+alignment);
-//        logger.info("prop of node"+edge.getAttribute("properties").toString());
     }
 
     private void createNodes() {
@@ -224,8 +220,7 @@ public class GraphViewGenerator implements IGraphViewService {
                 markedIndividuals,
                 labelsNum);
     
-        GraphViewMouseListener graphViewMouseListener = new GraphViewMouseListener(individualsToClassesMap,
-                pairsToObjectPropertiesMap);
+        GraphViewMouseListener graphViewMouseListener = new GraphViewMouseListener(individualsToClassesMap);
         graphModelViewer = new FxViewer(graphModel,
                 Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
 

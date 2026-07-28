@@ -247,18 +247,15 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             this.resultHolderComponent = new JPanel();
 
 
-            // this.resultHolderComponent.setLayout(new BoxLayout(this.resultHolderComponent, BoxLayout.PAGE_AXIS));
             this.resultHolderComponent.setLayout(new BorderLayout());
             INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             if (explainer != null){
                 this.logger.debug("Explainer available");
-                //this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
                 this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent, BorderLayout.CENTER);
 
             }
             else {
                 this.logger.debug("No explainer available");
-                //this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
                 this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent, BorderLayout.CENTER);
             }
     }
@@ -409,7 +406,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 new OWLLogicalAxiomChecker(this.getOWLModelManager());
         this.missingEntailmentTextEditor = new ExpressionEditor<>(this.getOWLEditorKit(), logicalAxiomChecker);
         JScrollPane editorScrollPane = ComponentFactory.createScrollPane(this.missingEntailmentTextEditor);
-//        editorScrollPane.setPreferredSize(new Dimension(400, 400));
         missingEntailmentEditorPanel.add(editorScrollPane);
         TitledBorder titledBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
@@ -465,7 +461,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2){
-                    JList list = (JList) e.getSource();
+                    JList<?> list = (JList<?>) e.getSource();
                     Object selectedValue = list.getSelectedValue();
                     if (selectedValue instanceof OWLObject){
                         missingEntailmentTextEditor.setText(reverseParseOWLObject((OWLObject) selectedValue));
@@ -535,7 +531,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JComboBox){
             this.logger.debug("Selected <Missing Entailment Explanation Service> changed");
-            JComboBox comboBox = (JComboBox) e.getSource();
+            JComboBox<?> comboBox = (JComboBox<?>) e.getSource();
             String serviceName = (String) comboBox.getSelectedItem();
             if (! this.nonEntailmentExplainerManager.isCurrentExplanationService(serviceName)){
                 this.nonEntailmentExplainerManager.setExplanationService(serviceName);
@@ -630,6 +626,8 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 case IGNORE_ONTOLOGY_CHANGE:
                     this.ignoreOntologyChangeEvent = true;
                     break;
+                default:
+                    break;
             }
         } else{
             this.logger.debug("EventSource is NOT the current explainer, event ignored");
@@ -698,14 +696,12 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     }
 
     private void showResult(Component resultComponent){
-//        this.resetMainComponent();
         this.resultHolderComponent.removeAll();
         this.resultHolderComponent.add(resultComponent, BorderLayout.CENTER);
         this.repaintComponents();
     }
 
     private void addMissingEntailment(){
-//        SwingUtilities.invokeLater(() -> {
         try{
             OWLAxiom axiomToAdd = this.missingEntailmentTextEditor.createObject();
             this.missingEntailmentTextEditor.setText("");
@@ -736,26 +732,22 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             this.selectedMissingEntailmentList.clearSelection();
             this.checkComputeButtonAndWarningLabelStatus();
         }
-//        });
+
     }
 
     private void deleteMissingEntailment(){
-//        SwingUtilities.invokeLater(() -> {
         List<OWLAxiom> toDelete = this.selectedMissingEntailmentList.getSelectedValuesList();
         this.selectedMissingEntailmentListModel.removeElements(toDelete);
         this.selectedMissingEntailmentList.clearSelection();
         this.missingEntailmentTextEditor.setText("");
         this.checkComputeButtonAndWarningLabelStatus();
-//        });
     }
 
     private void resetMissingEntailment(){
-//        SwingUtilities.invokeLater(() -> {
         this.selectedMissingEntailmentListModel.removeAll();
         this.selectedMissingEntailmentList.clearSelection();
         this.missingEntailmentTextEditor.setText("");
         this.checkComputeButtonAndWarningLabelStatus();
-//        });
     }
 
     private JFileChooser createFileChooser(){
@@ -830,7 +822,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     protected void checkComputeButtonAndWarningLabelStatus(){
         this.logger.debug("Changing Compute-Button status");
         INonEntailmentExplanationService<?> currentExplainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
-//        SwingUtilities.invokeLater(() -> {
         if (currentExplainer == null) {
             this.computeButton.setEnabled(false);
         } else {
@@ -847,9 +838,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 this.computeMessageLabel.setText(currentExplainer.getSupportsExplanationMessage());
             }
             this.computeButton.setEnabled(enabled);
-//                this.resetView();
         }
-//        });
         this.repaintComponents();
     }
 
@@ -929,11 +918,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             INonEntailmentExplanationService<?> explainer = nonEntailmentExplainerManager.getCurrentExplainer();
             explainer.setOntology(getOWLModelManager().getActiveOntology());
             resetResultComponent();
-//            resetExplanationServiceComponent();
-//            resetHorizontalSplitPane();
-//            resetHolderPanel();
-//            addHolderPanel();
-//            repaintComponents();
             checkComputeButtonAndWarningLabelStatus();
             computeMessageLabel.setText("");
             filterWarningLabel.setText("");
@@ -946,7 +930,6 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private static class OWLLogicalAxiomChecker implements OWLExpressionChecker<OWLAxiom>{
 
         private final OWLModelManager manager;
-        private final Logger logger = LoggerFactory.getLogger(OWLLogicalAxiomChecker.class);
 
         public OWLLogicalAxiomChecker(OWLModelManager manager){
             this.manager = manager;
@@ -980,7 +963,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
                 }
             }
             catch (ParserException e) {
-//                no logging done as exception is thrown during typing of axiom after each keystroke
+//                no logging, done as exception thrown during typing of axiom after each keystroke
                 throw ParserUtil.convertException(e);
             }
         }

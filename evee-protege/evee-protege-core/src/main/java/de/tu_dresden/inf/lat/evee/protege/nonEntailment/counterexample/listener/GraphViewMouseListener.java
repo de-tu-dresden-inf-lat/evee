@@ -15,7 +15,6 @@ import org.graphstream.ui.view.camera.Camera;
 import org.graphstream.ui.view.util.InteractiveElement;
 import org.graphstream.ui.view.util.MouseManager;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
@@ -37,7 +36,6 @@ public class GraphViewMouseListener implements MouseManager {
     private long curTime;
 
     private Map<String, List<OWLClass>> individualClassMap;
-    private Map<String[],List<OWLObjectProperty>> objectPropertyMap;
     private final EnumSet<InteractiveElement> interactiveEliments = EnumSet.of(
             InteractiveElement.NODE);
     private final Logger logger = Logger.getLogger(GraphViewMouseListener.class);
@@ -50,14 +48,9 @@ public class GraphViewMouseListener implements MouseManager {
     private boolean isFirstClick;
     private IGraphModelControlPanel controlPanel;
 
-    public GraphViewMouseListener(Map<String, List<OWLClass>> classMap,
-                                  Map<String[],List<OWLObjectProperty>> objectPropertyMap) {
-                                    
+    public GraphViewMouseListener(Map<String, List<OWLClass>> classMap) {              
         this.individualClassMap = classMap;
-        this.objectPropertyMap = objectPropertyMap;
         this.isFirstClick = true;
-
-
     }
 
     @Override

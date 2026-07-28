@@ -2,7 +2,6 @@ package de.tu_dresden.inf.lat.evee.protege.nonEntailment.abduction;
 
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerationListener;
 import de.tu_dresden.inf.lat.evee.general.interfaces.IExplanationGenerator;
-import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.INonEntailmentExplainer;
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.IOWLAbductionSolver;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEvent;
 import de.tu_dresden.inf.lat.evee.protege.tools.eventHandling.ExplanationEventType;

@@ -5,14 +5,10 @@ import org.protege.editor.core.plugin.AbstractPluginLoader;
 import org.protege.editor.core.plugin.DefaultPluginExtensionMatcher;
 import org.protege.editor.core.plugin.PluginExtensionMatcher;
 import org.protege.editor.owl.OWLEditorKit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NonEntailmentExplanationPluginLoader extends AbstractPluginLoader<NonEntailmentExplanationPlugin> {
 
     private final OWLEditorKit owlEditorKit;
-
-    private final Logger logger = LoggerFactory.getLogger(NonEntailmentExplanationPluginLoader.class);
 
     public NonEntailmentExplanationPluginLoader(OWLEditorKit editorKit) {
         super(NonEntailmentExplanationPlugin.PLUGIN_ID,
