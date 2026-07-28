@@ -245,15 +245,21 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
             this.nonEntailmentExplanationServiceComponent.setLayout(new BoxLayout(
                     this.nonEntailmentExplanationServiceComponent, BoxLayout.PAGE_AXIS));
             this.resultHolderComponent = new JPanel();
-            this.resultHolderComponent.setLayout(new BoxLayout(this.resultHolderComponent, BoxLayout.PAGE_AXIS));
+
+
+            // this.resultHolderComponent.setLayout(new BoxLayout(this.resultHolderComponent, BoxLayout.PAGE_AXIS));
+            this.resultHolderComponent.setLayout(new BorderLayout());
             INonEntailmentExplanationService<?> explainer = this.nonEntailmentExplainerManager.getCurrentExplainer();
             if (explainer != null){
                 this.logger.debug("Explainer available");
-                this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
+                //this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
+                this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent, BorderLayout.CENTER);
+
             }
             else {
                 this.logger.debug("No explainer available");
-                this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
+                //this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent);
+                this.nonEntailmentExplanationServiceComponent.add(this.resultHolderComponent, BorderLayout.CENTER);
             }
     }
 
@@ -694,7 +700,7 @@ public class NonEntailmentViewComponent extends AbstractOWLViewComponent
     private void showResult(Component resultComponent){
 //        this.resetMainComponent();
         this.resultHolderComponent.removeAll();
-        this.resultHolderComponent.add(resultComponent);
+        this.resultHolderComponent.add(resultComponent, BorderLayout.CENTER);
         this.repaintComponents();
     }
 

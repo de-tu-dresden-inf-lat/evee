@@ -62,7 +62,6 @@ public class GraphViewMouseListener implements MouseManager {
 
     @Override
     public void init(GraphicGraph graph, View view) {
-        logger.info("init method of mouse manager is started");
         this.view = view;
         this.graph = graph;
         this.camera = view.getCamera();

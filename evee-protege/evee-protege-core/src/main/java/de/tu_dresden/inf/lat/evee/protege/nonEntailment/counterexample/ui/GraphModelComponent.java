@@ -5,7 +5,6 @@ import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexampl
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IGraphView;
 import de.tu_dresden.inf.lat.evee.protege.nonEntailment.interfaces.counterexample.IInteractiveGraphModelComponent;
 
-import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.*;
 
 import javax.swing.*;
@@ -22,13 +21,23 @@ public class GraphModelComponent extends JPanel implements IInteractiveGraphMode
                                IGraphModelControlPanel controlPanel) {
         this.controlPanel = controlPanel;
         graphView.setControlPanel(this.controlPanel);
-        this.setLayout(new BoxLayout(this, 0));
-        this.modelViewPanel = new JPanel();
-        this.modelViewPanel.setLayout(new BoxLayout(this.modelViewPanel, 0));
+
+
+        // this.setLayout(new BoxLayout(this, 0));
+        // this.modelViewPanel = new JPanel();
+        // this.modelViewPanel.setLayout(new BoxLayout(this.modelViewPanel, 0));
+        // this.modelViewPanel.setMinimumSize(new Dimension(500, 500));
+        // this.modelViewPanel.add(graphView.toComponent());
+        // this.add(this.modelViewPanel);
+        // this.add(this.controlPanel.toComponent());
+
+                
+        this.setLayout(new BorderLayout());
+        this.modelViewPanel = new JPanel(new BorderLayout());
         this.modelViewPanel.setMinimumSize(new Dimension(500, 500));
-        this.modelViewPanel.add(graphView.toComponent());
-        this.add(this.modelViewPanel);
-        this.add(this.controlPanel.toComponent());
+        this.modelViewPanel.add(graphView.toComponent(), BorderLayout.CENTER);
+        this.add(this.modelViewPanel, BorderLayout.CENTER);
+        this.add(this.controlPanel.toComponent(), BorderLayout.EAST);
         
         updateUI();
     }
@@ -38,7 +47,7 @@ public class GraphModelComponent extends JPanel implements IInteractiveGraphMode
     public void update(IGraphView graphView) {
         this.modelViewPanel.removeAll();
         graphView.setControlPanel(controlPanel);
-        this.modelViewPanel.add(graphView.toComponent());
+        this.modelViewPanel.add(graphView.toComponent(), BorderLayout.CENTER);
         this.controlPanel.refreshSelectedClasses(new HashSet<>());
         updateUI();
     }
