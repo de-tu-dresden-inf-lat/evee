@@ -15,6 +15,8 @@ public class EdgeLabelPositioner {
 
     public static void initializeLabelsPositions(GraphicGraph graphModel) {
 
+        logger.warn("initializing label positions"); //debug log
+        
         graphModel.edges().map(e -> (GraphicEdge) e)
                 .filter(e -> e.getGroup()!=null)
                 .filter(e -> e.getNode0()!= e.getNode1())
@@ -124,6 +126,7 @@ public class EdgeLabelPositioner {
         }
         return true;
     }
+
     private static void positionLabel(GraphicEdge edge) {
 
         double CurrentOffset = edge.getStyle().getTextOffset().get(1);

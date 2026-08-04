@@ -130,6 +130,12 @@ public class GraphViewGenerator implements IGraphViewService {
                 "text-offset: 0, "+labelDistance+";"+
                 "fill-color: "+fillColor+
                 "text-alignment: "+alignment);
+
+        logger.warn(
+            "edge=" + edge.getId()
+            + " alignment=" + edge.getStyle().getTextAlignment()
+            + " offset=" + edge.getStyle().getTextOffset()
+            ); //debug log
     }
 
     private void createNodes() {
@@ -235,7 +241,13 @@ public class GraphViewGenerator implements IGraphViewService {
     public void doPostProcessing() {
         logger.info("postprocessing is started");
         try {
+
+            logger.warn("in post processing try"); //debug log
+
             Thread.sleep(autoLayoutTimeMs);
+
+            logger.warn("in post processing after sleep"); //debug log
+
             graphModelViewer.disableAutoLayout();
             EdgeLabelPositioner.initializeLabelsPositions(graphModel);
         } catch (InterruptedException e) {
