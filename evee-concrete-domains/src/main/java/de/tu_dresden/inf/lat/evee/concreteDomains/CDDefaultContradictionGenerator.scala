@@ -9,8 +9,8 @@ import org.apache.commons.math3.fraction.BigFraction
 object CDDefaultContradictionGenerator {
   val defaultLCBF: LinearConstraint[BigFraction] = new LinearConstraint[BigFraction](Map.empty, BigFraction.ONE)
   val defaultLCD: LinearConstraint[Double] = new LinearConstraint[Double](Map.empty, 1)
-  val defaultCD2: CD2Contradiction.type = CD2Contradiction
-  val defaultCDMult: CDMultContradiction.type = CDMultContradiction
+  val defaultDiff: DiffContradiction.type = DiffContradiction
+  val defaultMult: MultContradiction.type = MultContradiction
 
   def getDefaultContradiction[T <: CDConstraint](value : T): T = {
     value match {
@@ -18,8 +18,8 @@ object CDDefaultContradictionGenerator {
         if(v.getType.equals(BigFraction.ONE.getClass))
           return defaultLCBF.asInstanceOf[T]
         defaultLCD.asInstanceOf[T]
-      case _: CD2Predicate => defaultCD2.asInstanceOf[T]
-      case _: CDMultPredicate => defaultCDMult.asInstanceOf[T]
+      case _: CD2Predicate => defaultDiff.asInstanceOf[T]
+      case _: CDMultPredicate => defaultMult.asInstanceOf[T]
       case _ => throw CDException("Could not recognise the concrete domain constraint -> " + value)
     }
   }

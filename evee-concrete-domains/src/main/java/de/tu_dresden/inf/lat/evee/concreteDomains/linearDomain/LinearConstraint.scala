@@ -1,5 +1,6 @@
-package de.tu_dresden.inf.lat.evee.concreteDomains
+package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
 import org.semanticweb.owlapi.model.OWLDataProperty
 import org.apache.commons.math3.fraction.BigFraction
 
@@ -38,7 +39,4 @@ case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDC
     }
   }
 
-  /*override def hashCode(): Int = {
-    lhs.toList.map(pair => pair._1.toString().hashCode()+pair._2.hashCode()).sum+rhs.hashCode()
-  }*/
 }

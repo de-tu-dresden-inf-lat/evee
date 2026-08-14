@@ -1,25 +1,28 @@
-package de.tu_dresden.inf.lat.evee.concreteDomains
+package de.tu_dresden.inf.lat.evee.concreteDomains.multDomain
+
+
+import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.OWLDataProperty
 
 /**
- * The ConcreteDomain2 supports:
+ * multiplication domain supports:
  * - equality
  * - greater than
  * - x * q = y
  **/
 
 
-trait CDMultPredicate extends CDConstraint
-trait CDMultUnaryPredicate extends CDMultPredicate
+trait MultConstraint extends CDConstraint
+trait MultUnaryConstraint extends MultConstraint
 
 
 /**
  * property < bound
  */
-case class CDMultLessThan(property: OWLDataProperty, bound: BigFraction)
-  extends CDMultUnaryPredicate {
+case class MultLessThan(property: OWLDataProperty, bound: BigFraction)
+  extends MultUnaryConstraint {
   override def toString() = property + " < " + bound.doubleValue()
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
@@ -30,8 +33,8 @@ case class CDMultLessThan(property: OWLDataProperty, bound: BigFraction)
 /**
  * property = value
  */
-case class CDMultEqual(property: OWLDataProperty, value: BigFraction)
-  extends CDMultUnaryPredicate {
+case class MultEqual(property: OWLDataProperty, value: BigFraction)
+  extends MultUnaryConstraint {
   override def toString() = property + " = " + value.doubleValue()
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
@@ -44,8 +47,8 @@ case class CDMultEqual(property: OWLDataProperty, value: BigFraction)
  *
  * Side condition: factor > 0
  */
-case class CDMultiplication(property1: OWLDataProperty, factor: BigFraction, property2: OWLDataProperty)
-  extends CDMultPredicate {
+case class Multiplication(property1: OWLDataProperty, factor: BigFraction, property2: OWLDataProperty)
+  extends MultConstraint {
 
   if(factor.getNumerator.signum()!=1)
     throw new IllegalArgumentException("Factor has to be larger than 0")
@@ -59,7 +62,7 @@ case class CDMultiplication(property1: OWLDataProperty, factor: BigFraction, pro
   override def isInconsistent: Boolean = property1.equals(property2) && !factor.getNumerator().equals(factor.getDenominator())
 }
 
-object CDMultContradiction extends CDMultPredicate {
+object MultContradiction extends MultConstraint {
   override def toString() = "⊥"
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set.empty

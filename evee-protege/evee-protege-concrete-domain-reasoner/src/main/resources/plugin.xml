@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+<extension id="concreteDomainReasoner" 
+           point="org.protege.editor.owl.inference_reasonerfactory">
+	<name value="eveeCD"/>
+	<class value="de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner.ProtegeCDReasonerFactory"/>
+</extension>
+
+</plugin>

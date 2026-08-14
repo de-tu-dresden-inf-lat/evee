@@ -1,5 +1,6 @@
-package de.tu_dresden.inf.lat.evee.concreteDomains
+package de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
 import org.semanticweb.owlapi.model.OWLDataProperty
 
 /**
@@ -9,15 +10,15 @@ import org.semanticweb.owlapi.model.OWLDataProperty
  * - x + q = y
  **/
 
-trait CD2Predicate extends CDConstraint
-trait CD2UnaryPredicate extends CD2Predicate
+trait DiffConstraint extends CDConstraint
+trait DiffUnaryConstraint extends DiffConstraint
 
 
 /**
  * property > bound
  */
-case class CD2GreaterThan(property: OWLDataProperty, bound: Double)
-  extends CD2UnaryPredicate {
+case class DiffGreaterThan(property: OWLDataProperty, bound: Double)
+  extends DiffUnaryConstraint {
   override def toString() = property + " > " + bound
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
@@ -28,8 +29,8 @@ case class CD2GreaterThan(property: OWLDataProperty, bound: Double)
 /**
  * property = value
  */
-case class CD2Equal(property: OWLDataProperty, value: Double)
-  extends CD2UnaryPredicate {
+case class DiffEqual(property: OWLDataProperty, value: Double)
+  extends DiffUnaryConstraint {
   override def toString() = property + " = " + value
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
@@ -40,8 +41,8 @@ case class CD2Equal(property: OWLDataProperty, value: Double)
 /**
  * property1 + diff = property2
  */
-case class CD2Sum(property1: OWLDataProperty, diff: Double, property2: OWLDataProperty)
-  extends CD2Predicate {
+case class DiffSum(property1: OWLDataProperty, diff: Double, property2: OWLDataProperty)
+  extends DiffConstraint {
   override def toString() = {
     if(diff>=0)
       property1 + " + " + diff + " = " + property2
@@ -54,7 +55,7 @@ case class CD2Sum(property1: OWLDataProperty, diff: Double, property2: OWLDataPr
   override def isInconsistent: Boolean = property1.equals(property2) && !Math.abs(diff).equals(0.0)
 }
 
-object CD2Contradiction extends CD2Predicate {
+object DiffContradiction extends DiffConstraint {
   override def toString() = "⊥"
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set.empty

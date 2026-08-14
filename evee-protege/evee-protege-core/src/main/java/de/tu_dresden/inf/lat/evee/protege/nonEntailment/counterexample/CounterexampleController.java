@@ -99,7 +99,6 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
 
                 graphModel.recomputeGraphView(labelsNum);
                 graphGenerator.doPostProcessing();
-            
             }
         };
 
@@ -185,6 +184,7 @@ public class CounterexampleController implements ICounterexampleGenerationEventL
         graphModel = null;
     }
 
+    
     {
     SwingWorker<Void, Void> postprocessingWorker = new SwingWorker<Void, Void>() {
             @Override
