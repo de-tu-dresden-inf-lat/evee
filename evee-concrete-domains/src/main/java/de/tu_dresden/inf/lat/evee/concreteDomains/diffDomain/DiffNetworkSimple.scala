@@ -20,7 +20,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
   private var inferences = Set[IInference[DiffConstraint]]()
 
 
-  private val nodes = new mutable.HashMap[OWLDataProperty, DiffUnaryPredicate]()
+  private val nodes = new mutable.HashMap[OWLDataProperty, DiffUnaryConstraint]()
   private val edges = new mutable.HashMap[OWLDataProperty,
     mutable.Map[OWLDataProperty,DiffSum]]()
 
@@ -37,9 +37,9 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
     predicates.foreach(p => p match {
       case DiffContradiction => ;
       case DiffGreaterThan(d, _) =>
-        update(d, p.asInstanceOf[DiffUnaryPredicate])
+        update(d, p.asInstanceOf[DiffUnaryConstraint])
       case DiffEqual(d, _) =>
-        update(d, p.asInstanceOf[DiffUnaryPredicate])
+        update(d, p.asInstanceOf[DiffUnaryConstraint])
       case DiffSum(d1, _, d2) =>
         update(d1, d2, p.asInstanceOf[DiffSum])
     })
@@ -90,7 +90,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
                 val newPred = DiffSum(n1, (v2 - v1), n2)
                 update(n1,n2, newPred)
                 derived += newPred
-                inferences += new Inference(newPred, CD2Rules.RULE_DIFFERENCE_FROM_CONSTANTS, List(p1,p2).asJava)
+                inferences += new Inference(newPred, DiffRules.RULE_DIFFERENCE_FROM_CONSTANTS, List(p1,p2).asJava)
               case _: DiffGreaterThan => ;
             }))
         case _: DiffGreaterThan => ;
@@ -157,9 +157,9 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
       pred1.diff + pred2.diff,
       pred2.property2)
 
-  private def propagate(unary1: DiffUnaryPredicate,
+  private def propagate(unary1: DiffUnaryConstraint,
                 predicate: DiffSum
-               ): DiffUnaryPredicate =
+               ): DiffUnaryConstraint =
     unary1 match {
       case DiffEqual(property1, value1) =>
         DiffEqual(predicate.property2, value1 + predicate.diff)
@@ -168,7 +168,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
         DiffGreaterThan(predicate.property2, value1 + predicate.diff)
     }
 
-  private def update(d: OWLDataProperty, predicate: DiffUnaryPredicate): Unit = {
+  private def update(d: OWLDataProperty, predicate: DiffUnaryConstraint): Unit = {
     if(!nodes.contains(d))
       nodes.put(d,predicate)
     else (nodes(d), predicate) match {
@@ -207,12 +207,12 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
     }
   }
 
-  private var negativeNodes: mutable.Map[OWLDataProperty, mutable.Set[DiffUnaryPredicate]] = _
+  private var negativeNodes: mutable.Map[OWLDataProperty, mutable.Set[DiffUnaryConstraint]] = _
   private var negativeEdges: mutable.Map[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[DiffSum]]] = _
 
   def generateSolution(negativePredicates: Iterable[DiffConstraint]): Map[OWLDataProperty, Double] = {
     // "complete" the negative constraints w.r.t. the positive edges in the constraint network
-    negativeNodes = new mutable.HashMap[OWLDataProperty, mutable.Set[DiffUnaryPredicate]]()
+    negativeNodes = new mutable.HashMap[OWLDataProperty, mutable.Set[DiffUnaryConstraint]]()
     negativeEdges = new mutable.HashMap[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[DiffSum]]]()
     fillNegativeGraphAndMirror(negativePredicates)
     applyPositiveEdgesToNegativeGraph()
@@ -245,9 +245,9 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
     }
   }
 
-  private def updateNegativeNode(x: OWLDataProperty, p: DiffUnaryPredicate): Unit = {
+  private def updateNegativeNode(x: OWLDataProperty, p: DiffUnaryConstraint): Unit = {
     if (!negativeNodes.contains(x))
-      negativeNodes.put(x, new mutable.HashSet[DiffUnaryPredicate]())
+      negativeNodes.put(x, new mutable.HashSet[DiffUnaryConstraint]())
     negativeNodes(x).add(p)
   }
 

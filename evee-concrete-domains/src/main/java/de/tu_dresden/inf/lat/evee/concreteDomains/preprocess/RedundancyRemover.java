@@ -1,8 +1,8 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.preprocess;
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint;
-import de.tu_dresden.inf.lat.evee.data.extendedDataStructure.ExtendedOntology;
-import de.tu_dresden.inf.lat.evee.tools.Tools;
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.ExtendedOntology;
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import scala.collection.JavaConverters;

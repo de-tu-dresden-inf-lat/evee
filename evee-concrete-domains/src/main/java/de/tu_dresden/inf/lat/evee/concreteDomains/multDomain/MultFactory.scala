@@ -6,7 +6,7 @@ import org.semanticweb.owlapi.model.OWLOntology
 object MultFactory extends CDFactory[MultConstraint] {
 
   override def getParser(owlOntology: OWLOntology): CDParser[MultConstraint] =
-    new MultParser(owlOntology)
+    new MultConstraintParser(owlOntology)
 
   override def getReasoner(): CDReasoner[MultConstraint] =
     new MultReasoner()

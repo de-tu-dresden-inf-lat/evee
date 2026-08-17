@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.ExtendedOntology
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
 
@@ -38,19 +39,19 @@ object ExtendedOntologyParser {
 
     val constraints = constraintParser.parse(constraintsFile)
 
-    val extOnt = extendedDataStructure.ExtendedOntology(ontology, constraints)
+    val extOnt = ExtendedOntology(ontology, constraints)
 
     RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)
   }
 
-  def cd2Parse(ontologyFile: File, constraintsFile: File): ExtendedOntology[CD2Predicate] = {
+  def diffParse(ontologyFile: File, constraintsFile: File): ExtendedOntology[DiffConstraint] = {
     val ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyFile)
 
-    val constraintParser = new CD2Parser(ontology)
+    val constraintParser = new DiffConstraintParser(ontology)
 
     val constraints = constraintParser.parse(constraintsFile)
 
-    val extOnt = extendedDataStructure.ExtendedOntology(ontology, constraints)
+    val extOnt = ExtendedOntology(ontology, constraints)
 
     RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)
   }

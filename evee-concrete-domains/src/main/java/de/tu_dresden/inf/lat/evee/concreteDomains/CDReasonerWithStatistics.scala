@@ -1,7 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
-import  de.tu_dresden.inf.lat.evee.data.cdGeneral.ReasoningTaskTracker
+import  de.tu_dresden.inf.lat.evee.concreteDomains.data.cdGeneral.ReasoningTaskTracker
 
 abstract class CDReasonerWithStatistics[CD_CONSTRAINT <: CDConstraint] extends CDReasoner[CD_CONSTRAINT] {
 

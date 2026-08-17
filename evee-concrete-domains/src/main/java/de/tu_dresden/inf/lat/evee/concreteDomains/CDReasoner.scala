@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
 import de.tu_dresden.inf.lat.evee.nonEntailment.interfaces.INonEntailmentExplainer
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProof, IProofGenerator}

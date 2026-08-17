@@ -160,9 +160,9 @@ import scala.collection.mutable
       pred1.diff + pred2.diff,
       pred2.property2)
 
-  private def propagate(unary1: DiffUnaryPredicate,
+  private def propagate(unary1: DiffUnaryConstraint,
                 predicate: DiffSum
-               ): DiffUnaryPredicate =
+               ): DiffUnaryConstraint =
     unary1 match {
       case DiffEqual(property1, value1) =>
         DiffEqual(predicate.property2, value1 + predicate.diff)
@@ -171,7 +171,7 @@ import scala.collection.mutable
         DiffGreaterThan(predicate.property2, value1 + predicate.diff)
     }
 
-  private def update(d: OWLDataProperty, predicate: DiffUnaryPredicate): Unit = {
+  private def update(d: OWLDataProperty, predicate: DiffUnaryConstraint): Unit = {
 
     nodes.getOrElse(d, Set()).foreach { node =>
       (node, predicate) match {
@@ -210,12 +210,12 @@ import scala.collection.mutable
     }
   }
 
-  private var negativeNodes: mutable.Map[OWLDataProperty, mutable.Set[DiffUnaryPredicate]] = _
+  private var negativeNodes: mutable.Map[OWLDataProperty, mutable.Set[DiffUnaryConstraint]] = _
   private var negativeEdges: mutable.Map[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[DiffSum]]] = _
 
-  def generateSolution(negativePredicates: Iterable[DiffPredicate]): Map[OWLDataProperty, Double] = {
+  def generateSolution(negativePredicates: Iterable[DiffConstraint]): Map[OWLDataProperty, Double] = {
     // "complete" the negative constraints w.r.t. the positive edges in the constraint network
-    negativeNodes = new mutable.HashMap[OWLDataProperty, mutable.Set[DiffUnaryPredicate]]()
+    negativeNodes = new mutable.HashMap[OWLDataProperty, mutable.Set[DiffUnaryConstraint]]()
     negativeEdges = new mutable.HashMap[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[DiffSum]]]()
     fillNegativeGraphAndMirror(negativePredicates)
     applyPositiveEdgesToNegativeGraph()
@@ -236,7 +236,7 @@ import scala.collection.mutable
     return solution
   }
 
-  private def fillNegativeGraphAndMirror(negative: Iterable[DiffPredicate]): Unit = {
+  private def fillNegativeGraphAndMirror(negative: Iterable[DiffConstraint]): Unit = {
     negative.foreach {
       case DiffContradiction => ;
       case p@DiffGreaterThan(x, _) => updateNegativeNode(x, p)
@@ -248,9 +248,9 @@ import scala.collection.mutable
     }
   }
 
-  private def updateNegativeNode(x: OWLDataProperty, p: DiffUnaryPredicate): Unit = {
+  private def updateNegativeNode(x: OWLDataProperty, p: DiffUnaryConstraint): Unit = {
     if (!negativeNodes.contains(x))
-      negativeNodes.put(x, new mutable.HashSet[DiffUnaryPredicate]())
+      negativeNodes.put(x, new mutable.HashSet[DiffUnaryConstraint]())
     negativeNodes(x).add(p)
   }
 

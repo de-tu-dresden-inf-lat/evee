@@ -1,8 +1,8 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDReasonerWithStatistics
-import  de.tu_dresden.inf.lat.evee.data.cdGeneral.ReasoningTaskTracker
-import  de.tu_dresden.inf.lat.evee.data.names.ConcreteDomainName
+import  de.tu_dresden.inf.lat.evee.concreteDomains.data.cdGeneral.ReasoningTaskTracker
+import  de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools
 

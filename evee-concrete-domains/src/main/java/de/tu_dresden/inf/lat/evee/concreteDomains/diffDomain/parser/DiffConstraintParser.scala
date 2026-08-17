@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.parser
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.{DiffConstraint, DiffEqual, DiffGreaterThan, DiffSum}
 import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDParser
 

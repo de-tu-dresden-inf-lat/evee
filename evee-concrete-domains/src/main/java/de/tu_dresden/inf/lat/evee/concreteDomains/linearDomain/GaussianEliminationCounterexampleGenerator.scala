@@ -1,9 +1,9 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.LinearConstraint
+import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException
 
-import de.tu_dresden.lat.concreteDomains.CDCounterexampleGenerator
+import de.tu_dresden.inf.lat.evee.concreteDomains.CDCounterexampleGenerator
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools
 

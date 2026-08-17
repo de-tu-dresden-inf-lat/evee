@@ -1,6 +1,9 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.CDException
+import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
+import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.{MultConstraint, MultContradiction}
+import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.{DiffConstraint, DiffContradiction}
 import org.apache.commons.math3.fraction.BigFraction
 
 /**
@@ -18,8 +21,8 @@ object CDDefaultContradictionGenerator {
         if(v.getType.equals(BigFraction.ONE.getClass))
           return defaultLCBF.asInstanceOf[T]
         defaultLCD.asInstanceOf[T]
-      case _: CD2Predicate => defaultDiff.asInstanceOf[T]
-      case _: CDMultPredicate => defaultMult.asInstanceOf[T]
+      case _: DiffConstraint => defaultDiff.asInstanceOf[T]
+      case _: MultConstraint => defaultMult.asInstanceOf[T]
       case _ => throw CDException("Could not recognise the concrete domain constraint -> " + value)
     }
   }

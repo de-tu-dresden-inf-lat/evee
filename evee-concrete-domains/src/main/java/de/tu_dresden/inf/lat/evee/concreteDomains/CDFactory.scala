@@ -1,9 +1,8 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
-import de.tu_dresden.inf.lat.evee.data.extendedDataStructure.ExtendedOntology
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.ExtendedOntology
 
-import de.tu_dresden.inf.lat.evee.elkCD.ELKCDReasoner
+import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDReasoner
 
 import org.semanticweb.owlapi.model.OWLOntology
 

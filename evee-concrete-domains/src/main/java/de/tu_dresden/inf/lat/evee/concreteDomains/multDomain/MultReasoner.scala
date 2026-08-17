@@ -2,14 +2,14 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.multDomain
 
 import de.tu_dresden.inf.lat.evee.proofs.data.{Inference, Proof}
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof
-import de.tu_dresden.inf.lat.evee.concreteDomains{ConstraintNetwork, ConstraintPropagationReasoner}
+import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintNetwork, ConstraintPropagationReasoner}
 
-import  de.tu_dresden.inf.lat.evee.data.cdGeneral.ReasoningTaskTracker
-import  de.tu_dresden.inf.lat.evee.data.names.ConcreteDomainName
+import  de.tu_dresden.inf.lat.evee.concreteDomains.data.cdGeneral.ReasoningTaskTracker
+import  de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools
 
-import de.tu_dresden.lat.z3.Z3Checker
+//import de.tu_dresden.lat.z3.Z3Checker
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.OWLDataProperty
@@ -94,9 +94,6 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
     rTT.reasoningTaskType = "Consistency"
     rTT.cDReasoningTime = time
 
-    if (Tools.isZ3CheckEnabled)
-      throw new AssertionError("Not implemented!")
-
     res
 
   }
@@ -123,9 +120,9 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
     rTT.reasoningTaskType = "Implication"
     rTT.cDReasoningTime = time
 
-    if (Tools.isZ3CheckEnabled)
-      Z3Checker.checkImplication(res, JavaConverters.asJavaCollection(premises), conclusion, ConcreteDomainName
-        .QGreater, rTT)
+    // if (Tools.isZ3CheckEnabled)
+    //   Z3Checker.checkImplication(res, JavaConverters.asJavaCollection(premises), conclusion, ConcreteDomainName
+    //     .QGreater, rTT)
 
     res
   }

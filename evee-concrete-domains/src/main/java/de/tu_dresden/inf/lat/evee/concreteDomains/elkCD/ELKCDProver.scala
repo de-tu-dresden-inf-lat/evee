@@ -390,9 +390,9 @@ class ELKCDProver[CD_CONSTRAINT <: CDConstraint](elkCDReasoner: ELKCDReasoner[CD
    * @param axiom Final conclusion
    * @return
    */
-  override def getProof(axiom: ExtendedAxiom[CD_CONSTRAINT]): IProof[ExtendedAxiom[CD_CONSTRAINT]] = {
-    getProof(axiom, Optional.empty())
-  }
+  // override def getProof(axiom: ExtendedAxiom[CD_CONSTRAINT]): IProof[ExtendedAxiom[CD_CONSTRAINT]] = {
+  //   getProof(axiom, Optional.empty())
+  // }
 
   def getProofFromOWLDS(owlDS: IProof[OWLAxiom]): IProof[ExtendedAxiom[CD_CONSTRAINT]] = {
 

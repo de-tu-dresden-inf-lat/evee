@@ -1,12 +1,11 @@
-package de.tu_dresden.inf.lat.concreteDomains
+package de.tu_dresden.inf.lat.evee.concreteDomains
 
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException
 import de.tu_dresden.inf.lat.evee.proofs.data.{Inference, Proof}
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IInference, IProof}
-import de.tu_dresden.inf.lat.concreteDomains.{CDConstraint,CDCounterexampleGenerator, CDProofGenerator, CDReasoner, CDReasonerWithStatistics}
 
-import  de.tu_dresden.inf.lat.evee.data.cdGeneral.ReasoningTaskTracker
-import  de.tu_dresden.inf.lat.evee.data.names.ConcreteDomainName
+import  de.tu_dresden.inf.lat.evee.concreteDomains.data.cdGeneral.ReasoningTaskTracker
+import  de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools
 

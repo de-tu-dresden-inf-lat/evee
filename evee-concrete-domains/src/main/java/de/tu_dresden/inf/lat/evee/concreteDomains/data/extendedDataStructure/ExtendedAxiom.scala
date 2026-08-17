@@ -1,5 +1,7 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.{CDConstraint, ConstraintNamesFormatter}
+
 import de.tu_dresden.inf.lat.evee.proofs.data.AbstractExtendedAxiom
 
 import de.tu_dresden.inf.lat.prettyPrinting.formatting.SimpleOWLFormatter

@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.LinearConstraint
+import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDParser
 
