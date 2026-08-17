@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.tools;
 
-import  de.tu_dresden.inf.lat.evee.data.names.PropertyName;
+import  de.tu_dresden.inf.lat.evee.concreteDomains.data.names.PropertyName;
 
 import com.google.common.collect.Sets;
 import org.semanticweb.owlapi.model.*;

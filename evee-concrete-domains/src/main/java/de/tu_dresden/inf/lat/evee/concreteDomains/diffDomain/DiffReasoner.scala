@@ -10,7 +10,7 @@ import de.tu_dresden.inf.lat.evee.data.names.ConcreteDomainName
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools
 
-import de.tu_dresden.lat.z3.Z3Checker
+//import de.tu_dresden.lat.z3.Z3Checker
 
 import org.semanticweb.owlapi.model.OWLDataProperty
 
@@ -101,8 +101,8 @@ class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,Double] 
     rTT.reasoningTaskType = "Consistency"
     rTT.cDReasoningTime = time
 
-    if (Tools.isZ3CheckEnabled)
-      Z3Checker.checkConsistency(res, JavaConverters.asJavaCollection(predicates), ConcreteDomainName.QGreater, rTT)
+    // if (Tools.isZ3CheckEnabled)
+    //   Z3Checker.checkConsistency(res, JavaConverters.asJavaCollection(predicates), ConcreteDomainName.QGreater, rTT)
 
     res
   }
@@ -129,9 +129,9 @@ class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,Double] 
     rTT.reasoningTaskType = "Implication"
     rTT.cDReasoningTime = time
 
-    if (Tools.isZ3CheckEnabled)
-      Z3Checker.checkImplication(res, JavaConverters.asJavaCollection(premises), conclusion, ConcreteDomainName
-        .QGreater, rTT)
+    // if (Tools.isZ3CheckEnabled)
+    //   Z3Checker.checkImplication(res, JavaConverters.asJavaCollection(premises), conclusion, ConcreteDomainName
+    //     .QGreater, rTT)
 
     res
   }

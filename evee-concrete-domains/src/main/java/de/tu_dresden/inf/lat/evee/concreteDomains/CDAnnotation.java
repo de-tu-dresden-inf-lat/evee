@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 
-public class cdAnnotation {
+public class CDAnnotation {
 
     OWLOntology ontology;
     OWLSubClassOfAxiom subAxiom;
@@ -11,7 +11,7 @@ public class cdAnnotation {
     OWLOntologyManager man;
     OWLDataFactory factory;
 
-    public cdAnnotation(OWLOntology ontology, OWLSubClassOfAxiom axiom, OWLClassExpression classExpression) {
+    public CDAnnotation(OWLOntology ontology, OWLSubClassOfAxiom axiom, OWLClassExpression classExpression) {
         this.ontology = ontology;
         this.subAxiom = axiom;
         this.classExpression = classExpression;

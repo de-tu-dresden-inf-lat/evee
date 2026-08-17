@@ -44,7 +44,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <scala.version>2.12.17</scala.version>
         <LatScalaDlTools.Version>0.4.1</LatScalaDlTools.Version>
-        <LETHE.Version>0.8.1</LETHE.Version>
+        <LETHE.Version>0.8.2</LETHE.Version>
         <skipCompilation>false</skipCompilation>
         <skipTests>true</skipTests>
         <excludeResourcesInSourceJar>true</excludeResourcesInSourceJar>

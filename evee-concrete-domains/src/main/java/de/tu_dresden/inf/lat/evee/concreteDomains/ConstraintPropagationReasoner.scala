@@ -10,7 +10,7 @@ import  de.tu_dresden.inf.lat.evee.data.names.ConcreteDomainName
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools
 
-import de.tu_dresden.lat.z3.Z3Checker
+//import de.tu_dresden.lat.z3.Z3Checker
 
 import org.semanticweb.owlapi.model.OWLDataProperty
 

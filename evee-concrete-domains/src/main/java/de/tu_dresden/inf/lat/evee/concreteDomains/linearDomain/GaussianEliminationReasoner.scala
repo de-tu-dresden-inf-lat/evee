@@ -6,7 +6,7 @@ import  de.tu_dresden.inf.lat.evee.data.names.ConcreteDomainName
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools
 
-import de.tu_dresden.lat.z3.Z3Checker
+//import de.tu_dresden.lat.z3.Z3Checker
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.apache.commons.math3.linear.FieldVector
@@ -43,9 +43,9 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     rTT.reasoningTaskType = "Consistency"
     rTT.cDReasoningTime = time
 
-    if (Tools.isZ3CheckEnabled)
-      Z3Checker.checkConsistency(res, JavaConverters.asJavaCollection(predicates), ConcreteDomainName
-        .LinearConstraints, rTT)
+    // if (Tools.isZ3CheckEnabled)
+    //   Z3Checker.checkConsistency(res, JavaConverters.asJavaCollection(predicates), ConcreteDomainName
+    //     .LinearConstraints, rTT)
 
     res
   }
@@ -64,9 +64,9 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     rTT.reasoningTaskType = "Implication"
     rTT.cDReasoningTime = time
 
-    if (Tools.isZ3CheckEnabled)
-      Z3Checker.checkImplication(res, JavaConverters.asJavaCollection(premises), conclusion, ConcreteDomainName
-        .LinearConstraints, rTT)
+    // if (Tools.isZ3CheckEnabled)
+    //   Z3Checker.checkImplication(res, JavaConverters.asJavaCollection(premises), conclusion, ConcreteDomainName
+    //     .LinearConstraints, rTT)
 
     res
   }

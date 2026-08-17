@@ -728,7 +728,7 @@ public class LetheProofGenerator extends AbstractSimpleOWLProofGenerator {
     /**
      * Convert a set of LETHE clauses to axioms.
      */
-    private Set<OWLSubClassOfAxiom> letheClausesToOwlAxioms(OWLOntology currentJustification, Set<ConceptClause> letheClauses) {
+    private Set<OWLSubClassOfAxiom> letheClausesToOwlAxioms(OWLOntology currentJustification, Set<Expression> letheClauses) {
         Set<OWLSubClassOfAxiom> axioms = new HashSet<>();
         letheClauses.forEach(inputClause -> axioms.add((OWLSubClassOfAxiom) letheClauseToOwlAxiom(currentJustification, inputClause)));
         return axioms;
