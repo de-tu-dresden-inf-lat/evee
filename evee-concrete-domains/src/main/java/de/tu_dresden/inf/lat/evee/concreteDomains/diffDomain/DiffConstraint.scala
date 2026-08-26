@@ -4,7 +4,7 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
 import org.semanticweb.owlapi.model.OWLDataProperty
 
 /**
- * The ConcreteDomain2 supports:
+ * The domain D_Q,diff supports:
  * - equality
  * - greater than
  * - x + q = y

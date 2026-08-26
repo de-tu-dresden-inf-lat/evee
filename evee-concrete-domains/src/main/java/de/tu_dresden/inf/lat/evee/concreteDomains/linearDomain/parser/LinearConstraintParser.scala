@@ -2,13 +2,15 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.ParsingException
-import de.tu_dresden.inf.lat.evee.concreteDomains.CDParser
+import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.{IRI, OWLClass, OWLDataProperty, OWLOntology}
 import org.semanticweb.owlapi.util.DefaultPrefixManager
 
 import java.io.{BufferedReader, File, FileReader}
+import org.semanticweb.owlapi.model.OWLAnnotationSubject
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom
 
 /** **
  * Format:
@@ -30,110 +32,49 @@ extends LinearConstraintParser[Double](
   _.toDouble
 )
 
-class LinearConstraintParser[T](ontology: OWLOntology, numberParser: String => T) extends CDParser[LinearConstraint[T]] {
-
-  val COMMENT = "#"
-  val PREFIX = "PREFIX"
+class LinearConstraintParser[T](ontology: OWLOntology, numberParser: String => T) extends ConstraintParser[LinearConstraint[T]] {
 
   val manager = ontology.getOWLOntologyManager
   val factory = manager.getOWLDataFactory
 
-  val prefixManager = new DefaultPrefixManager()
-  //val manchesterParser =
-  //  new ManchesterOWLSyntaxParserImpl(new OWLAPIConfigProvider, factory)
-
-  override def parse(file: File): Map[OWLClass, LinearConstraint[T]] = {
-    parse(new BufferedReader(new FileReader(file)))
-  }
-
-  def parse(reader: BufferedReader): Map[OWLClass, LinearConstraint[T]] = {
-    parse(reader.lines())
-  }
-
-  val reComment = raw"#.*".r
-  val rePrefix = (PREFIX+raw"\s*(\w*):\s+<?([^>]+)>?").r
-
-  val strReIRI = raw"(<[^>]+>|[^\s]+)"
-  val strReNumber = raw"(-?[0-9]+(?:\.[0-9]*)?)"
-
-  val reClass = (strReIRI + raw"\s*:").r
   val reCoefficient = (strReNumber + raw"\s*\*\s*" + strReIRI).r
   val reConstant = (raw"=\s*" + strReNumber).r
 
-  def parse(lines: java.util.stream.Stream[String]): Map[OWLClass,LinearConstraint[T]] = {
+  def toConstraintMap(constraints: Map[OWLAnnotationSubject, String]): Map[OWLClass, LinearConstraint[T]] = {
 
-    var currentClass: Option[OWLClass] = None
+   constraints.map{ case (subject, constraint) => {
 
-    var currentCoefficients = Map[OWLDataProperty, T]()
+      if(!subject.isIRI())
+         throw new ParsingException(s"$subject could not be parsed to OWLClass: not a valid IRI")
 
-    var constraints = Map[OWLClass, LinearConstraint[T]]()
+      val owlClass = factory.getOWLClass(subject.asInstanceOf[IRI])
+      owlClass -> toConstraint(constraint)
 
-    var lineNr = 0
-
-    lines.forEach { line =>
-
-      lineNr += 1
-
-      line.trim match {
-
-        case "" => ;
-
-        case reComment(_*) => ;
-
-        case rePrefix(prefix, iri) =>
-          prefixManager.setPrefix(prefix, iri)
-
-        case reClass(classString) =>
-          if (!currentClass.isEmpty)
-            throw new ParsingException("Line " + lineNr + ": Did not finish parsing class " + currentClass.get)
-
-          currentClass = Some(
-            factory.getOWLClass(
-              prefixManager
-                .getIRI(
-                  classString)))
-
-          if (constraints.contains(currentClass.get))
-            throw new ParsingException("Line " + lineNr + ": " + currentClass + " has already a constraint assigned!")
-
-        case reCoefficient(num, dataIRI, _*) =>
-          if (currentClass.isEmpty)
-            throw new ParsingException("Line " + lineNr + ": coefficient before class: " + line)
-          val prp = factory.getOWLDataProperty(prefixManager.getIRI(dataIRI))
-          if (currentCoefficients.contains(prp))
-            throw new ParsingException(
-              "Line " + lineNr + ": two coefficients for same data property: " + prp + "\n" +
-                "has already assigned: " + currentCoefficients(prp) + "\n" +
-                "line: " + line)
-          currentCoefficients += (prp -> numberParser(num))
-
-        case reConstant(number) =>
-          if (currentClass.isEmpty)
-            throw new ParsingException("Line " + lineNr + ": constant before class: " + line)
-          else if (currentCoefficients.isEmpty)
-            throw new ParsingException("Line " + lineNr + ": constraint without coefficients: " + line)
-
-          val constant = numberParser(number)
-
-          constraints +=
-            (currentClass.get
-              -> LinearConstraint(currentCoefficients, constant))
-
-          // tidy up
-          currentClass = None
-          currentCoefficients = Map()
-
-        case _ =>
-          throw new ParsingException("Line "+lineNr+": unexpected line: '"+line+"'")
-      }
-
-    }
-
-    constraints
+    }}.toMap[OWLClass, LinearConstraint[T]]
   }
 
-    def getIRI(str: String): IRI =
-      prefixManager.getIRI(str)
+  def toConstraint(constraintStr: String): LinearConstraint[T] = {
+    val equation = constraintStr.split("=")
+    if(equation.length != 2)
+      throw new ParsingException(s"could not parse constraint $constraintStr")
 
+      val rhs = numberParser(equation(1))
+      
+      val lhs = equation(0).split("(?=[+-])").map{
+        summand => summand match {
+          case reCoefficient(coef, prop) =>
+              factory.getOWLDataProperty(getIRI(prop)) -> numberParser(coef)
+          case _ => 
+            throw new ParsingException(s"could not parse constraint $constraintStr")
+        }
+      }.toMap[OWLDataProperty, T]
 
+    LinearConstraint(lhs, rhs)
   }
+  
+  def toAnntoation(constraint: CDConstraint): OWLAnnotationAssertionAxiom = {
+    return null
+    //TODO: implement
+  }
+
+}

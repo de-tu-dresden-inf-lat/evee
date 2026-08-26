@@ -1,59 +1,88 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.ExtendedOntology
+import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffConstraint
-import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
-
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.parser.DiffConstraintParser
-import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser.LinearConstraintParser
+import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
+import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser.{DoubleLinearConstraintParser,LinearConstraintParser}
+import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.parser.MultConstraintParser
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure._
-  
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.{CDAnnotationNames, ConcreteDomainName}
 import de.tu_dresden.inf.lat.evee.concreteDomains.preprocess.RedundancyRemover
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.apibinding.OWLManager
+import org.semanticweb.owlapi.model.IRI
+import org.semanticweb.owlapi.model.AxiomType;
+
+import scala.collection.JavaConverters._
+
 
 import java.io.File
+import org.semanticweb.owlapi.model.OWLOntology
+import org.semanticweb.owlapi.model.OWLAnnotationSubject
 
 object ExtendedOntologyParser {
 
-  def doubleParse(ontologyFile: File, constraintsFile: File): ExtendedOntology[LinearConstraint[Double]] =
-    parse(ontologyFile, constraintsFile, _.toDouble)
+  val CONCRETE_DOMAIN_ANNOTATION_PROP_IRI: IRI = IRI.create(CDAnnotationNames.CONCRETE_DOMAIN_ANNOTATION_PROP)
+  val CONSTRAINT_ANNOTATION_PROP_IRI: IRI = IRI.create(CDAnnotationNames.CONSTRAINT_ANNOTATION_PROP)
 
-  def bigParse(s: String): BigFraction = {
-    val d = s.toDouble
-    if (d == 0d)
-      BigFraction.ZERO
-    else
-      new BigFraction(d)
+
+  /**
+   * parses an OWLOntology containing concrete domain constraints as annotations 
+   * into ExtendedOntology by parsing these Annotation into a Constraint Map
+  **/
+  def toExtendedOntology(ontology: OWLOntology): ExtendedOntology[CDConstraint] = {
+
+      //TODO: behaviour if domainStr is "" (now: exception) -> try/catch here??
+    val domain = getConcreteDomainName(ontology)
+
+    val constraintParser: ConstraintParser[CDConstraint] = domain match {
+      case ConcreteDomainName.QDiff   => new DiffConstraintParser(ontology)
+      case ConcreteDomainName.QMult   => new MultConstraintParser(ontology)
+      case ConcreteDomainName.QLinear  => new DoubleLinearConstraintParser(ontology)
+    }
+
+    val constraints = constraintParser.toConstraintMap(getConstraints(ontology))
+
+    val extOnt = ExtendedOntology(ontology, domain, constraints)
+
+    RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)  //TODO: why needed???
   }
 
-  def bigParse(ontologyFile: File, constraintsFile: File): ExtendedOntology[LinearConstraint[BigFraction]] = {
-    parse(ontologyFile, constraintsFile, bigParse)
+  /**
+   * parses an ExtendedOntology into an OWLOntology by translating
+   *  the constraints into OWLANnotations of the respective OWLClass
+  **/
+  def toOWLOntology(extOntology: ExtendedOntology[CDConstraint]): OWLOntology = {
+    return null //TODO
   }
 
-  def parse[T](ontologyFile: File, constraintsFile: File, numberParser: String => T): ExtendedOntology[LinearConstraint[T]] = {
-    val ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyFile)
 
-    val constraintParser = new LinearConstraintParser(ontology, numberParser)
-
-    val constraints = constraintParser.parse(constraintsFile)
-
-    val extOnt = ExtendedOntology(ontology, constraints)
-
-    RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)
+  def getConcreteDomainName(ontology: OWLOntology): ConcreteDomainName = {
+    val domainStr =   
+        ontology.getAxioms(AxiomType.ANNOTATION_ASSERTION).asScala
+                    .find(_.getProperty().getIRI() == CONCRETE_DOMAIN_ANNOTATION_PROP_IRI)
+                        .map(_.getValue)
+                          .flatMap(x => Option(x.asLiteral().orElse(null)))
+                            .map(_.getLiteral)
+                              .getOrElse("")
+    
+    ConcreteDomainName.getConcreteDomainName(domainStr)  
   }
 
-  def diffParse(ontologyFile: File, constraintsFile: File): ExtendedOntology[DiffConstraint] = {
-    val ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(ontologyFile)
+  def getConstraints(ontology: OWLOntology): Map[OWLAnnotationSubject,String] = {
+    ontology.getAxioms(AxiomType.ANNOTATION_ASSERTION).asScala
+      .filter(_.getProperty.getIRI == CONSTRAINT_ANNOTATION_PROP_IRI)
+        .flatMap { axiom =>
+            val literal = axiom.getValue.asLiteral()
 
-    val constraintParser = new DiffConstraintParser(ontology)
-
-    val constraints = constraintParser.parse(constraintsFile)
-
-    val extOnt = ExtendedOntology(ontology, constraints)
-
-    RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)
+            if (literal.isPresent)
+              Some(axiom.getSubject -> literal.get.getLiteral)
+            else
+              None
+          }.toMap
   }
+
 
 }

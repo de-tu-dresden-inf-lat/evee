@@ -41,7 +41,7 @@ public class RedundancyRemover{
 
         Set<OWLAxiom> nonLogical = extOnt.ontology().getAxioms();
         nonLogical.removeAll(extOnt.ontology().getLogicalAxioms());
-        owlManager.addAxioms(resOnt, nonLogical);
+        owlManager.addAxioms(resOnt, nonLogical); //TODO OWL4/5 thing
 
         for( OWLAxiom x : extOnt.ontology().getLogicalAxioms()){
             tmp = ar.visit(Collections.singletonList(x));
@@ -52,7 +52,7 @@ public class RedundancyRemover{
                 owlManager.addAxiom(resOnt, tmp.get(0));
         }
 
-        return new ExtendedOntology<>(resOnt, Tools.toScalaImmutableMap(newExtOntMap));
+        return new ExtendedOntology<>(resOnt, extOnt.concreteDomain(), Tools.toScalaImmutableMap(newExtOntMap));
     }
 
     private <CD_CONSTRAINT extends CDConstraint> void fillMaps(OWLObjectMap owlObjMap,

@@ -35,7 +35,7 @@ trait Reasoner {
   def classify(): mutable.MultiMap[OWLEntity,OWLClass]
 }
 
-class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](extendedOntology: ExtendedOntology[CD_CONSTRAINT],
+class ELKCDReasoner[+CD_CONSTRAINT <: CDConstraint](extendedOntology: ExtendedOntology[CD_CONSTRAINT],
                                                    cdReasoner: CDReasoner[CD_CONSTRAINT]) extends ReasonerWithStatistics {
 
   val factory = extendedOntology.ontology.getOWLOntologyManager.getOWLDataFactory()

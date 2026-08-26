@@ -5,7 +5,7 @@ import org.semanticweb.owlapi.model.OWLDataProperty
 import org.apache.commons.math3.fraction.BigFraction
 
 /**
- * This is another concrete domain in which every constraint is a linear constraint
+ * This is another concrete domain in which every constraint is a linear equation
  */
 
 case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDConstraint {

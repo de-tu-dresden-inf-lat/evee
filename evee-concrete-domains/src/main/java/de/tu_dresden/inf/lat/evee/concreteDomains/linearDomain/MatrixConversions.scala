@@ -1,7 +1,5 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
-
 import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.linear.{Array2DRowRealMatrix, ArrayFieldVector, ArrayRealVector, FieldVector, RealMatrix, RealVector}
 import org.apache.commons.math3.fraction.BigFraction

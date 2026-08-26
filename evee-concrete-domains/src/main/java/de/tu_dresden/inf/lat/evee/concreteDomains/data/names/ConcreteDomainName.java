@@ -4,7 +4,8 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.data.names;
  *
  */
 public enum ConcreteDomainName {
-	LinearConstraints, QGreater;
+	//LinearConstraints, QGreater;
+	QDiff, QMult, QLinear;
 	public static ConcreteDomainName getConcreteDomainName(String str) {
 		ConcreteDomainName result = parseArg(str);
 		if (result != null)
@@ -18,11 +19,14 @@ public enum ConcreteDomainName {
 	}
 
 	private static ConcreteDomainName parseArg(String str) {
-		if (str.equalsIgnoreCase("linearconstraints"))
-			return ConcreteDomainName.LinearConstraints;
+		if (str.equalsIgnoreCase("qDiff"))
+			return ConcreteDomainName.QDiff;
 
-		if (str.equalsIgnoreCase("qgreater"))
-			return ConcreteDomainName.QGreater;
+		if (str.equalsIgnoreCase("qMult"))
+			return ConcreteDomainName.QMult;
+
+		if (str.equalsIgnoreCase("qLinear"))
+			return ConcreteDomainName.QLinear;
 
 		return null;
 	}
