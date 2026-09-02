@@ -59,22 +59,12 @@ public class GraphModelView implements IGraphView {
         }
 
         JFXPanel panel = new JFXPanel();
-        CountDownLatch latch = new CountDownLatch(1);
 
         Platform.runLater(() -> {
             panel.setScene(new Scene((Parent) view));
             logger.info("graph scene set");
-            
-            latch.countDown();
         });
 
-
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            logger.warn("Interrupted while waiting for FX thread");
-        }
-     
         return panel;
     }
     
