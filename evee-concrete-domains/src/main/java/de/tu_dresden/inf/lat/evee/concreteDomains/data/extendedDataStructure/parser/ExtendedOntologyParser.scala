@@ -27,17 +27,17 @@ object ExtendedOntologyParser {
   val CONCRETE_DOMAIN_ANNOTATION_PROP_IRI: IRI = IRI.create(CDAnnotationNames.CONCRETE_DOMAIN_ANNOTATION_PROP)
   val CONSTRAINT_ANNOTATION_PROP_IRI: IRI = IRI.create(CDAnnotationNames.CONSTRAINT_ANNOTATION_PROP)
 
-
   /**
    * parses an OWLOntology containing concrete domain constraints as annotations 
    * into ExtendedOntology by parsing these Annotation into a Constraint Map
   **/
   def toExtendedOntology(ontology: OWLOntology): ExtendedOntology[CDConstraint] = {
+    val domain = getConcreteDomainName(ontology) //TODO: behaviour if domainStr is "" (now: exception) -> try/catch here??
+    toExtendedOntology(domain, ontology)
+  }
 
-      //TODO: behaviour if domainStr is "" (now: exception) -> try/catch here??
-    val domain = getConcreteDomainName(ontology)
-
-    val constraintParser: ConstraintParser[CDConstraint] = domain match {
+  def toExtendedOntology(concreteDomain: ConcreteDomainName, ontology: OWLOntology): ExtendedOntology[CDConstraint] = {
+    val constraintParser: ConstraintParser[CDConstraint] = concreteDomain match {
       case ConcreteDomainName.QDiff   => new DiffConstraintParser(ontology)
       case ConcreteDomainName.QMult   => new MultConstraintParser(ontology)
       case ConcreteDomainName.QLinear  => new DoubleLinearConstraintParser(ontology)
@@ -45,19 +45,10 @@ object ExtendedOntologyParser {
 
     val constraints = constraintParser.toConstraintMap(getConstraints(ontology))
 
-    val extOnt = ExtendedOntology(ontology, domain, constraints)
+    val extOnt = ExtendedOntology(ontology, concreteDomain, constraints)
 
-    RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)  //TODO: why needed???
+    RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)  //TODO: maybe remove ??? test!
   }
-
-  /**
-   * parses an ExtendedOntology into an OWLOntology by translating
-   *  the constraints into OWLANnotations of the respective OWLClass
-  **/
-  def toOWLOntology(extOntology: ExtendedOntology[CDConstraint]): OWLOntology = {
-    return null //TODO
-  }
-
 
   def getConcreteDomainName(ontology: OWLOntology): ConcreteDomainName = {
     val domainStr =   

@@ -5,7 +5,9 @@ import scala.collection.mutable.ListBuffer
 /**
  * @author Christian Alrabbaa
  */
-
+trait Reasoner {
+  def classify()
+}
 abstract class ReasonerWithStatistics extends Reasoner {
 
   private val owlClassificationTimes = ListBuffer[Long]()
