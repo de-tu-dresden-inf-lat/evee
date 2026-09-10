@@ -60,10 +60,20 @@ public class GraphModelView implements IGraphView {
 
         JFXPanel panel = new JFXPanel();
 
+        // CountDownLatch latch = new CountDownLatch(1);
+
         Platform.runLater(() -> {
             panel.setScene(new Scene((Parent) view));
             logger.info("graph scene set");
+            //latch.countDown();
         });
+
+        // try {
+        //     latch.await();
+        // } catch (InterruptedException e) {
+        //     logger.error("Error while waiting for JavaFX thread to finish setting graph scene", e);
+        //     Thread.currentThread().interrupt();
+        // }
 
         return panel;
     }

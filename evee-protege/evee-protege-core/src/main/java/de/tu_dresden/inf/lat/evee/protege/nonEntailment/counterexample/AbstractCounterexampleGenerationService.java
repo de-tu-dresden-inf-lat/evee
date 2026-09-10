@@ -169,12 +169,15 @@ abstract public class AbstractCounterexampleGenerationService
     private static void initFx() {
         synchronized (FX_LOCK){
             if (INITIALIZED_FX.compareAndSet(false, true)) {
-                String value = System.getProperty("glass.macosx.uikit");
-                if (!"false".equals(value)) {
-                    throw new IllegalStateException(
-                            "glass.macosx.uikit must be set to \"false\" before any JavaFX class loads " +
-                                    "(was: " + value + "). This must happen before JFXPanel/Platform is first touched."
-                    ); // (currently, this is done in NonEntailmentExplanationPluginLoader)
+
+                if (System.getProperty("os.name", "").toLowerCase().contains("mac")) {
+                    String value = System.getProperty("glass.macosx.uikit");
+                    if (!"false".equals(value)) {
+                        throw new IllegalStateException(
+                                "glass.macosx.uikit must be set to \"false\" before any JavaFX class loads " +
+                                        "(was: " + value + "). This must happen before JFXPanel/Platform is first touched."
+                        ); // (currently, this is done in NonEntailmentExplanationPluginLoader)
+                    }
                 }
                 Platform.setImplicitExit(false);
                 try {
