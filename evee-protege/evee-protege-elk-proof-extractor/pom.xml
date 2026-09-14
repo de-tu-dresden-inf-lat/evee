@@ -91,7 +91,7 @@
                             javax.activation.*,
                             org.apache.geronimo.mail.*,
                             org.apache.geronimo.osgi.locator.*;-split-package:=merge-last,
-                            org.liveontologies.owlapi.proof.*,
+                            org.liveontologies.owlapi.proof.*;-split-package:=merge-last,
                             org.semanticweb.elk.*;-split-package:=merge-last,
                             com.google.common.collect.*;-split-package:=merge-last,
                             com.google.common.base.*;-split-package:=merge-last,

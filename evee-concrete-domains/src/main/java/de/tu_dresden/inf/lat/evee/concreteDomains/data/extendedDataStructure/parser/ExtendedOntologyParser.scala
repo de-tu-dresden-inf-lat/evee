@@ -21,6 +21,7 @@ import scala.collection.JavaConverters._
 import java.io.File
 import org.semanticweb.owlapi.model.OWLOntology
 import org.semanticweb.owlapi.model.OWLAnnotationSubject
+import org.semanticweb.owlapi.model.OWLLiteral
 
 object ExtendedOntologyParser {
 
@@ -52,12 +53,15 @@ object ExtendedOntologyParser {
 
   def getConcreteDomainName(ontology: OWLOntology): ConcreteDomainName = {
     val domainStr =   
-        ontology.getAxioms(AxiomType.ANNOTATION_ASSERTION).asScala
+        ontology.getAnnotations.asScala
                     .find(_.getProperty().getIRI() == CONCRETE_DOMAIN_ANNOTATION_PROP_IRI)
-                        .map(_.getValue)
-                          .flatMap(x => Option(x.asLiteral().orElse(null)))
-                            .map(_.getLiteral)
-                              .getOrElse("")
+                        .flatMap { annotation =>
+                                  annotation.getValue match {
+                                    case literal: OWLLiteral => Some(literal.getLiteral)
+                                    case _ => None
+                                    }
+                                  }
+                                  .getOrElse("")
     
     ConcreteDomainName.getConcreteDomainName(domainStr)  
   }
@@ -66,12 +70,10 @@ object ExtendedOntologyParser {
     ontology.getAxioms(AxiomType.ANNOTATION_ASSERTION).asScala
       .filter(_.getProperty.getIRI == CONSTRAINT_ANNOTATION_PROP_IRI)
         .flatMap { axiom =>
-            val literal = axiom.getValue.asLiteral()
-
-            if (literal.isPresent)
-              Some(axiom.getSubject -> literal.get.getLiteral)
-            else
-              None
+            axiom.getValue match{
+              case literal: OWLLiteral => Some(axiom.getSubject -> literal.getLiteral)
+              case _ => None
+            }
           }.toMap
   }
 

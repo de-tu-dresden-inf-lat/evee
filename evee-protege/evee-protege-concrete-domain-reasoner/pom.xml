@@ -12,7 +12,8 @@
 
     <artifactId>evee-protege-concrete-domain-reasoner</artifactId>
     <name>evee-protege-concrete-domain-reasoner</name>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
+
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -27,12 +28,29 @@
             <artifactId>evee-protege-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>evee-concrete-domains</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-distribution</artifactId>
+				</exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
 
     <build>
         <resources>
-             <!-- Local resources -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -53,9 +71,17 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
                         <Import-Package>
+                            de.tu_dresden.inf.lat.evee.data.*;resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>
+                            org.apache.commons.math3.*,
+                            de.tu_dresden.inf.lat.evee.concreteDomains.*,
+                            de.tu_dresden.inf.lat.evee.proofGenerators.*,
+                            org.semanticweb.elk.owlapi.*;-split-package:=merge-last,
+                            org.semanticweb.elk.exceptions.*;-split-package:=merge-last,
+                            org.semanticweb.elk.*;-split-package:=merge-last,
+                            org.liveontologies.owlapi.proof.*;-split-package:=merge-last,
                         </Private-Package>
                     </instructions>
                 </configuration>
