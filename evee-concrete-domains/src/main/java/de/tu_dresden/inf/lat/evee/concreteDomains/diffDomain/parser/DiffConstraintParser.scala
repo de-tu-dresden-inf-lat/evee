@@ -10,11 +10,12 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager
 
 import org.semanticweb.owlapi.model.OWLAnnotationSubject
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom
+import org.semanticweb.owlapi.model.OWLDocumentFormat
 
 /**
  * Parser for the concrete domain QDiff
  */
-class DiffConstraintParser(ontology: OWLOntology) extends ConstraintParser[DiffConstraint] {
+class DiffConstraintParser(val ontology: OWLOntology) extends ConstraintParser[DiffConstraint] {
 
   val numberParser: (String => Double) = _.toDouble
 
@@ -66,6 +67,5 @@ class DiffConstraintParser(ontology: OWLOntology) extends ConstraintParser[DiffC
   def toAnntoation(constraint: CDConstraint): OWLAnnotationAssertionAxiom = {
     return null //TODO implement
   }
-
 
 }

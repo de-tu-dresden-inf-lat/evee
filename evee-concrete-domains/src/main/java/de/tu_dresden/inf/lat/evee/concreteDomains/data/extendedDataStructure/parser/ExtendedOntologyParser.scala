@@ -47,8 +47,8 @@ object ExtendedOntologyParser {
     val constraints = constraintParser.toConstraintMap(getConstraints(ontology))
 
     val extOnt = ExtendedOntology(ontology, concreteDomain, constraints)
-
-    RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)  //TODO: maybe remove ??? test!
+    extOnt
+   // RedundancyRemover.getInstance().makeConstraintNamesUnique(extOnt)  //TODO: maybe remove ??? test!
   }
 
   def getConcreteDomainName(ontology: OWLOntology): ConcreteDomainName = {

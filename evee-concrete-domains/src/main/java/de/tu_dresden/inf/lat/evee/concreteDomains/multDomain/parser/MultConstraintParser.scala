@@ -15,7 +15,7 @@ import scala.reflect.internal.util.FreshNameCreator
 import org.semanticweb.owlapi.model.OWLAnnotationSubject
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom
 
-class MultConstraintParser(ontology: OWLOntology) extends ConstraintParser[MultConstraint] {
+class MultConstraintParser(val ontology: OWLOntology) extends ConstraintParser[MultConstraint] {
 
   val reEqual = (strReIRI + raw"\s*=\s*" + strReNumber).r
   val reLess = (strReIRI + raw"\s*<\s*" + strReNumber).r

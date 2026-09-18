@@ -32,7 +32,7 @@ extends LinearConstraintParser[Double](
   _.toDouble
 )
 
-class LinearConstraintParser[T](ontology: OWLOntology, numberParser: String => T) extends ConstraintParser[LinearConstraint[T]] {
+class LinearConstraintParser[T](val ontology: OWLOntology, numberParser: String => T) extends ConstraintParser[LinearConstraint[T]] {
 
   val manager = ontology.getOWLOntologyManager
   val factory = manager.getOWLDataFactory
