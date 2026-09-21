@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.parser
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.{DiffConstraint, DiffEqual, DiffGreaterThan, DiffSum}
-import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.ParsingException
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
 import de.tu_dresden.inf.lat.evee.general.data.exceptions
 
@@ -62,10 +62,6 @@ class DiffConstraintParser(val ontology: OWLOntology) extends ConstraintParser[D
       case _ =>
         throw new ParsingException(s"could not parse constraint $constraintStr")
     }
-  }
-
-  def toAnntoation(constraint: CDConstraint): OWLAnnotationAssertionAxiom = {
-    return null //TODO implement
   }
 
 }

@@ -9,6 +9,7 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.parser.MultConstrai
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure._
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.{CDAnnotationNames, ConcreteDomainName}
 import de.tu_dresden.inf.lat.evee.concreteDomains.preprocess.RedundancyRemover
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.apibinding.OWLManager
@@ -22,6 +23,7 @@ import java.io.File
 import org.semanticweb.owlapi.model.OWLOntology
 import org.semanticweb.owlapi.model.OWLAnnotationSubject
 import org.semanticweb.owlapi.model.OWLLiteral
+import org.semanticweb.owlapi.model.OWLClass
 
 object ExtendedOntologyParser {
 
@@ -38,6 +40,9 @@ object ExtendedOntologyParser {
   }
 
   def toExtendedOntology(concreteDomain: ConcreteDomainName, ontology: OWLOntology): ExtendedOntology[CDConstraint] = {
+    if (concreteDomain == null)
+      return new ExtendedOntology(ontology, null, Map.empty[OWLClass, CDConstraint]) // no concrete domain, using default ELK for reasoning
+
     val constraintParser: ConstraintParser[CDConstraint] = concreteDomain match {
       case ConcreteDomainName.QDiff   => new DiffConstraintParser(ontology)
       case ConcreteDomainName.QMult   => new MultConstraintParser(ontology)
@@ -60,9 +65,8 @@ object ExtendedOntologyParser {
                                     case literal: OWLLiteral => Some(literal.getLiteral)
                                     case _ => None
                                     }
-                                  }
-                                  .getOrElse("")
-    
+                        }.getOrElse(throw new ParsingException(s"could not find concrete domain annotation in ontology"))
+                                
     ConcreteDomainName.getConcreteDomainName(domainStr)  
   }
 

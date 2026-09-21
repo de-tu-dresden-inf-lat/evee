@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.parser
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.ParsingException
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain._
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.FreshClasses
@@ -66,9 +66,5 @@ class MultConstraintParser(val ontology: OWLOntology) extends ConstraintParser[M
 
     }
 
-  }
-
-  def toAnntoation(constraint: CDConstraint): OWLAnnotationAssertionAxiom = {
-    return null //TODO implement
   }
 }

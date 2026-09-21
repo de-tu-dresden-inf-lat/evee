@@ -1,7 +1,7 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
-import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.ParsingException
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
 
 import org.apache.commons.math3.fraction.BigFraction
@@ -70,11 +70,6 @@ class LinearConstraintParser[T](val ontology: OWLOntology, numberParser: String 
       }.toMap[OWLDataProperty, T]
 
     LinearConstraint(lhs, rhs)
-  }
-  
-  def toAnntoation(constraint: CDConstraint): OWLAnnotationAssertionAxiom = {
-    return null
-    //TODO: implement
   }
 
 }

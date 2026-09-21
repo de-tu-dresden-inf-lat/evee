@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.ParsingException
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 
 import org.semanticweb.owlapi.model.OWLClass
 import org.semanticweb.owlapi.model.OWLAnnotationSubject;
@@ -28,8 +28,6 @@ trait ConstraintParser[+CD <: CDConstraint] {
 
   def toConstraintMap(constraintsStr: Map[OWLAnnotationSubject, String]): Map[OWLClass, CD]
   def toConstraint(constraintStr: String): CD
-
-  def toAnntoation(constraint: CDConstraint): OWLAnnotationAssertionAxiom
 
   def getIRI(str: String): IRI = {
     prefixFormat.getIRI(str) match {

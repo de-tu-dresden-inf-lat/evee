@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.exceptions.CDException
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.CDException
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.{MultConstraint, MultContradiction}
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.{DiffConstraint, DiffContradiction}

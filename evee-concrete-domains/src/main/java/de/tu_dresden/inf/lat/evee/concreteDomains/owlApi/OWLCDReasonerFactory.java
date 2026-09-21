@@ -8,16 +8,21 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffReasoner;
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraintReasoner;
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.MultReasoner;
 import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDReasoner;
+import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDReasonerEmptyDomain;
 
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
 
 public class OWLCDReasonerFactory implements OWLReasonerFactory {
+
+    private final Logger logger = LoggerFactory.getLogger(OWLCDReasonerFactory.class);
 
     @Override
     public String getReasonerName() {
@@ -64,7 +69,13 @@ public class OWLCDReasonerFactory implements OWLReasonerFactory {
 
     private OWLReasoner createReasoner(OWLOntology ontology, OWLReasonerConfiguration config, boolean buffering) {
 
-        ConcreteDomainName domain = ExtendedOntologyParser.getConcreteDomainName(ontology);
+        ConcreteDomainName domain;
+        try{
+         domain = ExtendedOntologyParser.getConcreteDomainName(ontology);
+        } catch (Exception e){
+           logger.warn("no concrete domain found, using default ELK for reasoning: "+ e);
+           return new ELKCDReasonerEmptyDomain(ontology, config, buffering);
+        }
 
         CDReasoner cdReasoner;
         switch(domain){

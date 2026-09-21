@@ -71,6 +71,18 @@ case class AddCDAxiomsResult(
   ontologyChanged: Boolean,
   addedInformation: Set[Set[OWLClass]]
 )
+
+class ELKCDReasonerEmptyDomain(
+    rootOntology: OWLOntology,
+    config: OWLReasonerConfiguration,
+    bufferingMode: Boolean
+) extends ELKCDReasoner[Nothing](
+      rootOntology,
+      null,
+      null,
+      config,
+      bufferingMode
+) 
 class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
                                                     domain: ConcreteDomainName,
                                                     cdReasoner: CDReasoner[CD_CONSTRAINT],
@@ -151,6 +163,10 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     
     var changed = false
     var addedInformation = Set.empty[Set[OWLClass]]
+
+    if (cdReasoner == null) { //using only ELK to reason, no concrete domain
+        return AddCDAxiomsResult(changed, addedInformation)
+    }
 
     extendedOntology.ontology.getNestedClassExpressions.forEach{ classExp =>
       val startTime = System.nanoTime()

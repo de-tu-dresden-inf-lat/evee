@@ -1,4 +1,4 @@
-package de.tu_dresden.inf.lat.evee.concreteDomains.exceptions
+package de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions
 
 /**
  * @author Christian Alrabbaa

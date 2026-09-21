@@ -1,17 +1,21 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.data.names;
+
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException;
+
 /**
  * @author Christian Alrabbaa
- *
+ *s
  */
 public enum ConcreteDomainName {
 	//LinearConstraints, QGreater;
 	QDiff, QMult, QLinear;
-	public static ConcreteDomainName getConcreteDomainName(String str) {
+	public static ConcreteDomainName getConcreteDomainName(String str)  throws ParsingException {
+
 		ConcreteDomainName result = parseArg(str);
 		if (result != null)
 			return result;
 
-		throw new IllegalArgumentException("No getConcreteDomainName value for \"" + str + "\"");
+		throw new ParsingException("cannot parse domain name: \"" + str + "\"");
 	}
 
 	public static boolean isName(String str) {
