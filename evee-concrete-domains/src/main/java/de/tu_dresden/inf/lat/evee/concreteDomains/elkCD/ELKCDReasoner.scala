@@ -49,6 +49,7 @@ import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.parameters.OntologyCopy
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration
 import org.semanticweb.owlapi.model.RemoveAxiom
+import org.slf4j.LoggerFactory
 
 case class Token(){
   private var time: Long = 0
@@ -92,6 +93,8 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
                                                     with OWLReasoner {
 
   private val REASONER_NAME = "ELK-CD"
+  
+  private val logger = LoggerFactory.getLogger(classOf[ELKCDReasoner[CD_CONSTRAINT]])
 
   val manager =  OWLManager.createOWLOntologyManager();
   val factory = manager.getOWLDataFactory()
@@ -109,13 +112,14 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       flush()
     }
   })
-
   
   override def classify() = {
     val token = Token()
     
     var alreadyAdded: Set[Set[OWLClass]] = Set.empty
     var changed = true
+
+    logger.info("Starting classification with ELK-CD reasoner...")
 
     while(changed) {
       val startTime = System.nanoTime()
@@ -136,8 +140,13 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       token.addOneReasonerCall()
 
       val result = addRequiredCDAxioms(alreadyAdded, token)
+      logger.warn("result of iteration: (changed) " + result.ontologyChanged) //debug log
       alreadyAdded ++= result.addedInformation 
-      changed ||= result.ontologyChanged
+      changed = result.ontologyChanged
+
+      logger.warn("already added: "+alreadyAdded) //debug log
+
+      logger.warn("end of while. changed: "+changed) //debug log
     }
     //Store the time in ms
     collectStatistics( token.getTime() / 1000000, token.getReasonerCalls())
@@ -182,9 +191,12 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
         }
       }
       val relevant = subsumers.filter(extendedOntology.constraintNames).toSet
-      if(!alreadyAdded.contains(relevant)){
+
+      logger.warn("relevant already added?: "+alreadyAdded.contains(relevant)) //debug log
+      if(!alreadyAdded.contains(relevant)){ //TODO condition not working???
+        logger.warn("adding axioms for: "+relevant) //debug log
         val result = addCDAxioms(relevant)
-        changed ||= result.ontologyChanged
+        changed = changed || result.ontologyChanged
         addedInformation ++= result.addedInformation
       }
     }
@@ -197,7 +209,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       val relevant = classes.filter(extendedOntology.constraintNames).toSet
       if(!alreadyAdded.contains(relevant)){
         val result = addCDAxioms(relevant)
-        changed ||= result.ontologyChanged
+        changed = changed || result.ontologyChanged
         addedInformation ++= result.addedInformation
       }
     }
@@ -211,17 +223,16 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     val lhs = relevant.size match {
       case 0 => factory.getOWLThing
       case 1 => relevant.head
-      case _ => factory.getOWLObjectIntersectionOf(relevant.asJava)
+      case _ => factory.getOWLObjectIntersectionOf(relevant.toArray[OWLClassExpression]: _*)
     }
 
-    if(!cdReasoner.consistent(predicates)){ {
+    if(!cdReasoner.consistent(predicates)){ 
+      logger.warn("predicares not consistent") //debug log
       val newAxiom = factory.getOWLSubClassOfAxiom(lhs, factory.getOWLNothing)
       manager.addAxiom(extendedOntology.ontology, newAxiom)
 
       return AddCDAxiomsResult(ontologyChanged = true, addedInformation = Set(relevant))
-      } 
     }
-   
 
     val impliedNames: Set[OWLClass] = extendedOntology.constraintNames.filterNot(relevant).filter{owlClass =>
                             cdReasoner.implies(predicates, extendedOntology.constraintFor(owlClass))}
@@ -230,11 +241,10 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
         var newAxiom = factory.getOWLSubClassOfAxiom(lhs, owlClass)
         manager.addAxiom(extendedOntology.ontology, newAxiom)
       }
-      
     
     // We already added all necessary information about the following extended set
     // since it does not imply any more names and is inconsistent iff `relevant` is consistent.
-    return AddCDAxiomsResult(ontologyChanged = (impliedNames.size > 0), addedInformation = Set(relevant ++ impliedNames))
+    return AddCDAxiomsResult(ontologyChanged = (impliedNames.size > 0), addedInformation = Set(relevant ++ impliedNames, relevant)) //TODO ERROR here (probably)
   }
 
 ///////////////////////////////////////////////////OWLReasoner methods ///////////////////////////////////////
