@@ -101,9 +101,6 @@ class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,Double] 
     rTT.reasoningTaskType = "Consistency"
     rTT.cDReasoningTime = time
 
-    // if (Tools.isZ3CheckEnabled)
-    //   Z3Checker.checkConsistency(res, JavaConverters.asJavaCollection(predicates), ConcreteDomainName.QGreater, rTT)
-
     res
   }
 

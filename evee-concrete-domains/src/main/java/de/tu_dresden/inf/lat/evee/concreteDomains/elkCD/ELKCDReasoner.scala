@@ -140,13 +140,8 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       token.addOneReasonerCall()
 
       val result = addRequiredCDAxioms(alreadyAdded, token)
-      logger.warn("result of iteration: (changed) " + result.ontologyChanged) //debug log
       alreadyAdded ++= result.addedInformation 
       changed = result.ontologyChanged
-
-      logger.warn("already added: "+alreadyAdded) //debug log
-
-      logger.warn("end of while. changed: "+changed) //debug log
     }
     //Store the time in ms
     collectStatistics( token.getTime() / 1000000, token.getReasonerCalls())
@@ -192,9 +187,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       }
       val relevant = subsumers.filter(extendedOntology.constraintNames).toSet
 
-      logger.warn("relevant already added?: "+alreadyAdded.contains(relevant)) //debug log
       if(!alreadyAdded.contains(relevant)){ //TODO condition not working???
-        logger.warn("adding axioms for: "+relevant) //debug log
         val result = addCDAxioms(relevant)
         changed = changed || result.ontologyChanged
         addedInformation ++= result.addedInformation
@@ -227,7 +220,6 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     }
 
     if(!cdReasoner.consistent(predicates)){ 
-      logger.warn("predicares not consistent") //debug log
       val newAxiom = factory.getOWLSubClassOfAxiom(lhs, factory.getOWLNothing)
       manager.addAxiom(extendedOntology.ontology, newAxiom)
 

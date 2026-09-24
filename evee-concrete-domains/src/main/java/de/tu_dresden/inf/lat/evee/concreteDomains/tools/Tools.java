@@ -1,7 +1,5 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.tools;
 
-import  de.tu_dresden.inf.lat.evee.concreteDomains.data.names.PropertyName;
-
 import com.google.common.collect.Sets;
 import org.semanticweb.owlapi.model.*;
 
@@ -126,10 +124,5 @@ public class Tools {
         boolean assertionActivated = false;
         assert assertionActivated = true;
         return assertionActivated;
-    }
-
-    public static boolean isZ3CheckEnabled(){
-    return System.getProperty(PropertyName.enableZ3Checks.getProperty()) != null &&
-            System.getProperty(PropertyName.enableZ3Checks.getProperty()).equalsIgnoreCase("true");
     }
 }
