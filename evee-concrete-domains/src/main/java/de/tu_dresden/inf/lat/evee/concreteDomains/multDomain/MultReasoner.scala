@@ -120,10 +120,6 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
     rTT.reasoningTaskType = "Implication"
     rTT.cDReasoningTime = time
 
-    // if (Tools.isZ3CheckEnabled)
-    //   Z3Checker.checkImplication(res, JavaConverters.asJavaCollection(premises), conclusion, ConcreteDomainName
-    //     .QGreater, rTT)
-
     res
   }
 

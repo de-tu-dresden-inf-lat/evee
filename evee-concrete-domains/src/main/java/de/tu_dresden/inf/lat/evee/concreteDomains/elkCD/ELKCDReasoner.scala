@@ -42,9 +42,7 @@ import org.semanticweb.owlapi.model.OWLOntologyChange
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
-import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffReasoner
-import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.MultReasoner
-import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraintReasoner
+
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.parameters.OntologyCopy
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration

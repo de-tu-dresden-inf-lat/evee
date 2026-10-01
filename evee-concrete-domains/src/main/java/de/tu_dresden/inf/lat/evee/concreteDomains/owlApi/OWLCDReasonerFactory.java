@@ -5,7 +5,7 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.Ext
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser;
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName;
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffReasoner;
-import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraintReasoner;
+import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.GaussianEliminationReasoner;
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.MultReasoner;
 import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDReasoner;
 import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDReasonerEmptyDomain;
@@ -83,7 +83,7 @@ public class OWLCDReasonerFactory implements OWLReasonerFactory {
                 cdReasoner = new DiffReasoner();
                 break;
             case QLinear:
-                cdReasoner = new LinearConstraintReasoner();
+                cdReasoner = new GaussianEliminationReasoner();
                 break;
             case QMult:
                 cdReasoner = new MultReasoner();

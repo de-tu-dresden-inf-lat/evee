@@ -5,7 +5,6 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationExceptio
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IProof, IProofGenerator}
 import org.semanticweb.owlapi.model.OWLDataProperty
 
-// TODO adapt this interface using "setPremises", to make it easier to reuse computations to check different conclusions for the same set of premises
 trait CDReasoner[CD_CONSTRAINT <: CDConstraint] {
   def consistent(predicates: Iterable[CD_CONSTRAINT]): Boolean
   def implies(premises: Iterable[CD_CONSTRAINT], conclusion: CD_CONSTRAINT): Boolean
