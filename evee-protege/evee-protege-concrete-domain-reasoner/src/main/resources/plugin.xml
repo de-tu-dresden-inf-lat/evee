@@ -3,7 +3,7 @@
 <plugin>
 
 	<extension id="concreteDomainReasoner" point="org.protege.editor.owl.inference_reasonerfactory">
-		<name value="eveeElkCd"/>
+		<name value="PACER"/>
 		<class value="de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner.ProtegeCDReasonerFactory"/>
 	</extension>
 

@@ -144,6 +144,11 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     //Store the time in ms
     collectStatistics( token.getTime() / 1000000, token.getReasonerCalls())
 
+    logger.warn("end of classify(). added: "+ alreadyAdded) //debug log
+
+    logger.warn("Subclasses of Nothing: " + internalReasoner.getSubClasses(factory.getOWLNothing(),false).getFlattened().asScala) //debug log
+    logger.warn("Unsatisfiable classes: " + internalReasoner.getUnsatisfiableClasses().getEntities().asScala) //debug log
+
     internalReasoner.flush()
     state = state.copy(true, internalReasoner.isConsistent)
   }
@@ -185,7 +190,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       }
       val relevant = subsumers.filter(extendedOntology.constraintNames).toSet
 
-      if(!alreadyAdded.contains(relevant)){ //TODO condition not working???
+      if(!alreadyAdded.contains(relevant)){
         val result = addCDAxioms(relevant)
         changed = changed || result.ontologyChanged
         addedInformation ++= result.addedInformation
@@ -218,6 +223,10 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     }
 
     if(!cdReasoner.consistent(predicates)){ 
+
+     // logger.warn("not consistent: " + predicates) //debug log
+     // logger.warn("adding axiom: " + lhs + " ⊑ ⊥") //debug log
+
       val newAxiom = factory.getOWLSubClassOfAxiom(lhs, factory.getOWLNothing)
       manager.addAxiom(extendedOntology.ontology, newAxiom)
 
@@ -230,11 +239,13 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     impliedNames.foreach{ owlClass =>
         var newAxiom = factory.getOWLSubClassOfAxiom(lhs, owlClass)
         manager.addAxiom(extendedOntology.ontology, newAxiom)
+
+        logger.warn("adding "+ newAxiom) //debug log
       }
     
     // We already added all necessary information about the following extended set
     // since it does not imply any more names and is inconsistent iff `relevant` is consistent.
-    return AddCDAxiomsResult(ontologyChanged = (impliedNames.size > 0), addedInformation = Set(relevant ++ impliedNames, relevant)) //TODO ERROR here (probably)
+    return AddCDAxiomsResult(ontologyChanged = (impliedNames.size > 0), addedInformation = Set(relevant ++ impliedNames, relevant))
   }
 
 ///////////////////////////////////////////////////OWLReasoner methods ///////////////////////////////////////

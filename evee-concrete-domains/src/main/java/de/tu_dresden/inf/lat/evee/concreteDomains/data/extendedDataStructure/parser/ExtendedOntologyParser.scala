@@ -15,15 +15,14 @@ import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.IRI
 import org.semanticweb.owlapi.model.AxiomType;
-
-import scala.collection.JavaConverters._
-
-
-import java.io.File
 import org.semanticweb.owlapi.model.OWLOntology
 import org.semanticweb.owlapi.model.OWLAnnotationSubject
 import org.semanticweb.owlapi.model.OWLLiteral
 import org.semanticweb.owlapi.model.OWLClass
+
+import scala.collection.JavaConverters._
+import java.io.File
+
 
 object ExtendedOntologyParser {
 
@@ -35,7 +34,7 @@ object ExtendedOntologyParser {
    * into ExtendedOntology by parsing these Annotation into a Constraint Map
   **/
   def toExtendedOntology(ontology: OWLOntology): ExtendedOntology[CDConstraint] = {
-    val domain = getConcreteDomainName(ontology) //TODO: behaviour if domainStr is "" (now: exception) -> try/catch here??
+    val domain = getConcreteDomainName(ontology)
     toExtendedOntology(domain, ontology)
   }
 

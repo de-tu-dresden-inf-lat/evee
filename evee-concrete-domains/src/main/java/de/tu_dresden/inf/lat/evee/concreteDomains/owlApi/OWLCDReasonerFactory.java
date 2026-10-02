@@ -26,8 +26,7 @@ public class OWLCDReasonerFactory implements OWLReasonerFactory {
 
     @Override
     public String getReasonerName() {
-        return OWLCDReasonerFactory.class.getPackage().getImplementationTitle();
-
+        return "PACER";
     }
 
     @Override
