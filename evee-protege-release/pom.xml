@@ -62,6 +62,11 @@
             <artifactId>evee-protege-abduction-lethe</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>evee-protege-concrete-domain-reasoner</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     <build>

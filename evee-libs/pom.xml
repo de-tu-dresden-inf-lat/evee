@@ -59,6 +59,11 @@
             <artifactId>evee-nemo-proof-extractor</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>evee-concrete-domains</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
