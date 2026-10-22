@@ -1,70 +1,37 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.parser
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
-import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain._
-import de.tu_dresden.inf.lat.evee.concreteDomains.tools.{FreshClasses, Numbers}
-
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers
+import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, ConstraintTokens}
 import org.apache.commons.math3.fraction.BigFraction
-import org.semanticweb.owlapi.model.parameters.Imports
-import org.semanticweb.owlapi.model.{IRI, OWLAxiom, OWLClass, OWLDataHasValue, OWLDataProperty, OWLDataPropertyAssertionAxiom, OWLOntology}
+import org.semanticweb.owlapi.model.{OWLDataProperty, OWLOntology}
 
-import java.io.{BufferedReader, File, FileReader}
-import scala.collection.JavaConverters.setAsJavaSetConverter
-import scala.reflect.internal.util.FreshNameCreator
-import org.semanticweb.owlapi.model.OWLAnnotationSubject
-import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom
-
+/**
+ * Parser for the concrete domain QMult. A constraint has one of the forms x = c, x < c, x * c = y or c * x = y,
+ * where x and y are data properties and c is a number; a factor c has to be positive.
+ */
 class MultConstraintParser(val ontology: OWLOntology) extends ConstraintParser[MultConstraint] {
 
-  val reEqual = (strReIRI + raw"\s*=\s*" + strReNumber).r
-  val reLess = (strReIRI + raw"\s*<\s*" + strReNumber).r
-  val reMult = (strReIRI + raw"\s*\*\s*" + strReNumber + raw"\s*=\s*" + strReIRI).r
-
-  val numberParser: String => BigFraction = Numbers.parse
-
-  val manager = ontology.getOWLOntologyManager
-  val factory = manager.getOWLDataFactory
-
-
-  def toConstraintMap(constraints: Map[OWLAnnotationSubject,String]): Map[OWLClass, MultConstraint] = {
-    constraints.map{ case (subject, constraint) => {
-
-        if(!subject.isIRI())
-          throw new ParsingException(s"$subject could not be parsed to OWLClass: not a valid IRI")
-
-        val owlClass = factory.getOWLClass(subject.asInstanceOf[IRI])
-
-        owlClass -> toConstraint(constraint)
-      }
-    }.toMap[OWLClass, MultConstraint]
-    
-  }
-
-  def toConstraint(constraintStr: String): MultConstraint = {
-
-    constraintStr match {
-
-      case reEqual(classStr, propertyStr, constantStr) =>
-        val property = factory.getOWLDataProperty(getIRI(propertyStr))
-        val constant = numberParser(constantStr)
-        MultEqual(property, constant)
-
-      case reLess(propertyStr, constantStr) =>
-        val property = factory.getOWLDataProperty(getIRI(propertyStr))
-        val constant = numberParser(constantStr)
-        MultLessThan(property, constant)
-
-      case reMult(property1Str, factorStr, property2Str) =>
-        val property1 = factory.getOWLDataProperty(getIRI(property1Str))
-        val factor = numberParser(factorStr)
-        val property2 = factory.getOWLDataProperty(getIRI(property2Str))
-        Multiplication(property1, factor, property2)
-
-      case _ =>
-        throw new ParsingException(s"could not parse constraint $constraintStr")
-
+  override protected def parse(tokens: ConstraintTokens): MultConstraint =
+    if (tokens.atNumber) {
+      val factor = tokens.number()
+      tokens.expect("*")
+      product(property(tokens), factor, tokens)
+    } else {
+      val x = property(tokens)
+      if (tokens.accept("=")) MultEqual(x, tokens.number())
+      else if (tokens.accept("<")) MultLessThan(x, tokens.number())
+      else if (tokens.accept("*")) product(x, tokens.number(), tokens)
+      else tokens.fail("'=', '<' or '*'")
     }
 
+  /** reads the rest "= y" of a product x * factor = y */
+  private def product(x: OWLDataProperty, factor: BigFraction, tokens: ConstraintTokens): Multiplication = {
+    tokens.expect("=")
+    val y = property(tokens)
+    if (factor.compareTo(BigFraction.ZERO) <= 0)
+      throw new ParsingException(s"the factor ${Numbers.format(factor)} has to be positive")
+    Multiplication(x, factor, y)
   }
 }
