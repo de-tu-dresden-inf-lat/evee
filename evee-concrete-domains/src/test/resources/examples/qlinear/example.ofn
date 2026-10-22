@@ -1,0 +1,109 @@
+Prefix(:=<http://example#>)
+Prefix(cd:=<http://tu-dresden.de/inf/lat/evee/cd#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://example#>
+Annotation(cd:concreteDomain "QLinear")
+
+Declaration(Class(:Condition1))
+Declaration(Class(:Condition2))
+Declaration(Class(:Condition3))
+Declaration(Class(:Condition4))
+Declaration(Class(:Condition5))
+Declaration(Class(:Condition6))
+Declaration(Class(:Condition7))
+Declaration(Class(:GoodSystem))
+Declaration(Class(:Policy))
+Declaration(Class(:Policy1))
+Declaration(Class(:Policy2))
+Declaration(Class(:Policy3))
+Declaration(Class(:System1))
+Declaration(ObjectProperty(:satisfiesPolicy))
+Declaration(DataProperty(:x))
+Declaration(DataProperty(:y))
+Declaration(AnnotationProperty(cd:concreteDomain))
+Declaration(AnnotationProperty(cd:constraint))
+
+############################
+#   Object Properties
+############################
+
+# Object Property: <http://example#satisfiesPolicy> (<http://example#satisfiesPolicy>)
+
+SubObjectPropertyOf(:satisfiesPolicy owl:topObjectProperty)
+ObjectPropertyRange(:satisfiesPolicy :Policy)
+
+
+############################
+#   Data Properties
+############################
+
+# Data Property: <http://example#x> (<http://example#x>)
+
+DataPropertyRange(:x owl:real)
+
+# Data Property: <http://example#y> (<http://example#y>)
+
+SubDataPropertyOf(:y owl:topDataProperty)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://example#Condition1> (<http://example#Condition1>)
+
+AnnotationAssertion(cd:constraint :Condition1 "3 * :x + 4 * :y = 22")
+
+# Class: <http://example#Condition2> (<http://example#Condition2>)
+
+AnnotationAssertion(cd:constraint :Condition2 ":z - 2 * :y = 12")
+
+# Class: <http://example#Condition3> (<http://example#Condition3>)
+
+AnnotationAssertion(cd:constraint :Condition3 ":x + :z + :y = 10")
+
+# Class: <http://example#Condition4> (<http://example#Condition4>)
+
+AnnotationAssertion(cd:constraint :Condition4 ":z + 3 * :y = -16")
+
+# Class: <http://example#Condition5> (<http://example#Condition5>)
+
+AnnotationAssertion(cd:constraint :Condition5 "5 * :v + :w = 0")
+
+# Class: <http://example#Condition6> (<http://example#Condition6>)
+
+AnnotationAssertion(cd:constraint :Condition6 ":u + :w = 13")
+
+# Class: <http://example#Condition7> (<http://example#Condition7>)
+
+AnnotationAssertion(cd:constraint :Condition7 "25 * :v + 6 * :w + :u = 13")
+
+# Class: <http://example#Policy1> (<http://example#Policy1>)
+
+EquivalentClasses(:Policy1 ObjectIntersectionOf(:Condition1 :Condition2 :Condition3))
+SubClassOf(:Policy1 :Policy)
+
+# Class: <http://example#Policy2> (<http://example#Policy2>)
+
+EquivalentClasses(:Policy2 ObjectIntersectionOf(:Condition5 :Condition6))
+SubClassOf(:Policy2 :Policy)
+
+# Class: <http://example#Policy3> (<http://example#Policy3>)
+
+EquivalentClasses(:Policy3 ObjectIntersectionOf(:Condition4 :Condition7))
+SubClassOf(:Policy3 :Policy)
+
+# Class: <http://example#System1> (<http://example#System1>)
+
+SubClassOf(:System1 ObjectSomeValuesFrom(:satisfiesPolicy ObjectIntersectionOf(:Policy1 :Policy2)))
+
+
+SubClassOf(ObjectSomeValuesFrom(:satisfiesPolicy :Policy3) :GoodSystem)
+)

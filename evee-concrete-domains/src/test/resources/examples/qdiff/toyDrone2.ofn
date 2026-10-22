@@ -1,0 +1,63 @@
+Prefix(:=<http://toyDrone#>)
+Prefix(cd:=<http://tu-dresden.de/inf/lat/evee/cd#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://toyDrone>
+Annotation(cd:concreteDomain "QDiff")
+
+Declaration(Class(:C1))
+Declaration(Class(:C2))
+Declaration(Class(:C3))
+Declaration(Class(:C4))
+Declaration(Class(:C5))
+Declaration(Class(:C6))
+Declaration(Class(:Cat))
+Declaration(Class(:Drone))
+Declaration(Class(:Hexicopter))
+Declaration(AnnotationProperty(cd:concreteDomain))
+Declaration(AnnotationProperty(cd:constraint))
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://toyDrone#C1> (<http://toyDrone#C1>)
+
+AnnotationAssertion(cd:constraint :C1 ":x + 2 = :y")
+
+# Class: <http://toyDrone#C2> (<http://toyDrone#C2>)
+
+AnnotationAssertion(cd:constraint :C2 ":y + 2 = :z")
+
+# Class: <http://toyDrone#C3> (<http://toyDrone#C3>)
+
+AnnotationAssertion(cd:constraint :C3 ":z + 1 = :w")
+
+# Class: <http://toyDrone#C4> (<http://toyDrone#C4>)
+
+AnnotationAssertion(cd:constraint :C4 ":w > 11")
+
+# Class: <http://toyDrone#C5> (<http://toyDrone#C5>)
+
+AnnotationAssertion(cd:constraint :C5 ":x = 0")
+
+# Class: <http://toyDrone#C6> (<http://toyDrone#C6>)
+
+AnnotationAssertion(cd:constraint :C6 ":x > 6")
+SubClassOf(:C6 :Hexicopter)
+
+# Class: <http://toyDrone#Drone> (<http://toyDrone#Drone>)
+
+SubClassOf(:Drone :C1)
+SubClassOf(:Drone :C2)
+SubClassOf(:Drone :C3)
+SubClassOf(:Drone :C4)
+
+
+)

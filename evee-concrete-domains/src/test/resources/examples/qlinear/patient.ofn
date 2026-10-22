@@ -1,0 +1,129 @@
+Prefix(:=<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#>)
+Prefix(cd:=<http://tu-dresden.de/inf/lat/evee/cd#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#>
+Annotation(cd:concreteDomain "QLinear")
+
+Declaration(Class(:A-age))
+Declaration(Class(:A-dia))
+Declaration(Class(:A-hr))
+Declaration(Class(:A-pp))
+Declaration(Class(:A-sys))
+Declaration(Class(:CurrentPatient))
+Declaration(Class(:HeartRateMax))
+Declaration(Class(:HeartRateNearMax))
+Declaration(Class(:ICUpatient))
+Declaration(Class(:NeedAttention))
+Declaration(Class(:Patient))
+Declaration(Class(:PulsePressure))
+Declaration(Class(:PulsePressure25mmHg))
+Declaration(Class(:PulsePressureLargerThan50mmHG))
+Declaration(DataProperty(:age))
+Declaration(DataProperty(:dia))
+Declaration(DataProperty(:hr))
+Declaration(DataProperty(:maxHR))
+Declaration(DataProperty(:pp))
+Declaration(DataProperty(:sys))
+Declaration(AnnotationProperty(cd:concreteDomain))
+Declaration(AnnotationProperty(cd:constraint))
+
+############################
+#   Data Properties
+############################
+
+# Data Property: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#age> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#age>)
+
+DataPropertyDomain(:age :Patient)
+DataPropertyRange(:age owl:real)
+
+# Data Property: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#dia> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#dia>)
+
+DataPropertyDomain(:dia :Patient)
+DataPropertyRange(:dia owl:real)
+
+# Data Property: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#hr> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#hr>)
+
+DataPropertyDomain(:hr :Patient)
+DataPropertyRange(:hr owl:real)
+
+# Data Property: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#maxHR> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#maxHR>)
+
+DataPropertyDomain(:maxHR :Patient)
+DataPropertyRange(:maxHR owl:real)
+
+# Data Property: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#pp> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#pp>)
+
+DataPropertyDomain(:pp :Patient)
+DataPropertyRange(:pp owl:real)
+
+# Data Property: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#sys> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#sys>)
+
+DataPropertyDomain(:sys :Patient)
+DataPropertyRange(:sys owl:real)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-age> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-age>)
+
+AnnotationAssertion(cd:constraint :A-age ":age = 42")
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-dia> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-dia>)
+
+AnnotationAssertion(cd:constraint :A-dia ":dia = 95")
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-hr> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-hr>)
+
+AnnotationAssertion(cd:constraint :A-hr ":hr = 173")
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-pp> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-pp>)
+
+AnnotationAssertion(cd:constraint :A-pp ":pp = 25")
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-sys> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#A-sys>)
+
+AnnotationAssertion(cd:constraint :A-sys ":sys = 120")
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#CurrentPatient> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#CurrentPatient>)
+
+SubClassOf(:CurrentPatient :A-age)
+SubClassOf(:CurrentPatient :A-dia)
+SubClassOf(:CurrentPatient :A-hr)
+SubClassOf(:CurrentPatient :A-pp)
+SubClassOf(:CurrentPatient :A-sys)
+SubClassOf(:CurrentPatient :ICUpatient)
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#HeartRateMax> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#HeartRateMax>)
+
+AnnotationAssertion(cd:constraint :HeartRateMax ":maxHR + :age = 220")
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#HeartRateNearMax> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#HeartRateNearMax>)
+
+AnnotationAssertion(cd:constraint :HeartRateNearMax ":maxHR - :hr = 5")
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#ICUpatient> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#ICUpatient>)
+
+SubClassOf(:ICUpatient :HeartRateMax)
+SubClassOf(:ICUpatient :Patient)
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#PulsePressure> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#PulsePressure>)
+
+AnnotationAssertion(cd:constraint :PulsePressure ":sys - :dia - :pp = 0")
+
+# Class: <http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#PulsePressure25mmHg> (<http://www.semanticweb.org/lat/ontologies/2023/concrete-domain/patient#PulsePressure25mmHg>)
+
+AnnotationAssertion(cd:constraint :PulsePressure25mmHg ":sys - :dia = 25")
+
+
+SubClassOf(ObjectIntersectionOf(:HeartRateNearMax :ICUpatient) :NeedAttention)
+SubClassOf(ObjectIntersectionOf(:ICUpatient :PulsePressureLargerThan50mmHG) :NeedAttention)
+)
