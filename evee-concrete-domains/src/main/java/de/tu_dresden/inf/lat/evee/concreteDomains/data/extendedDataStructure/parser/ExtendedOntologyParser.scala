@@ -69,15 +69,23 @@ object ExtendedOntologyParser {
     ConcreteDomainName.getConcreteDomainName(domainStr)  
   }
 
+  /**
+   * The text of the constraint of each annotated subject. A class can have at most one constraint; constraints are
+   * combined by conjunctions of their classes (ObjectIntersectionOf).
+   */
   def getConstraints(ontology: OWLOntology): Map[OWLAnnotationSubject,String] = {
-    ontology.getAxioms(AxiomType.ANNOTATION_ASSERTION).asScala
+    val annotations = ontology.getAxioms(AxiomType.ANNOTATION_ASSERTION).asScala.toSeq
       .filter(_.getProperty.getIRI == CONSTRAINT_ANNOTATION_PROP_IRI)
-        .flatMap { axiom =>
-            axiom.getValue match{
-              case literal: OWLLiteral => Some(axiom.getSubject -> literal.getLiteral)
-              case _ => None
-            }
-          }.toMap
+    annotations.groupBy(_.getSubject).map { case (subject, axioms) =>
+      val constraints = axioms.map(_.getValue match {
+        case literal: OWLLiteral => literal.getLiteral
+        case other => throw new ParsingException(s"The constraint of $subject has to be a string, not $other")
+      }).distinct.sorted
+      if (constraints.size > 1)
+        throw new ParsingException(s"$subject has the constraints " + constraints.map("\"" + _ + "\"").mkString(", ") +
+          ", but a class can have at most one; use one class per constraint and combine them with ObjectIntersectionOf")
+      subject -> constraints.head
+    }
   }
 
 

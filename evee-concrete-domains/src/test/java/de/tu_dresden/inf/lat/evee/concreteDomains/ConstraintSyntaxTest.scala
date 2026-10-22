@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains
 import de.tu_dresden.inf.lat.evee.concreteDomains.ReasonerTestSupport._
 import de.tu_dresden.inf.lat.evee.concreteDomains.TestOntologies.ontology
 import org.junit.Assert.{assertTrue, fail}
-import org.junit.{Ignore, Test}
+import org.junit.Test
 
 /** Constraints written in the cd:constraint annotations are read correctly. */
 class ConstraintSyntaxTest {
@@ -36,7 +36,6 @@ class ConstraintSyntaxTest {
     Seq("C0" -> ":x * 2 = :y", "C1" -> ":y < 6", "C2" -> ":x < 3"),
     "SubClassOf(:A :C0)", "SubClassOf(:A :C1)"), "A", "C2")
 
-  @Ignore("B8")
   @Test def twoConstraintsOnOneClassAreRejected(): Unit = {
     val o = ontology("QDiff", Seq("C0" -> ":x = 0", "C0" -> ":x > 1"))
     try {

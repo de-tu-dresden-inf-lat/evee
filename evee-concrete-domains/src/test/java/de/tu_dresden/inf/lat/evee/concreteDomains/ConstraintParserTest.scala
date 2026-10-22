@@ -95,6 +95,16 @@ class ConstraintParserTest {
     assertError(parser, ":x = 1", "cannot resolve :x, since the ontology defines no prefixes")
   }
 
+  @Test def constraintMustBeAString(): Unit = {
+    val wrong = ontology("QDiff", Seq(), "AnnotationAssertion(cd:constraint :C0 :value)")
+    try {
+      ExtendedOntologyParser.toExtendedOntology(wrong)
+      fail("a constraint that is not a string should be rejected")
+    } catch {
+      case e: ParsingException => assertTrue(e.getMessage, e.getMessage.contains("C0 has to be a string"))
+    }
+  }
+
   @Test def errorNamesTheClass(): Unit = {
     val wrong = ontology("QDiff", Seq("C0" -> ":x = five"))
     try {
