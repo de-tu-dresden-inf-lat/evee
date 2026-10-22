@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.parser
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain._
-import de.tu_dresden.inf.lat.evee.concreteDomains.tools.FreshClasses
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.{FreshClasses, Numbers}
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.parameters.Imports
@@ -21,7 +21,7 @@ class MultConstraintParser(val ontology: OWLOntology) extends ConstraintParser[M
   val reLess = (strReIRI + raw"\s*<\s*" + strReNumber).r
   val reMult = (strReIRI + raw"\s*\*\s*" + strReNumber + raw"\s*=\s*" + strReIRI).r
 
-  val numberParser: (String => Double) = _.toDouble
+  val numberParser: String => BigFraction = Numbers.parse
 
   val manager = ontology.getOWLOntologyManager
   val factory = manager.getOWLDataFactory
@@ -48,18 +48,18 @@ class MultConstraintParser(val ontology: OWLOntology) extends ConstraintParser[M
       case reEqual(classStr, propertyStr, constantStr) =>
         val property = factory.getOWLDataProperty(getIRI(propertyStr))
         val constant = numberParser(constantStr)
-        MultEqual(property,new BigFraction(constant))
+        MultEqual(property, constant)
 
       case reLess(propertyStr, constantStr) =>
         val property = factory.getOWLDataProperty(getIRI(propertyStr))
         val constant = numberParser(constantStr)
-        MultLessThan(property, new BigFraction(constant))
+        MultLessThan(property, constant)
 
       case reMult(property1Str, factorStr, property2Str) =>
         val property1 = factory.getOWLDataProperty(getIRI(property1Str))
         val factor = numberParser(factorStr)
         val property2 = factory.getOWLDataProperty(getIRI(property2Str))
-        Multiplication(property1, new BigFraction(factor), property2)
+        Multiplication(property1, factor, property2)
 
       case _ =>
         throw new ParsingException(s"could not parse constraint $constraintStr")

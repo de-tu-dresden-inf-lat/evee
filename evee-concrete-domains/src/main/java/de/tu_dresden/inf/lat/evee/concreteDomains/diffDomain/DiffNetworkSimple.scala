@@ -4,6 +4,8 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.ConstraintNetwork
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference
 import de.tu_dresden.inf.lat.evee.proofs.tools.ProofTools
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers.FractionOps
+import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.OWLDataProperty
 
 import scala.collection.JavaConverters.seqAsJavaListConverter
@@ -109,7 +111,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
 
   private def addTautologicalEdges(): Unit = {
     edges.keySet.union(nodes.keySet).foreach(n1 => {
-      val newPred = DiffSum(n1, 0, n1)
+      val newPred = DiffSum(n1, BigFraction.ZERO, n1)
       update(n1,n1,newPred)
       derived += newPred
       inferences += new Inference(newPred, DiffRules.RULE_ZERO, List.empty.asJava)
@@ -210,7 +212,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
   private var negativeNodes: mutable.Map[OWLDataProperty, mutable.Set[DiffUnaryConstraint]] = _
   private var negativeEdges: mutable.Map[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[DiffSum]]] = _
 
-  def generateSolution(negativePredicates: Iterable[DiffConstraint]): Map[OWLDataProperty, Double] = {
+  def generateSolution(negativePredicates: Iterable[DiffConstraint]): Map[OWLDataProperty, BigFraction] = {
     // "complete" the negative constraints w.r.t. the positive edges in the constraint network
     negativeNodes = new mutable.HashMap[OWLDataProperty, mutable.Set[DiffUnaryConstraint]]()
     negativeEdges = new mutable.HashMap[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[DiffSum]]]()
@@ -219,7 +221,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
 
     var properties = derived.flatMap(_.getOWLDataProperties).union(negativePredicates.flatMap(_.getOWLDataProperties).toSet)
 
-    var solution = Map[OWLDataProperty, Double]()
+    var solution = Map[OWLDataProperty, BigFraction]()
 
     while (properties.nonEmpty) {
       // choose a new value for an un-assigned variable and update the constraints
@@ -279,7 +281,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
     )
   }
 
-  private def chooseAssignment(properties: Set[OWLDataProperty]): (OWLDataProperty, Double) = {
+  private def chooseAssignment(properties: Set[OWLDataProperty]): (OWLDataProperty, BigFraction) = {
     // If there is a constraint x=v, then assign v to x
     for (n1 <- nodes.keys) {
       nodes(n1) match {
@@ -305,24 +307,24 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
       .union(lowerBoundExclusive.toSet)
 
     // Find a value in between the lower and upper bounds and not equal to one of the forbidden values
-    def allowedValue: Double = {
+    def allowedValue: BigFraction = {
       if (upperBoundInclusive.isDefined && !forbiddenValues.contains(upperBoundInclusive.get))
         upperBoundInclusive.get
       else {
         if (forbiddenValues.size == 0)
-          return 0d
+          return BigFraction.ZERO
         if (forbiddenValues.size == 1)
-          return forbiddenValues.head + 1d
+          return forbiddenValues.head + BigFraction.ONE
         val lowest = forbiddenValues.min
         val nextLowest = forbiddenValues.filter(_ > lowest).min
-        (lowest + nextLowest) / 2
+        (lowest + nextLowest) / BigFraction.TWO
       }
     }
 
     (x, allowedValue)
   }
 
-  private def reduceNegative(x: OWLDataProperty, v: Double): Unit = {
+  private def reduceNegative(x: OWLDataProperty, v: BigFraction): Unit = {
     // Remove all constraints that only talk about x
     negativeNodes.remove(x)
     negativeEdges.remove(x)
@@ -335,7 +337,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
     })
   }
 
-  private def reducePositive(x: OWLDataProperty, v: Double): Unit = {
+  private def reducePositive(x: OWLDataProperty, v: BigFraction): Unit = {
     // Remove all constraints that only talk about x
     nodes.remove(x)
     edges.remove(x)

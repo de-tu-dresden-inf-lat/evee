@@ -9,9 +9,11 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.data.cdGeneral.ReasoningTaskTr
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Tools
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers.FractionOps
 
 //import de.tu_dresden.lat.z3.Z3Checker
 
+import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.OWLDataProperty
 
 import java.util
@@ -36,7 +38,7 @@ object DiffRules {
 }
 
 
-class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,Double] {
+class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,BigFraction] {
 
   override var lastNetwork: ConstraintNetwork[DiffConstraint] = new DiffNetworkSimple()
 
@@ -136,21 +138,21 @@ class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,Double] 
 
   override def proveInconsistency(): IProof[DiffConstraint] = getProof(DiffContradiction)
 
-  override def generateExplanations(): Stream[Map[OWLDataProperty, Double]] = {
+  override def generateExplanations(): Stream[Map[OWLDataProperty, BigFraction]] = {
     saturate(predicates)
     val solution = lastNetwork.generateSolution(negativePredicates)
     lastReasoningInput = Set() // reset this to avoid reusing the ConstraintNetwork again (we have just destroyed it)
 
     assertionTest(solution)
     val map = solution.filterKeys(prop => relevantDataProperties.contains(prop))
-    Stream.of[Map[OWLDataProperty, Double]](map)
+    Stream.of[Map[OWLDataProperty, BigFraction]](map)
   }
 
-  def satisfies(constraint: DiffConstraint, assignment: Map[OWLDataProperty, Double]): Boolean = {
+  def satisfies(constraint: DiffConstraint, assignment: Map[OWLDataProperty, BigFraction]): Boolean = {
     constraint match {
-      case DiffEqual(prop, value) => assignment(prop) == value
+      case DiffEqual(prop, value) => assignment(prop).equals(value)
       case DiffGreaterThan(prop, value) => assignment(prop) > value
-      case DiffSum(prop1, value, prop2) => assignment(prop1) + value == assignment(prop2)
+      case DiffSum(prop1, value, prop2) => (assignment(prop1) + value).equals(assignment(prop2))
       case DiffContradiction => false
     }
   }

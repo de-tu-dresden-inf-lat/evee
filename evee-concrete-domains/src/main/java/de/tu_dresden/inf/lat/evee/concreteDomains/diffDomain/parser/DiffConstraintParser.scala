@@ -3,8 +3,9 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.parser
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.{DiffConstraint, DiffEqual, DiffGreaterThan, DiffSum}
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
-import de.tu_dresden.inf.lat.evee.general.data.exceptions
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers
 
+import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.{IRI, OWLClass, OWLOntology}
 import org.semanticweb.owlapi.util.DefaultPrefixManager
 
@@ -17,7 +18,7 @@ import org.semanticweb.owlapi.model.OWLDocumentFormat
  */
 class DiffConstraintParser(val ontology: OWLOntology) extends ConstraintParser[DiffConstraint] {
 
-  val numberParser: (String => Double) = _.toDouble
+  val numberParser: String => BigFraction = Numbers.parse
 
   val reEqual =   (strReIRI + raw"\s*=\s*" + strReNumber).r
   val reGreater = (strReIRI + raw"\s*>\s*" + strReNumber).r

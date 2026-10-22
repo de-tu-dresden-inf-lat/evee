@@ -30,19 +30,19 @@ class ConstraintProofTest {
   private def fraction(n: Int) = new BigFraction(n)
 
   @Test def diffSum(): Unit =
-    assertDiffProof(Seq(DiffSum(x, 1, y), DiffSum(y, 2, z)), DiffSum(x, 3, z))
+    assertDiffProof(Seq(DiffSum(x, fraction(1), y), DiffSum(y, fraction(2), z)), DiffSum(x, fraction(3), z))
 
   @Test def diffEqual(): Unit =
-    assertDiffProof(Seq(DiffEqual(x, 0), DiffSum(x, 1, y)), DiffEqual(y, 1))
+    assertDiffProof(Seq(DiffEqual(x, fraction(0)), DiffSum(x, fraction(1), y)), DiffEqual(y, fraction(1)))
 
   @Test def diffGreaterThan(): Unit =
-    assertDiffProof(Seq(DiffGreaterThan(x, 0), DiffSum(x, 1, y)), DiffGreaterThan(y, 1))
+    assertDiffProof(Seq(DiffGreaterThan(x, fraction(0)), DiffSum(x, fraction(1), y)), DiffGreaterThan(y, fraction(1)))
 
   @Test def diffBoundFromEqual(): Unit =
-    assertDiffProof(Seq(DiffEqual(x, 5)), DiffGreaterThan(x, 3))
+    assertDiffProof(Seq(DiffEqual(x, fraction(5))), DiffGreaterThan(x, fraction(3)))
 
   @Test def diffInconsistency(): Unit =
-    assertDiffProof(Seq(DiffEqual(x, 0), DiffGreaterThan(x, 1)), DiffContradiction)
+    assertDiffProof(Seq(DiffEqual(x, fraction(0)), DiffGreaterThan(x, fraction(1))), DiffContradiction)
 
   @Test def multProduct(): Unit =
     assertMultProof(Seq(Multiplication(x, fraction(2), y), Multiplication(y, fraction(3), z)),

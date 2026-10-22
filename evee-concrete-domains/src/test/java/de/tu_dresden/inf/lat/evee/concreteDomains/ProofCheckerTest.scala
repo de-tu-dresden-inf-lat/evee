@@ -103,6 +103,8 @@ class ProofCheckerTest {
     problems(tautology, subClassOf("A", "C3"), subClassOf("A", "C3"), inference(subClassOf("A", "C3"))),
     "unsound inference")
 
+  private def fraction(n: Int) = new BigFraction(n)
+
   private val Seq(x, y, z) = Seq("x", "y", "z")
     .map(name => OWLManager.getOWLDataFactory.getOWLDataProperty(IRI.create(TestOntologies.NS + name)))
 
@@ -119,8 +121,8 @@ class ProofCheckerTest {
   }
 
   @Test def unsoundDiffInference(): Unit = {
-    val premises = Seq[DiffConstraint](DiffSum(x, 1, y), DiffSum(y, 2, z))
-    assertProblems(problems(new DiffReasoner(), premises, DiffSum(x, 5, z), premises -> DiffSum(x, 5, z)),
+    val premises = Seq[DiffConstraint](DiffSum(x, fraction(1), y), DiffSum(y, fraction(2), z))
+    assertProblems(problems(new DiffReasoner(), premises, DiffSum(x, fraction(5), z), premises -> DiffSum(x, fraction(5), z)),
       "unsound inference")
   }
 

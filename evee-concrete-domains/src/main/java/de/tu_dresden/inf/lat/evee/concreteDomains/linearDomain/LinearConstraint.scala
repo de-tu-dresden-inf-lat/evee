@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers
 import org.semanticweb.owlapi.model.OWLDataProperty
 import org.apache.commons.math3.fraction.BigFraction
 
@@ -12,7 +13,7 @@ case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDC
   override def toString() = {
     val l = lhs.keys.toList.sortWith(_.toString < _.toString).map{key => format(key, lhs(key))}
       .map(_.replaceAll("\\s","")).mkString(" + ").replaceAll("\\+ -","\u2212 ")//Works better with GraphViz
-    val r = " = " + rhs.toString.replaceAll("\\s","")
+    val r = " = " + formatNumber(rhs)
     if (l.nonEmpty) l + r else 0 + r
   }
 
@@ -32,11 +33,16 @@ case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDC
   }
 
   def format(prop: OWLDataProperty, value: T): String = {
-    value.toString.trim match {
+    formatNumber(value) match {
       case "1" => prop.toString
       case "-1" => "-" + prop.toString
-      case _ => value + "*" + prop
+      case number => number + "*" + prop
     }
+  }
+
+  private def formatNumber(value: T): String = value match {
+    case fraction: BigFraction => Numbers.format(fraction)
+    case other => other.toString.replaceAll("\\s", "")
   }
 
 }

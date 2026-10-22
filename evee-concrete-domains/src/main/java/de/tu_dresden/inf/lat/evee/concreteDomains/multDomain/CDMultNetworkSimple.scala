@@ -215,7 +215,7 @@ class MultNetworkSimple extends ConstraintNetwork[MultConstraint] {
   private var negativeNodes: mutable.Map[OWLDataProperty, mutable.Set[MultUnaryConstraint]] = _
   private var negativeEdges: mutable.Map[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[Multiplication]]] = _
 
-  def generateSolution(negativeConstraints: Iterable[MultConstraint]): Map[OWLDataProperty, Double] =
+  def generateSolution(negativeConstraints: Iterable[MultConstraint]): Map[OWLDataProperty, BigFraction] =
     throw new AssertionError("Not Implemented!")
 
   private def fillNegativeGraphAndMirror(negative: Iterable[MultConstraint]): Unit = {

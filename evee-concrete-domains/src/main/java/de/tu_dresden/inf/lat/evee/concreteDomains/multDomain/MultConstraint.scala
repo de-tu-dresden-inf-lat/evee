@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.multDomain
 
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.OWLDataProperty
@@ -23,7 +24,7 @@ trait MultUnaryConstraint extends MultConstraint
  */
 case class MultLessThan(property: OWLDataProperty, bound: BigFraction)
   extends MultUnaryConstraint {
-  override def toString() = property + " < " + bound.doubleValue()
+  override def toString() = property + " < " + Numbers.format(bound)
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
@@ -35,7 +36,7 @@ case class MultLessThan(property: OWLDataProperty, bound: BigFraction)
  */
 case class MultEqual(property: OWLDataProperty, value: BigFraction)
   extends MultUnaryConstraint {
-  override def toString() = property + " = " + value.doubleValue()
+  override def toString() = property + " = " + Numbers.format(value)
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
@@ -54,7 +55,7 @@ case class Multiplication(property1: OWLDataProperty, factor: BigFraction, prope
     throw new IllegalArgumentException("Factor has to be larger than 0")
 
   override def toString() = {
-    factor.doubleValue()+" * "+property1+" = "+property2
+    Numbers.format(factor) + " * " + property1 + " = " + property2
   }
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property1, property2)

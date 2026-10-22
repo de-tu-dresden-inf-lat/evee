@@ -1,6 +1,9 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers.FractionOps
+import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.OWLDataProperty
 
 /**
@@ -17,9 +20,9 @@ trait DiffUnaryConstraint extends DiffConstraint
 /**
  * property > bound
  */
-case class DiffGreaterThan(property: OWLDataProperty, bound: Double)
+case class DiffGreaterThan(property: OWLDataProperty, bound: BigFraction)
   extends DiffUnaryConstraint {
-  override def toString() = property + " > " + bound
+  override def toString() = property + " > " + Numbers.format(bound)
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
@@ -29,9 +32,9 @@ case class DiffGreaterThan(property: OWLDataProperty, bound: Double)
 /**
  * property = value
  */
-case class DiffEqual(property: OWLDataProperty, value: Double)
+case class DiffEqual(property: OWLDataProperty, value: BigFraction)
   extends DiffUnaryConstraint {
-  override def toString() = property + " = " + value
+  override def toString() = property + " = " + Numbers.format(value)
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
@@ -41,18 +44,18 @@ case class DiffEqual(property: OWLDataProperty, value: Double)
 /**
  * property1 + diff = property2
  */
-case class DiffSum(property1: OWLDataProperty, diff: Double, property2: OWLDataProperty)
+case class DiffSum(property1: OWLDataProperty, diff: BigFraction, property2: OWLDataProperty)
   extends DiffConstraint {
   override def toString() = {
-    if(diff>=0)
-      property1 + " + " + diff + " = " + property2
+    if(diff >= BigFraction.ZERO)
+      property1 + " + " + Numbers.format(diff) + " = " + property2
     else
-      property1 + " - " + (-diff) + " = " + property2
+      property1 + " - " + Numbers.format(-diff) + " = " + property2
   }
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property1, property2)
 
-  override def isInconsistent: Boolean = property1.equals(property2) && !Math.abs(diff).equals(0.0)
+  override def isInconsistent: Boolean = property1.equals(property2) && !diff.equals(BigFraction.ZERO)
 }
 
 object DiffContradiction extends DiffConstraint {

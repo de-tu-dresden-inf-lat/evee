@@ -3,6 +3,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstraint}
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.{IRI, OWLClass, OWLDataProperty, OWLOntology}
@@ -12,27 +13,12 @@ import java.io.{BufferedReader, File, FileReader}
 import org.semanticweb.owlapi.model.OWLAnnotationSubject
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom
 
-/** **
- * Format:
- *
- * # COMMENT
- *
- * PREFIX ss: IRI
- * ..
- * CLASS_IRI:
- * DOUBLE * DATA_PROPERTY
- * DOUBLE * DATAPROPRTY
- * ..
- * = DOUBLE
+/**
+ * Parser for the concrete domain QLinear: linear equations such as 2*x+-1*y=5, with exact rational coefficients
  */
+class LinearConstraintParser(val ontology: OWLOntology) extends ConstraintParser[LinearConstraint[BigFraction]] {
 
-class DoubleLinearConstraintParser(ontology: OWLOntology)
-extends LinearConstraintParser[Double](
-  ontology,
-  _.toDouble
-)
-
-class LinearConstraintParser[T](val ontology: OWLOntology, numberParser: String => T) extends ConstraintParser[LinearConstraint[T]] {
+  val numberParser: String => BigFraction = Numbers.parse
 
   val manager = ontology.getOWLOntologyManager
   val factory = manager.getOWLDataFactory
@@ -40,7 +26,7 @@ class LinearConstraintParser[T](val ontology: OWLOntology, numberParser: String 
   val reCoefficient = (strReNumber + raw"\s*\*\s*" + strReIRI).r
   val reConstant = (raw"=\s*" + strReNumber).r
 
-  def toConstraintMap(constraints: Map[OWLAnnotationSubject, String]): Map[OWLClass, LinearConstraint[T]] = {
+  def toConstraintMap(constraints: Map[OWLAnnotationSubject, String]): Map[OWLClass, LinearConstraint[BigFraction]] = {
 
    constraints.map{ case (subject, constraint) => {
 
@@ -50,10 +36,10 @@ class LinearConstraintParser[T](val ontology: OWLOntology, numberParser: String 
       val owlClass = factory.getOWLClass(subject.asInstanceOf[IRI])
       owlClass -> toConstraint(constraint)
 
-    }}.toMap[OWLClass, LinearConstraint[T]]
+    }}.toMap[OWLClass, LinearConstraint[BigFraction]]
   }
 
-  def toConstraint(constraintStr: String): LinearConstraint[T] = {
+  def toConstraint(constraintStr: String): LinearConstraint[BigFraction] = {
     val equation = constraintStr.split("=")
     if(equation.length != 2)
       throw new ParsingException(s"could not parse constraint $constraintStr")
@@ -67,7 +53,7 @@ class LinearConstraintParser[T](val ontology: OWLOntology, numberParser: String 
           case _ => 
             throw new ParsingException(s"could not parse constraint $constraintStr")
         }
-      }.toMap[OWLDataProperty, T]
+      }.toMap[OWLDataProperty, BigFraction]
 
     LinearConstraint(lhs, rhs)
   }

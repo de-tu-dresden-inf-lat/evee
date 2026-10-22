@@ -31,27 +31,27 @@ class ExampleOntologiesTest {
   @Test def diffDrones13cUnique(): Unit =
     assertEntailedOnlyWithConcreteDomain(load("qdiff/ddist13c-unique.ofn"), "World", "PartiallySafe")
 
-  @Ignore("B1, B9")
+  @Ignore("B9")
   @Test def linearCoffee(): Unit =
     assertEntailedOnlyWithConcreteDomain(load("qlinear/coffee.ofn"), "Order", "Ristretto")
 
-  @Ignore("B1, B9")
+  @Ignore("B9")
   @Test def linearPatient(): Unit =
     assertEntailedOnlyWithConcreteDomain(load("qlinear/patient.ofn"), "CurrentPatient", "NeedAttention")
 
-  @Ignore("B1, B9")
+  @Ignore("B9")
   @Test def linearExample(): Unit =
     assertEntailedOnlyWithConcreteDomain(load("qlinear/example.ofn"), "System1", "GoodSystem")
 
-  @Ignore("B1, B9")
+  @Ignore("B9")
   @Test def linearExample2(): Unit =
     assertEntailedOnlyWithConcreteDomain(load("qlinear/example2.ofn"), "A1", "B3")
 
-  @Ignore("B1, B9")
+  @Ignore("B9")
   @Test def linearArtificial3a(): Unit =
     assertEntailedOnlyWithConcreteDomain(load("qlinear/artificial3a.ofn"), "A", "B")
 
-  @Ignore("B1, B9")
+  @Ignore("B9")
   @Test def linearArtificial3aUnique(): Unit =
     assertEntailedOnlyWithConcreteDomain(load("qlinear/artificial3a-unique.ofn"), "A", "B")
 }

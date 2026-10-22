@@ -4,7 +4,7 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, CDConstrain
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.parser.DiffConstraintParser
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
-import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser.{DoubleLinearConstraintParser,LinearConstraintParser}
+import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser.LinearConstraintParser
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.parser.MultConstraintParser
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure._
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.{CDAnnotationNames, ConcreteDomainName}
@@ -45,7 +45,7 @@ object ExtendedOntologyParser {
     val constraintParser: ConstraintParser[CDConstraint] = concreteDomain match {
       case ConcreteDomainName.QDiff   => new DiffConstraintParser(ontology)
       case ConcreteDomainName.QMult   => new MultConstraintParser(ontology)
-      case ConcreteDomainName.QLinear  => new DoubleLinearConstraintParser(ontology)
+      case ConcreteDomainName.QLinear  => new LinearConstraintParser(ontology)
     }
 
     val constraints = constraintParser.toConstraintMap(getConstraints(ontology))
