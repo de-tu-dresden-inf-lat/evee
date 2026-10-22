@@ -8,6 +8,13 @@ import org.protege.editor.owl.OWLEditorKit;
 
 public class NonEntailmentExplanationPluginLoader extends AbstractPluginLoader<NonEntailmentExplanationPlugin> {
 
+    static {
+        // must run as early as possible, before any JavaFX classes are loaded
+        if (System.getProperty("os.name", "").toLowerCase().contains("mac")) {
+            System.setProperty("glass.macosx.uikit", "false");
+        }
+    }
+
     private final OWLEditorKit owlEditorKit;
 
     public NonEntailmentExplanationPluginLoader(OWLEditorKit editorKit) {

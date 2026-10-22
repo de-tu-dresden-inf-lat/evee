@@ -13,10 +13,7 @@ public class EdgeLabelPositioner {
     private final static Logger logger = Logger.getLogger(EdgeLabelPositioner.class);
 
 
-    public static void initializeLabelsPositions(GraphicGraph graphModel) {
-
-        logger.warn("initializing label positions"); //debug log
-        
+    public static void initializeLabelsPositions(GraphicGraph graphModel) {        
         graphModel.edges().map(e -> (GraphicEdge) e)
                 .filter(e -> e.getGroup()!=null)
                 .filter(e -> e.getNode0()!= e.getNode1())

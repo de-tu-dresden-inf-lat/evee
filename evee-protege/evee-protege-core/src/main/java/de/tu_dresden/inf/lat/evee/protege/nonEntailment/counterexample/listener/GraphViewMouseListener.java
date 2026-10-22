@@ -159,7 +159,7 @@ public class GraphViewMouseListener implements MouseManager {
     private void onScroll(ScrollEvent e) {
         e.consume();
         double i = e.getDeltaY();
-        double factor = Math.pow(1.05, i);
+        double factor = Math.pow(1.02, i);
         Camera cam = view.getCamera();
         double zoom = cam.getViewPercent() * factor;
         Point2 pxCenter  = cam.transformGuToPx(cam.getViewCenter().x, cam.getViewCenter().y, 0);
