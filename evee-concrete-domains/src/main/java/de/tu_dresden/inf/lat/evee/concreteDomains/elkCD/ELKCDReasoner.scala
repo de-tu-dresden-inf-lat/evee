@@ -23,12 +23,13 @@ import org.semanticweb.owlapi.model.OWLClassExpression
 import org.semanticweb.owlapi.model.AxiomType
 import org.semanticweb.owlapi.model.OWLAxiom
 import org.semanticweb.owlapi.reasoner.NodeSet
+import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression
 import org.semanticweb.owlapi.model.OWLNamedIndividual
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy
 import org.semanticweb.owlapi.reasoner.IndividualNodeSetPolicy
 import org.semanticweb.owlapi.reasoner.OWLReasoner
-import org.semanticweb.owlapi.model.OWLOntology
+import org.semanticweb.owlapi.model.{OWLObject, OWLOntology}
 import org.semanticweb.owlapi.util.Version
 import org.semanticweb.owlapi.model.{OWLDataProperty, OWLDataPropertyExpression}
 import java.{util => ju}
@@ -104,6 +105,12 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   var internalReasoner: OWLReasoner = _
   var state = ClassificationState()
 
+  /** the sets of constraint classes whose consequences have been added to the internal ontology */
+  private var handledConstraintSets: Set[Set[OWLClass]] = Set.empty
+
+  /** the class expressions for which all consequences of the concrete domain are in the internal ontology */
+  private val checkedExpressions = mutable.Set[OWLClassExpression]()
+
   load()
 
   private val changeListener = new OWLOntologyChangeListener {
@@ -126,68 +133,96 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     extendedOntology = ExtendedOntology(ontology, domain, constraints).asInstanceOf[ExtendedOntology[CD_CONSTRAINT]]
     internalReasoner = reasonerFactory.createReasoner(ontology, config)
     state = ClassificationState()
+    handledConstraintSets = Set.empty
+    checkedExpressions.clear()
   }
 
-  /** takes pending changes into account in non-buffering mode and classifies if necessary */
-  private def prepare(): Unit = {
+  /**
+   * Takes pending changes into account in non-buffering mode and classifies if necessary. Then adds the consequences
+   * of the concrete domain for the class expressions in the query that have not been checked yet, e.g., because they
+   * do not occur in the ontology.
+   */
+  private def prepare(query: OWLObject*): Unit = synchronized {
     if (!bufferingMode)
       flush()
     if (!state.computed)
       classify()
+    if (state.consistent) {
+      val unchecked = query.flatMap(_.getNestedClassExpressions.asScala).filterNot(checkedExpressions).toSet
+      if (unchecked.nonEmpty)
+        addConsequences(unchecked, Token())
+    }
   }
   
   /**
-   * Adds the axioms that follow from the concrete domain to the internal ontology until nothing changes. Stops as soon
-   * as the internal ontology is inconsistent; the internal reasoner then answers queries like ELK does for
-   * inconsistent ontologies, i.e., most of them throw an InconsistentOntologyException.
+   * Adds the axioms that follow from the concrete domain for the class expressions of the ontology, its constraint
+   * classes and its individuals to the internal ontology. If the ontology is inconsistent, the internal reasoner
+   * answers queries like ELK does for inconsistent ontologies, i.e., most of them throw an
+   * InconsistentOntologyException.
    */
   override def classify() = {
     val token = Token()
-    
-    var alreadyAdded: Set[Set[OWLClass]] = Set.empty
-    var changed = true
-    var consistent = true
 
     logger.info("Starting classification with ELK-CD reasoner...")
+
+    val expressions = extendedOntology.ontology.getNestedClassExpressions.asScala.toSet ++ extendedOntology.constraintNames
+    val consistent = addConsequences(expressions, token, includingIndividuals = true)
+
+    //Store the time in ms
+    collectStatistics( token.getTime() / 1000000, token.getReasonerCalls())
+
+    logger.warn("end of classify(). added: "+ handledConstraintSets) //debug log
+
+    state = ClassificationState(computed = true, consistent = consistent)
+  }
+
+  /**
+   * Adds the axioms that follow from the concrete domain for the given class expressions (and the individuals) to the
+   * internal ontology until nothing changes. Stops as soon as the internal ontology is inconsistent.
+   *
+   * @return whether the internal ontology is consistent
+   */
+  private def addConsequences(expressions: Set[OWLClassExpression], token: Token,
+                              includingIndividuals: Boolean = false): Boolean = {
+    var changed = true
+    var consistent = true
 
     while(changed && consistent) {
       val startTime = System.nanoTime()
       internalReasoner.flush()
       consistent = internalReasoner.isConsistent
-      if (consistent) {
-        internalReasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY)
-        internalReasoner.precomputeInferences(InferenceType.DISJOINT_CLASSES)
-        internalReasoner.precomputeInferences(InferenceType.CLASS_ASSERTIONS)
-      }
       token.addTime(System.nanoTime() - startTime)
       token.addOneReasonerCall()
 
-      if (consistent) {
-        val result = addRequiredCDAxioms(alreadyAdded, token)
-        alreadyAdded ++= result.addedInformation
-        changed = result.ontologyChanged
-      }
+      if (consistent)
+        changed = addRequiredCDAxioms(expressions, includingIndividuals, token)
     }
-    //Store the time in ms
-    collectStatistics( token.getTime() / 1000000, token.getReasonerCalls())
-
-    logger.warn("end of classify(). added: "+ alreadyAdded) //debug log
-
-    state = ClassificationState(computed = true, consistent = consistent)
+    if (consistent)
+      checkedExpressions ++= expressions
+    consistent
   }
 
-  private def addRequiredCDAxioms(alreadyAdded: Set[Set[OWLClass]], token: Token): AddCDAxiomsResult = {
-    
-    var changed = false
-    var addedInformation = Set.empty[Set[OWLClass]]
+  /** @return whether axioms were added */
+  private def addRequiredCDAxioms(expressions: Set[OWLClassExpression], includingIndividuals: Boolean,
+                                  token: Token): Boolean = {
 
     if (cdReasoner == null) { //using only ELK to reason, no concrete domain
-        return AddCDAxiomsResult(changed, addedInformation)
+        return false
     }
 
-    extendedOntology.ontology.getNestedClassExpressions.forEach{ classExp =>
+    var changed = false
+
+    def addCDAxiomsFor(relevant: Set[OWLClass]): Unit =
+      if (!handledConstraintSets.contains(relevant)) {
+        val result = addCDAxioms(relevant)
+        changed = changed || result.ontologyChanged
+        handledConstraintSets ++= result.addedInformation
+      }
+
+    // an unsatisfiable class expression has no further consequences, but ELK reports all classes as its subsumers
+    expressions.filter(internalReasoner.isSatisfiable).foreach{ classExp =>
       val startTime = System.nanoTime()
-      val superClasses = internalReasoner.getSuperClasses(classExp, false)
+      val superClasses = allSuperClasses(classExp)
       token.addTime(System.nanoTime() - startTime)
 
       val subsumers = superClasses.getFlattened.asScala
@@ -198,30 +233,34 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
           case _ =>
         }
       }
-      val relevant = subsumers.filter(extendedOntology.constraintNames).toSet
-
-      if(!alreadyAdded.contains(relevant)){
-        val result = addCDAxioms(relevant)
-        changed = changed || result.ontologyChanged
-        addedInformation ++= result.addedInformation
-      }
+      addCDAxiomsFor(subsumers.filter(extendedOntology.constraintNames).toSet)
     }
 
-    extendedOntology.ontology.getIndividualsInSignature().forEach{ individual =>
-      val startTime = System.nanoTime()
-      val classes = internalReasoner.getTypes(individual, false).getFlattened.asScala
-      token.addTime(System.nanoTime() - startTime)
+    if (includingIndividuals)
+      extendedOntology.ontology.getIndividualsInSignature().forEach{ individual =>
+        val startTime = System.nanoTime()
+        val classes = internalReasoner.getTypes(individual, false).getFlattened.asScala
+        token.addTime(System.nanoTime() - startTime)
 
-      val relevant = classes.filter(extendedOntology.constraintNames).toSet
-      if(!alreadyAdded.contains(relevant)){
-        val result = addCDAxioms(relevant)
-        changed = changed || result.ontologyChanged
-        addedInformation ++= result.addedInformation
+        addCDAxiomsFor(classes.filter(extendedOntology.constraintNames).toSet)
       }
-    }
 
-    return AddCDAxiomsResult(changed, addedInformation)
+    changed
   }
+
+  /**
+   * All superclasses of the class expression. ELK 0.6.0 omits the direct superclasses of a complex class expression
+   * from all its superclasses, so they are added here.
+   */
+  private def allSuperClasses(ce: OWLClassExpression): NodeSet[OWLClass] =
+    if (!ce.isAnonymous)
+      internalReasoner.getSuperClasses(ce, false)
+    else {
+      val result = new OWLClassNodeSet()
+      result.addAllNodes(internalReasoner.getSuperClasses(ce, true).getNodes)
+      result.addAllNodes(internalReasoner.getSuperClasses(ce, false).getNodes)
+      result
+    }
 
   private def addCDAxioms(relevant: Set[OWLClass]): AddCDAxiomsResult = {
     //println("Adding axioms for: "+relevant)
@@ -287,12 +326,12 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   }
 
   override def isEntailed(axiom: OWLAxiom): Boolean = {
-    prepare()
+    prepare(axiom)
     return internalReasoner.isEntailed(axiom)
   }
 
   override def isEntailed(axioms: ju.Set[_ <: OWLAxiom]): Boolean = {
-    prepare()
+    prepare(axioms.asScala.toSeq: _*)
     return internalReasoner.isEntailed(axioms)
   }
 
@@ -307,7 +346,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   }
 
   override def isSatisfiable(cls: OWLClassExpression): Boolean = {
-    prepare()
+    prepare(cls)
     return internalReasoner.isSatisfiable(cls)
   }
 
@@ -322,17 +361,17 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   }
 
   override def getSubClasses(ce: OWLClassExpression, direct: Boolean): NodeSet[OWLClass] = {
-    prepare()
+    prepare(ce)
     return internalReasoner.getSubClasses(ce, direct)
   }
 
   override def getSuperClasses(ce: OWLClassExpression, direct: Boolean): NodeSet[OWLClass] = {
-    prepare()
-    return internalReasoner.getSuperClasses(ce, direct)
+    prepare(ce)
+    return if (direct) internalReasoner.getSuperClasses(ce, true) else allSuperClasses(ce)
   }
 
   override def getEquivalentClasses(ce: OWLClassExpression): Node[OWLClass] = {
-    prepare()
+    prepare(ce)
     return internalReasoner.getEquivalentClasses(ce)
   }
   
@@ -367,7 +406,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   }
   
   override def getInstances(ce: OWLClassExpression, direct: Boolean): NodeSet[OWLNamedIndividual] = {
-    prepare()
+    prepare(ce)
     return internalReasoner.getInstances(ce, direct)
   }
 
@@ -442,7 +481,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
    * Takes the pending changes into account. The new internal ontology is built before the old one is discarded, so
    * that the reasoner keeps working if the changed ontology cannot be read, e.g., because of a wrong constraint.
    */
-  override def flush(): Unit = {
+  override def flush(): Unit = synchronized {
     if (pendingChangesBuffer.nonEmpty) {
       val oldReasoner = internalReasoner
       load()

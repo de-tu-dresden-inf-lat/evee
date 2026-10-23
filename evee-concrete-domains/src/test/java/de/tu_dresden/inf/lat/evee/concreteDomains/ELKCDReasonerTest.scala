@@ -4,7 +4,7 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.ReasonerTestSupport._
 import de.tu_dresden.inf.lat.evee.concreteDomains.TestOntologies.{cls, ontology}
 import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.OWLCDReasonerFactory
 import org.junit.Assert.{assertEquals, assertFalse, assertThrows, assertTrue, fail}
-import org.junit.{Ignore, Test}
+import org.junit.Test
 import org.semanticweb.owlapi.apibinding.OWLManager
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser
@@ -80,16 +80,50 @@ class ELKCDReasonerTest {
     assertUnsatisfiable(o, "A")
   }
 
-  @Ignore("B7")
   @Test def unsatisfiableConjunctionNotInOntology(): Unit = withReasoner(ontology("QDiff", contradicting)) {
     reasoner => assertFalse("C0 and C1 should be unsatisfiable", reasoner.isSatisfiable(and("C0", "C1")))
   }
 
-  @Ignore("B7")
   @Test def subsumptionOfConjunctionNotInOntology(): Unit = withReasoner(ontology("QDiff",
     Seq("C0" -> ":x + 1 = :y", "C1" -> ":x = 0", "C2" -> ":y = 1"))) { reasoner =>
     assertTrue("C0 and C1 should be subsumed by C2",
       reasoner.isEntailed(factory.getOWLSubClassOfAxiom(and("C0", "C1"), cls("C2"))))
+  }
+
+  private val r = factory.getOWLObjectProperty(IRI.create(TestOntologies.NS + "r"))
+
+  @Test def unsatisfiableNestedExpressionNotInOntology(): Unit = withReasoner(ontology("QDiff", contradicting)) {
+    reasoner => assertFalse("r some (C0 and C1) should be unsatisfiable",
+      reasoner.isSatisfiable(factory.getOWLObjectSomeValuesFrom(r, and("C0", "C1"))))
+  }
+
+  /** the subsumption needs C0 and C1 ⊑ C2 from the concrete domain, then the axiom about r some C2 */
+  @Test def nestedSubsumptionNotInOntology(): Unit = withReasoner(ontology("QDiff",
+    Seq("C0" -> ":x + 1 = :y", "C1" -> ":x = 0", "C2" -> ":y = 1"),
+    "SubClassOf(ObjectSomeValuesFrom(:r :C2) :D)")) { reasoner =>
+    assertTrue("r some (C0 and C1) should be subsumed by D", reasoner.isEntailed(
+      factory.getOWLSubClassOfAxiom(factory.getOWLObjectSomeValuesFrom(r, and("C0", "C1")), cls("D"))))
+  }
+
+  /**
+   * C1 is a direct superclass of A and B and C0, which occurs only nested in the ontology. ELK 0.6.0 omits the direct
+   * superclasses of complex class expressions when asked for all superclasses.
+   */
+  @Test def directSuperclassOfNestedExpressionIsUsed(): Unit = assertUnsatisfiable(ontology("QDiff", contradicting,
+    "SubClassOf(ObjectIntersectionOf(:A :B) :C1)",
+    "SubClassOf(:E ObjectSomeValuesFrom(:r ObjectIntersectionOf(:A :B :C0)))"), "E")
+
+  @Test def superclassesOfExpressionNotInOntology(): Unit = withReasoner(ontology("QDiff",
+    Seq("C0" -> ":x = 0", "C1" -> ":x > -1"), "SubClassOf(ObjectIntersectionOf(:A :C1) :D)")) { reasoner =>
+    val superClasses = reasoner.getSuperClasses(and("A", "C0"), false)
+    for (name <- Seq("A", "C0", "C1", "D"))
+      assertTrue(name + " should be a superclass of A and C0", superClasses.containsEntity(cls(name)))
+  }
+
+  /** C0 and C1 occur only in their constraint annotations, not in any logical axiom */
+  @Test def constraintClassesAreClassified(): Unit = withReasoner(ontology("QMult",
+    Seq("C0" -> ":x = 5", "C1" -> ":x < 6"))) { reasoner =>
+    assertTrue("C1 should be a superclass of C0", reasoner.getSuperClasses(cls("C0"), false).containsEntity(cls("C1")))
   }
 
   @Test def constraintsOfImportedOntologiesAreUsed(): Unit = {
@@ -143,6 +177,7 @@ class ELKCDReasonerTest {
     val axioms = o.getAxioms()
     withReasoner(o) { reasoner =>
       assertFalse(reasoner.isSatisfiable(cls("A")))
+      assertFalse(reasoner.isSatisfiable(factory.getOWLObjectSomeValuesFrom(r, and("C0", "C1"))))
       assertEquals("the ontology should not be changed by reasoning", axioms, o.getAxioms())
     }
   }
