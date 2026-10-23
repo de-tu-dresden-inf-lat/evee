@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.ReasonerTestSupport._
 import de.tu_dresden.inf.lat.evee.concreteDomains.TestOntologies.{cls, ontology}
+import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDReasoner
 import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.OWLCDReasonerFactory
 import org.junit.Assert.{assertEquals, assertFalse, assertThrows, assertTrue, fail}
 import org.junit.Test
@@ -170,6 +171,34 @@ class ELKCDReasonerTest {
       reasoner.flush()
       assertFalse("the corrected ontology should be used", reasoner.isSatisfiable(cls("A")))
     } finally reasoner.dispose()
+  }
+
+  private def concreteDomainAxioms(reasoner: org.semanticweb.owlapi.reasoner.OWLReasoner) =
+    reasoner.asInstanceOf[ELKCDReasoner[_]].concreteDomainAxioms
+
+  @Test def addedAxiomsAreRecorded(): Unit = {
+    val o = ontology("QDiff", Seq("C0" -> ":x = 0", "C1" -> ":x > -1", "C2" -> ":x > 1"), "SubClassOf(:A :C0)")
+    val reasoner = new OWLCDReasonerFactory().createReasoner(o)
+    try {
+      assertTrue(reasoner.isEntailed(subClassOf("A", "C1")))
+      assertEquals(Set(subClassOf("C0", "C1"), subClassOf("C2", "C1")), concreteDomainAxioms(reasoner))
+      // a query on an expression that is not in the ontology adds C0 ⊓ C1 ⊓ C2 ⊑ ⊥ (C1 is implied by C0)
+      assertFalse(reasoner.isSatisfiable(and("C0", "C2")))
+      assertTrue(concreteDomainAxioms(reasoner).contains(
+        factory.getOWLSubClassOfAxiom(and("C0", "C1", "C2"), factory.getOWLNothing)))
+      // the recorded axioms belong to the current internal ontology
+      o.getOWLOntologyManager.removeAxiom(o, subClassOf("A", "C0"))
+      o.getOWLOntologyManager.addAxiom(o, factory.getOWLDeclarationAxiom(cls("C3")))
+      reasoner.flush()
+      assertFalse(reasoner.isEntailed(subClassOf("A", "C1")))
+      assertEquals(Set(subClassOf("C0", "C1"), subClassOf("C2", "C1")), concreteDomainAxioms(reasoner))
+    } finally reasoner.dispose()
+  }
+
+  @Test def assertedAxiomsAreNotRecorded(): Unit = withReasoner(ontology("QMult",
+    Seq("C0" -> ":x = 5", "C1" -> ":x < 6"), "SubClassOf(:C0 :C1)")) { reasoner =>
+    assertTrue(reasoner.isEntailed(subClassOf("C0", "C1")))
+    assertTrue("C0 ⊑ C1 is asserted, not added", concreteDomainAxioms(reasoner).isEmpty)
   }
 
   @Test def ontologyIsNotChanged(): Unit = {

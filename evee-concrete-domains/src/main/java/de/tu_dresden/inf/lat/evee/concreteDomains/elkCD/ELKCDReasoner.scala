@@ -111,6 +111,9 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   /** the class expressions for which all consequences of the concrete domain are in the internal ontology */
   private val checkedExpressions = mutable.Set[OWLClassExpression]()
 
+  /** the axioms that were added to the internal ontology because of the concrete domain */
+  private val addedAxioms = mutable.Set[OWLAxiom]()
+
   load()
 
   private val changeListener = new OWLOntologyChangeListener {
@@ -135,6 +138,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     state = ClassificationState()
     handledConstraintSets = Set.empty
     checkedExpressions.clear()
+    addedAxioms.clear()
   }
 
   /**
@@ -262,6 +266,21 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       result
     }
 
+  /** adds the axiom to the internal ontology and records it, unless it is already there, e.g., asserted by the user */
+  private def addConcreteDomainAxiom(axiom: OWLAxiom): Unit = {
+    val ontology = extendedOntology.ontology
+    if (!ontology.containsAxiom(axiom)) {
+      ontology.getOWLOntologyManager.addAxiom(ontology, axiom)
+      addedAxioms += axiom
+    }
+  }
+
+  /**
+   * The axioms that the reasoner added to its internal ontology because of the concrete domain. All other axioms of
+   * the internal ontology are axioms of the root ontology or its imports, as of the last flush.
+   */
+  def concreteDomainAxioms: Set[OWLAxiom] = synchronized { addedAxioms.toSet }
+
   private def addCDAxioms(relevant: Set[OWLClass]): AddCDAxiomsResult = {
     //println("Adding axioms for: "+relevant)
     val predicates = relevant.map(extendedOntology.constraintFor)
@@ -276,8 +295,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
      // logger.warn("not consistent: " + predicates) //debug log
      // logger.warn("adding axiom: " + lhs + " ⊑ ⊥") //debug log
 
-      val newAxiom = factory.getOWLSubClassOfAxiom(lhs, factory.getOWLNothing)
-      extendedOntology.ontology.getOWLOntologyManager.addAxiom(extendedOntology.ontology, newAxiom)
+      addConcreteDomainAxiom(factory.getOWLSubClassOfAxiom(lhs, factory.getOWLNothing))
 
       return AddCDAxiomsResult(ontologyChanged = true, addedInformation = Set(relevant))
     }
@@ -286,8 +304,8 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
                             cdReasoner.implies(predicates, extendedOntology.constraintFor(owlClass))}
 
     impliedNames.foreach{ owlClass =>
-        var newAxiom = factory.getOWLSubClassOfAxiom(lhs, owlClass)
-        extendedOntology.ontology.getOWLOntologyManager.addAxiom(extendedOntology.ontology, newAxiom)
+        val newAxiom = factory.getOWLSubClassOfAxiom(lhs, owlClass)
+        addConcreteDomainAxiom(newAxiom)
 
         logger.warn("adding "+ newAxiom) //debug log
       }
