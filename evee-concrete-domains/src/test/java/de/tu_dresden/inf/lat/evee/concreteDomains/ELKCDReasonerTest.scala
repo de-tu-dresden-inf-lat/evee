@@ -8,7 +8,8 @@ import org.junit.{Ignore, Test}
 import org.semanticweb.owlapi.apibinding.OWLManager
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser
-import org.semanticweb.owlapi.reasoner.InconsistentOntologyException
+import org.semanticweb.owlapi.model.IRI
+import org.semanticweb.owlapi.reasoner.{InconsistentOntologyException, InferenceType}
 
 /** The concrete domain reasoner behaves like an OWLReasoner, e.g., inside Protégé. */
 class ELKCDReasonerTest {
@@ -18,11 +19,25 @@ class ELKCDReasonerTest {
   /** C0 and C1 have contradicting constraints */
   private val contradicting = Seq("C0" -> ":x = 0", "C1" -> ":x > 1")
 
-  @Ignore("B4")
   @Test def inconsistentOntology(): Unit = withReasoner(ontology("QDiff", contradicting,
     "ClassAssertion(:C0 :a)", "ClassAssertion(:C1 :a)")) { reasoner =>
     assertFalse("the ontology should be inconsistent", reasoner.isConsistent)
     assertThrows(classOf[InconsistentOntologyException], () => reasoner.getSuperClasses(cls("C0"), false))
+    // Protégé classifies with precomputeInferences and reports an inconsistent ontology if it gets this exception
+    assertThrows(classOf[InconsistentOntologyException], () => reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY))
+  }
+
+  @Test def inconsistencyCanBeRemoved(): Unit = {
+    val o = ontology("QDiff", contradicting, "ClassAssertion(:C0 :a)", "ClassAssertion(:C1 :a)")
+    val reasoner = new OWLCDReasonerFactory().createReasoner(o)
+    try {
+      assertFalse("the ontology should be inconsistent", reasoner.isConsistent)
+      val a = factory.getOWLNamedIndividual(IRI.create(TestOntologies.NS + "a"))
+      o.getOWLOntologyManager.removeAxiom(o, factory.getOWLClassAssertionAxiom(cls("C1"), a))
+      reasoner.flush()
+      assertTrue("the ontology should be consistent again", reasoner.isConsistent)
+      assertTrue(reasoner.getTypes(a, false).containsEntity(cls("C0")))
+    } finally reasoner.dispose()
   }
 
   @Test def bufferingReasonerAppliesChangesOnFlush(): Unit = {

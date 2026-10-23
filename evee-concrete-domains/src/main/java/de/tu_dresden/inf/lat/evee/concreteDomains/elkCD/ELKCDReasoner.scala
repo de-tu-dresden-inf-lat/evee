@@ -4,13 +4,10 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDReasoner
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.ExtendedOntology
 
-import de.tu_dresden.inf.lat.evee.proofGenerators.ELKProofGenerator
-import de.tu_dresden.inf.lat.evee.proofs.tools.{MinimalHypergraphProofExtractor, MinimalProofExtractor}
-
 import org.semanticweb.elk.owlapi.ElkReasonerFactory
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.model.{OWLClass, OWLEntity}
-import org.semanticweb.owlapi.reasoner.{InconsistentOntologyException, InferenceType}
+import org.semanticweb.owlapi.reasoner.InferenceType
 import org.semanticweb.owlapi.reasoner.Node
 
 
@@ -139,59 +136,44 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       classify()
   }
   
+  /**
+   * Adds the axioms that follow from the concrete domain to the internal ontology until nothing changes. Stops as soon
+   * as the internal ontology is inconsistent; the internal reasoner then answers queries like ELK does for
+   * inconsistent ontologies, i.e., most of them throw an InconsistentOntologyException.
+   */
   override def classify() = {
     val token = Token()
     
     var alreadyAdded: Set[Set[OWLClass]] = Set.empty
     var changed = true
+    var consistent = true
 
     logger.info("Starting classification with ELK-CD reasoner...")
 
-    while(changed) {
+    while(changed && consistent) {
       val startTime = System.nanoTime()
       internalReasoner.flush()
-      try {
+      consistent = internalReasoner.isConsistent
+      if (consistent) {
         internalReasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY)
         internalReasoner.precomputeInferences(InferenceType.DISJOINT_CLASSES)
         internalReasoner.precomputeInferences(InferenceType.CLASS_ASSERTIONS)
-      } catch {
-        case exp: InconsistentOntologyException =>
-          println()
-          println("Ontology is inconsistent!")
-          val explanation = explainInconsistency()
-          explanation.foreach(println)
-          System.exit(1) //TODO: not good 
       }
       token.addTime(System.nanoTime() - startTime)
       token.addOneReasonerCall()
 
-      val result = addRequiredCDAxioms(alreadyAdded, token)
-      alreadyAdded ++= result.addedInformation 
-      changed = result.ontologyChanged
+      if (consistent) {
+        val result = addRequiredCDAxioms(alreadyAdded, token)
+        alreadyAdded ++= result.addedInformation
+        changed = result.ontologyChanged
+      }
     }
     //Store the time in ms
     collectStatistics( token.getTime() / 1000000, token.getReasonerCalls())
 
     logger.warn("end of classify(). added: "+ alreadyAdded) //debug log
 
-    logger.warn("Subclasses of Nothing: " + internalReasoner.getSubClasses(factory.getOWLNothing(),false).getFlattened().asScala) //debug log
-    logger.warn("Unsatisfiable classes: " + internalReasoner.getUnsatisfiableClasses().getEntities().asScala) //debug log
-
-    internalReasoner.flush()
-    state = state.copy(true, internalReasoner.isConsistent)
-  }
-
-  private def explainInconsistency() = {
-    val axiom = factory.getOWLSubClassOfAxiom(
-      factory.getOWLThing(),
-      factory.getOWLNothing())
-
-    val proofGenerator = new ELKProofGenerator()
-    proofGenerator.setReasoner(internalReasoner)
-    println(proofGenerator.supportsProof(axiom))
-    val proof = proofGenerator.getProof(axiom)
-    val min = MinimalHypergraphProofExtractor.makeUnique(proof)
-    min.getInferences().asScala.filter(_.getRuleName.equals("Asserted Conclusion")).map(_.getConclusion)
+    state = ClassificationState(computed = true, consistent = consistent)
   }
 
   private def addRequiredCDAxioms(alreadyAdded: Set[Set[OWLClass]], token: Token): AddCDAxiomsResult = {
