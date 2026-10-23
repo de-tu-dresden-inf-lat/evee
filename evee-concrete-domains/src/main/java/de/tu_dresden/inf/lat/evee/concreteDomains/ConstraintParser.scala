@@ -27,21 +27,20 @@ trait ConstraintParser[+CD <: CDConstraint] {
     result
   }
 
-  /** the constraints of the classes, given as the annotated subjects and the texts of their constraints */
-  def toConstraintMap(constraints: Map[OWLAnnotationSubject, String]): Map[OWLClass, CD] =
-    constraints.map { case (subject, constraint) =>
-      val owlClass = subject match {
-        case iri: IRI => factory.getOWLClass(iri)
-        case other => throw new ParsingException(s"""The constraint "$constraint" has to be attached to a class, not to $other""")
-      }
-      val parsed =
-        try toConstraint(constraint)
-        catch {
-          case e: ParsingException =>
-            throw new ParsingException(s"""Cannot read the constraint "$constraint" of ${owlClass.getIRI}: ${e.getMessage}""")
-        }
-      owlClass -> parsed
+  /** the class that the constraint is attached to, with the constraint */
+  def classConstraint(subject: OWLAnnotationSubject, constraint: String): (OWLClass, CD) = {
+    val owlClass = subject match {
+      case iri: IRI => factory.getOWLClass(iri)
+      case other => throw new ParsingException(s"""The constraint "$constraint" has to be attached to a class, not to $other""")
     }
+    val parsed =
+      try toConstraint(constraint)
+      catch {
+        case e: ParsingException =>
+          throw new ParsingException(s"""Cannot read the constraint "$constraint" of ${owlClass.getIRI}: ${e.getMessage}""")
+      }
+    owlClass -> parsed
+  }
 
   /** reads the name of a data property: a full IRI, a prefixed name, or a plain name in the default namespace */
   protected def property(tokens: ConstraintTokens): OWLDataProperty =

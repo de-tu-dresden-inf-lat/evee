@@ -38,13 +38,12 @@ import java.{util => ju}
 import org.semanticweb.owlapi.model.{OWLDataProperty, OWLLiteral}
 import org.semanticweb.owlapi.reasoner.BufferingMode
 import org.semanticweb.owlapi.model.OWLDataProperty
-import org.semanticweb.owlapi.model.OWLOntologyChange
+import org.semanticweb.owlapi.model.{OWLOntologyChange, OWLOntologyChangeListener}
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 
 import org.semanticweb.owlapi.apibinding.OWLManager
-import org.semanticweb.owlapi.model.parameters.OntologyCopy
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration
 import org.semanticweb.owlapi.model.RemoveAxiom
 import org.slf4j.LoggerFactory
@@ -94,22 +93,51 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   
   private val logger = LoggerFactory.getLogger(classOf[ELKCDReasoner[CD_CONSTRAINT]])
 
-  val manager =  OWLManager.createOWLOntologyManager();
-  val factory = manager.getOWLDataFactory()
+  val factory = OWLManager.getOWLDataFactory()
   val reasonerFactory = new ElkReasonerFactory()
-  val pendingChangesBuffer = mutable.ListBuffer[OWLOntologyChange]()
 
-  var mutableOntology = manager.copyOntology(rootOntology, OntologyCopy.DEEP);
-  var extendedOntology = ExtendedOntologyParser.toExtendedOntology(domain, mutableOntology).asInstanceOf[ExtendedOntology[CD_CONSTRAINT]]
-  var internalReasoner = reasonerFactory.createReasoner(extendedOntology.ontology, config)
+  /** the changes of the root ontology and its imports that the reasoner has not taken into account yet */
+  private val pendingChangesBuffer = mutable.ListBuffer[OWLOntologyChange]()
+
+  /**
+   * An internal copy of the axioms of the root ontology and its imports, with the constraints of its classes. The
+   * reasoner adds the axioms that follow from the concrete domain to this copy, never to the root ontology.
+   */
+  var extendedOntology: ExtendedOntology[CD_CONSTRAINT] = _
+  var internalReasoner: OWLReasoner = _
   var state = ClassificationState()
 
-  rootOntology.getOWLOntologyManager().addOntologyChangeListener(changes => {
-    pendingChangesBuffer ++= changes.asScala.filter(change => change.getOntology() == rootOntology)
-    if (!bufferingMode) {
-      flush()
+  load()
+
+  private val changeListener = new OWLOntologyChangeListener {
+    override def ontologiesChanged(changes: ju.List[_ <: OWLOntologyChange]): Unit = {
+      val ontologies = rootOntology.getImportsClosure
+      pendingChangesBuffer ++= changes.asScala.filter(change => ontologies.contains(change.getOntology))
     }
-  })
+  }
+  rootOntology.getOWLOntologyManager.addOntologyChangeListener(changeListener)
+
+  /**
+   * Copies the current axioms of the root ontology and its imports into a new internal ontology, in a new manager, and
+   * reads the constraints of their classes.
+   */
+  private def load(): Unit = {
+    val ontology = OWLManager.createOWLOntologyManager().createOntology()
+    rootOntology.getImportsClosure.forEach(imported =>
+      imported.getAxioms().forEach(axiom => ontology.getOWLOntologyManager.addAxiom(ontology, axiom)))
+    val constraints = ExtendedOntologyParser.toConstraintMap(domain, rootOntology)
+    extendedOntology = ExtendedOntology(ontology, domain, constraints).asInstanceOf[ExtendedOntology[CD_CONSTRAINT]]
+    internalReasoner = reasonerFactory.createReasoner(ontology, config)
+    state = ClassificationState()
+  }
+
+  /** takes pending changes into account in non-buffering mode and classifies if necessary */
+  private def prepare(): Unit = {
+    if (!bufferingMode)
+      flush()
+    if (!state.computed)
+      classify()
+  }
   
   override def classify() = {
     val token = Token()
@@ -228,7 +256,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
      // logger.warn("adding axiom: " + lhs + " ⊑ ⊥") //debug log
 
       val newAxiom = factory.getOWLSubClassOfAxiom(lhs, factory.getOWLNothing)
-      manager.addAxiom(extendedOntology.ontology, newAxiom)
+      extendedOntology.ontology.getOWLOntologyManager.addAxiom(extendedOntology.ontology, newAxiom)
 
       return AddCDAxiomsResult(ontologyChanged = true, addedInformation = Set(relevant))
     }
@@ -238,7 +266,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
 
     impliedNames.foreach{ owlClass =>
         var newAxiom = factory.getOWLSubClassOfAxiom(lhs, owlClass)
-        manager.addAxiom(extendedOntology.ontology, newAxiom)
+        extendedOntology.ontology.getOWLOntologyManager.addAxiom(extendedOntology.ontology, newAxiom)
 
         logger.warn("adding "+ newAxiom) //debug log
       }
@@ -272,97 +300,97 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   /////////////// reasoning /////////////////////
 
   override def isConsistent(): Boolean = {
-    if(!state.computed) classify()
+    prepare()
     return state.consistent
   }
 
   override def isEntailed(axiom: OWLAxiom): Boolean = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.isEntailed(axiom)
   }
 
   override def isEntailed(axioms: ju.Set[_ <: OWLAxiom]): Boolean = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.isEntailed(axioms)
   }
 
   override def isEntailmentCheckingSupported(axiomType: AxiomType[_]): Boolean = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.isEntailmentCheckingSupported(axiomType)
   }
 
   override def getUnsatisfiableClasses():Node[OWLClass] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getUnsatisfiableClasses()
   }
 
   override def isSatisfiable(cls: OWLClassExpression): Boolean = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.isSatisfiable(cls)
   }
 
   override def getTopClassNode(): Node[OWLClass] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getTopClassNode()
   }
 
   override def getBottomClassNode(): Node[OWLClass] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getBottomClassNode()
   }
 
   override def getSubClasses(ce: OWLClassExpression, direct: Boolean): NodeSet[OWLClass] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getSubClasses(ce, direct)
   }
 
   override def getSuperClasses(ce: OWLClassExpression, direct: Boolean): NodeSet[OWLClass] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getSuperClasses(ce, direct)
   }
 
   override def getEquivalentClasses(ce: OWLClassExpression): Node[OWLClass] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getEquivalentClasses(ce)
   }
   
   override def getTopObjectPropertyNode(): Node[OWLObjectPropertyExpression] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getTopObjectPropertyNode()
   }
 
   override def getBottomObjectPropertyNode(): Node[OWLObjectPropertyExpression] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getBottomObjectPropertyNode()
   }
 
   override def getSubObjectProperties(pe: OWLObjectPropertyExpression, direct: Boolean): NodeSet[OWLObjectPropertyExpression] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getSubObjectProperties(pe, direct)
   }
 
   override def getSuperObjectProperties(pe: OWLObjectPropertyExpression, direct: Boolean): NodeSet[OWLObjectPropertyExpression] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getSuperObjectProperties(pe, direct)
   }
 
   override def getEquivalentObjectProperties(pe: OWLObjectPropertyExpression): Node[OWLObjectPropertyExpression] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getEquivalentObjectProperties(pe)
   }
 
   override def getTypes(ind: OWLNamedIndividual, direct: Boolean): NodeSet[OWLClass] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getTypes(ind, direct)
   }
   
   override def getInstances(ce: OWLClassExpression, direct: Boolean): NodeSet[OWLNamedIndividual] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getInstances(ce, direct)
   }
 
   override def getSameIndividuals(ind: OWLNamedIndividual): Node[OWLNamedIndividual] = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.getSameIndividuals(ind)
   }
 
@@ -403,12 +431,12 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   ///// precomputation ////////
 
   override def precomputeInferences(inferenceTypes: InferenceType*): Unit = {
-    if(!state.computed) classify()
+    prepare()
     internalReasoner.precomputeInferences(inferenceTypes: _*)
   }
 
   override def isPrecomputed(inferenceType: InferenceType): Boolean = {
-    if(!state.computed) classify()
+    prepare()
     return internalReasoner.isPrecomputed(inferenceType)
   }
 
@@ -423,27 +451,37 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   }
 
   override def dispose() = {
+    rootOntology.getOWLOntologyManager.removeOntologyChangeListener(changeListener)
+    pendingChangesBuffer.clear()
     internalReasoner.dispose()
   }
 
+  /**
+   * Takes the pending changes into account. The new internal ontology is built before the old one is discarded, so
+   * that the reasoner keeps working if the changed ontology cannot be read, e.g., because of a wrong constraint.
+   */
   override def flush(): Unit = {
-    mutableOntology = manager.copyOntology(rootOntology, OntologyCopy.DEEP);
-    extendedOntology = ExtendedOntologyParser.toExtendedOntology(domain, mutableOntology).asInstanceOf[ExtendedOntology[CD_CONSTRAINT]]
-    internalReasoner = reasonerFactory.createReasoner(extendedOntology.ontology, config)
-    state = ClassificationState()
+    if (pendingChangesBuffer.nonEmpty) {
+      val oldReasoner = internalReasoner
+      load()
+      oldReasoner.dispose()
+      pendingChangesBuffer.clear()
+    }
   }
 
-  override def getPendingChanges(): ju.List[OWLOntologyChange] = {
-    return new ju.ArrayList[OWLOntologyChange](pendingChangesBuffer.asJava) //return copy
+  // In non-buffering mode, changes are taken into account before the next query, so none of them is pending.
+
+  override def getPendingChanges(): ju.List[OWLOntologyChange] =
+    if (bufferingMode) new ju.ArrayList[OWLOntologyChange](pendingChangesBuffer.asJava) else new ju.ArrayList()
+
+  override def getPendingAxiomAdditions(): ju.Set[OWLAxiom] = pendingAxioms {
+    case change: AddAxiom => change.getAxiom
   }
 
-  override def getPendingAxiomAdditions(): ju.Set[OWLAxiom] = {
-    pendingChangesBuffer.filter(change => change.isInstanceOf[AddAxiom])
-                        .map(change => change.asInstanceOf[AddAxiom].getAxiom()).toSet.asJava
+  override def getPendingAxiomRemovals(): ju.Set[OWLAxiom] = pendingAxioms {
+    case change: RemoveAxiom => change.getAxiom
   }
 
-  override def getPendingAxiomRemovals(): ju.Set[OWLAxiom] = {
-    pendingChangesBuffer.filter(change => change.isInstanceOf[RemoveAxiom])
-                        .map(change => change.asInstanceOf[RemoveAxiom].getAxiom()).toSet.asJava
-  }
+  private def pendingAxioms(axiomOf: PartialFunction[OWLOntologyChange, OWLAxiom]): ju.Set[OWLAxiom] =
+    if (bufferingMode) pendingChangesBuffer.collect(axiomOf).toSet.asJava else new ju.HashSet()
 }
