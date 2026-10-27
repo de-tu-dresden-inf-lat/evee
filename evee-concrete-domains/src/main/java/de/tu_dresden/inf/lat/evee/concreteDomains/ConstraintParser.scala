@@ -42,9 +42,22 @@ trait ConstraintParser[+CD <: CDConstraint] {
     owlClass -> parsed
   }
 
+  /**
+   * reads def(x) if it comes next, which says that the data property x has a value; each concrete domain expresses
+   * this by one of its constraints
+   */
+  protected def definedProperty(tokens: ConstraintTokens): Option[OWLDataProperty] =
+    if (tokens.acceptCall("def")) {
+      val x = property(tokens)
+      tokens.expect(")")
+      Some(x)
+    } else None
+
   /** reads the name of a data property: a full IRI, a prefixed name, or a plain name in the default namespace */
-  protected def property(tokens: ConstraintTokens): OWLDataProperty =
-    factory.getOWLDataProperty(resolve(tokens.name()))
+  protected def property(tokens: ConstraintTokens): OWLDataProperty = property(tokens.name())
+
+  /** the data property with the given name, as written in a constraint */
+  protected def property(name: String): OWLDataProperty = factory.getOWLDataProperty(resolve(name))
 
   private def resolve(name: String): IRI =
     if (name.startsWith("<"))

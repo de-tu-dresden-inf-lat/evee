@@ -9,11 +9,15 @@ import org.semanticweb.owlapi.model.{OWLDataProperty, OWLOntology}
 
 /**
  * Parser for the concrete domain QMult. A constraint has one of the forms x = c, x < c, x * c = y or c * x = y,
- * where x and y are data properties and c is a number; a factor c has to be positive.
+ * where x and y are data properties and c is a number; a factor c has to be positive. The constraint def(x) says that
+ * x has a value and is the same constraint as x * 1 = x.
  */
 class MultConstraintParser(val ontology: OWLOntology) extends ConstraintParser[MultConstraint] {
 
   override protected def parse(tokens: ConstraintTokens): MultConstraint =
+    definedProperty(tokens).map(x => Multiplication(x, BigFraction.ONE, x)).getOrElse(relation(tokens))
+
+  private def relation(tokens: ConstraintTokens): MultConstraint =
     if (tokens.atNumber) {
       val factor = tokens.number()
       tokens.expect("*")

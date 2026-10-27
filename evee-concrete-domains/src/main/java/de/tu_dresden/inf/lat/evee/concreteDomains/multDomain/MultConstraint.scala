@@ -55,7 +55,10 @@ case class Multiplication(property1: OWLDataProperty, factor: BigFraction, prope
     throw new IllegalArgumentException("Factor has to be larger than 0")
 
   override def toString() = {
-    Numbers.format(factor) + " * " + property1 + " = " + property2
+    if (property1.equals(property2) && factor.equals(BigFraction.ONE))
+      "def(" + property1 + ")"
+    else
+      Numbers.format(factor) + " * " + property1 + " = " + property2
   }
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property1, property2)

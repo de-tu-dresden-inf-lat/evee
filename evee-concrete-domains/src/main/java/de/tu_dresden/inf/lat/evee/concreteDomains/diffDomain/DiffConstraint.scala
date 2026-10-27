@@ -47,7 +47,9 @@ case class DiffEqual(property: OWLDataProperty, value: BigFraction)
 case class DiffSum(property1: OWLDataProperty, diff: BigFraction, property2: OWLDataProperty)
   extends DiffConstraint {
   override def toString() = {
-    if(diff >= BigFraction.ZERO)
+    if (property1.equals(property2) && diff.equals(BigFraction.ZERO))
+      "def(" + property1 + ")"
+    else if(diff >= BigFraction.ZERO)
       property1 + " + " + Numbers.format(diff) + " = " + property2
     else
       property1 + " - " + Numbers.format(-diff) + " = " + property2

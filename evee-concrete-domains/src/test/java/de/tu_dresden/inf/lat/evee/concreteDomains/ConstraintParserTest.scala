@@ -54,8 +54,18 @@ class ConstraintParserTest {
     assertEquals(equation(x -> fraction(2), y -> fraction(-1))(fraction(5)), linear.toConstraint("2*:x+-1*:y=5"))
     assertEquals(equation(x -> fraction(1), y -> fraction(-1))(fraction(0)), linear.toConstraint(":x - :y = 0"))
     assertEquals(equation(x -> fraction(-1))(fraction(-3)), linear.toConstraint("-:x = -3"))
-    assertEquals(equation(x -> fraction(2))(fraction(4)), linear.toConstraint("x + x = 4"))
     assertEquals(equation(x -> fraction(1, 2), y -> fraction(-1))(fraction(1)), linear.toConstraint("0.5 * :x − :y = 1"))
+  }
+
+  /** def(x) says that x has a value; each domain expresses this by one of its constraints */
+  @Test def definedValues(): Unit = {
+    assertEquals(DiffSum(x, fraction(0), x), diff.toConstraint("def(x)"))
+    assertEquals(diff.toConstraint("def(:x)"), diff.toConstraint(":x + 0 = :x"))
+    assertEquals(Multiplication(x, fraction(1), x), mult.toConstraint("def( :x )"))
+    assertEquals(mult.toConstraint("def(x)"), mult.toConstraint("x * 1 = x"))
+    assertEquals(LinearConstraint[BigFraction](Map(x -> fraction(0)), fraction(0)), linear.toConstraint("def(x)"))
+    for (parser <- Seq(diff, mult, linear))
+      assertEquals("def(<" + TestOntologies.NS + "x>)", parser.toConstraint("def(x)").toString)
   }
 
   /** the constraints can be read from their own string representation */
@@ -64,7 +74,8 @@ class ConstraintParserTest {
     diffs.foreach(c => assertEquals(c, diff.toConstraint(c.toString)))
     val mults = Seq(MultEqual(x, fraction(7, 2)), MultLessThan(x, fraction(1, 3)), Multiplication(x, fraction(2, 3), y))
     mults.foreach(c => assertEquals(c, mult.toConstraint(c.toString)))
-    val linears = Seq(LinearConstraint[BigFraction](Map(x -> fraction(1, 3), y -> fraction(-1)), fraction(5, 2)))
+    val linears = Seq(LinearConstraint[BigFraction](Map(x -> fraction(1, 3), y -> fraction(-1)), fraction(5, 2)),
+      LinearConstraint[BigFraction](Map(x -> fraction(0)), fraction(0)))
     linears.foreach(c => assertEquals(c, linear.toConstraint(c.toString)))
   }
 
@@ -85,6 +96,10 @@ class ConstraintParserTest {
     assertError(mult, "0 * :x = :y", "the factor 0 has to be positive")
     assertError(linear, "2 :x = 1", "expected '*', but found ':x'")
     assertError(linear, ":x + 1 = 2", "expected '*', but found '='")
+    assertError(linear, "x + x = 4", "x occurs twice")
+    assertError(linear, "x - x = 0", "x occurs twice")
+    assertError(linear, "0 * :x + :y = 1", "the coefficient of :x is 0; use def(:x)")
+    assertError(diff, "def(x", "expected ')', but the constraint ends")
   }
 
   @Test def ontologyWithoutPrefixes(): Unit = {

@@ -10,7 +10,9 @@ import org.apache.commons.math3.fraction.BigFraction
  */
 
 case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDConstraint {
-  override def toString() = {
+  override def toString(): String = {
+    if (lhs.size == 1 && formatNumber(lhs.values.head) == "0" && formatNumber(rhs) == "0")
+      return "def(" + lhs.keys.head + ")"
     val l = lhs.keys.toList.sortWith(_.toString < _.toString).map{key => format(key, lhs(key))}
       .map(_.replaceAll("\\s","")).mkString(" + ").replaceAll("\\+ -","\u2212 ")//Works better with GraphViz
     val r = " = " + formatNumber(rhs)

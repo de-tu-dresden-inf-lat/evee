@@ -7,11 +7,15 @@ import org.semanticweb.owlapi.model.OWLOntology
 
 /**
  * Parser for the concrete domain QDiff. A constraint has one of the forms x = c, x > c, x + c = y or x - c = y,
- * where x and y are data properties and c is a number.
+ * where x and y are data properties and c is a number, or def(x), which says that x has a value and is the same
+ * constraint as x + 0 = x.
  */
 class DiffConstraintParser(val ontology: OWLOntology) extends ConstraintParser[DiffConstraint] {
 
-  override protected def parse(tokens: ConstraintTokens): DiffConstraint = {
+  override protected def parse(tokens: ConstraintTokens): DiffConstraint =
+    definedProperty(tokens).map(x => DiffSum(x, BigFraction.ZERO, x)).getOrElse(relation(tokens))
+
+  private def relation(tokens: ConstraintTokens): DiffConstraint = {
     val x = property(tokens)
     if (tokens.accept("="))
       DiffEqual(x, tokens.number())

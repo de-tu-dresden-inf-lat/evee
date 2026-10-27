@@ -9,7 +9,7 @@ import org.apache.commons.math3.fraction.BigFraction
  *  - names of data properties: full IRIs in angle brackets, prefixed names such as ex:x or :x, and plain names such
  *    as x; names may contain hyphens, so a minus sign after a name needs a space before it,
  *  - numbers without sign: decimals such as 0.5 or 1e-3, and fractions such as 1/3,
- *  - the operators + - * = < > (also − for minus).
+ *  - the operators + - * = < > ( ) (also − for minus).
  * Whitespace between tokens is optional.
  */
 class ConstraintTokens(input: String) {
@@ -23,7 +23,7 @@ class ConstraintTokens(input: String) {
     """(<[^<>\s]*>)""" +
     """|([\p{L}_:](?:[\p{L}\p{N}_\-.:%]*[\p{L}\p{N}_:%])?)""" +
     """|((?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?:/\d+)?)""" +
-    """|([-+*=<>−]))""").r
+    """|([-+*=<>−()]))""").r
 
   private val tokens: Vector[Token] = {
     val result = Vector.newBuilder[Token]
@@ -89,6 +89,12 @@ class ConstraintTokens(input: String) {
       case Some(NumberToken(value, _, _)) => index += 1; value.multiply(sign)
       case _ => fail("a number")
     }
+  }
+
+  /** reads the name and the opening parenthesis of a function such as def( if they come next */
+  def acceptCall(function: String): Boolean = (next, tokens.lift(index + 1)) match {
+    case (Some(NameToken(`function`, _)), Some(OperatorToken("(", _))) => index += 2; true
+    case _ => false
   }
 
   /** reads a name as written: a full IRI in angle brackets, a prefixed name or a plain name */

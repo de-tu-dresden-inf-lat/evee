@@ -49,7 +49,11 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
 
   def implies(premises: Iterable[LinearConstraint[BigFraction]], conclusion: LinearConstraint[BigFraction], tracker: Option[ImplicationTracker]): Boolean = {
     val start = System.nanoTime()
-    val res = !satisfiable(premises, Iterable(conclusion), tracker)
+    // the data properties of the conclusion need values; for def(x), elimination alone would derive it from nothing
+    val valuesExist = conclusion.getOWLDataProperties.subsetOf(premises.flatMap(_.getOWLDataProperties).toSet)
+    val res =
+      if (valuesExist) !satisfiable(premises, Iterable(conclusion), tracker)
+      else !satisfiable(premises, Iterable.empty, tracker)
     val time = System.nanoTime() - start
 
     val rTT = new ReasoningTaskTracker()

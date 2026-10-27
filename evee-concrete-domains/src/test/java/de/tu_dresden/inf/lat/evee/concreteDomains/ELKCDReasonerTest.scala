@@ -41,6 +41,20 @@ class ELKCDReasonerTest {
     } finally reasoner.dispose()
   }
 
+  /** def(hr) only holds where hr has a value, e.g. because of hr = 83 (B11) */
+  private def assertDefinedOnlyWithValue(domain: String): Unit = withReasoner(ontology(domain,
+    Seq("HasValue" -> "def(:hr)", "Hr83" -> ":hr = 83"), "SubClassOf(:P :Hr83)", "Declaration(Class(:Q))")) {
+    reasoner =>
+      assertTrue("P has a value for hr", reasoner.isEntailed(subClassOf("P", "HasValue")))
+      assertFalse("Q need not have a value for hr", reasoner.isEntailed(subClassOf("Q", "HasValue")))
+      assertFalse("not everything has a value for hr",
+        reasoner.isEntailed(factory.getOWLSubClassOfAxiom(factory.getOWLThing, cls("HasValue"))))
+  }
+
+  @Test def definedValueDiff(): Unit = assertDefinedOnlyWithValue("QDiff")
+  @Test def definedValueMult(): Unit = assertDefinedOnlyWithValue("QMult")
+  @Test def definedValueLinear(): Unit = assertDefinedOnlyWithValue("QLinear")
+
   @Test def bufferingReasonerAppliesChangesOnFlush(): Unit = {
     val o = ontology("QDiff", contradicting, "SubClassOf(:A :C0)")
     val reasoner = new OWLCDReasonerFactory().createReasoner(o)
