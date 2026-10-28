@@ -21,6 +21,9 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
   private var derived = Set[DiffConstraint]()
   private var inferences = Set[IInference[DiffConstraint]]()
 
+  /** the constraints the network was filled with */
+  private var given = Seq[DiffConstraint]()
+
 
   private val nodes = new mutable.HashMap[OWLDataProperty, DiffUnaryConstraint]()
   private val edges = new mutable.HashMap[OWLDataProperty,
@@ -34,6 +37,7 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
   }
 
   def fill(predicates: Iterable[DiffConstraint]) = {
+    given ++= predicates
     inferences ++= predicates.map(new Inference(_, ProofTools.ASSERTED_1, List[DiffConstraint]().asJava))
     derived ++= predicates
     predicates.foreach(p => p match {
@@ -114,9 +118,15 @@ class DiffNetworkSimple extends ConstraintNetwork[DiffConstraint] {
       val newPred = DiffSum(n1, BigFraction.ZERO, n1)
       update(n1,n1,newPred)
       derived += newPred
-      inferences += new Inference(newPred, DiffRules.RULE_ZERO, List.empty.asJava)
+      // def(n1) holds because a given constraint mentions n1; there is nothing to derive if def(n1) is given itself
+      if (!given.contains(newPred))
+        inferences += new Inference(newPred, DiffRules.RULE_ZERO, List(withProperty(n1)).asJava)
     })
   }
+
+  /** a given constraint with the data property, which therefore has a value */
+  private def withProperty(property: OWLDataProperty): DiffConstraint =
+    given.filter(_.getOWLDataProperties.contains(property)).minBy(_.toString)
 
   private def propagateEdges(): Unit = {
     var added=true

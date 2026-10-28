@@ -17,6 +17,12 @@ trait CDReasoner[CD_CONSTRAINT <: CDConstraint] {
   def implies(premises: Iterable[CD_CONSTRAINT], conclusion: CD_CONSTRAINT): Boolean
 }
 
+/** rule names shared by the proofs of all concrete domains */
+object CDRules {
+  /** def(x) holds because a premise mentions x, so x has a value */
+  val DEFINED = "Defined"
+}
+
 trait CDProofGenerator[CD_CONSTRAINT <: CDConstraint] extends IProofGenerator[CD_CONSTRAINT, Iterable[CD_CONSTRAINT]] {
   def getCDReasoner: CDReasoner[CD_CONSTRAINT]
 

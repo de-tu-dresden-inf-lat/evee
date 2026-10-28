@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain
 import de.tu_dresden.inf.lat.evee.general.data.exceptions.ModelGenerationException
 import de.tu_dresden.inf.lat.evee.proofs.data.{Inference, Proof}
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IInference, IProof}
-import de.tu_dresden.inf.lat.evee.concreteDomains.{CDCounterexampleGenerator, CDProofGenerator, CDReasoner, ConstraintPropagationReasoner, ConstraintNetwork}
+import de.tu_dresden.inf.lat.evee.concreteDomains.{CDCounterexampleGenerator, CDProofGenerator, CDReasoner, CDRules, ConstraintPropagationReasoner, ConstraintNetwork}
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.cdGeneral.ReasoningTaskTracker
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
@@ -29,7 +29,7 @@ object DiffRules {
   val RULE_DIFFERENT_CONSTANTS = "Different constants"
   val RULE_CONSTANT_TOO_SMALL = "Constant too small"
   val RULE_DIFFERENT_DIFFERENCES = "Different differences"
-  val RULE_ZERO = "Tautology"
+  val RULE_ZERO = CDRules.DEFINED
   val RULE_DIFFERENCE_FROM_CONSTANTS = "Constant difference"
   val RULE_TRANSITIVITY = "Sum of differences"
   val RULE_PROPAGATE_EQUAL = "Propagate ="

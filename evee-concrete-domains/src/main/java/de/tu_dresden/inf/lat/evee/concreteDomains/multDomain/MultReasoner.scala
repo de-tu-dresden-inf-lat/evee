@@ -2,7 +2,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.multDomain
 
 import de.tu_dresden.inf.lat.evee.proofs.data.{Inference, Proof}
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof
-import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintNetwork, ConstraintPropagationReasoner}
+import de.tu_dresden.inf.lat.evee.concreteDomains.{CDRules, ConstraintNetwork, ConstraintPropagationReasoner}
 
 import  de.tu_dresden.inf.lat.evee.concreteDomains.data.cdGeneral.ReasoningTaskTracker
 import  de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
@@ -25,7 +25,7 @@ object MultRules {
   val RULE_DIFFERENT_CONSTANTS = "Different constants"
   val RULE_CONSTANT_TOO_LARGE = "Constant too large"
   val RULE_DIFFERENT_FACTORS = "Different factors"
-  val RULE_ZERO = "Tautology"
+  val RULE_ZERO = CDRules.DEFINED
   val RULE_FACTOR_FROM_CONSTANTS = "Constant quotient"
   val RULE_TRANSITIVITY = "Product of factors"
   val RULE_PROPAGATE_EQUAL = "Propagate ="

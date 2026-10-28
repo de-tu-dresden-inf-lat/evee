@@ -3,7 +3,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains
 import de.tu_dresden.inf.lat.evee.concreteDomains.ReasonerTestSupport.subClassOf
 import de.tu_dresden.inf.lat.evee.concreteDomains.TestOntologies.{cls, ontology}
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser
-import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.{DiffConstraint, DiffReasoner, DiffSum}
+import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.{DiffConstraint, DiffEqual, DiffReasoner, DiffSum}
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.{GaussianEliminationReasoner, LinearConstraint}
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.{MultConstraint, MultLessThan, MultReasoner, Multiplication}
 import de.tu_dresden.inf.lat.evee.proofs.data.{Inference, Proof}
@@ -130,6 +130,14 @@ class ProofCheckerTest {
     val premises = Seq[MultConstraint](Multiplication(x, new BigFraction(2), y), MultLessThan(y, new BigFraction(6)))
     val goal = MultLessThan(x, new BigFraction(2))
     assertProblems(problems(new MultReasoner(), premises, goal, premises -> goal), "unsound inference")
+  }
+
+  /** x has a value because x = 5 mentions it, but def(x) does not hold without premises */
+  @Test def definedNeedsPremise(): Unit = {
+    val premises = Seq[DiffConstraint](DiffEqual(x, fraction(5)))
+    val goal = DiffSum(x, fraction(0), x)
+    assertProblems(problems(new DiffReasoner(), premises, goal, premises -> goal))
+    assertProblems(problems(new DiffReasoner(), premises, goal, Seq() -> goal), "unsound inference")
   }
 
   private def linear(coefficients: (OWLDataProperty, Int)*)(constant: Int) =

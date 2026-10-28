@@ -81,6 +81,16 @@ class ConstraintProofTest {
   @Test def linearInconsistency(): Unit =
     assertLinearProof(Seq(equation(x -> 1)(1), equation(x -> 1)(2)), CDDefaultContradictionGenerator.defaultLCBF)
 
+  /** def(x) is derived from a premise that mentions x */
+  @Test def diffDefined(): Unit =
+    assertDiffProof(Seq(DiffEqual(x, fraction(5))), DiffSum(x, fraction(0), x))
+
+  @Test def multDefined(): Unit =
+    assertMultProof(Seq(Multiplication(x, fraction(2), y)), Multiplication(y, fraction(1), y))
+
+  @Test def linearDefined(): Unit =
+    assertLinearProof(Seq(equation(x -> 1, y -> 1)(5)), equation(x -> 0)(0))
+
   @Test def multInconsistency(): Unit =
     assertMultProof(Seq(MultEqual(x, fraction(5)), MultLessThan(x, fraction(3))), MultContradiction)
 }

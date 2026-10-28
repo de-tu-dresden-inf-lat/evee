@@ -3,6 +3,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain;
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDDefaultContradictionGenerator;
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDProofGenerator;
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDReasoner;
+import de.tu_dresden.inf.lat.evee.concreteDomains.CDRules;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationException;
@@ -10,6 +11,7 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.tools.ProofTools;
 import org.apache.commons.math3.fraction.BigFraction;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 
 import scala.Option;
 import scala.collection.Iterable;
@@ -63,6 +65,9 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
      */
     @Override
     public IProof<LinearConstraint<BigFraction>> getProof(LinearConstraint<BigFraction> conclusion) throws ProofGenerationException {
+        if (conclusion.isDef() && !this.constraints.contains(conclusion))
+            return definedProof(conclusion);
+
         this.cDReasoner.considerAllPivotRows(true);
 
         Set<LinearConstraint<BigFraction>> premises = new HashSet<>(this.constraints);
@@ -102,6 +107,19 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
             throw new ProofGenerationException("Failed to prove LinearConstraint -> " + conclusion);
         else
             return ds;
+    }
+
+    /** def(x) does not follow by elimination: x has a value because one of the constraints mentions x */
+    private IProof<LinearConstraint<BigFraction>> definedProof(LinearConstraint<BigFraction> conclusion) throws ProofGenerationException {
+        OWLDataProperty x = conclusion.lhs().keys().head();
+        Optional<LinearConstraint<BigFraction>> premise = this.constraints.stream()
+                .filter(c -> c.getOWLDataProperties().contains(x))
+                .min(Comparator.comparing(Object::toString));
+        if (!premise.isPresent())
+            throw new ProofGenerationException("Linear Constraint is not implied -> " + conclusion + "\nTheory\n" + this.constraints);
+        return new Proof<>(conclusion, Arrays.asList(
+                new Inference<>(conclusion, CDRules.DEFINED(), Collections.singletonList(premise.get())),
+                new Inference<>(premise.get(), ProofTools.ASSERTED_2, Collections.emptyList())));
     }
 
     /** getProof throws an exception if it fails */

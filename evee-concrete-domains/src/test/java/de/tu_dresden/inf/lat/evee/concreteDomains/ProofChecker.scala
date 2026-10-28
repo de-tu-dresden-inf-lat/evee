@@ -58,16 +58,13 @@ class ProofChecker[T](goal: T, isAsserted: T => Boolean, isSound: IInference[T] 
 object ProofChecker {
 
   /**
-   * A checker for proofs of a constraint from the given premises, as produced by a CDProofGenerator.
-   *
-   * Since features are partial, a constraint only holds if its variables have values; e.g., x + 0 = x does not follow
-   * from no premises. The constraint reasoners nevertheless use such tautologies without premises for the variables
-   * of the input constraints. Hence, an inference without premises is sound if the input constraints imply it.
+   * A checker for proofs of a constraint from the given premises, as produced by a CDProofGenerator. Every inference
+   * has to be sound on its own. Since features are partial, a constraint only holds if its variables have values, so
+   * e.g. def(x) does not follow from no premises, but from x = 5.
    */
   def forConstraints[C <: CDConstraint](reasoner: CDReasoner[C], premises: Iterable[C], goal: C): ProofChecker[C] =
     new ProofChecker[C](goal, premises.toSet, inference =>
-      if (inference.getPremises.isEmpty) reasoner.implies(premises, inference.getConclusion)
-      else reasoner.implies(inference.getPremises.asScala, inference.getConclusion))
+      reasoner.implies(inference.getPremises.asScala, inference.getConclusion))
 
   /**
    * A checker for proofs of an OWL axiom from the given ontology that may use concrete domain reasoning. An inference
