@@ -12,12 +12,12 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 
 import org.apache.commons.math3.fraction.BigFraction;
-import org.apache.commons.math3.fraction.BigFractionFormat;
 import org.apache.commons.math3.linear.FieldVector;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 
 import scala.collection.immutable.Map;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +27,12 @@ import java.util.stream.Collectors;
  * A class to track all inferences that lead to the implied constraint.
  */
 public class ImplicationTracker {
+    /** the prefix of the rule names, which list the factors of the premises */
+    public static final String RULE_PREFIX = "Linear combination [";
+
     private final IProof<LinearConstraint<BigFraction>> derivationStructure;
+    /** the factors of the premises of each elimination step: the conclusion is the sum of the premises times these factors */
+    private final java.util.Map<IInference<LinearConstraint<BigFraction>>, BigFraction[]> factors = new HashMap<>();
     private final LinearConstraint<BigFraction> impliedLinearConstraint;
     private final Set<LinearConstraint<BigFraction>> theory;
     private Map<OWLDataProperty, Integer> varsMap;
@@ -60,8 +65,6 @@ public class ImplicationTracker {
     }
 
     public void addInference(FieldVector<BigFraction> conclusionVector, FieldVector<BigFraction> pivotVector, FieldVector<BigFraction> other, BigFraction factor1, BigFraction factor2){
-        String ruleName = "["+factor1+","+factor2+"]";
-
         LinearConstraint<BigFraction> conclusion = MatrixConversions.toLinearConstraint(conclusionVector,this.varsMap);
 
         List<LinearConstraint<BigFraction>> premise = new LinkedList<>(Arrays.asList(MatrixConversions.toLinearConstraint(pivotVector, this.varsMap)));
@@ -73,7 +76,9 @@ public class ImplicationTracker {
             this.fromContradiction = true;
             this.contradiction = conclusion;
         }
-        this.derivationStructure.addInference(new Inference<>(conclusion, format(ruleName), premise));
+        IInference<LinearConstraint<BigFraction>> inference = new Inference<>(conclusion, ruleName(factor1, factor2), premise);
+        this.factors.put(inference, new BigFraction[]{factor1, factor2});
+        this.derivationStructure.addInference(inference);
     }
 
     public IProof<LinearConstraint<BigFraction>> getFlippedDerivationStructure() {
@@ -105,10 +110,9 @@ public class ImplicationTracker {
 
                     int cIndx = x.getPremises().indexOf(c);
                     List<LinearConstraint<BigFraction>> newPremise = Lists.newLinkedList(x.getPremises());
-                    String newRuleName ="";
+                    String newRuleName;
 
-                    BigFraction[] factors = getFractionsFromStr(Arrays.stream(x.getRuleName().substring(1, x.getRuleName().length() - 1)
-                            .split(",")).map(String::trim).collect(Collectors.toList()));
+                    BigFraction[] factors = this.factors.get(x).clone();
 
                     BigFraction b = factors[cIndx];
                     factors[cIndx] = BigFraction.ONE.divide(factors[cIndx]);
@@ -116,14 +120,14 @@ public class ImplicationTracker {
 
                     if (x.getConclusion().rhs().equals(BigFraction.ZERO) && (x.getConclusion().lhs().keys().isEmpty())){
                         newPremise.remove(cIndx);
-                        newRuleName = "["+factors[1-cIndx]+"]";
+                        newRuleName = ruleName(factors[1 - cIndx]);
                     }
                     else {
                         newPremise.set(cIndx, x.getConclusion());
-                        newRuleName = "[" + factors[0] + "," + factors[1] + "]";
+                        newRuleName = ruleName(factors[0], factors[1]);
                     }
 
-                    ds.addInference(new Inference<>(c,format(newRuleName),newPremise));
+                    ds.addInference(new Inference<>(c, newRuleName, newPremise));
 
                     tmp.addAll(newPremise);
                 }
@@ -135,23 +139,18 @@ public class ImplicationTracker {
         return ds;
     }
 
-    private BigFraction[] getFractionsFromStr(List<String> fractions) {
-        BigFraction[] res = new BigFraction[fractions.size()];
-        int i=0;
-        for(String y : fractions){
-            res[i] = BigFractionFormat.getProperInstance().parse(y);
-            i++;
-        }
-        return res;
-    }
-
     public IProof<LinearConstraint<BigFraction>> getDerivationStructure() {
         return this.derivationStructure;
     }
 
-    private String format(String ruleName){
-        if(ruleName.contains("/"))
-            return ruleName.replaceAll("\\s+","").replace("/"," / ");
-        return ruleName;
+    /** the name of a step whose conclusion is the sum of its premises times the factors, e.g. "Linear combination [1, -1/3]" */
+    public static String ruleName(BigFraction... factors) {
+        return Arrays.stream(factors).map(ImplicationTracker::format).collect(Collectors.joining(", ", RULE_PREFIX, "]"));
+    }
+
+    private static String format(BigFraction fraction) {
+        if (fraction.getDenominator().equals(BigInteger.ONE))
+            return fraction.getNumerator().toString();
+        return fraction.getNumerator() + "/" + fraction.getDenominator();
     }
 }

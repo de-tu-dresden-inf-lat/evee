@@ -93,14 +93,17 @@ class ProofCheckerTest {
     inference(subClassOf("A", "B"), subClassOf("A", "C0"), subClassOf("C1", "B"))),
     "unsound inference")
 
-  /** x + 0 = x holds exactly for the individuals that have a value for x */
-  private val tautology = ontology("QDiff", Seq("C0" -> ":x = 5", "C3" -> ":x + 0 = :x"))
+  /** def(x) holds exactly for the individuals that have a value for x */
+  private val defined = ontology("QDiff", Seq("C0" -> ":x = 5", "C3" -> "def(:x)"))
 
-  @Test def tautologyForConstrainedFeature(): Unit = assertProblems(
-    problems(tautology, subClassOf("C0", "C3"), subClassOf("C0", "C3"), inference(subClassOf("C0", "C3"))))
+  /** C0 ⊑ C0 shows that the elements of C0 have a value for x */
+  @Test def definedFromPremise(): Unit = assertProblems(
+    problems(defined, subClassOf("C0", "C3"), subClassOf("C0", "C3"),
+      inference(subClassOf("C0", "C0")), inference(subClassOf("C0", "C3"), subClassOf("C0", "C0"))))
 
-  @Test def tautologyForUnconstrainedFeature(): Unit = assertProblems(
-    problems(tautology, subClassOf("A", "C3"), subClassOf("A", "C3"), inference(subClassOf("A", "C3"))),
+  /** every inference has to be sound on its own, even if the context C0 has a value for x */
+  @Test def definedWithoutPremise(): Unit = assertProblems(
+    problems(defined, subClassOf("C0", "C3"), subClassOf("C0", "C3"), inference(subClassOf("C0", "C3"))),
     "unsound inference")
 
   private def fraction(n: Int) = new BigFraction(n)

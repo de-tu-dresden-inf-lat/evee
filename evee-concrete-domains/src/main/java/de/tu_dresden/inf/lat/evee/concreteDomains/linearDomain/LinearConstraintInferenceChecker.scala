@@ -3,8 +3,10 @@ package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDDefaultContradictionGenerator
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference
 
-import org.apache.commons.math3.fraction.{BigFraction, BigFractionFormat}
+import org.apache.commons.math3.fraction.BigFraction
 import org.semanticweb.owlapi.model.OWLDataProperty
+
+import java.math.BigInteger
 
 import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 
@@ -20,16 +22,16 @@ object LinearConstraintInferenceChecker {
       return inf.getPremises.size()==1 && inf.getPremises.iterator().next().isInconsistent && inf.getConclusion
       .isInconsistent}
 
-    var name = inf.getRuleName
-    name = name.substring(1, name.length - 1)
-    val factors = name.split(',')
-    var i = 0
+    // the rule name lists the factors of the premises, e.g. "Linear combination [1, -1/3]"
+    val name = inf.getRuleName
+    if (!name.startsWith(ImplicationTracker.RULE_PREFIX) || !name.endsWith("]"))
+      return false
+    val factors = name.substring(ImplicationTracker.RULE_PREFIX.length, name.length - 1).split(',').map(fraction)
+    if (factors.length != inf.getPremises.size())
+      return false
     var sum = inf.getConclusion
-    for (premise <- inf.getPremises.asScala) {
-      val factor = BigFractionFormat.getProperInstance.parse(factors(i))
+    for ((premise, factor) <- inf.getPremises.asScala.zip(factors))
       sum = add(sum, multiply(factor.negate(), premise))
-      i = i + 1
-    }
 
     val result = {
       if (!sum.lhs.values.forall(BigFraction.ZERO.equals(_)))
@@ -47,6 +49,11 @@ object LinearConstraintInferenceChecker {
       println(inf)
     }
     result
+  }
+
+  private def fraction(text: String): BigFraction = text.trim.split('/') match {
+    case Array(numerator) => new BigFraction(new BigInteger(numerator.trim))
+    case Array(numerator, denominator) => new BigFraction(new BigInteger(numerator.trim), new BigInteger(denominator.trim))
   }
 
   private def multiply(a: BigFraction, c: LinearConstraint[BigFraction]) = LinearConstraint[BigFraction](c.lhs.mapValues(a.multiply), a.multiply(c.rhs))

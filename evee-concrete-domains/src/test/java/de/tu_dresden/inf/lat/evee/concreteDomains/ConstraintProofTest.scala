@@ -1,12 +1,15 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain._
-import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.{GaussianEliminationProver, GaussianEliminationReasoner, LinearConstraint}
+import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.{GaussianEliminationProver, GaussianEliminationReasoner, ImplicationTracker, LinearConstraint, LinearConstraintInferenceChecker}
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain._
 import org.apache.commons.math3.fraction.BigFraction
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.{IRI, OWLDataProperty}
+
+import scala.collection.JavaConverters._
 
 /** The proofs that the constraint reasoners generate for their own conclusions are correct. */
 class ConstraintProofTest {
@@ -28,10 +31,14 @@ class ConstraintProofTest {
     ProofChecker.forConstraints(new MultReasoner(), premises, goal).assertCorrect(prover.getProof(goal))
   }
 
+  /** also checks that the rule names of the linear combinations give their factors */
   private def assertLinearProof(premises: Seq[LinearConstraint[BigFraction]], goal: LinearConstraint[BigFraction]): Unit = {
     val prover = new GaussianEliminationProver()
     prover.setOntology(premises)
-    ProofChecker.forConstraints(new GaussianEliminationReasoner(), premises, goal).assertCorrect(prover.getProof(goal))
+    val proof = prover.getProof(goal)
+    ProofChecker.forConstraints(new GaussianEliminationReasoner(), premises, goal).assertCorrect(proof)
+    for (inference <- proof.getInferences.asScala if inference.getRuleName.startsWith(ImplicationTracker.RULE_PREFIX))
+      assertTrue("wrong factors: " + inference, LinearConstraintInferenceChecker.correctCDInference(inference))
   }
 
   private def fraction(n: Int) = new BigFraction(n)

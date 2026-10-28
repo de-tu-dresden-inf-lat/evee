@@ -6,6 +6,9 @@ public final class CDAnnotationNames {
      // private constructor to prevent instantiation
     private CDAnnotationNames() {}
 
+    /** the namespace of the annotation properties and of the auxiliary classes in proofs */
+    public static final String NAMESPACE = "http://tu-dresden.de/inf/lat/evee/cd#";
+
     public static final String CONSTRAINT_ANNOTATION_PROP = "http://tu-dresden.de/inf/lat/evee/cd#constraint";
     public static final String CONCRETE_DOMAIN_ANNOTATION_PROP = "http://tu-dresden.de/inf/lat/evee/cd#concreteDomain";
 }

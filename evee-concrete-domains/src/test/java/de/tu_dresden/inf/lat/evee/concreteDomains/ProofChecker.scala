@@ -3,6 +3,7 @@ package de.tu_dresden.inf.lat.evee.concreteDomains
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IInference, IProof}
 import de.tu_dresden.inf.lat.evee.proofs.tools.ProofTools
 import org.junit.Assert.assertTrue
+import org.semanticweb.owlapi.reasoner.InconsistentOntologyException
 import org.semanticweb.owlapi.model.parameters.{AxiomAnnotations, Imports}
 import org.semanticweb.owlapi.model.{OWLAxiom, OWLClass, OWLClassExpression, OWLOntology, OWLSubClassOfAxiom}
 
@@ -71,8 +72,8 @@ object ProofChecker {
    * is sound if its conclusion follows from its premises in OWL (checked with HermiT), or if it is a concrete domain
    * inference: all its sentences have the form X ⊑ D for the same X, where each D is a class with a constraint
    * (the conclusion may also have owl:Nothing), and the constraints of the premises imply the constraint of the
-   * conclusion (or are inconsistent if the conclusion is X ⊑ owl:Nothing). The constraints of the classes among the
-   * top-level conjuncts of X also hold for X, so they are added to the premises.
+   * conclusion (or are inconsistent if the conclusion is X ⊑ owl:Nothing). As in constraint proofs, every inference
+   * has to be sound on its own: the constraints that X has because of its conjuncts are not added to the premises.
    *
    * @param constraints the constraint of each class, including fresh classes that only occur in proofs
    */
@@ -92,13 +93,16 @@ object ProofChecker {
       if (!premises.forall(hasConstraint) || !(conclusion.isOWLNothing || hasConstraint(conclusion)))
         return false
 
-      val conjunctConstraints = subsumptions.head.getSubClass.asConjunctSet.asScala.filter(hasConstraint)
-      val premiseConstraints = (premises ++ conjunctConstraints).map(p => constraints(p.asOWLClass))
+      val premiseConstraints = premises.map(p => constraints(p.asOWLClass))
       if (conclusion.isOWLNothing) !reasoner.consistent(premiseConstraints)
       else reasoner.implies(premiseConstraints, constraints(conclusion.asOWLClass))
     }
 
+    // inconsistent premises entail everything, but HermiT throws an exception for them
+    def correctInOWL(inference: IInference[OWLAxiom]): Boolean =
+      try ProofTools.isCorrect(inference) catch { case _: InconsistentOntologyException => true }
+
     new ProofChecker[OWLAxiom](goal, asserted,
-      inference => ProofTools.isCorrect(inference) || soundForConcreteDomain(inference))
+      inference => correctInOWL(inference) || soundForConcreteDomain(inference))
   }
 }
