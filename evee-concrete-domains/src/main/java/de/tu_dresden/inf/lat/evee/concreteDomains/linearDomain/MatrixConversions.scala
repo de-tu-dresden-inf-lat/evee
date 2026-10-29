@@ -11,19 +11,14 @@ object MatrixConversions {
     println(row.toArray.map(_.doubleValue).mkString("[", ", " , "]"))
   }
 
-  def getKeyMap[T] (constraints: Iterable[LinearConstraint[T]]) = {
-    var counter = 0
-    var keyMap = Map[OWLDataProperty, Integer]()
-    constraints.foreach(
-      _.lhs.keys.foreach(key =>
-        if(!keyMap.contains(key))
-          {
-            keyMap += ((key,counter))
-            counter+=1
-          }
-      )
-    )
-    keyMap
+  /**
+   * the column of each variable of the constraints, which is the order of elimination: first the variables in the
+   * given order, then the others sorted by IRI
+   */
+  def getKeyMap[T] (constraints: Iterable[LinearConstraint[T]], order: Seq[OWLDataProperty] = Seq()): Map[OWLDataProperty, Integer] = {
+    val variables = constraints.flatMap(_.lhs.keys).toSet
+    val ordered = order.filter(variables).distinct ++ (variables -- order).toSeq.sortBy(_.getIRI.toString)
+    ordered.zipWithIndex.map { case (variable, column) => variable -> Integer.valueOf(column) }.toMap
   }
 
   /**

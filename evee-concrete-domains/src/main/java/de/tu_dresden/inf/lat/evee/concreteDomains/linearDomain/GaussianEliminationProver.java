@@ -18,6 +18,7 @@ import scala.collection.Iterable;
 import scala.collection.JavaConverters;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Proofs for linear constraints, built from the steps of Gaussian elimination.
@@ -25,8 +26,12 @@ import java.util.*;
  * @author Christian Alrabbaa
  */
 public class GaussianEliminationProver implements CDProofGenerator<LinearConstraint<BigFraction>> {
+    /** the default of {@link #setMaxVariablesForAllOrders(int)} */
+    public static final int DEFAULT_MAX_VARIABLES_FOR_ALL_ORDERS = 4;
+
     private Set<LinearConstraint<BigFraction>> constraints;
     private final GaussianEliminationReasoner cDReasoner;
+    private int maxVariablesForAllOrders = DEFAULT_MAX_VARIABLES_FOR_ALL_ORDERS;
 
     public GaussianEliminationProver() {
         this(new GaussianEliminationReasoner());
@@ -35,6 +40,15 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
     /** the reasoner is changed to track all inferences, so it should not be used for anything else */
     public GaussianEliminationProver(GaussianEliminationReasoner cDReasoner) {
         this.cDReasoner = cDReasoner;
+    }
+
+    /**
+     * The proofs depend on the order in which the variables are eliminated. If the premises and the conclusion have at
+     * most this many variables, the derivation structure contains the eliminations in all orders (n! for n variables),
+     * and minimisation chooses; otherwise only the elimination with the variables sorted by IRI.
+     */
+    public void setMaxVariablesForAllOrders(int maxVariablesForAllOrders) {
+        this.maxVariablesForAllOrders = maxVariablesForAllOrders;
     }
 
     @Override
@@ -58,8 +72,8 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
     }
 
     /**
-     * Return a derivation structure with all inferences relevant to proving {@code conclusion}</br>
-     * @implNote !!This currently returns the full derivation structure with one root!!
+     * Returns a derivation structure with the inferences of Gaussian elimination that prove {@code conclusion}, for the
+     * variable orders described in {@link #setMaxVariablesForAllOrders(int)}.
      * @param conclusion The constraint to prove
      * @throws ProofGenerationException
      */
@@ -68,11 +82,37 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
         if (conclusion.isDef() && !this.constraints.contains(conclusion))
             return definedProof(conclusion);
 
+        // a fixed order of the premises, so that the proofs do not depend on hash codes
+        List<LinearConstraint<BigFraction>> premises = this.constraints.stream()
+                .sorted(Comparator.comparing(Object::toString)).collect(Collectors.toList());
+        List<OWLDataProperty> variables = new ArrayList<>();
+        for (LinearConstraint<BigFraction> constraint : premises)
+            variables.addAll(JavaConverters.setAsJavaSet(constraint.getOWLDataProperties()));
+        variables.addAll(JavaConverters.setAsJavaSet(conclusion.getOWLDataProperties()));
+        variables = variables.stream().distinct().sorted(Comparator.comparing(v -> v.getIRI().toString()))
+                .collect(Collectors.toList());
+        List<List<OWLDataProperty>> orders = variables.size() <= this.maxVariablesForAllOrders ?
+                permutations(variables) : Collections.singletonList(variables);
+
+        Set<IInference<LinearConstraint<BigFraction>>> inferences = new LinkedHashSet<>();
         this.cDReasoner.considerAllPivotRows(true);
+        for (List<OWLDataProperty> order : orders) {
+            this.cDReasoner.variableOrder(JavaConverters.asScalaBuffer(order).toList());
+            inferences.addAll(eliminationSteps(premises, conclusion));
+        }
 
-        Set<LinearConstraint<BigFraction>> premises = new HashSet<>(this.constraints);
+        for (LinearConstraint<BigFraction> premise : premises) {
+            inferences.add(new Inference<>(premise, ProofTools.ASSERTED_2, Collections.emptyList()));
+        }
+        if (inferences.isEmpty())
+            throw new ProofGenerationException("Failed to prove LinearConstraint -> " + conclusion);
+        return new Proof<>(conclusion, new ArrayList<>(inferences));
+    }
 
-        ImplicationTracker tracker = new ImplicationTracker(premises, conclusion);
+    /** the inferences of one elimination, with the variable order set in the reasoner */
+    private List<IInference<LinearConstraint<BigFraction>>> eliminationSteps(List<LinearConstraint<BigFraction>> premises,
+            LinearConstraint<BigFraction> conclusion) throws ProofGenerationException {
+        ImplicationTracker tracker = new ImplicationTracker(new HashSet<>(premises), conclusion);
         boolean implied = this.cDReasoner.implies(JavaConverters.collectionAsScalaIterable(premises), conclusion,
                 Option.apply(tracker));
 
@@ -89,10 +129,6 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
                 inferences.add(inf);
         }
 
-        for (LinearConstraint<BigFraction> premise : premises) {
-            inferences.add(new Inference<>(premise, ProofTools.ASSERTED_2, Collections.emptyList()));
-        }
-
         if(conclusion.isInconsistent()){
             if(!tracker.getContradiction().isPresent())
                 throw new ProofGenerationException("Inconsistent conclusion without a contradiction in the tracker!\n" +
@@ -101,12 +137,25 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
                     Collections.singletonList(tracker.getContradiction().get())));
         }
 
-        ds = new Proof<>(conclusion, inferences);
+        return inferences;
+    }
 
-        if(ds.getInferences().isEmpty())
-            throw new ProofGenerationException("Failed to prove LinearConstraint -> " + conclusion);
-        else
-            return ds;
+    /** all orders of the elements */
+    private static <T> List<List<T>> permutations(List<T> elements) {
+        if (elements.isEmpty())
+            return Collections.singletonList(Collections.emptyList());
+        List<List<T>> result = new ArrayList<>();
+        for (T first : elements) {
+            List<T> rest = new ArrayList<>(elements);
+            rest.remove(first);
+            for (List<T> order : permutations(rest)) {
+                List<T> permutation = new ArrayList<>();
+                permutation.add(first);
+                permutation.addAll(order);
+                result.add(permutation);
+            }
+        }
+        return result;
     }
 
     /** def(x) does not follow by elimination: x has a value because one of the constraints mentions x */

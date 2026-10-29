@@ -4,7 +4,8 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain._
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.{GaussianEliminationProver, GaussianEliminationReasoner, ImplicationTracker, LinearConstraint, LinearConstraintInferenceChecker}
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain._
 import org.apache.commons.math3.fraction.BigFraction
-import org.junit.Assert.assertTrue
+import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.TreeProofGenerator
+import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.{IRI, OWLDataProperty}
@@ -100,4 +101,28 @@ class ConstraintProofTest {
 
   @Test def multInconsistency(): Unit =
     assertMultProof(Seq(MultEqual(x, fraction(5)), MultLessThan(x, fraction(3))), MultContradiction)
+
+  /** from qlinear/example.ofn: eliminating x first takes 3 steps, eliminating y first only 2 */
+  private val system = Seq(equation(x -> 3, y -> 4)(22), equation(y -> -2, z -> 1)(12), equation(x -> 1, y -> 1, z -> 1)(10))
+  private val combination = equation(y -> 3, z -> 1)(-16)
+
+  /** the number of linear combinations in a proof of minimal tree size */
+  private def linearSteps(premises: Seq[LinearConstraint[BigFraction]], maxVariablesForAllOrders: Int): Int = {
+    val prover = new GaussianEliminationProver()
+    prover.setMaxVariablesForAllOrders(maxVariablesForAllOrders)
+    prover.setOntology(premises)
+    TreeProofGenerator.getMinimalTreeSizeProof(prover.getProof(combination)).getInferences.asScala
+      .count(_.getRuleName.startsWith(ImplicationTracker.RULE_PREFIX))
+  }
+
+  @Test def linearAllVariableOrders(): Unit = {
+    assertLinearProof(system, combination)
+    assertEquals(2, linearSteps(system, 3))
+  }
+
+  /** above the limit, the variables are eliminated in the order of their IRIs, however the constraints are written */
+  @Test def linearFixedVariableOrder(): Unit = {
+    assertEquals(3, linearSteps(system, 2))
+    assertEquals(3, linearSteps(system.reverse.map(c => LinearConstraint(c.lhs.toSeq.reverse.toMap, c.rhs)), 2))
+  }
 }

@@ -21,9 +21,15 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
   private var targetRows: Iterable[FieldVector[BigFraction]] = _
   private var pivotRowLog: List[FieldVector[BigFraction]] = _
   private var considerAllPivotRows: Boolean = false
+  private var variableOrder: Seq[OWLDataProperty] = Seq()
 
   def considerAllPivotRows(value: Boolean): Unit = {
     considerAllPivotRows = value
+  }
+
+  /** the order in which the variables are eliminated; variables not in it come afterwards, sorted by IRI */
+  def variableOrder(order: Seq[OWLDataProperty]): Unit = {
+    variableOrder = order
   }
 
   override def consistent(predicates: Iterable[LinearConstraint[BigFraction]]): Boolean = {
@@ -83,7 +89,7 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
   def gaussianElimination(predicates: Iterable[LinearConstraint[BigFraction]], targets: Iterable[LinearConstraint[BigFraction]], tracker: Option[ImplicationTracker]):
     (Map[OWLDataProperty, Integer], Iterable[FieldVector[BigFraction]], Iterable[FieldVector[BigFraction]]) = {
 
-    keyMap = MatrixConversions.getKeyMap(predicates ++ targets)
+    keyMap = MatrixConversions.getKeyMap(predicates ++ targets, variableOrder)
     numVars = keyMap.size
     rows = predicates.map(MatrixConversions.toBigRow(_, keyMap))
     targetRows = targets.map(MatrixConversions.toBigRow(_, keyMap))

@@ -56,6 +56,16 @@ class ELKCDProofGenerator(givenReasoner: ELKCDReasoner[CDConstraint] = null)
   /** whether this generator created the reasoner, and therefore has to dispose of it */
   private var ownReasoner = false
   private var prover: CDProofGenerator[CDConstraint] = _
+  private var maxVariablesForAllOrders = GaussianEliminationProver.DEFAULT_MAX_VARIABLES_FOR_ALL_ORDERS
+
+  /** for QLinear: see [[GaussianEliminationProver.setMaxVariablesForAllOrders]] */
+  def setMaxVariablesForAllOrders(max: Int): Unit = {
+    maxVariablesForAllOrders = max
+    (prover: Any) match {
+      case linear: GaussianEliminationProver => linear.setMaxVariablesForAllOrders(max)
+      case _ =>
+    }
+  }
 
   /**
    * Sets the ontology. The concrete domain reasoner given to the constructor is used if it is for this ontology;
@@ -96,7 +106,10 @@ class ELKCDProofGenerator(givenReasoner: ELKCDReasoner[CDConstraint] = null)
   private def constraintProver(domain: ConcreteDomainName): CDProofGenerator[CDConstraint] = (domain match {
     case ConcreteDomainName.QDiff => new DiffReasoner()
     case ConcreteDomainName.QMult => new MultReasoner()
-    case ConcreteDomainName.QLinear => new GaussianEliminationProver()
+    case ConcreteDomainName.QLinear =>
+      val linear = new GaussianEliminationProver()
+      linear.setMaxVariablesForAllOrders(maxVariablesForAllOrders)
+      linear
     case _ => null
   }).asInstanceOf[CDProofGenerator[CDConstraint]]
 
@@ -197,7 +210,10 @@ class ELKCDProofGenerator(givenReasoner: ELKCDReasoner[CDConstraint] = null)
             case Some(constraint) => prover.getProof(constraint)
             case None => prover.proveInconsistency()
           }
-          for (step <- constraintProof.getInferences.asScala.toSeq.sortBy(_.toString) if !ProofTools.isAsserted(step))
+          // sorted, so that the auxiliary classes are numbered in the same way each time; each step is converted to
+          // a string only once, because sortBy would convert it in every comparison
+          val steps = constraintProof.getInferences.asScala.toSeq.map(step => step.toString -> step).sortBy(_._1).map(_._2)
+          for (step <- steps if !ProofTools.isAsserted(step))
             inferences += new Inference[OWLAxiom](inContext(owlClass(step.getConclusion)), step.getRuleName,
               step.getPremises.asScala.map(p => inContext(owlClass(p))).asJava)
       }
