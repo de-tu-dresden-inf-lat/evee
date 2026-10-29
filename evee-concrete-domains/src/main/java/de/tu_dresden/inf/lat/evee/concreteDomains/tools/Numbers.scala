@@ -17,12 +17,10 @@ object Numbers {
     else new BigFraction(value.unscaledValue, BigInteger.TEN.pow(value.scale))
   }
 
-  /** a decimal number if the value has a finite decimal expansion, otherwise a fraction such as "1/3" */
+  /** an integer such as "3", or a fraction in lowest terms such as "-1/3" */
   def format(value: BigFraction): String =
-    try new BigDecimal(value.getNumerator).divide(new BigDecimal(value.getDenominator)).stripTrailingZeros.toPlainString
-    catch {
-      case _: ArithmeticException => value.getNumerator + "/" + value.getDenominator
-    }
+    if (value.getDenominator == BigInteger.ONE) value.getNumerator.toString
+    else value.getNumerator + "/" + value.getDenominator
 
   /** arithmetic and comparison operators for BigFraction */
   implicit class FractionOps(val a: BigFraction) extends AnyVal {

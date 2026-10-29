@@ -6,6 +6,7 @@ import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint;
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers;
 import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
 import de.tu_dresden.inf.lat.evee.proofs.data.Proof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
@@ -17,7 +18,6 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 
 import scala.collection.immutable.Map;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -145,12 +145,6 @@ public class ImplicationTracker {
 
     /** the name of a step whose conclusion is the sum of its premises times the factors, e.g. "Linear combination [1, -1/3]" */
     public static String ruleName(BigFraction... factors) {
-        return Arrays.stream(factors).map(ImplicationTracker::format).collect(Collectors.joining(", ", RULE_PREFIX, "]"));
-    }
-
-    private static String format(BigFraction fraction) {
-        if (fraction.getDenominator().equals(BigInteger.ONE))
-            return fraction.getNumerator().toString();
-        return fraction.getNumerator() + "/" + fraction.getDenominator();
+        return Arrays.stream(factors).map(Numbers::format).collect(Collectors.joining(", ", RULE_PREFIX, "]"));
     }
 }

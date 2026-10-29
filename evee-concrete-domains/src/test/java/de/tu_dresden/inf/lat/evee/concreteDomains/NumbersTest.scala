@@ -16,11 +16,13 @@ class NumbersTest {
   }
 
   @Test def format(): Unit = {
-    assertEquals("0.5", Numbers.format(new BigFraction(1, 2)))
-    assertEquals("-2.5", Numbers.format(new BigFraction(-5, 2)))
+    assertEquals("1/2", Numbers.format(new BigFraction(1, 2)))
+    assertEquals("-5/2", Numbers.format(new BigFraction(-5, 2)))
     assertEquals("5", Numbers.format(new BigFraction(5)))
     assertEquals("0", Numbers.format(BigFraction.ZERO))
     assertEquals("100", Numbers.format(new BigFraction(100)))
     assertEquals("1/3", Numbers.format(new BigFraction(1, 3)))
+    assertEquals("7/20", Numbers.format(new BigFraction(7, 20)))
+    assertEquals("-1/6", Numbers.format(new BigFraction(-1, 6)))
   }
 }
