@@ -27,6 +27,8 @@ case class DiffGreaterThan(property: OWLDataProperty, bound: BigFraction)
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
   override def isInconsistent: Boolean = false
+
+  override def size: Int = 3
 }
 
 /**
@@ -39,6 +41,8 @@ case class DiffEqual(property: OWLDataProperty, value: BigFraction)
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
   override def isInconsistent: Boolean = false
+
+  override def size: Int = 3
 }
 
 /**
@@ -58,6 +62,8 @@ case class DiffSum(property1: OWLDataProperty, diff: BigFraction, property2: OWL
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property1, property2)
 
   override def isInconsistent: Boolean = property1.equals(property2) && !diff.equals(BigFraction.ZERO)
+
+  override def size: Int = if (property1.equals(property2) && diff.equals(BigFraction.ZERO)) 2 else 5
 }
 
 object DiffContradiction extends DiffConstraint {
@@ -66,4 +72,6 @@ object DiffContradiction extends DiffConstraint {
   override def getOWLDataProperties: Set[OWLDataProperty] = Set.empty
 
   override def isInconsistent: Boolean = true
+
+  override def size: Int = 1
 }

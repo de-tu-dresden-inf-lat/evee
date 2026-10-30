@@ -57,6 +57,22 @@ class ConstraintParserTest {
     assertEquals(equation(x -> fraction(1, 2), y -> fraction(-1))(fraction(1)), linear.toConstraint("0.5 * :x − :y = 1"))
   }
 
+  /** the number of symbols, as in the printed constraint, without factors 1 and -1 */
+  @Test def sizes(): Unit = {
+    assertEquals(3, diff.toConstraint(":x = 5").size)
+    assertEquals(3, diff.toConstraint(":x > 5").size)
+    assertEquals(5, diff.toConstraint(":x + 5 = :y").size)
+    assertEquals(2, diff.toConstraint("def(:x)").size)
+    assertEquals(3, mult.toConstraint(":x < 5").size)
+    assertEquals(4, mult.toConstraint("2 * :x = :y").size)
+    assertEquals(2, mult.toConstraint("def(:x)").size)
+    assertEquals(7, linear.toConstraint("3 * :x + 4 * :y = 22").size)
+    assertEquals(5, linear.toConstraint(":x - :y = 1").size)
+    assertEquals(3, linear.toConstraint("-:x = 1").size)
+    assertEquals(2, linear.toConstraint("def(:x)").size)
+    assertEquals(1, DiffContradiction.size)
+  }
+
   /** def(x) says that x has a value; each domain expresses this by one of its constraints */
   @Test def definedValues(): Unit = {
     assertEquals(DiffSum(x, fraction(0), x), diff.toConstraint("def(x)"))

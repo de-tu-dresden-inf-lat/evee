@@ -29,6 +29,8 @@ case class MultLessThan(property: OWLDataProperty, bound: BigFraction)
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
   override def isInconsistent: Boolean = false
+
+  override def size: Int = 3
 }
 
 /**
@@ -41,6 +43,8 @@ case class MultEqual(property: OWLDataProperty, value: BigFraction)
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property)
 
   override def isInconsistent: Boolean = false
+
+  override def size: Int = 3
 }
 
 /**
@@ -64,6 +68,9 @@ case class Multiplication(property1: OWLDataProperty, factor: BigFraction, prope
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property1, property2)
 
   override def isInconsistent: Boolean = property1.equals(property2) && !factor.getNumerator().equals(factor.getDenominator())
+
+  /** the factor is a number before the first property, without an operator, as in linear constraints */
+  override def size: Int = if (property1.equals(property2) && factor.equals(BigFraction.ONE)) 2 else 4
 }
 
 object MultContradiction extends MultConstraint {
@@ -72,4 +79,6 @@ object MultContradiction extends MultConstraint {
   override def getOWLDataProperties: Set[OWLDataProperty] = Set.empty
 
   override def isInconsistent: Boolean = true
+
+  override def size: Int = 1
 }

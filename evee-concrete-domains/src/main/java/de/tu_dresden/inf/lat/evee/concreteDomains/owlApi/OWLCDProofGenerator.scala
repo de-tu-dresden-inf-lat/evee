@@ -22,28 +22,41 @@ import scala.collection.JavaConverters._
  *
  * Only OWL API methods that are the same in versions 4 and 5 are used, since Protégé runs this code with version 4.
  *
- * @param givenReasoner the concrete domain reasoner to use for the ontology it was created for; see
- *                      [[ELKCDProofGenerator]]
+ * @param initialReasoner the concrete domain reasoner to use for the ontology it was created for; see
+ *                        [[ELKCDProofGenerator]]
  */
-class OWLCDProofGenerator(givenReasoner: ELKCDReasoner[CDConstraint] = null)
+class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
   extends IProofGenerator[OWLAxiom, OWLOntology] {
 
   import OWLCDProofGenerator._
 
-  private val generator = new ELKCDProofGenerator(givenReasoner)
-  private var constraints: Map[OWLClass, CDConstraint] = Map()
+  private val generator = new ELKCDProofGenerator(initialReasoner)
+  /** the classes of the ontology that have a constraint */
+  private var inputConstraints: Map[OWLClass, CDConstraint] = Map()
+  /** the classes of the ontology that have a constraint and the classes that show a constraint in the proofs so far */
+  private val classConstraints = scala.collection.mutable.Map[OWLClass, CDConstraint]()
   private var inputClassesAsConstraints = false
 
   /** whether the classes of the ontology that have a constraint are shown by their constraint (default: false) */
   def setInputClassesAsConstraints(value: Boolean): Unit = inputClassesAsConstraints = value
 
+  /** see [[ELKCDProofGenerator.setReasoner]] */
+  def setReasoner(reasoner: ELKCDReasoner[CDConstraint]): Unit = generator.setReasoner(reasoner)
+
+  /**
+   * the constraints of the classes in the proofs: of the classes of the ontology that have one, and of the classes that
+   * show one. The map is filled again by setOntology and grows with each proof.
+   */
+  def constraints: scala.collection.Map[OWLClass, CDConstraint] = classConstraints
+
   /** for QLinear: see [[ELKCDProofGenerator.setMaxVariablesForAllOrders]] */
   def setMaxVariablesForAllOrders(max: Int): Unit = generator.setMaxVariablesForAllOrders(max)
 
   override def setOntology(ontology: OWLOntology): Unit = {
-    val extended = ExtendedOntologyParser.toExtendedOntology(ontology)
-    constraints = extended.constraintMap
-    generator.setOntology(extended)
+    generator.setOntology(ExtendedOntologyParser.toExtendedOntology(ontology))
+    inputConstraints = generator.constraintMap
+    classConstraints.clear()
+    classConstraints ++= inputConstraints
   }
 
   /** disposes of the reasoner if the generator created it */
@@ -58,9 +71,13 @@ class OWLCDProofGenerator(givenReasoner: ELKCDReasoner[CDConstraint] = null)
     val goalClasses = goal.getClassesInSignature.asScala.toSet
     def render(axiom: ExtendedAxiom[CDConstraint]): OWLAxiom = {
       val shown = axiom.map.filter { case (cls, _) =>
-        !goalClasses.contains(cls) && (inputClassesAsConstraints || !constraints.contains(cls)) }
+        !goalClasses.contains(cls) && (inputClassesAsConstraints || !inputConstraints.contains(cls)) }
       if (shown.isEmpty) axiom.axiom
-      else replace(axiom.axiom, shown.map { case (cls, constraint) => cls -> constraintClass(constraint) })
+      else replace(axiom.axiom, shown.map { case (cls, constraint) =>
+        val shownClass = constraintClass(constraint)
+        classConstraints(shownClass) = constraint
+        cls -> shownClass
+      })
     }
     val inferences = proof.getInferences.asScala.map(inference => new Inference[OWLAxiom](
       render(inference.getConclusion), inference.getRuleName, inference.getPremises.asScala.map(render).asJava))
@@ -82,6 +99,23 @@ object OWLCDProofGenerator {
     val text = IRI_IN_ANGLE_BRACKETS.replaceAllIn(constraint.toString, m =>
       scala.util.matching.Regex.quoteReplacement(IRI.create(m.group(1)).getShortForm))
     factory.getOWLClass(IRI.create(CDAnnotationNames.NAMESPACE + "[" + text + "]"))
+  }
+
+  /** the classes in the axiom, once for each occurrence, in the axioms and class expressions of EL */
+  def classOccurrences(axiom: OWLAxiom): Seq[OWLClass] = {
+    def expression(c: OWLClassExpression): Seq[OWLClass] = c match {
+      case cls: OWLClass => Seq(cls)
+      case and: OWLObjectIntersectionOf => and.asConjunctSet.asScala.toSeq.flatMap(expression)
+      case some: OWLObjectSomeValuesFrom => expression(some.getFiller)
+      case _ => Seq()
+    }
+    axiom match {
+      case sub: OWLSubClassOfAxiom => expression(sub.getSubClass) ++ expression(sub.getSuperClass)
+      case equivalent: OWLEquivalentClassesAxiom => equivalent.getClassExpressions.asScala.toSeq.flatMap(expression)
+      case disjoint: OWLDisjointClassesAxiom => disjoint.getClassExpressions.asScala.toSeq.flatMap(expression)
+      case assertion: OWLClassAssertionAxiom => expression(assertion.getClassExpression)
+      case _ => Seq()
+    }
   }
 
   /** the axiom with the classes replaced; only the axioms and class expressions of EL that occur in proofs change */

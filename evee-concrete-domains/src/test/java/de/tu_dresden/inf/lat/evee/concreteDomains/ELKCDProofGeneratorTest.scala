@@ -208,5 +208,23 @@ class ELKCDProofGeneratorTest {
     } finally reasoner.dispose()
   }
 
+  /** a reasoner set later is used from the next setOntology on; without it, the generator uses its own */
+  @Test def setsTheReasonerLater(): Unit = {
+    val o = ontology("QDiff", Seq("C0" -> ":x = 5", "C1" -> ":x > 3"), "SubClassOf(:A :C0)")
+    val reasoner = new OWLCDReasonerFactory().createReasoner(o).asInstanceOf[ELKCDReasoner[CDConstraint]]
+    val generator = new ELKCDProofGenerator()
+    try {
+      generator.setReasoner(reasoner)
+      generator.setOntology(extended(o))
+      generator.getProof(ExtendedAxiom[CDConstraint](subClassOf("A", "C1"), Map()))
+      assertTrue("the reasoner should be used", reasoner.concreteDomainAxioms.contains(subClassOf("C0", "C1")))
+      generator.setReasoner(null)
+      generator.setOntology(extended(o))
+      generator.getProof(ExtendedAxiom[CDConstraint](subClassOf("A", "C1"), Map()))
+      generator.dispose()
+      assertTrue("the reasoner should not be disposed", reasoner.isEntailed(subClassOf("A", "C1")))
+    } finally reasoner.dispose()
+  }
+
   private def subClassOf(sub: String, sup: String) = factory.getOWLSubClassOfAxiom(cls(sub), cls(sup))
 }

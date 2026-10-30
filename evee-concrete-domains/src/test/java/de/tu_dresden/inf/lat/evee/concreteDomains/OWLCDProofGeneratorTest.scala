@@ -8,7 +8,7 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffReasoner
 import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDProofGenerator
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.GaussianEliminationReasoner
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.MultReasoner
-import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.OWLCDProofGenerator
+import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.{ConstraintSizeWeightedTreeSizeMeasure, OWLCDProofGenerator}
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof
 import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.TreeProofGenerator
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -115,6 +115,22 @@ class OWLCDProofGeneratorTest {
     assertEquals(goal, minimal.getFinalConclusion)
     assertTrue(minimal.toString, minimal.getInferences.asScala.exists(i => i.getConclusion == goal &&
       i.getRuleName == "Same Constraint" && i.getPremises.asScala == Seq(factory.getOWLSubClassOfAxiom(cls("A"), shown("x > 1")))))
+  }
+
+  /** a class with a constraint counts with the size of its constraint, also when it is shown by its constraint */
+  @Test def constraintSizes(): Unit = {
+    val o = load("qdiff/patient.ofn")
+    val generator = new OWLCDProofGenerator()
+    try {
+      generator.setInputClassesAsConstraints(true)
+      generator.setOntology(o)
+      val measure = new ConstraintSizeWeightedTreeSizeMeasure(generator.constraints)
+      // pp = 65 has 3 symbols, CurrentPatient and ⊑ one each
+      assertEquals(5d, measure.leafValue(factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), owlClass(o, "A-pp"))), 0d)
+      val proof = generator.getProof(factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), owlClass(o, "NeedAttention")))
+      assertTrue(proof.getInferences.asScala.exists(_.getConclusion == factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), shown("pp = 65"))))
+      assertEquals(5d, measure.leafValue(factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), shown("pp = 65"))), 0d)
+    } finally generator.dispose()
   }
 
   /** the constraint is shown with the short names of the data properties and fractions */

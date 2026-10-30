@@ -44,15 +44,16 @@ import scala.collection.mutable
  * The proofs are derivation structures with the alternatives of ELK and of the constraint provers; minimisation
  * selects a proof. The ontology is never changed.
  *
- * @param givenReasoner the concrete domain reasoner to use for the ontology it was created for; for other ontologies,
- *                      the generator creates its own reasoner
+ * @param initialReasoner the concrete domain reasoner to use for the ontology it was created for; for other
+ *                        ontologies, the generator creates its own reasoner (see [[setReasoner]])
  */
-class ELKCDProofGenerator(givenReasoner: ELKCDReasoner[CDConstraint] = null)
+class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
   extends IProofGenerator[ExtendedAxiom[CDConstraint], ExtendedOntology[CDConstraint]] {
 
   private val factory = OWLManager.getOWLDataFactory
 
-  private var reasoner: ELKCDReasoner[CDConstraint] = givenReasoner
+  private var givenReasoner: ELKCDReasoner[CDConstraint] = initialReasoner
+  private var reasoner: ELKCDReasoner[CDConstraint] = _
   /** whether this generator created the reasoner, and therefore has to dispose of it */
   private var ownReasoner = false
   private var prover: CDProofGenerator[CDConstraint] = _
@@ -68,18 +69,36 @@ class ELKCDProofGenerator(givenReasoner: ELKCDReasoner[CDConstraint] = null)
   }
 
   /**
-   * Sets the ontology. The concrete domain reasoner given to the constructor is used if it is for this ontology;
-   * otherwise, the generator creates a non-buffering reasoner, which takes changes of the ontology into account.
+   * The concrete domain reasoner to use from the next call of [[setOntology]] on, if it is for that ontology; null to
+   * let the generator use its own reasoner. The generator never disposes of it.
+   */
+  def setReasoner(reasoner: ELKCDReasoner[CDConstraint]): Unit = givenReasoner = reasoner
+
+  /**
+   * Sets the ontology. The given concrete domain reasoner is used if it is for this ontology; otherwise, the
+   * generator creates a non-buffering reasoner, which takes changes of the ontology into account.
    */
   override def setOntology(ontology: ExtendedOntology[CDConstraint]): Unit = {
-    if (reasoner == null || reasoner.getRootOntology != ontology.ontology) {
+    if (givenReasoner != null && givenReasoner.getRootOntology == ontology.ontology) {
+      if (reasoner ne givenReasoner) {
+        dispose()
+        reasoner = givenReasoner
+      }
+    } else if (reasoner == null || !ownReasoner || reasoner.getRootOntology != ontology.ontology) {
       dispose()
       reasoner = new OWLCDReasonerFactory().createNonBufferingReasoner(ontology.ontology)
         .asInstanceOf[ELKCDReasoner[CDConstraint]]
       ownReasoner = true
     }
-    prover = constraintProver(ontology.concreteDomain)
+    prover = constraintProver(reasoner.extendedOntology.concreteDomain)
   }
+
+  /**
+   * the constraints of the classes, as the reasoner read them when it last loaded the ontology; the proofs are for
+   * that state of the ontology
+   */
+  def constraintMap: Map[OWLClass, CDConstraint] =
+    if (reasoner == null) Map() else reasoner.extendedOntology.constraintMap
 
   /** disposes of the reasoner if the generator created it */
   def dispose(): Unit = {

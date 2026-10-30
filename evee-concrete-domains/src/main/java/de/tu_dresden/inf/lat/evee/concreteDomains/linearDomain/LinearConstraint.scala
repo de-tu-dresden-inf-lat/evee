@@ -24,6 +24,12 @@ case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDC
 
   override def getOWLDataProperties: Set[OWLDataProperty] = lhs.keys.toSet
 
+  /** each variable, its factor unless it is 1 or -1, the n - 1 signs between the terms, = and the constant */
+  override def size: Int =
+    if (isDef) 2
+    else if (lhs.isEmpty) 3
+    else lhs.values.map(v => if (Set("1", "-1").contains(formatNumber(v))) 1 else 2).sum + lhs.size - 1 + 2
+
   // TODO find a better solution -> fix T to BigFraction?
   override def isInconsistent: Boolean = {
     val ZERO = rhs match {
