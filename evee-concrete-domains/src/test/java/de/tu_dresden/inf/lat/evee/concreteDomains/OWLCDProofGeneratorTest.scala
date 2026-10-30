@@ -53,11 +53,12 @@ class OWLCDProofGeneratorTest {
       generator.getProof(ExtendedAxiom[CDConstraint](goal, Map())).getInferences.asScala
         .flatMap(inference => (inference.getConclusion +: inference.getPremises.asScala).flatMap(_.map.values)).toSet
     } finally generator.dispose()
-    val constraints = extended.constraintMap ++ allConstraints.map(c => OWLCDProofGenerator.constraintClass(c) -> c)
+    val prefixes = OWLCDProofGenerator.prefixesOf(o)
+    val constraints = extended.constraintMap ++ allConstraints.map(c => OWLCDProofGenerator.constraintClass(c, prefixes) -> c)
 
     val asserted = if (!inputClassesAsConstraints) o else {
       val classes = extended.constraintMap.filterKeys(!goal.getClassesInSignature.contains(_))
-        .map { case (cls, c) => cls -> OWLCDProofGenerator.constraintClass(c) }
+        .map { case (cls, c) => cls -> OWLCDProofGenerator.constraintClass(c, prefixes) }
       val manager = OWLManager.createOWLOntologyManager()
       val shown = manager.createOntology()
       manager.addAxioms(shown, o.getLogicalAxioms().asScala.map(OWLCDProofGenerator.replace(_, classes): OWLAxiom).asJava)
@@ -78,7 +79,8 @@ class OWLCDProofGeneratorTest {
   private def classes(proof: IProof[OWLAxiom]): Set[OWLClass] =
     proof.getInferences.asScala.flatMap(i => (i.getConclusion +: i.getPremises.asScala).flatMap(_.getClassesInSignature.asScala)).toSet
 
-  private def shown(constraint: String) = factory.getOWLClass(IRI.create(CDAnnotationNames.NAMESPACE + "[" + constraint + "]"))
+  private def shown(constraint: String) =
+    factory.getOWLClass(IRI.create(OWLCDProofGenerator.CONSTRAINT_CLASS_NAMESPACE + constraint))
 
   @Test def diffPatient(): Unit = assertCorrectProofs("qdiff/patient.ofn", "CurrentPatient", "NeedAttention")
   @Test def linearCoffee(): Unit = assertCorrectProofs("qlinear/coffee.ofn", "Order", "Ristretto")
@@ -92,7 +94,7 @@ class OWLCDProofGeneratorTest {
     for (inputClassesAsConstraints <- Seq(true, false)) {
       val used = classes(assertCorrectProof(o, goal, inputClassesAsConstraints))
       assertFalse(used.toString, used.exists(_.getIRI.toString.startsWith(CDAnnotationNames.NAMESPACE + "Aux")))
-      assertTrue(used.toString, used.exists(_.getIRI.toString.startsWith(CDAnnotationNames.NAMESPACE + "[")))
+      assertTrue(used.toString, used.exists(_.getIRI.toString.startsWith(OWLCDProofGenerator.CONSTRAINT_CLASS_NAMESPACE)))
       assertEquals(used.toString, !inputClassesAsConstraints, used.exists(constraintClasses.contains))
     }
   }
@@ -114,7 +116,7 @@ class OWLCDProofGeneratorTest {
     val minimal = assertCorrectProof(o, goal, inputClassesAsConstraints = true)
     assertEquals(goal, minimal.getFinalConclusion)
     assertTrue(minimal.toString, minimal.getInferences.asScala.exists(i => i.getConclusion == goal &&
-      i.getRuleName == "Same Constraint" && i.getPremises.asScala == Seq(factory.getOWLSubClassOfAxiom(cls("A"), shown("x > 1")))))
+      i.getRuleName == "Same Constraint" && i.getPremises.asScala == Seq(factory.getOWLSubClassOfAxiom(cls("A"), shown(":x > 1")))))
   }
 
   /** a class with a constraint counts with the size of its constraint, also when it is shown by its constraint */
@@ -128,16 +130,21 @@ class OWLCDProofGeneratorTest {
       // pp = 65 has 3 symbols, CurrentPatient and ⊑ one each
       assertEquals(5d, measure.leafValue(factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), owlClass(o, "A-pp"))), 0d)
       val proof = generator.getProof(factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), owlClass(o, "NeedAttention")))
-      assertTrue(proof.getInferences.asScala.exists(_.getConclusion == factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), shown("pp = 65"))))
-      assertEquals(5d, measure.leafValue(factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), shown("pp = 65"))), 0d)
+      assertTrue(proof.getInferences.asScala.exists(_.getConclusion == factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), shown(":pp = 65"))))
+      assertEquals(5d, measure.leafValue(factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), shown(":pp = 65"))), 0d)
     } finally generator.dispose()
   }
 
-  /** the constraint is shown with the short names of the data properties and fractions */
+  /** the constraint is shown with fractions and the data properties as prefixed names, or by their short forms */
   @Test def constraintClass(): Unit = {
-    val o = ontology("QLinear", Seq("C0" -> "2 * :x + :y = 1", "C1" -> ":x = 1/2"))
+    val o = ontology("QLinear", Seq("C0" -> "2 * :x + :y = 1", "C1" -> ":x = 1/2", "C2" -> "<http://other.org/z> = 3"))
     val constraints = ExtendedOntologyParser.toExtendedOntology(o).constraintMap
-    assertEquals(shown("2*x + y = 1"), OWLCDProofGenerator.constraintClass(constraints(cls("C0"))))
-    assertEquals(shown("x = 1/2"), OWLCDProofGenerator.constraintClass(constraints(cls("C1"))))
+    val prefixes = OWLCDProofGenerator.prefixesOf(o)
+    def shownBy(name: String, prefixes: Map[String, String]) =
+      OWLCDProofGenerator.constraintClass(constraints(cls(name)), prefixes)
+    assertEquals(shown("2*:x + :y = 1"), shownBy("C0", prefixes))
+    assertEquals(shown(":x = 1/2"), shownBy("C1", prefixes))
+    assertEquals(shown("z = 3"), shownBy("C2", prefixes))
+    assertEquals(shown("ex:x = 1/2"), shownBy("C1", Map("ex:" -> TestOntologies.NS)))
   }
 }

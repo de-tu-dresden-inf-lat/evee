@@ -19,9 +19,11 @@ class ConstraintTokens(input: String) {
   private case class NumberToken(value: BigFraction, text: String, position: Int) extends Token
   private case class OperatorToken(text: String, position: Int) extends Token
 
+  import ConstraintTokens.NAME
+
   private val TokenPattern = ("""\s*(?:""" +
     """(<[^<>\s]*>)""" +
-    """|([\p{L}_:](?:[\p{L}\p{N}_\-.:%]*[\p{L}\p{N}_:%])?)""" +
+    "|(" + NAME + ")" +
     """|((?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?(?:/\d+)?)""" +
     """|([-+*=<>−()]))""").r
 
@@ -105,4 +107,13 @@ class ConstraintTokens(input: String) {
 
   /** checks that all tokens have been read */
   def end(): Unit = if (next.isDefined) fail("the end of the constraint")
+}
+
+object ConstraintTokens {
+
+  /** a prefixed name such as ex:x or :x, or a plain name such as x */
+  private val NAME = """[\p{L}_:](?:[\p{L}\p{N}_\-.:%]*[\p{L}\p{N}_:%])?"""
+
+  /** whether the text can be written as a prefixed or plain name in a constraint */
+  def isName(text: String): Boolean = text.matches(NAME)
 }
