@@ -7,4 +7,24 @@
 		<class value="de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner.ProtegeCDReasonerFactory"/>
 	</extension>
 
+	<extension id="eveeProofPreferencesConcreteDomain" point="org.liveontologies.protege.explanation.proof.preferences">
+		<label value="PACER Proof"/>
+		<class value="de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner.proofService.CDProofPreferencesUI"/>
+	</extension>
+
+	<extension id="eveeProofConcreteDomainDepthOptimized" point="org.liveontologies.protege.explanation.proof.service">
+		<name value="PACER Proof, optimized for depth"/>
+		<class value="de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner.proofService.CDDepthMinimalProofService"/>
+	</extension>
+
+	<extension id="eveeProofConcreteDomainSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
+		<name value="PACER Proof, optimized for size"/>
+		<class value="de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner.proofService.CDSizeMinimalProofService"/>
+	</extension>
+
+	<extension id="eveeProofConcreteDomainWeightedSizeOptimized" point="org.liveontologies.protege.explanation.proof.service">
+		<name value="PACER Proof, optimized for weighted size"/>
+		<class value="de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner.proofService.CDWeightedSizeMinimalProofService"/>
+	</extension>
+
 </plugin>
