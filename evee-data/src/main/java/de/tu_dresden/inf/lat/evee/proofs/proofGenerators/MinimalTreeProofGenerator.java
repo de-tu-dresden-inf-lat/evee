@@ -5,12 +5,14 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationExceptio
 import de.tu_dresden.inf.lat.evee.general.interfaces.IProgressTracker;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IRecursiveMeasure;
 import de.tu_dresden.inf.lat.evee.proofs.tools.MinimalProofExtractor;
 import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
 
 /**
  * A decorator for IProofGenerator that additionally extracts the smallest proof
- * (w.r.t. tree size) from the output of the inner IProofGenerator.
+ * (w.r.t. tree size, or another recursive measure) from the output of the inner
+ * IProofGenerator.
  * 
  * @author stefborg
  *
@@ -21,9 +23,20 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
 public class MinimalTreeProofGenerator<SENTENCE, ONTOLOGY> implements IProofGenerator<SENTENCE, ONTOLOGY> {
 
 	private IProofGenerator<SENTENCE, ONTOLOGY> innerGenerator;
+	private IRecursiveMeasure<SENTENCE> measure;
 
 	public MinimalTreeProofGenerator(IProofGenerator<SENTENCE, ONTOLOGY> innerGenerator) {
+		this(innerGenerator, new TreeSizeMeasure<SENTENCE>());
+	}
+
+	/**
+	 * Extracts the proof that is smallest w.r.t. the given measure, e.g.
+	 * DepthMeasure or OWLAxiomSizeWeightedTreeSizeMeasure.
+	 */
+	public MinimalTreeProofGenerator(IProofGenerator<SENTENCE, ONTOLOGY> innerGenerator,
+			IRecursiveMeasure<SENTENCE> measure) {
 		this.innerGenerator = innerGenerator;
+		this.measure = measure;
 	}
 
 	@Override
@@ -40,7 +53,7 @@ public class MinimalTreeProofGenerator<SENTENCE, ONTOLOGY> implements IProofGene
 	public IProof<SENTENCE> getProof(SENTENCE axiom) throws ProofGenerationException {
 		IProof<SENTENCE> proof = innerGenerator.getProof(axiom);
 		ProofGeneratorMain.logTime("Generated");
-		proof = new MinimalProofExtractor<SENTENCE>(new TreeSizeMeasure<SENTENCE>()).extract(proof);
+		proof = new MinimalProofExtractor<SENTENCE>(measure).extract(proof);
 		ProofGeneratorMain.logTime("Minimized");
 		return proof;
 	}
