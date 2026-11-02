@@ -68,6 +68,17 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
     }
   }
 
+  private var maxVariablesForAllPaths = DiffReasoner.DEFAULT_MAX_VARIABLES_FOR_ALL_PATHS
+
+  /** for QDiff: see [[DiffReasoner.setMaxVariablesForAllPaths]]; above the limit, DiffNetworkComplete is used */
+  def setMaxVariablesForAllPaths(max: Int): Unit = {
+    maxVariablesForAllPaths = max
+    (prover: Any) match {
+      case diff: DiffReasoner => diff.setMaxVariablesForAllPaths(max)
+      case _ =>
+    }
+  }
+
   /**
    * The concrete domain reasoner to use from the next call of [[setOntology]] on, if it is for that ontology; null to
    * let the generator use its own reasoner. The generator never disposes of it.
@@ -123,7 +134,11 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
   override def successful(): Boolean = true
 
   private def constraintProver(domain: ConcreteDomainName): CDProofGenerator[CDConstraint] = (domain match {
-    case ConcreteDomainName.QDiff => new DiffReasoner()
+    case ConcreteDomainName.QDiff =>
+      val diff = new DiffReasoner()
+      diff.setCompleteReasoning()
+      diff.setMaxVariablesForAllPaths(maxVariablesForAllPaths)
+      diff
     case ConcreteDomainName.QMult => new MultReasoner()
     case ConcreteDomainName.QLinear =>
       val linear = new GaussianEliminationProver()

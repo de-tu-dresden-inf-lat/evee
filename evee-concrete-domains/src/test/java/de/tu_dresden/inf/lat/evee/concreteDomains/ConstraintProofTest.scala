@@ -125,4 +125,42 @@ class ConstraintProofTest {
     assertEquals(3, linearSteps(system, 2))
     assertEquals(3, linearSteps(system.reverse.map(c => LinearConstraint(c.lhs.toSeq.reverse.toMap, c.rhs)), 2))
   }
+
+  /** the proof of the goal for proofs over OWL, i.e. the complete network, or all paths up to the given limit */
+  private def diffProof(premises: Seq[DiffConstraint], goal: DiffConstraint, maxVariablesForAllPaths: Int) = {
+    val prover = new DiffReasoner()
+    prover.setCompleteReasoning()
+    prover.setMaxVariablesForAllPaths(maxVariablesForAllPaths)
+    prover.setOntology(premises)
+    val proof = prover.getProof(goal)
+    ProofChecker.forConstraints(new DiffReasoner(), premises, goal).assertCorrect(proof)
+    proof.getInferences.asScala.filterNot(i => i.getPremises.contains(i.getConclusion)).map(_.toString).toSet
+  }
+
+  /**
+   * from qdiff/toyDrone.ofn: the value of z is also propagated from the derived value of y, whatever the names and
+   * the order of the data properties
+   */
+  @Test def diffAllPropagations(): Unit =
+    for (names <- Seq(Seq("x", "y", "z", "w"), Seq("w", "z", "y", "x"), Seq("b", "d", "a", "c"));
+         maxVariablesForAllPaths <- Seq(0, DiffReasoner.DEFAULT_MAX_VARIABLES_FOR_ALL_PATHS)) {
+      val Seq(x, y, z, w) = names.map(property)
+      val premises = Seq(DiffEqual(x, fraction(0)), DiffSum(x, fraction(2), y), DiffSum(y, fraction(2), z),
+        DiffSum(z, fraction(1), w), DiffGreaterThan(w, fraction(11)))
+      for (order <- Seq(premises, premises.reverse)) {
+        val steps = diffProof(order, DiffContradiction, maxVariablesForAllPaths)
+        val step = new de.tu_dresden.inf.lat.evee.proofs.data.Inference[DiffConstraint](DiffEqual(z, fraction(4)),
+          DiffRules.RULE_PROPAGATE_EQUAL, List[DiffConstraint](DiffEqual(y, fraction(2)), DiffSum(y, fraction(2), z)).asJava)
+        assertTrue(names + ", " + maxVariablesForAllPaths + ": " + steps, steps.contains(step.toString))
+      }
+    }
+
+  /** with contradicting differences, all paths give more derivations than the complete network, which are correct */
+  @Test def diffContradictingDifferences(): Unit = {
+    val premises = Seq(DiffSum(x, fraction(1), y), DiffSum(y, fraction(1), z), DiffSum(x, fraction(3), z))
+    val complete = diffProof(premises, DiffContradiction, 0)
+    val allPaths = diffProof(premises, DiffContradiction, 3)
+    assertTrue((complete -- allPaths).toString, complete.subsetOf(allPaths))
+    assertTrue(allPaths.size > complete.size)
+  }
 }

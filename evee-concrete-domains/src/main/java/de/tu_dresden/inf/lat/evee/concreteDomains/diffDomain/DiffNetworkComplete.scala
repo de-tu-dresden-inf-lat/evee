@@ -15,6 +15,11 @@ import scala.collection.mutable
 /**
  * Allows more than one unary constraint per node. Should be used for generating complete derivation structures. Beware
  * however that those may be much larger.
+ *
+ * The constraints are processed in a fixed order (sorted by their text, and in insertion order afterwards), so that
+ * the derivation structure does not depend on hash codes. After the saturation, every step between the derived
+ * constraints is recorded (see [[DiffSteps.between]]), not only the step that first derived a constraint. Of two
+ * different differences for the same pair of data properties, only the first one is propagated further.
   */
   class DiffNetworkComplete extends ConstraintNetwork[DiffConstraint] {
 
@@ -27,9 +32,11 @@ import scala.collection.mutable
   private var given = Seq[DiffConstraint]()
 
 
-  private val nodes = new mutable.HashMap[OWLDataProperty, mutable.Set[DiffUnaryConstraint]]()
-    with mutable.MultiMap[OWLDataProperty,DiffUnaryConstraint] {}
-  private val edges = new mutable.HashMap[OWLDataProperty,
+  private val nodes = new mutable.LinkedHashMap[OWLDataProperty, mutable.Set[DiffUnaryConstraint]]()
+    with mutable.MultiMap[OWLDataProperty,DiffUnaryConstraint] {
+    override protected def makeSet: mutable.Set[DiffUnaryConstraint] = new mutable.LinkedHashSet[DiffUnaryConstraint]()
+  }
+  private val edges = new mutable.LinkedHashMap[OWLDataProperty,
     mutable.Map[OWLDataProperty,DiffSum]]()
 
   private var inconsistent: Boolean = false
@@ -39,7 +46,8 @@ import scala.collection.mutable
     this.continueEvenIfInconsistent=true
   }
 
-  def fill(predicates: Iterable[DiffConstraint]) = {
+  def fill(unsorted: Iterable[DiffConstraint]) = {
+    val predicates = unsorted.toSeq.sortBy(_.toString)
     given ++= predicates
     inferences ++= predicates.map(new Inference(_, ProofTools.ASSERTED_1, List[DiffConstraint]().asJava))
     derived ++= predicates
@@ -76,6 +84,11 @@ import scala.collection.mutable
       // deriveEdgesFromUnary() would just add edges that were already there (we assume all implicit egdes to be derived  by propagateEdges)
       // the other only depend on binary predicates, which are not added by propagateValues
       //println("Step 4: "+derived)
+
+      // the steps above record only the steps they make, e.g. no value propagated from a value derived later
+      inferences ++= DiffSteps.between(derived)
+      if (inferences.exists(_.getConclusion == DiffContradiction))
+        inconsistent = true
   }
 
   def derivedPredicates() = {
@@ -93,7 +106,8 @@ import scala.collection.mutable
     nodes.keys.foreach(n1 =>
       nodes(n1).foreach(p1 => p1 match {
         case DiffEqual(_, v1) =>
-          nodes.keys.foreach(n2 =>
+          // def(n1) is derived by addTautologicalEdges, not from n1 = v1 and itself
+          nodes.keys.filter(_ != n1).foreach(n2 =>
             nodes(n2).foreach(p2 => p2 match {
               case DiffEqual(_, v2) =>
                 val newPred = DiffSum(n1, (v2 - v1), n2)
@@ -153,7 +167,7 @@ import scala.collection.mutable
   private def propagateValues(): Unit = {
     if (!inconsistent||continueEvenIfInconsistent)
       edges.keys.foreach(n1 =>
-        nodes.getOrElse(n1,Set()).foreach(unary1 =>
+        nodes.getOrElse(n1,Set()).toList.foreach(unary1 =>
           edges(n1).keys.foreach(n2 => {
             val newPred = propagate(unary1, edges(n1)(n2))
             derived += newPred
@@ -188,9 +202,11 @@ import scala.collection.mutable
     nodes.getOrElse(d, Set()).foreach { node =>
       (node, predicate) match {
         case (same1, same2) if same1.equals(same2) => ; // all good
-        case (_: DiffEqual, _: DiffEqual) =>
+        case (e1: DiffEqual, e2: DiffEqual) =>
           inconsistent = true
-          inferences += new Inference(DiffContradiction, DiffRules.RULE_DIFFERENT_CONSTANTS, List(node, predicate).asJava)
+          // the smaller value first, as in DiffSteps
+          inferences += new Inference(DiffContradiction, DiffRules.RULE_DIFFERENT_CONSTANTS,
+            (if (e1.value < e2.value) List[DiffConstraint](e1, e2) else List[DiffConstraint](e2, e1)).asJava)
 
         case (DiffGreaterThan(_, v1), DiffEqual(_, v2)) =>
           if (v1 >= v2) {
@@ -211,12 +227,14 @@ import scala.collection.mutable
 
   private def update(d1: OWLDataProperty, d2: OWLDataProperty, p: DiffSum) = {
     if(!edges.contains(d1))
-      edges.put(d1, new mutable.HashMap[OWLDataProperty, DiffSum]())
+      edges.put(d1, new mutable.LinkedHashMap[OWLDataProperty, DiffSum]())
     edges(d1).get(d2) match {
       case None => edges(d1).put(d2,p)
       case Some(other) if !other.equals(p) => {
         inconsistent = true
-        inferences += new Inference(DiffContradiction, DiffRules.RULE_DIFFERENT_DIFFERENCES, List(other, p).asJava)
+        // the smaller difference first, as in DiffSteps
+        inferences += new Inference(DiffContradiction, DiffRules.RULE_DIFFERENT_DIFFERENCES,
+          (if (other.diff < p.diff) List[DiffConstraint](other, p) else List[DiffConstraint](p, other)).asJava)
       }
       case Some(p) => ;
     }
