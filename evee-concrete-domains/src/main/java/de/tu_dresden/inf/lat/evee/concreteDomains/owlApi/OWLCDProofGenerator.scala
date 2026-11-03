@@ -54,7 +54,7 @@ class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
   /** for QLinear: see [[ELKCDProofGenerator.setMaxVariablesForAllOrders]] */
   def setMaxVariablesForAllOrders(max: Int): Unit = generator.setMaxVariablesForAllOrders(max)
 
-  /** for QDiff: see [[ELKCDProofGenerator.setMaxVariablesForAllPaths]] */
+  /** for QDiff and QMult: see [[ELKCDProofGenerator.setMaxVariablesForAllPaths]] */
   def setMaxVariablesForAllPaths(max: Int): Unit = generator.setMaxVariablesForAllPaths(max)
 
   override def setOntology(ontology: OWLOntology): Unit = {

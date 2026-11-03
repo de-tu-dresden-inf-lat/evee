@@ -38,11 +38,6 @@ object DiffRules {
 }
 
 
-object DiffReasoner {
-  /** the limit of setMaxVariablesForAllPaths that proofs use by default */
-  val DEFAULT_MAX_VARIABLES_FOR_ALL_PATHS = 6
-}
-
 class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,BigFraction] {
 
   override var lastNetwork: ConstraintNetwork[DiffConstraint] = new DiffNetworkSimple()
@@ -52,20 +47,11 @@ class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,BigFract
     completeReasoning=true;
   }
 
-  private var maxVariablesForAllPaths = -1
-
-  /**
-   * For proofs: if the constraints have at most this many variables, the derivation structure contains the derivations
-   * along all paths that visit no variable twice ([[DiffNetworkFull]]), whose number can grow exponentially with the
-   * number of variables; otherwise those of the network chosen by setCompleteReasoning. By default, it is never used.
-   */
-  def setMaxVariablesForAllPaths(max: Int): Unit = maxVariablesForAllPaths = max
-
   override def saturate(predicates: Iterable[DiffConstraint]): Set[DiffConstraint] = {
 
       lastReasoningInput = predicates
 
-      lastNetwork = if (predicates.flatMap(_.getOWLDataProperties).toSet.size <= maxVariablesForAllPaths)
+      lastNetwork = if (allPaths(predicates))
         new DiffNetworkFull()
       else if(completeReasoning)
         new DiffNetworkComplete()

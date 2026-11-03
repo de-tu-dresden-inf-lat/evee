@@ -18,6 +18,11 @@ import java.util.stream.Stream
 import scala.collection.JavaConverters
 import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
 
+object ConstraintPropagationReasoner {
+  /** the limit of setMaxVariablesForAllPaths that proofs use by default */
+  val DEFAULT_MAX_VARIABLES_FOR_ALL_PATHS = 6
+}
+
 abstract class ConstraintPropagationReasoner[Constraint <: CDConstraint, DOMAIN] extends CDReasonerWithStatistics[Constraint]
   with CDProofGenerator[Constraint] with CDCounterexampleGenerator[Constraint, DOMAIN] {
 
@@ -41,6 +46,20 @@ abstract class ConstraintPropagationReasoner[Constraint <: CDConstraint, DOMAIN]
   }
 
   def setCompleteReasoning(): Unit
+
+  private var maxVariablesForAllPaths = -1
+
+  /**
+   * For proofs: if the constraints have at most this many variables, the derivation structure contains the derivations
+   * along all paths that visit no variable twice (e.g. [[diffDomain.DiffNetworkFull]]), whose number can grow
+   * exponentially with the number of variables; otherwise those of the network chosen by setCompleteReasoning. By
+   * default, it is never used.
+   */
+  def setMaxVariablesForAllPaths(max: Int): Unit = maxVariablesForAllPaths = max
+
+  /** whether the derivations along all paths are used for the constraints, see setMaxVariablesForAllPaths */
+  protected def allPaths(constraints: Iterable[Constraint]): Boolean =
+    constraints.flatMap(_.getOWLDataProperties).toSet.size <= maxVariablesForAllPaths
 
   def saturate(predicates: Iterable[Constraint]): Set[Constraint]
 

@@ -38,14 +38,20 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
 
   override var lastNetwork: ConstraintNetwork[MultConstraint] = new MultNetworkSimple()
 
-  override def setCompleteReasoning(): Unit =
-    throw new AssertionError("Not implemented!")
+  override def setCompleteReasoning(): Unit = {
+    lastNetwork = new MultNetworkComplete()
+    completeReasoning = true
+  }
 
   override def saturate(predicates: Iterable[MultConstraint]): Set[MultConstraint] = {
 
     lastReasoningInput = predicates
 
-    lastNetwork = 
+    lastNetwork = if (allPaths(predicates))
+      new MultNetworkFull()
+    else if (completeReasoning)
+      new MultNetworkComplete()
+    else
       new MultNetworkSimple()
     if(continueEvenIfInconsistent)
       lastNetwork.setContinueEvenIfInconsistent()

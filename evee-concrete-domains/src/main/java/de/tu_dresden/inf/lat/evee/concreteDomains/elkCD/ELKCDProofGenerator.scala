@@ -1,6 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.elkCD
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.{CDConstraint, CDProofGenerator}
+import de.tu_dresden.inf.lat.evee.concreteDomains.{CDConstraint, CDProofGenerator, ConstraintPropagationReasoner}
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.{ExtendedAxiom, ExtendedOntology}
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.{CDAnnotationNames, ConcreteDomainName}
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.DiffReasoner
@@ -68,13 +68,16 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
     }
   }
 
-  private var maxVariablesForAllPaths = DiffReasoner.DEFAULT_MAX_VARIABLES_FOR_ALL_PATHS
+  private var maxVariablesForAllPaths = ConstraintPropagationReasoner.DEFAULT_MAX_VARIABLES_FOR_ALL_PATHS
 
-  /** for QDiff: see [[DiffReasoner.setMaxVariablesForAllPaths]]; above the limit, DiffNetworkComplete is used */
+  /**
+   * for QDiff and QMult: see [[ConstraintPropagationReasoner.setMaxVariablesForAllPaths]]; above the limit, the
+   * complete networks are used (DiffNetworkComplete, MultNetworkComplete)
+   */
   def setMaxVariablesForAllPaths(max: Int): Unit = {
     maxVariablesForAllPaths = max
     (prover: Any) match {
-      case diff: DiffReasoner => diff.setMaxVariablesForAllPaths(max)
+      case propagation: ConstraintPropagationReasoner[_, _] => propagation.setMaxVariablesForAllPaths(max)
       case _ =>
     }
   }
@@ -139,7 +142,11 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
       diff.setCompleteReasoning()
       diff.setMaxVariablesForAllPaths(maxVariablesForAllPaths)
       diff
-    case ConcreteDomainName.QMult => new MultReasoner()
+    case ConcreteDomainName.QMult =>
+      val mult = new MultReasoner()
+      mult.setCompleteReasoning()
+      mult.setMaxVariablesForAllPaths(maxVariablesForAllPaths)
+      mult
     case ConcreteDomainName.QLinear =>
       val linear = new GaussianEliminationProver()
       linear.setMaxVariablesForAllOrders(maxVariablesForAllOrders)
