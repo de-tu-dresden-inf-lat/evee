@@ -87,22 +87,20 @@ class MultNetworkSimple extends ConstraintNetwork[MultConstraint] {
   private def deriveEdgesFromUnary() = {
 
     // derive edges from values
+    // only positive values have a factor between them, which has to be positive
     nodes.keys.foreach(n1 =>
       nodes.get(n1).foreach(p1 => p1 match {
-        case MultEqual(_, v1) if v1.getNumerator().signum()!=0 =>
+        case MultEqual(_, v1) if v1.getNumerator().signum()==1 =>
           nodes.keys.foreach(n2 =>
             nodes.get(n2).foreach(p2 => p2 match {
-              case MultEqual(_, v2) =>
-                val quotient = v2.divide(v1)
-                if(v1.getNumerator.signum()==1){ // otherwise the constraint is not allowed
-                  val newPred = Multiplication(n1, quotient, n2)
-                  update(n1, n2, newPred)
-                  derived += newPred
-                  inferences += new Inference(newPred, MultRules.RULE_FACTOR_FROM_CONSTANTS, List(p1, p2).asJava)
-                }
-              case _: MultLessThan => ;
+              case MultEqual(_, v2) if v2.getNumerator().signum()==1 =>
+                val newPred = Multiplication(n1, v2.divide(v1), n2)
+                update(n1, n2, newPred)
+                derived += newPred
+                inferences += new Inference(newPred, MultRules.RULE_FACTOR_FROM_CONSTANTS, List(p1, p2).asJava)
+              case _ => ;
             }))
-        case _: MultLessThan => ;
+        case _ => ;
       }))
   }
 

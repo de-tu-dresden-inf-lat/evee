@@ -95,6 +95,15 @@ class ELKCDReasonerTest {
     assertUnsatisfiable(o, "A")
   }
 
+  /**
+   * B12: there is no positive factor between the values 2 and 0, which made the reasoner throw an exception (the
+   * subsumption holds whether or not QMult allows the value 0)
+   */
+  @Test def multZeroValue(): Unit = withReasoner(ontology("QMult",
+    Seq("C0" -> ":x = 2", "C1" -> ":y = 0", "C2" -> ":y < 1"), "SubClassOf(:A ObjectIntersectionOf(:C0 :C1))")) {
+    reasoner => assertTrue("A should be subsumed by C2", reasoner.isEntailed(subClassOf("A", "C2")))
+  }
+
   @Test def unsatisfiableConjunctionNotInOntology(): Unit = withReasoner(ontology("QDiff", contradicting)) {
     reasoner => assertFalse("C0 and C1 should be unsatisfiable", reasoner.isSatisfiable(and("C0", "C1")))
   }
