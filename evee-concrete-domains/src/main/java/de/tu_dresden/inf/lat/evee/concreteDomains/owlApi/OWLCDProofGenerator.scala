@@ -10,6 +10,7 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.{IInference, IProof, IProofG
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.formats.PrefixDocumentFormat
 import org.semanticweb.owlapi.model._
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
@@ -32,6 +33,7 @@ class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
   import OWLCDProofGenerator._
 
   private val generator = new ELKCDProofGenerator(initialReasoner)
+  private val logger = LoggerFactory.getLogger(classOf[OWLCDProofGenerator])
   /** the classes of the ontology that have a constraint */
   private var inputConstraints: Map[OWLClass, CDConstraint] = Map()
   private var prefixes: Map[String, String] = Map()
@@ -74,6 +76,7 @@ class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
 
   override def getProof(goal: OWLAxiom): IProof[OWLAxiom] = {
     val proof = generator.getProof(extended(goal))
+    val start = System.nanoTime()
     val goalClasses = goal.getClassesInSignature.asScala.toSet
     def render(axiom: ExtendedAxiom[CDConstraint]): OWLAxiom = {
       val shown = axiom.map.filter { case (cls, _) =>
@@ -89,6 +92,9 @@ class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
       render(inference.getConclusion), inference.getRuleName, inference.getPremises.asScala.map(render).asJava))
       .filterNot(inference => inference.getPremises.contains(inference.getConclusion))
       .toSeq.distinct
+    if (logger.isDebugEnabled)
+      logger.debug(s"Converted to OWL axioms: ${inferences.size} of ${proof.getInferences.size} inferences in " +
+        s"${(System.nanoTime() - start) / 1000000} ms")
     new Proof[OWLAxiom](goal, inferences.map(i => i: IInference[OWLAxiom]).asJava)
   }
 

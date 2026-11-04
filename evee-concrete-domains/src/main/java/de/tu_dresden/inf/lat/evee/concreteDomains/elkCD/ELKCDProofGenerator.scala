@@ -15,6 +15,7 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.ProofTools
 import org.semanticweb.elk.owlapi.ElkReasoner
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.model.{IRI, OWLAxiom, OWLClass, OWLClassExpression, OWLSubClassOfAxiom}
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -51,6 +52,7 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
   extends IProofGenerator[ExtendedAxiom[CDConstraint], ExtendedOntology[CDConstraint]] {
 
   private val factory = OWLManager.getOWLDataFactory
+  private val logger = LoggerFactory.getLogger(classOf[ELKCDProofGenerator])
 
   private var givenReasoner: ELKCDReasoner[CDConstraint] = initialReasoner
   private var reasoner: ELKCDReasoner[CDConstraint] = _
@@ -131,7 +133,19 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
       throw new ProofGenerationException("No ontology has been set")
     if (!reasoner.isEntailed(goal.axiom))
       throw new ProofGenerationException("The axiom is not entailed: " + goal.axiom)
-    new Construction(goal.axiom).proof
+    val start = System.nanoTime()
+    val proof = new Construction(goal.axiom).proof
+    if (logger.isDebugEnabled)
+      logger.debug(s"Derivation structure for ${goal.axiom}: ${proof.getInferences.size} inferences in " +
+        s"${(System.nanoTime() - start) / 1000000} ms")
+    proof
+  }
+
+  /** how the prover proves constraints with this many variables, for debug messages */
+  private def method(variables: Int): String = (prover: Any) match {
+    case _: GaussianEliminationProver =>
+      if (variables <= maxVariablesForAllOrders) "all elimination orders" else "one elimination order"
+    case _ => if (variables <= maxVariablesForAllPaths) "all paths" else "complete network"
   }
 
   override def successful(): Boolean = true
@@ -246,10 +260,17 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
           // E has the same constraint as a conjunct of L
           inferences += new Inference[OWLAxiom](inContext(target), SAME_CONSTRAINT, List(inContext(given(constraint))).asJava)
         case None =>
+          val start = System.nanoTime()
           prover.setOntology(given.keys)
           val constraintProof = goalConstraint match {
             case Some(constraint) => prover.getProof(constraint)
             case None => prover.proveInconsistency()
+          }
+          if (logger.isDebugEnabled) {
+            val variables = (given.keys ++ goalConstraint).flatMap(_.getOWLDataProperties).toSet.size
+            logger.debug(s"Constraint proof of ${goalConstraint.getOrElse("a contradiction")} from ${given.size} " +
+              s"constraints with $variables variables (${method(variables)}): " +
+              s"${constraintProof.getInferences.size} inferences in ${(System.nanoTime() - start) / 1000000} ms")
           }
           // sorted, so that the auxiliary classes are numbered in the same way each time; each step is converted to
           // a string only once, because sortBy would convert it in every comparison

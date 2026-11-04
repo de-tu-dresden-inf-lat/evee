@@ -56,6 +56,13 @@ case class Token(){
   def getReasonerCalls(): Int = calls
 
   def addOneReasonerCall(): Unit = calls = calls + 1
+
+  private var constraintChecks: Int = 0
+
+  /** the number of sets of constraints whose consequences the concrete domain reasoner computed */
+  def getConstraintChecks(): Int = constraintChecks
+
+  def addOneConstraintCheck(): Unit = constraintChecks = constraintChecks + 1
 }
 
 case class ClassificationState(
@@ -166,6 +173,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
    */
   override def classify() = {
     val token = Token()
+    val start = System.nanoTime()
 
     logger.info("Starting classification with ELK-CD reasoner...")
 
@@ -175,7 +183,12 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     //Store the time in ms
     collectStatistics( token.getTime() / 1000000, token.getReasonerCalls())
 
-    logger.debug("Classified; {} axioms added because of the concrete domain", addedAxioms.size)
+    if (logger.isDebugEnabled)
+      logger.debug(s"Classified in ${(System.nanoTime() - start) / 1000000} ms " +
+        s"(${token.getTime() / 1000000} ms in ELK, ${token.getReasonerCalls()} rounds): " +
+        s"${extendedOntology.constraintNames.size} classes with constraints, " +
+        s"${token.getConstraintChecks()} sets of their constraints checked, " +
+        s"${addedAxioms.size} axioms added because of the concrete domain")
 
     state = ClassificationState(computed = true, consistent = consistent)
   }
@@ -219,6 +232,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     def addCDAxiomsFor(relevant: Set[OWLClass]): Unit =
       if (!handledConstraintSets.contains(relevant)) {
         val result = addCDAxioms(relevant)
+        token.addOneConstraintCheck()
         changed = changed || result.ontologyChanged
         handledConstraintSets ++= result.addedInformation
       }
