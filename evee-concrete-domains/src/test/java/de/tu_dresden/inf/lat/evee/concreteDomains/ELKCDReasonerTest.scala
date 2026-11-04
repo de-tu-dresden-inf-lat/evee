@@ -9,7 +9,8 @@ import org.junit.Test
 import org.semanticweb.owlapi.apibinding.OWLManager
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser
-import org.semanticweb.owlapi.model.IRI
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
+import org.semanticweb.owlapi.model.{AddOntologyAnnotation, IRI, OWLAnnotationValue, OWLOntology}
 import org.semanticweb.owlapi.reasoner.{InconsistentOntologyException, InferenceType, Node, NodeSet, OWLReasoner}
 
 import scala.util.{Failure, Success, Try}
@@ -144,6 +145,44 @@ class ELKCDReasonerTest {
       }
     }
   }
+
+  /** the message of the error that the factory reports instead of creating a reasoner */
+  private def creationError(o: OWLOntology): String =
+    try {
+      new OWLCDReasonerFactory().createReasoner(o).dispose()
+      fail("the reasoner should not be created")
+      ""
+    } catch {
+      case e: ParsingException => e.getMessage
+    }
+
+  private def addConcreteDomain(o: OWLOntology, value: OWLAnnotationValue): Unit =
+    o.getOWLOntologyManager.applyChange(new AddOntologyAnnotation(o, factory.getOWLAnnotation(
+      factory.getOWLAnnotationProperty(ExtendedOntologyParser.CONCRETE_DOMAIN_ANNOTATION_PROP_IRI), value)))
+
+  /** a wrong constraint is reported as it is, naming the constraint and its class */
+  @Test def wrongConstraintAtCreation(): Unit = {
+    val message = creationError(ontology("QDiff", Seq("C0" -> ":x = five")))
+    assertTrue(message, message.contains(":x = five") && message.contains("C0"))
+  }
+
+  /** a wrong concrete domain is reported, instead of reasoning like ELK */
+  @Test def wrongConcreteDomain(): Unit = {
+    val unknown = creationError(ontology("QDif", Seq()))
+    assertTrue(unknown, unknown.contains("\"QDif\"") && unknown.contains(ConcreteDomainName.NAMES))
+    val notString = ontology(null, Seq())
+    addConcreteDomain(notString, IRI.create(TestOntologies.NS + "QDiff"))
+    assertTrue(creationError(notString), creationError(notString).contains("has to be a string"))
+    val two = ontology("QDiff", Seq())
+    addConcreteDomain(two, factory.getOWLLiteral("QMult"))
+    assertTrue(creationError(two), creationError(two).contains("only one concrete domain"))
+  }
+
+  /** without an annotation cd:concreteDomain, PACER reasons like ELK */
+  @Test def noConcreteDomain(): Unit =
+    withReasoner(ontology(null, Seq(), "SubClassOf(:A :B)", "SubClassOf(:B :C)")) { reasoner =>
+      assertTrue(reasoner.isEntailed(subClassOf("A", "C")))
+    }
 
   @Test def unsatisfiableConjunctionNotInOntology(): Unit = withReasoner(ontology("QDiff", contradicting)) {
     reasoner => assertFalse("C0 and C1 should be unsatisfiable", reasoner.isSatisfiable(and("C0", "C1")))

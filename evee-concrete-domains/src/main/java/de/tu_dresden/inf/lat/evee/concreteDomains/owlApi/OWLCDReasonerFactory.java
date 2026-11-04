@@ -1,6 +1,7 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.owlApi;
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDReasoner;
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException;
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.ExtendedOntology;
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser;
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName;
@@ -17,9 +18,6 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
 public class OWLCDReasonerFactory implements OWLReasonerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(OWLCDReasonerFactory.class);
@@ -31,50 +29,34 @@ public class OWLCDReasonerFactory implements OWLReasonerFactory {
 
     @Override
     public OWLReasoner createNonBufferingReasoner(OWLOntology ontology) {
-          try{
-            return createReasoner(ontology, null, false);
-        } catch (Exception e){
-            throw new RuntimeException(e); //TODO: handle exception properly
-        }
+        return createReasoner(ontology, null, false);
     }
 
     @Override
     public OWLReasoner createReasoner(OWLOntology ontology) {
-        try{
-            return createReasoner(ontology, null, true);
-        } catch (Exception e){
-            throw new RuntimeException(e); //TODO: handle exception properly
-        }
+        return createReasoner(ontology, null, true);
     }
 
     @Override
     public OWLReasoner createNonBufferingReasoner(OWLOntology ontology, OWLReasonerConfiguration config) {
-        try{
-            return createReasoner(ontology, config, false);
-        } catch (Exception e){
-            throw new RuntimeException(e); //TODO: handle exception properly
-        }
+        return createReasoner(ontology, config, false);
     }
 
     @Override
     public OWLReasoner createReasoner(OWLOntology ontology, OWLReasonerConfiguration config) {
-        try{
-            return createReasoner(ontology, config, true);
-        } catch (Exception e){
-            throw new RuntimeException(e); //TODO: handle exception properly
-        }
+        return createReasoner(ontology, config, true);
     }
-    
 
+    /**
+     * Without an annotation cd:concreteDomain, the reasoner reasons like ELK. If the concrete domain or a constraint
+     * cannot be read, it throws a {@link ParsingException} whose message says what is wrong and where.
+     */
     private OWLReasoner createReasoner(OWLOntology ontology, OWLReasonerConfiguration config, boolean buffering) {
-
-        ConcreteDomainName domain;
-        try{
-         domain = ExtendedOntologyParser.getConcreteDomainName(ontology);
-        } catch (Exception e){
-           logger.warn("no concrete domain found, using default ELK for reasoning: "+ e);
-           return new ELKCDReasonerEmptyDomain(ontology, config, buffering);
+        if (!ExtendedOntologyParser.hasConcreteDomain(ontology)) {
+            logger.info("The ontology has no annotation cd:concreteDomain, so PACER reasons like ELK");
+            return new ELKCDReasonerEmptyDomain(ontology, config, buffering);
         }
+        ConcreteDomainName domain = ExtendedOntologyParser.getConcreteDomainName(ontology);
 
         CDReasoner cdReasoner;
         switch(domain){
@@ -89,9 +71,7 @@ public class OWLCDReasonerFactory implements OWLReasonerFactory {
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported concrete domain: " + domain);
-        }    
-
-
+        }
         return new ELKCDReasoner(ontology, domain, cdReasoner, config, buffering);
     }
 }

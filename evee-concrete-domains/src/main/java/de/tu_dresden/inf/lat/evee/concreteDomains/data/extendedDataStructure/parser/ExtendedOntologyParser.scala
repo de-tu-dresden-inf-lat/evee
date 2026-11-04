@@ -71,20 +71,22 @@ object ExtendedOntologyParser {
       case ConcreteDomainName.QLinear => new LinearConstraintParser(ontology)
     }
 
-  def getConcreteDomainName(ontology: OWLOntology): ConcreteDomainName = {
-    val domainStr =   
-        ontology.getAnnotations.asScala
-                    .find(_.getProperty().getIRI() == CONCRETE_DOMAIN_ANNOTATION_PROP_IRI)
-                        .flatMap { annotation =>
-                                  annotation.getValue match {
-                                    case literal: OWLLiteral => Some(literal.getLiteral)
-                                    case _ => None
-                                    }
-                        }.getOrElse(throw new ParsingException(s"could not find concrete domain annotation in ontology"))
-                                
-    ConcreteDomainName.getConcreteDomainName(domainStr)  
-  }
+  private def concreteDomainAnnotations(ontology: OWLOntology) =
+    ontology.getAnnotations.asScala.toSeq.filter(_.getProperty.getIRI == CONCRETE_DOMAIN_ANNOTATION_PROP_IRI)
 
+  /** whether the ontology names its concrete domain by an annotation cd:concreteDomain */
+  def hasConcreteDomain(ontology: OWLOntology): Boolean = concreteDomainAnnotations(ontology).nonEmpty
 
-
+  /** the concrete domain that the annotation cd:concreteDomain of the ontology names */
+  def getConcreteDomainName(ontology: OWLOntology): ConcreteDomainName =
+    concreteDomainAnnotations(ontology).map(_.getValue).distinct match {
+      case Seq() => throw new ParsingException(
+        s"The ontology has no annotation cd:concreteDomain, which names its concrete domain (${ConcreteDomainName.NAMES})")
+      case Seq(literal: OWLLiteral) => ConcreteDomainName.getConcreteDomainName(literal.getLiteral)
+      case Seq(other) => throw new ParsingException(
+        s"The annotation cd:concreteDomain of the ontology has to be a string (${ConcreteDomainName.NAMES}), not $other")
+      case several => throw new ParsingException("The ontology has the annotations cd:concreteDomain " +
+        several.map { case literal: OWLLiteral => "\"" + literal.getLiteral + "\""; case other => other }.mkString(", ") +
+        ", but it can use only one concrete domain")
+    }
 }

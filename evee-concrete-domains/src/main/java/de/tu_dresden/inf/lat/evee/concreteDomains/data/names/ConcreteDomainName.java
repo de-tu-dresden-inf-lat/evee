@@ -9,13 +9,17 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingExcepti
 public enum ConcreteDomainName {
 	//LinearConstraints, QGreater;
 	QDiff, QMult, QLinear;
+
+	/** the names of the concrete domains, for messages */
+	public static final String NAMES = "QDiff, QMult or QLinear";
+
 	public static ConcreteDomainName getConcreteDomainName(String str)  throws ParsingException {
 
 		ConcreteDomainName result = parseArg(str);
 		if (result != null)
 			return result;
 
-		throw new ParsingException("cannot parse domain name: \"" + str + "\"");
+		throw new ParsingException("The concrete domain \"" + str + "\" is unknown; use " + NAMES);
 	}
 
 	public static boolean isName(String str) {
