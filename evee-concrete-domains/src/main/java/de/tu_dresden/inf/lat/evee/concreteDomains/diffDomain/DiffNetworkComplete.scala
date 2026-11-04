@@ -66,10 +66,8 @@ import scala.collection.mutable
   def propagate(): Unit = {
 
       deriveEdgesFromUnary()
-      //println("Step 1: "+derived)
 
       mirrorEdges() // add corresponding backward edges
-      //println("Step 2: " + derived)
 
       addTautologicalEdges() // add x+0-x for all used x
 
@@ -77,13 +75,11 @@ import scala.collection.mutable
       // this does not make new inferences in the previous steps possible:
       // first depends only on unary predicates,
       // all edges added by second step are added here as well
-      //println("Step 3: " + derived)
 
       propagateValues() // propagate the values along the edges
       // this also does not make new inferences in the previous steps possible:
       // deriveEdgesFromUnary() would just add edges that were already there (we assume all implicit egdes to be derived  by propagateEdges)
       // the other only depend on binary predicates, which are not added by propagateValues
-      //println("Step 4: "+derived)
 
       // the steps above record only the steps they make, e.g. no value propagated from a value derived later
       inferences ++= DiffSteps.between(derived)

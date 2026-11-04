@@ -72,7 +72,6 @@ public class ImplicationTracker {
         premise.add(p2);
 
         if(conclusion.isInconsistent()){
-            System.out.println("the conclusion is a contradiction");
             this.fromContradiction = true;
             this.contradiction = conclusion;
         }

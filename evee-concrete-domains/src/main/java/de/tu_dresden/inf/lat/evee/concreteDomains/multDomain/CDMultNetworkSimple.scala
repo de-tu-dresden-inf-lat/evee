@@ -72,7 +72,6 @@ class MultNetworkSimple extends ConstraintNetwork[MultConstraint] {
     // this also does not make new inferences in the previous steps possible:
     // deriveEdgesFromUnary() would just add edges that were already there (we assume all implicit egdes to be derived  by propagateEdges)
     // the other only depend on binary predicates, which are not added by propagateValues
-    //println("Step 4: "+derived)
   }
 
   def derivedPredicates() = {

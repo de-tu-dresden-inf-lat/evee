@@ -175,7 +175,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
     //Store the time in ms
     collectStatistics( token.getTime() / 1000000, token.getReasonerCalls())
 
-    logger.warn("end of classify(). added: "+ handledConstraintSets) //debug log
+    logger.debug("Classified; {} axioms added because of the concrete domain", addedAxioms.size)
 
     state = ClassificationState(computed = true, consistent = consistent)
   }
@@ -230,7 +230,6 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
       token.addTime(System.nanoTime() - startTime)
 
       val subsumers = superClasses.getFlattened.asScala
-      //println(subsumers)
       for (conjunct <- classExp.asConjunctSet().asScala) {
         conjunct match {
           case cls: OWLClass => subsumers.add(cls)
@@ -282,7 +281,6 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   def concreteDomainAxioms: Set[OWLAxiom] = synchronized { addedAxioms.toSet }
 
   private def addCDAxioms(relevant: Set[OWLClass]): AddCDAxiomsResult = {
-    //println("Adding axioms for: "+relevant)
     val predicates = relevant.map(extendedOntology.constraintFor)
     val lhs = relevant.size match {
       case 0 => factory.getOWLThing
@@ -292,9 +290,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
 
     if(!cdReasoner.consistent(predicates)){ 
 
-     // logger.warn("not consistent: " + predicates) //debug log
-     // logger.warn("adding axiom: " + lhs + " ⊑ ⊥") //debug log
-
+      logger.debug("Adding {} ⊑ ⊥", lhs)
       addConcreteDomainAxiom(factory.getOWLSubClassOfAxiom(lhs, factory.getOWLNothing))
 
       return AddCDAxiomsResult(ontologyChanged = true, addedInformation = Set(relevant))
@@ -307,7 +303,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
         val newAxiom = factory.getOWLSubClassOfAxiom(lhs, owlClass)
         addConcreteDomainAxiom(newAxiom)
 
-        logger.warn("adding "+ newAxiom) //debug log
+        logger.debug("Adding {}", newAxiom)
       }
     
     // We already added all necessary information about the following extended set

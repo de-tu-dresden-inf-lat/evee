@@ -7,10 +7,6 @@ import org.semanticweb.owlapi.model.OWLDataProperty
 
 object MatrixConversions {
 
-  def printRow(row: FieldVector[BigFraction]): Unit = {
-    println(row.toArray.map(_.doubleValue).mkString("[", ", " , "]"))
-  }
-
   /**
    * the column of each variable of the constraints, which is the order of elimination: first the variables in the
    * given order, then the others sorted by IRI

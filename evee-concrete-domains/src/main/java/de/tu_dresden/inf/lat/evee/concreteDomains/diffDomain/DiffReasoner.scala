@@ -75,7 +75,6 @@ class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,BigFract
 
     conclusion match {
       case DiffGreaterThan(property, bound) =>
-        //println("Additional proof for "+conclusion+ " may be necessary")
         lastReasoningOutput.foreach(p => p match {
           case DiffEqual(property2, var2) if property2.equals(property) && var2 > bound =>
             inferences ::= new Inference[DiffConstraint](conclusion, DiffRules.RULE_INFER_BOUND_FROM_CONSTANT, List(p).asJava)

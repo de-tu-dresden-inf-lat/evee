@@ -98,24 +98,16 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     if(tracker.isDefined)
       tracker.get.setVarsMap(keyMap);
 
-    //println("Variables: " + numVars)
-    //println("KeyMap: " + keyMap)
 
     var i = 0
     while (i < numVars) {
-      //println("i = " + i)
-      //println("Rows: " + rows.size)
 //      for (row <- rows)
-//        MatrixConversions.printRow(row)
-      //println("Target: " + targetRows.size)
 //      for (targetRow <- targetRows)
-//        MatrixConversions.printRow(targetRow)
 
       // Find the next column with non-zero entries and classify the rows accordingly.
       var (pivotRows, rowsWithZeroEntries, newI) = findFirstNonZero(rows, i, false)
       i = newI
       var (targetRowsWithNonZeroEntries, targetRowsWithZeroEntries, _) = findFirstNonZero(targetRows, i, true)
-      //println("i' = " + i)
       if (i < numVars) {
         // There must be at least one pivot row since i < numVars
         assert(pivotRows.nonEmpty)
@@ -127,7 +119,6 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
           if (!considerAllPivotRows)
             pivotRowLog = pivotRow :: pivotRowLog
 //          print("Pivot: ")
-//          MatrixConversions.printRow(pivotRow)
 
           // Reduce all the remaining possible pivot rows w.r.t. the current one.
           pivotRows = pivotRows.tail
@@ -177,17 +168,14 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
 
   def reduce(row: FieldVector[BigFraction], pivotRow: FieldVector[BigFraction], i: Int,  tracker: Option[ImplicationTracker]): FieldVector[BigFraction] = {
 //    print("Reducing ")
-//    MatrixConversions.printRow(row)
 
     val factor = row.getEntry(i).negate.divide(pivotRow.getEntry(i)) // f = -y_i/x_i
-//    println("Factor: " + factor.doubleValue)
     if (factor.equals(BigFraction.ZERO)) {
       return row
     }
 
     val sum = row.add(pivotRow.mapMultiply(factor)) // y' = y + f*x
 //    print("Reduced: ")
-//    MatrixConversions.printRow(sum)
 
     assert(sum.getEntry(i).equals(BigFraction.ZERO))
 

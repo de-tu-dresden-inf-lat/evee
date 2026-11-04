@@ -33,22 +33,14 @@ object LinearConstraintInferenceChecker {
     for ((premise, factor) <- inf.getPremises.asScala.zip(factors))
       sum = add(sum, multiply(factor.negate(), premise))
 
-    val result = {
-      if (!sum.lhs.values.forall(BigFraction.ZERO.equals(_)))
-        return false
-      //Inconsistency check is needed because default contradiction is not necessary the same original inconsistent
-      // equation that the bottom concept represents
-      if(inf.getConclusion.isInconsistent)
-        !sum.rhs.equals(CDDefaultContradictionGenerator.defaultLCBF.rhs)
-      else
-        sum.rhs.equals(BigFraction.ZERO)
-    }
-
-    if(!result) {
-      println("Wrong CD inference")
-      println(inf)
-    }
-    result
+    if (!sum.lhs.values.forall(BigFraction.ZERO.equals(_)))
+      return false
+    //Inconsistency check is needed because default contradiction is not necessary the same original inconsistent
+    // equation that the bottom concept represents
+    if(inf.getConclusion.isInconsistent)
+      !sum.rhs.equals(CDDefaultContradictionGenerator.defaultLCBF.rhs)
+    else
+      sum.rhs.equals(BigFraction.ZERO)
   }
 
   private def fraction(text: String): BigFraction = text.trim.split('/') match {

@@ -71,7 +71,6 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
 
     conclusion match {
       case MultLessThan(property, bound) =>
-        //println("Additional proof for "+conclusion+ " may be necessary")
         lastReasoningOutput.foreach(p => p match {
           case MultEqual(property2, var2) if property2.equals(property) && var2.compareTo(bound) < 0=>
             inferences ::= new Inference[MultConstraint](conclusion, MultRules.RULE_INFER_BOUND_FROM_CONSTANT, List(p).asJava)
