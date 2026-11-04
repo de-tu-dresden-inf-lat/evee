@@ -10,7 +10,9 @@ import org.semanticweb.owlapi.apibinding.OWLManager
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.parser.ExtendedOntologyParser
 import org.semanticweb.owlapi.model.IRI
-import org.semanticweb.owlapi.reasoner.{InconsistentOntologyException, InferenceType}
+import org.semanticweb.owlapi.reasoner.{InconsistentOntologyException, InferenceType, Node, NodeSet, OWLReasoner}
+
+import scala.util.{Failure, Success, Try}
 
 /** The concrete domain reasoner behaves like an OWLReasoner, e.g., inside Protégé. */
 class ELKCDReasonerTest {
@@ -102,6 +104,45 @@ class ELKCDReasonerTest {
   @Test def multZeroValue(): Unit = withReasoner(ontology("QMult",
     Seq("C0" -> ":x = 2", "C1" -> ":y = 0", "C2" -> ":y < 1"), "SubClassOf(:A ObjectIntersectionOf(:C0 :C1))")) {
     reasoner => assertTrue("A should be subsumed by C2", reasoner.isEntailed(subClassOf("A", "C2")))
+  }
+
+  /** the other reasoning methods give ELK's answers, or throw ELK's exception where ELK does not support them */
+  @Test def otherMethodsAsElk(): Unit = {
+    val o = ontology("QDiff", Seq("C0" -> ":x = 0"), "SubClassOf(:A :C0)", "SubObjectPropertyOf(:r :s)",
+      "ObjectPropertyDomain(:r :A)", "ClassAssertion(:A :a)", "ObjectPropertyAssertion(:r :a :b)")
+    val x = factory.getOWLDataProperty(IRI.create(TestOntologies.NS + "x"))
+    val a = factory.getOWLNamedIndividual(IRI.create(TestOntologies.NS + "a"))
+    val calls: Seq[(String, OWLReasoner => Any)] = Seq(
+      "getDisjointClasses" -> (_.getDisjointClasses(cls("A"))),
+      "getDisjointObjectProperties" -> (_.getDisjointObjectProperties(r)),
+      "getInverseObjectProperties" -> (_.getInverseObjectProperties(r)),
+      "getObjectPropertyDomains" -> (_.getObjectPropertyDomains(r, false)),
+      "getObjectPropertyRanges" -> (_.getObjectPropertyRanges(r, false)),
+      "getTopDataPropertyNode" -> (_.getTopDataPropertyNode()),
+      "getBottomDataPropertyNode" -> (_.getBottomDataPropertyNode()),
+      "getSubDataProperties" -> (_.getSubDataProperties(x, false)),
+      "getSuperDataProperties" -> (_.getSuperDataProperties(x, false)),
+      "getEquivalentDataProperties" -> (_.getEquivalentDataProperties(x)),
+      "getDisjointDataProperties" -> (_.getDisjointDataProperties(x)),
+      "getDataPropertyDomains" -> (_.getDataPropertyDomains(x, false)),
+      "getObjectPropertyValues" -> (_.getObjectPropertyValues(a, r)),
+      "getDataPropertyValues" -> (_.getDataPropertyValues(a, x)),
+      "getDifferentIndividuals" -> (_.getDifferentIndividuals(a)))
+    def result(value: Any): Any = value match {
+      case nodes: NodeSet[_] => nodes.getFlattened
+      case node: Node[_] => node.getEntities
+      case other => other
+    }
+    withReasoner(o) { pacer =>
+      withElk(o) { elk =>
+        for ((name, call) <- calls)
+          (Try(result(call(elk))), Try(result(call(pacer)))) match {
+            case (Success(expected), Success(actual)) => assertEquals(name, expected, actual)
+            case (Failure(expected), Failure(actual)) => assertEquals(name, expected.getClass, actual.getClass)
+            case (expected, actual) => fail(s"$name: ELK gives $expected, PACER $actual")
+          }
+      }
+    }
   }
 
   @Test def unsatisfiableConjunctionNotInOntology(): Unit = withReasoner(ontology("QDiff", contradicting)) {

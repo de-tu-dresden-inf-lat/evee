@@ -434,38 +434,85 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
   }
 
 
-  ///////////// unsupported reasoning methods //////////////////////
+  ///////////// other reasoning methods //////////////////////
 
- override def getDisjointClasses(ce: OWLClassExpression): NodeSet[OWLClass] = throw new UnsupportedOperationException("unsupported method 'getDisjointClasses'")
+  // As in ELK: answered for the internal ontology, with the consequences of the concrete domain, or ELK throws an
+  // UnsupportedOperationException itself.
 
-  override def getDisjointObjectProperties(pe: OWLObjectPropertyExpression): NodeSet[OWLObjectPropertyExpression] = throw new UnsupportedOperationException("unsupported method 'getDisjointObjectProperties'")
+  override def getDisjointClasses(ce: OWLClassExpression): NodeSet[OWLClass] = {
+    prepare(ce)
+    internalReasoner.getDisjointClasses(ce)
+  }
 
-  override def getInverseObjectProperties(pe: OWLObjectPropertyExpression): Node[OWLObjectPropertyExpression] = throw new UnsupportedOperationException("unsupported method 'getInverseObjectProperties'")
+  override def getDisjointObjectProperties(pe: OWLObjectPropertyExpression): NodeSet[OWLObjectPropertyExpression] = {
+    prepare()
+    internalReasoner.getDisjointObjectProperties(pe)
+  }
 
-  override def getObjectPropertyDomains(pe: OWLObjectPropertyExpression, direct: Boolean): NodeSet[OWLClass] = throw new UnsupportedOperationException("unsupported method 'getObjectPropertyDomains'")
+  override def getInverseObjectProperties(pe: OWLObjectPropertyExpression): Node[OWLObjectPropertyExpression] = {
+    prepare()
+    internalReasoner.getInverseObjectProperties(pe)
+  }
 
-  override def getObjectPropertyRanges(pe: OWLObjectPropertyExpression, direct: Boolean): NodeSet[OWLClass] = throw new UnsupportedOperationException("unsupported method 'getObjectPropertyRanges'")
+  override def getObjectPropertyDomains(pe: OWLObjectPropertyExpression, direct: Boolean): NodeSet[OWLClass] = {
+    prepare()
+    internalReasoner.getObjectPropertyDomains(pe, direct)
+  }
 
-  override def getTopDataPropertyNode(): Node[OWLDataProperty] = throw new UnsupportedOperationException("unsupported method 'getTopDataPropertyNode'")
+  override def getObjectPropertyRanges(pe: OWLObjectPropertyExpression, direct: Boolean): NodeSet[OWLClass] = {
+    prepare()
+    internalReasoner.getObjectPropertyRanges(pe, direct)
+  }
 
-  override def getBottomDataPropertyNode(): Node[OWLDataProperty] = throw new UnsupportedOperationException("unsupported method 'getBottomDataPropertyNode'")
+  override def getTopDataPropertyNode(): Node[OWLDataProperty] = {
+    prepare()
+    internalReasoner.getTopDataPropertyNode()
+  }
 
-  override def getSubDataProperties(pe: OWLDataProperty, direct: Boolean): NodeSet[OWLDataProperty] = throw new UnsupportedOperationException("unsupported method 'getSubDataProperties'")
+  override def getBottomDataPropertyNode(): Node[OWLDataProperty] = {
+    prepare()
+    internalReasoner.getBottomDataPropertyNode()
+  }
 
-  override def getSuperDataProperties(pe: OWLDataProperty, direct: Boolean): NodeSet[OWLDataProperty] = throw new UnsupportedOperationException("unsupported method 'getSuperDataProperties'")
+  override def getSubDataProperties(pe: OWLDataProperty, direct: Boolean): NodeSet[OWLDataProperty] = {
+    prepare()
+    internalReasoner.getSubDataProperties(pe, direct)
+  }
 
-  override def getEquivalentDataProperties(pe: OWLDataProperty): Node[OWLDataProperty] = throw new UnsupportedOperationException("unsupported method 'getEquivalentDataProperties'")
+  override def getSuperDataProperties(pe: OWLDataProperty, direct: Boolean): NodeSet[OWLDataProperty] = {
+    prepare()
+    internalReasoner.getSuperDataProperties(pe, direct)
+  }
 
-  override def getDisjointDataProperties(pe: OWLDataPropertyExpression): NodeSet[OWLDataProperty] = throw new UnsupportedOperationException("unsupported method 'getDisjointDataProperties'")
+  override def getEquivalentDataProperties(pe: OWLDataProperty): Node[OWLDataProperty] = {
+    prepare()
+    internalReasoner.getEquivalentDataProperties(pe)
+  }
 
-  override def getDataPropertyDomains(pe: OWLDataProperty, direct: Boolean): NodeSet[OWLClass] = throw new UnsupportedOperationException("unsupported method 'getDataPropertyDomains'")
+  override def getDisjointDataProperties(pe: OWLDataPropertyExpression): NodeSet[OWLDataProperty] = {
+    prepare()
+    internalReasoner.getDisjointDataProperties(pe)
+  }
 
-  override def getObjectPropertyValues(ind: OWLNamedIndividual, pe: OWLObjectPropertyExpression): NodeSet[OWLNamedIndividual] = throw new UnsupportedOperationException("unsupported method 'getObjectPropertyValues'")
+  override def getDataPropertyDomains(pe: OWLDataProperty, direct: Boolean): NodeSet[OWLClass] = {
+    prepare()
+    internalReasoner.getDataPropertyDomains(pe, direct)
+  }
 
-  override def getDataPropertyValues(ind: OWLNamedIndividual, pe: OWLDataProperty): ju.Set[OWLLiteral] = throw new UnsupportedOperationException("unsupported method 'getDataPropertyValues'")
+  override def getObjectPropertyValues(ind: OWLNamedIndividual, pe: OWLObjectPropertyExpression): NodeSet[OWLNamedIndividual] = {
+    prepare()
+    internalReasoner.getObjectPropertyValues(ind, pe)
+  }
 
-  override def getDifferentIndividuals(ind: OWLNamedIndividual): NodeSet[OWLNamedIndividual] = throw new UnsupportedOperationException("unsupported method 'getDifferentIndividuals'")
+  override def getDataPropertyValues(ind: OWLNamedIndividual, pe: OWLDataProperty): ju.Set[OWLLiteral] = {
+    prepare()
+    internalReasoner.getDataPropertyValues(ind, pe)
+  }
 
+  override def getDifferentIndividuals(ind: OWLNamedIndividual): NodeSet[OWLNamedIndividual] = {
+    prepare()
+    internalReasoner.getDifferentIndividuals(ind)
+  }
 
   ///// precomputation ////////
 
