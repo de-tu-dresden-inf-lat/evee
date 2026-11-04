@@ -39,6 +39,8 @@ class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
   private var prefixes: Map[String, String] = Map()
   /** the classes of the ontology that have a constraint and the classes that show a constraint in the proofs so far */
   private val classConstraints = scala.collection.mutable.Map[OWLClass, CDConstraint]()
+  /** the classes that show the constraints, rendered with the prefixes of the ontology */
+  private val shownClasses = scala.collection.mutable.Map[CDConstraint, OWLClass]()
   private var inputClassesAsConstraints = false
 
   /** whether the classes of the ontology that have a constraint are shown by their constraint (default: false) */
@@ -65,6 +67,7 @@ class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
     prefixes = prefixesOf(ontology)
     classConstraints.clear()
     classConstraints ++= inputConstraints
+    shownClasses.clear()
   }
 
   /** disposes of the reasoner if the generator created it */
@@ -78,16 +81,21 @@ class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
     val proof = generator.getProof(extended(goal))
     val start = System.nanoTime()
     val goalClasses = goal.getClassesInSignature.asScala.toSet
-    def render(axiom: ExtendedAxiom[CDConstraint]): OWLAxiom = {
+    // each axiom occurs in several inferences, and each constraint in several axioms; both are rendered once
+    val rendered = scala.collection.mutable.Map[ExtendedAxiom[CDConstraint], OWLAxiom]()
+    def render(axiom: ExtendedAxiom[CDConstraint]): OWLAxiom = rendered.getOrElseUpdate(axiom, {
       val shown = axiom.map.filter { case (cls, _) =>
         !goalClasses.contains(cls) && (inputClassesAsConstraints || !inputConstraints.contains(cls)) }
       if (shown.isEmpty) axiom.axiom
       else replace(axiom.axiom, shown.map { case (cls, constraint) =>
-        val shownClass = constraintClass(constraint, prefixes)
-        classConstraints(shownClass) = constraint
+        val shownClass = shownClasses.getOrElseUpdate(constraint, {
+          val newClass = constraintClass(constraint, prefixes)
+          classConstraints(newClass) = constraint
+          newClass
+        })
         cls -> shownClass
       })
-    }
+    })
     val inferences = proof.getInferences.asScala.map(inference => new Inference[OWLAxiom](
       render(inference.getConclusion), inference.getRuleName, inference.getPremises.asScala.map(render).asJava))
       .filterNot(inference => inference.getPremises.contains(inference.getConclusion))

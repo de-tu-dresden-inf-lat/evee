@@ -181,6 +181,11 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
     private val elkConclusions: Set[OWLAxiom] = elkProof.getInferences.asScala.map(_.getConclusion).toSet
 
     private val inferences = mutable.LinkedHashSet[IInference[OWLAxiom]]()
+    /**
+     * the steps of the constraint proofs, sorted, for each set of given constraints and goal (None for a
+     * contradiction); both alternatives of a step C ⊑ L, L ⊑ E ⊢ C ⊑ E need the same constraint proof
+     */
+    private val constraintSteps = mutable.Map[(Set[CDConstraint], Option[CDConstraint]), Seq[IInference[CDConstraint]]]()
 
     val proof: IProof[ExtendedAxiom[CDConstraint]] = {
       // the added axioms that need their own proof in the context of their left-hand side
@@ -209,8 +214,10 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
       provedInOwnContext.foreach(axiom => liftInContext(axiom, axiom.getSubClass, None))
 
       val allConstraints = constraints ++ auxiliaryClasses.map(_.swap)
-      def extended(axiom: OWLAxiom) = ExtendedAxiom[CDConstraint](axiom,
-        axiom.getClassesInSignature.asScala.filter(allConstraints.contains).map(c => c -> allConstraints(c)).toMap)
+      // each axiom occurs in several inferences
+      val extendedAxioms = mutable.Map[OWLAxiom, ExtendedAxiom[CDConstraint]]()
+      def extended(axiom: OWLAxiom) = extendedAxioms.getOrElseUpdate(axiom, ExtendedAxiom[CDConstraint](axiom,
+        axiom.getClassesInSignature.asScala.filter(allConstraints.contains).map(c => c -> allConstraints(c)).toMap))
       val result: Seq[IInference[ExtendedAxiom[CDConstraint]]] = inferences.toSeq
         .filterNot(inference => inference.getPremises.contains(inference.getConclusion))
         .map(inference => new Inference(extended(inference.getConclusion), inference.getRuleName,
@@ -260,21 +267,23 @@ class ELKCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
           // E has the same constraint as a conjunct of L
           inferences += new Inference[OWLAxiom](inContext(target), SAME_CONSTRAINT, List(inContext(given(constraint))).asJava)
         case None =>
-          val start = System.nanoTime()
-          prover.setOntology(given.keys)
-          val constraintProof = goalConstraint match {
-            case Some(constraint) => prover.getProof(constraint)
-            case None => prover.proveInconsistency()
-          }
-          if (logger.isDebugEnabled) {
-            val variables = (given.keys ++ goalConstraint).flatMap(_.getOWLDataProperties).toSet.size
-            logger.debug(s"Constraint proof of ${goalConstraint.getOrElse("a contradiction")} from ${given.size} " +
-              s"constraints with $variables variables (${method(variables)}): " +
-              s"${constraintProof.getInferences.size} inferences in ${(System.nanoTime() - start) / 1000000} ms")
-          }
-          // sorted, so that the auxiliary classes are numbered in the same way each time; each step is converted to
-          // a string only once, because sortBy would convert it in every comparison
-          val steps = constraintProof.getInferences.asScala.toSeq.map(step => step.toString -> step).sortBy(_._1).map(_._2)
+          val steps = constraintSteps.getOrElseUpdate((given.keySet, goalConstraint), {
+            val start = System.nanoTime()
+            prover.setOntology(given.keys)
+            val constraintProof = goalConstraint match {
+              case Some(constraint) => prover.getProof(constraint)
+              case None => prover.proveInconsistency()
+            }
+            if (logger.isDebugEnabled) {
+              val variables = (given.keys ++ goalConstraint).flatMap(_.getOWLDataProperties).toSet.size
+              logger.debug(s"Constraint proof of ${goalConstraint.getOrElse("a contradiction")} from ${given.size} " +
+                s"constraints with $variables variables (${method(variables)}): " +
+                s"${constraintProof.getInferences.size} inferences in ${(System.nanoTime() - start) / 1000000} ms")
+            }
+            // sorted, so that the auxiliary classes are numbered in the same way each time; each step is converted to
+            // a string only once, because sortBy would convert it in every comparison
+            constraintProof.getInferences.asScala.toSeq.map(step => step.toString -> step).sortBy(_._1).map(_._2)
+          })
           for (step <- steps if !ProofTools.isAsserted(step))
             inferences += new Inference[OWLAxiom](inContext(owlClass(step.getConclusion)), step.getRuleName,
               step.getPremises.asScala.map(p => inContext(owlClass(p))).asJava)
