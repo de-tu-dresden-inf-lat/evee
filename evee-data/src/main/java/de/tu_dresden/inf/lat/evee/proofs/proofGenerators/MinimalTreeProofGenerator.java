@@ -8,6 +8,8 @@ import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IRecursiveMeasure;
 import de.tu_dresden.inf.lat.evee.proofs.tools.MinimalProofExtractor;
 import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A decorator for IProofGenerator that additionally extracts the smallest proof
@@ -21,6 +23,8 @@ import de.tu_dresden.inf.lat.evee.proofs.tools.measures.TreeSizeMeasure;
  */
 
 public class MinimalTreeProofGenerator<SENTENCE, ONTOLOGY> implements IProofGenerator<SENTENCE, ONTOLOGY> {
+
+	private static final Logger logger = LoggerFactory.getLogger(MinimalTreeProofGenerator.class);
 
 	private IProofGenerator<SENTENCE, ONTOLOGY> innerGenerator;
 	private IRecursiveMeasure<SENTENCE> measure;
@@ -51,11 +55,17 @@ public class MinimalTreeProofGenerator<SENTENCE, ONTOLOGY> implements IProofGene
 
 	@Override
 	public IProof<SENTENCE> getProof(SENTENCE axiom) throws ProofGenerationException {
+		long start = System.nanoTime();
 		IProof<SENTENCE> proof = innerGenerator.getProof(axiom);
 		ProofGeneratorMain.logTime("Generated");
-		proof = new MinimalProofExtractor<SENTENCE>(measure).extract(proof);
+		long generated = System.nanoTime();
+		IProof<SENTENCE> minimal = new MinimalProofExtractor<SENTENCE>(measure).extract(proof);
 		ProofGeneratorMain.logTime("Minimized");
-		return proof;
+		if (logger.isDebugEnabled())
+			logger.debug("Minimal proof w.r.t. {}: {} of {} inferences; {} ms to generate the derivation structure, {} ms to minimize",
+					measure.getClass().getSimpleName(), minimal.getInferences().size(), proof.getInferences().size(),
+					(generated - start) / 1000000, (System.nanoTime() - generated) / 1000000);
+		return minimal;
 	}
 
 	@Override
