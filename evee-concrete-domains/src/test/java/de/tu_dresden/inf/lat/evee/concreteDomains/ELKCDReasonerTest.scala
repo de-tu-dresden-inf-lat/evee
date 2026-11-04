@@ -4,7 +4,7 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.ReasonerTestSupport._
 import de.tu_dresden.inf.lat.evee.concreteDomains.TestOntologies.{cls, ontology}
 import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDReasoner
 import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.OWLCDReasonerFactory
-import org.junit.Assert.{assertEquals, assertFalse, assertThrows, assertTrue, fail}
+import org.junit.Assert.{assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue, fail}
 import org.junit.Test
 import org.semanticweb.owlapi.apibinding.OWLManager
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
@@ -12,6 +12,7 @@ import de.tu_dresden.inf.lat.evee.concreteDomains.data.extendedDataStructure.par
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 import org.semanticweb.owlapi.model.{AddOntologyAnnotation, IRI, OWLAnnotationValue, OWLOntology}
 import org.semanticweb.owlapi.reasoner.{InconsistentOntologyException, InferenceType, Node, NodeSet, OWLReasoner}
+import org.semanticweb.owlapi.util.Version
 
 import scala.util.{Failure, Success, Try}
 
@@ -105,6 +106,11 @@ class ELKCDReasonerTest {
   @Test def multZeroValue(): Unit = withReasoner(ontology("QMult",
     Seq("C0" -> ":x = 2", "C1" -> ":y = 0", "C2" -> ":y < 1"), "SubClassOf(:A ObjectIntersectionOf(:C0 :C1))")) {
     reasoner => assertTrue("A should be subsumed by C2", reasoner.isEntailed(subClassOf("A", "C2")))
+  }
+
+  /** the version comes from reasoner.properties, which Maven fills in; 0.0.0.0 means it was not found or not filled in */
+  @Test def version(): Unit = withReasoner(ontology("QDiff", contradicting.take(1))) { reasoner =>
+    assertNotEquals(new Version(0, 0, 0, 0), reasoner.getReasonerVersion)
   }
 
   /** the other reasoning methods give ELK's answers, or throw ELK's exception where ELK does not support them */

@@ -316,7 +316,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
 //////////// config /////////////////////
   override def getReasonerName(): String = return REASONER_NAME
 
-  override def getReasonerVersion(): Version =  return new Version(1, 0, 0, 0); //TODO
+  override def getReasonerVersion(): Version = ELKCDReasoner.VERSION
 
   override def getBufferingMode(): BufferingMode = if (bufferingMode) BufferingMode.BUFFERING else BufferingMode.NON_BUFFERING
 
@@ -566,4 +566,18 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
 
   private def pendingAxioms(axiomOf: PartialFunction[OWLOntologyChange, OWLAxiom]): ju.Set[OWLAxiom] =
     if (bufferingMode) pendingChangesBuffer.collect(axiomOf).toSet.asJava else new ju.HashSet()
+}
+
+object ELKCDReasoner {
+
+  /** the version of Evee, which Maven writes into reasoner.properties, e.g. 0.6.1-SNAPSHOT as 0.6.1.0 */
+  lazy val VERSION: Version = {
+    val properties = new ju.Properties()
+    val in = classOf[ELKCDReasoner[_]].getResourceAsStream("reasoner.properties")
+    if (in != null)
+      try properties.load(in) finally in.close()
+    val numbers = properties.getProperty("version", "").takeWhile(_ != '-').split('.').toSeq
+      .map(n => scala.util.Try(n.toInt).getOrElse(0)).padTo(4, 0)
+    new Version(numbers(0), numbers(1), numbers(2), numbers(3))
+  }
 }
