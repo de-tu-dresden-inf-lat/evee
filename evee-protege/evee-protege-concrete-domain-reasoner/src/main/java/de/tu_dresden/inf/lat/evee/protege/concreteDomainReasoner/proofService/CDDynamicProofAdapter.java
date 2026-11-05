@@ -15,11 +15,16 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 /**
  * Generates proofs with the given generator, which uses the given {@link OWLCDProofGenerator}. As the proof service
  * of ELK, it uses the running PACER reasoner of Protégé as it is, so the proofs are for the state of the ontology when
- * the reasoner was last synchronised, like the inferred class hierarchy.
+ * the reasoner was last synchronised, like the inferred class hierarchy. The limits for the alternatives of
+ * constraint proofs come from the preferences.
  */
 public class CDDynamicProofAdapter extends AbstractEveeDynamicProofAdapter {
 
     private final OWLCDProofGenerator generator;
+    private final CDProofPreferencesManager preferencesManager;
+    /** the limits last given to the generator; -1 before the first proof */
+    private int maxVariablesForAllOrders = -1;
+    private int maxVariablesForAllPaths = -1;
     private ELKCDReasoner<CDConstraint> reasonerInUse = null;
     private boolean reasonerChanged = false;
 
@@ -27,6 +32,7 @@ public class CDDynamicProofAdapter extends AbstractEveeDynamicProofAdapter {
                                  CDProofPreferencesManager preferencesManager, EveeDynamicProofLoadingUI uiWindow) {
         super(preferencesManager, uiWindow);
         this.generator = generator;
+        this.preferencesManager = preferencesManager;
         super.setInnerProofGenerator(innerGenerator);
         super.resetCachingProofGenerator();
     }
@@ -60,6 +66,18 @@ public class CDDynamicProofAdapter extends AbstractEveeDynamicProofAdapter {
     protected void setProofGeneratorParameters(boolean previousParametersChanged) {
         boolean parametersChanged = this.reasonerChanged;
         this.reasonerChanged = false;
-        super.setProofGeneratorParameters(previousParametersChanged || parametersChanged);
+        int allOrders = this.preferencesManager.loadMaxVariablesForAllOrders();
+        int allPaths = this.preferencesManager.loadMaxVariablesForAllPaths();
+        if (allOrders != this.maxVariablesForAllOrders || allPaths != this.maxVariablesForAllPaths) {
+            this.generator.setMaxVariablesForAllOrders(allOrders);
+            this.generator.setMaxVariablesForAllPaths(allPaths);
+            this.maxVariablesForAllOrders = allOrders;
+            this.maxVariablesForAllPaths = allPaths;
+            parametersChanged = true;
+        }
+        // the base class resets the cache only for ontologies with an IRI
+        if (parametersChanged)
+            super.resetCachingProofGenerator();
+        super.setProofGeneratorParameters(previousParametersChanged);
     }
 }
