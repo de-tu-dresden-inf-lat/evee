@@ -126,6 +126,41 @@ class ConstraintProofTest {
     assertEquals(3, linearSteps(system.reverse.map(c => LinearConstraint(c.lhs.toSeq.reverse.toMap, c.rhs)), 2))
   }
 
+  /**
+   * The constraints of the proof in all variable orders: the given ones and the goal as written, the others with
+   * integer coefficients without a common divisor and a positive first coefficient (with the variables sorted by IRI);
+   * no constraint occurs twice in different scalings.
+   */
+  private def assertIntegerForm(premises: Seq[LinearConstraint[BigFraction]], goal: LinearConstraint[BigFraction]): Unit = {
+    val prover = new GaussianEliminationProver()
+    prover.setOntology(premises)
+    val proof = prover.getProof(goal)
+    val constraints = proof.getInferences.asScala.flatMap(i => i.getPremises.asScala :+ i.getConclusion).toSet
+    def entries(c: LinearConstraint[BigFraction]) =
+      c.lhs.toSeq.sortBy(_._1.getIRI.toString).map(_._2).filterNot(_ == BigFraction.ZERO) :+ c.rhs
+    for (c <- constraints -- premises - goal; values = entries(c).filterNot(_ == BigFraction.ZERO)) {
+      assertTrue("not integer: " + c, values.forall(_.getDenominator == java.math.BigInteger.ONE))
+      assertEquals("common divisor: " + c, java.math.BigInteger.ONE,
+        values.map(_.getNumerator).foldLeft(java.math.BigInteger.ZERO)(_ gcd _))
+      assertTrue("negative first coefficient: " + c, values.head.compareTo(BigFraction.ZERO) > 0)
+    }
+    val byMultiple = constraints.groupBy(c => entries(c).map(_.divide(entries(c).find(_ != BigFraction.ZERO).get)))
+    for ((_, scalings) <- byMultiple)
+      assertEquals("in different scalings: " + scalings, 1, scalings.size)
+  }
+
+  @Test def linearIntegerForm(): Unit = {
+    assertLinearProof(system, combination)
+    assertIntegerForm(system, combination)
+  }
+
+  /** a derived constraint that is a multiple of the goal is the goal as written, here 2y = 6 instead of y = 3 */
+  @Test def linearGivenForm(): Unit = {
+    val premises = Seq(equation(x -> 1, y -> 1)(5), equation(x -> 1)(2))
+    assertLinearProof(premises, equation(y -> 2)(6))
+    assertIntegerForm(premises, equation(y -> 2)(6))
+  }
+
   /** the proof of the goal for proofs over OWL, i.e. the complete network, or all paths up to the given limit */
   private def diffProof(premises: Seq[DiffConstraint], goal: DiffConstraint, maxVariablesForAllPaths: Int) = {
     val prover = new DiffReasoner()

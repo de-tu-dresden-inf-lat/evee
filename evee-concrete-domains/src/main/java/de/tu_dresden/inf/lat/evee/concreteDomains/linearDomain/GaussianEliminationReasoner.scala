@@ -9,6 +9,7 @@ import org.apache.commons.math3.fraction.BigFraction
 import org.apache.commons.math3.linear.FieldVector
 import org.semanticweb.owlapi.model.OWLDataProperty
 
+import java.math.BigInteger
 import scala.collection.JavaConverters
 import scala.collection.mutable.ListBuffer
 
@@ -20,6 +21,10 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
   private var rows: Iterable[FieldVector[BigFraction]] = _
   private var targetRows: Iterable[FieldVector[BigFraction]] = _
   private var pivotRowLog: List[FieldVector[BigFraction]] = _
+  /** the columns of the variables sorted by IRI, which fix the sign of the canonical form */
+  private var columnsByIRI: Seq[Int] = _
+  /** the given rows by their canonical form, with the factor that gives it, so that their multiples are written as given */
+  private var givenRows: Map[FieldVector[BigFraction], (FieldVector[BigFraction], BigFraction)] = _
   private var considerAllPivotRows: Boolean = false
   private var variableOrder: Seq[OWLDataProperty] = Seq()
 
@@ -94,6 +99,13 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     rows = predicates.map(MatrixConversions.toBigRow(_, keyMap))
     targetRows = targets.map(MatrixConversions.toBigRow(_, keyMap))
     pivotRowLog = List[FieldVector[BigFraction]]()
+    columnsByIRI = keyMap.toSeq.sortBy(_._1.getIRI.toString).map(_._2.intValue)
+    // of several given rows with the same canonical form, the first one
+    givenRows = (rows ++ targetRows).foldLeft(Map[FieldVector[BigFraction], (FieldVector[BigFraction], BigFraction)]()) {
+      (map, row) =>
+        val (canonicalRow, factor) = canonical(row)
+        if (map.contains(canonicalRow)) map else map + (canonicalRow -> (row, factor))
+    }
 
     if(tracker.isDefined)
       tracker.get.setVarsMap(keyMap);
@@ -179,7 +191,7 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
 
     assert(sum.getEntry(i).equals(BigFraction.ZERO))
 
-    val (normalized, factor2) = normalize(sum, i)
+    val (normalized, factor2) = normalize(sum)
 
     if (tracker.isDefined)
       tracker.get.addInference(normalized, pivotRow, row, factor.multiply(factor2), factor2)
@@ -189,13 +201,34 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     normalized
   }
 
-  def normalize(row: FieldVector[BigFraction], i: Int): (FieldVector[BigFraction], BigFraction) = {
-    for (j <- i until numVars) {
-      if (!row.getEntry(j).equals(BigFraction.ZERO)) {
-        val factor = row.getEntry(j).reciprocal()
-        return (row.mapMultiply(factor), factor)
-      }
+  /**
+   * The representative of the constraint of the row, and the factor that gives it: the given row if the row is a
+   * multiple of one, otherwise the canonical form. So multiples of a constraint become the same row in every order of
+   * elimination, and the given constraints keep the form in which they were written.
+   */
+  def normalize(row: FieldVector[BigFraction]): (FieldVector[BigFraction], BigFraction) = {
+    val (canonicalRow, factor) = canonical(row)
+    givenRows.get(canonicalRow) match {
+      // row * factor = canonicalRow = given * givenFactor
+      case Some((given, givenFactor)) => (given, factor.divide(givenFactor))
+      case None => (canonicalRow, factor)
     }
-    return (row, BigFraction.ONE)
+  }
+
+  /**
+   * The row with integer entries without a common divisor whose first non-zero coefficient, with the variables sorted
+   * by IRI, is positive (for 0 = c, the constant), and the factor that gives it. The zero row stays as it is.
+   */
+  private def canonical(row: FieldVector[BigFraction]): (FieldVector[BigFraction], BigFraction) = {
+    val entries = (columnsByIRI :+ numVars).map(row.getEntry).filterNot(_.equals(BigFraction.ZERO))
+    if (entries.isEmpty)
+      return (row, BigFraction.ONE)
+    // of fractions in lowest terms, the greatest common divisor is that of the numerators divided by the least common
+    // multiple of the denominators
+    val lcm = entries.map(_.getDenominator).foldLeft(BigInteger.ONE)((a, b) => a.divide(a.gcd(b)).multiply(b))
+    val gcd = entries.map(_.getNumerator).foldLeft(BigInteger.ZERO)(_ gcd _)
+    val sign = if (entries.head.compareTo(BigFraction.ZERO) < 0) BigInteger.ONE.negate else BigInteger.ONE
+    val factor = new BigFraction(lcm.multiply(sign), gcd)
+    (row.mapMultiply(factor), factor)
   }
 }
