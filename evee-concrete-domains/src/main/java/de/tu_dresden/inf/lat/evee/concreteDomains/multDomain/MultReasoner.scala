@@ -19,8 +19,8 @@ import scala.collection.JavaConverters
 import scala.collection.JavaConverters.seqAsJavaListConverter
 
 object MultRules {
-  val RULE_INFER_BOUND_FROM_CONSTANT = "Introduce >"
-  val RULE_INFER_WEAKER_BOUND = "Weaken >"
+  val RULE_INFER_BOUND_FROM_CONSTANT = "Introduce <"
+  val RULE_INFER_WEAKER_BOUND = "Weaken <"
   val RULE_INFER_FROM_CONTRADICTION = "From ⊥"
   val RULE_DIFFERENT_CONSTANTS = "Different constants"
   val RULE_CONSTANT_TOO_LARGE = "Constant too large"

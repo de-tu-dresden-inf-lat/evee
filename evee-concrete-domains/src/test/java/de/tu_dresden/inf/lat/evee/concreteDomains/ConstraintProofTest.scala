@@ -99,6 +99,17 @@ class ConstraintProofTest {
   @Test def linearDefined(): Unit =
     assertLinearProof(Seq(equation(x -> 1, y -> 1)(5)), equation(x -> 0)(0))
 
+  /** the rules for bounds of QMult name its relation < (not > as in QDiff) */
+  @Test def multBoundRuleNames(): Unit = {
+    def rules(premise: MultConstraint, goal: MultConstraint) = {
+      val prover = new MultReasoner()
+      prover.setOntology(Seq(premise))
+      prover.getProof(goal).getInferences.asScala.map(_.getRuleName).toSet
+    }
+    assertTrue(rules(MultEqual(x, fraction(5)), MultLessThan(x, fraction(6))).contains("Introduce <"))
+    assertTrue(rules(MultLessThan(x, fraction(5)), MultLessThan(x, fraction(6))).contains("Weaken <"))
+  }
+
   @Test def multInconsistency(): Unit =
     assertMultProof(Seq(MultEqual(x, fraction(5)), MultLessThan(x, fraction(3))), MultContradiction)
 
