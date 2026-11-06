@@ -108,6 +108,15 @@ class ELKCDReasonerTest {
     reasoner => assertTrue("A should be subsumed by C2", reasoner.isEntailed(subClassOf("A", "C2")))
   }
 
+  /** QMult is over all rational numbers: 4 * x = x is satisfiable and gives x = 0, which contradicts x < 0 */
+  @Test def multFactorForZero(): Unit = withReasoner(ontology("QMult",
+    Seq("C0" -> "4 * :x = :x", "C1" -> ":x = 0", "C2" -> ":x < 0"),
+    "SubClassOf(:A :C0)", "SubClassOf(:B ObjectIntersectionOf(:C0 :C2))")) { reasoner =>
+    assertTrue("C0 should be satisfiable", reasoner.isSatisfiable(cls("C0")))
+    assertTrue("A should be subsumed by C1", reasoner.isEntailed(subClassOf("A", "C1")))
+    assertFalse("B should be unsatisfiable", reasoner.isSatisfiable(cls("B")))
+  }
+
   /** the version comes from reasoner.properties, which Maven fills in; 0.0.0.0 means it was not found or not filled in */
   @Test def version(): Unit = withReasoner(ontology("QDiff", contradicting.take(1))) { reasoner =>
     assertNotEquals(new Version(0, 0, 0, 0), reasoner.getReasonerVersion)

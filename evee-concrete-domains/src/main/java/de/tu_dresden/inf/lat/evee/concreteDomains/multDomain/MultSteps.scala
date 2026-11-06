@@ -25,10 +25,13 @@ object MultSteps {
       if (!premises.contains(conclusion) && (conclusion == MultContradiction || constraints.contains(conclusion)))
         steps += new Inference[MultConstraint](conclusion, rule, premises.toList.asJava)
 
-    // only positive values have a factor between them
-    for (e1 <- equals; e2 <- equals
-         if e1.property != e2.property && e1.value > BigFraction.ZERO && e2.value > BigFraction.ZERO)
-      step(Multiplication(e1.property, e2.value / e1.value, e2.property), MultRules.RULE_FACTOR_FROM_CONSTANTS, e1, e2)
+    // q * x = y holds for the values of x and y if q times the one is the other, e.g. for every q if both are 0; not
+    // from one value of x alone, as def(x) and q * x = x have their own rules
+    val equalsOf = equals.groupBy(_.property)
+    for (m <- products if m.property1 != m.property2;
+         e1 <- equalsOf.getOrElse(m.property1, Nil); e2 <- equalsOf.getOrElse(m.property2, Nil)
+         if e1.value * m.factor == e2.value)
+      step(m, MultRules.RULE_FACTOR_FROM_CONSTANTS, e1, e2)
     for (m <- products)
       step(Multiplication(m.property2, m.factor.reciprocal(), m.property1), MultRules.RULE_INVERSE, m)
     for (m1 <- products; m2 <- productsFrom.getOrElse(m1.property2, Nil))
@@ -42,9 +45,10 @@ object MultSteps {
       step(MultContradiction, MultRules.RULE_DIFFERENT_CONSTANTS, e1, e2)
     for (e <- equals; l <- lessThans if l.property == e.property && e.value >= l.bound)
       step(MultContradiction, MultRules.RULE_CONSTANT_TOO_LARGE, e, l)
+    // q1 * x = y and q2 * x = y with q1 ≠ q2 hold only for x = 0
     for (m1 <- products; m2 <- productsFrom(m1.property1)
          if m1.property2 == m2.property2 && m1.factor < m2.factor)
-      step(MultContradiction, MultRules.RULE_DIFFERENT_FACTORS, m1, m2)
+      step(MultEqual(m1.property1, BigFraction.ZERO), MultRules.RULE_DIFFERENT_FACTORS, m1, m2)
     steps.result()
   }
 }

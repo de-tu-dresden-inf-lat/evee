@@ -78,6 +78,10 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
             inferences ::= new Inference[MultConstraint](conclusion, MultRules.RULE_INFER_WEAKER_BOUND, List(p).asJava)
           case other => false
         })
+      case m: Multiplication if !lastReasoningOutput.contains(m) =>
+        valuesFor(m, lastReasoningOutput).foreach { case (e1, e2) =>
+          inferences ::= new Inference[MultConstraint](conclusion, MultRules.RULE_FACTOR_FROM_CONSTANTS, List[MultConstraint](e1, e2).asJava)
+        }
       case _ => ;
     }
 
@@ -116,6 +120,7 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
           case MultLessThan(property2, var2) if property2.equals(property) => var2.compareTo(bound) <= 0
           case _ => false
         })
+      case m: Multiplication => saturated.contains(m) || valuesFor(m, saturated).nonEmpty
       case _ => saturated.contains(conclusion)
     })
     val time = System.nanoTime() - start
@@ -129,6 +134,15 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
   }
 
   override def proveInconsistency(): IProof[MultConstraint] = getProof(MultContradiction)
+
+  /**
+   * the derived values of the two data properties of q * x = y for which it holds, i.e. q times the one is the other;
+   * the networks do not derive q * x = y for all q if x = y = 0
+   */
+  private def valuesFor(m: Multiplication, derived: Set[MultConstraint]): Option[(MultEqual, MultEqual)] =
+    (for (MultEqual(x, v1) <- derived if x == m.property1; MultEqual(y, v2) <- derived if y == m.property2
+          if v1.multiply(m.factor).equals(v2))
+      yield (MultEqual(x, v1), MultEqual(y, v2))).headOption
 
   override def generateExplanations(): Stream[Map[OWLDataProperty, BigFraction]] =
   throw new AssertionError("Not Implemented!")

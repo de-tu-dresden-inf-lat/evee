@@ -172,6 +172,16 @@ class ELKCDProofGeneratorTest {
     Seq("C0" -> ":x * 2 = :y", "C1" -> ":y < 6", "C2" -> ":x < 3"), "SubClassOf(:A :C0)", "SubClassOf(:A :C1)"),
     subClassOf("A", "C2"))
 
+  /** x = y = 0 satisfy every factor, which the step from the two values shows; A is satisfiable */
+  @Test def multZero(): Unit = {
+    val o = ontology("QMult", Seq("C0" -> "2 * :x = :y", "C1" -> "3 * :x = :y", "C2" -> "5 * :x = :y"),
+      "SubClassOf(:A ObjectIntersectionOf(:C0 :C1))")
+    val reasoner = new OWLCDReasonerFactory().createReasoner(o)
+    try assertTrue("A should be satisfiable", reasoner.isSatisfiable(cls("A")))
+    finally reasoner.dispose()
+    assertCorrectProof(o, subClassOf("A", "C2"))
+  }
+
   @Test def unsatisfiableClass(): Unit = assertCorrectProof(ontology("QDiff",
     Seq("C0" -> ":x = 0", "C1" -> ":x + 1 = :y", "C2" -> ":y > 2"), "SubClassOf(:A ObjectIntersectionOf(:C0 :C1 :C2))"),
     sub(cls("A"), factory.getOWLNothing))

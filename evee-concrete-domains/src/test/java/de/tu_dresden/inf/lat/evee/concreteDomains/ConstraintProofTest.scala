@@ -225,12 +225,40 @@ class ConstraintProofTest {
       }
     }
 
-  /** with contradicting factors, all paths give more derivations than the complete network, which are correct */
-  @Test def multContradictingFactors(): Unit = {
+  /**
+   * different factors 4 and 3 between x and z hold only for x = 0 (not ⊥, as QMult is over all rational numbers); all
+   * paths give more derivations than the complete network, which are correct
+   */
+  @Test def multDifferentFactors(): Unit = {
     val premises = Seq(Multiplication(x, fraction(2), y), Multiplication(y, fraction(2), z), Multiplication(x, fraction(3), z))
-    val complete = multProof(premises, MultContradiction, 0)
-    val allPaths = multProof(premises, MultContradiction, 3)
+    assertTrue("the premises should be consistent", new MultReasoner().consistent(premises))
+    val complete = multProof(premises, MultEqual(x, fraction(0)), 0)
+    val allPaths = multProof(premises, MultEqual(x, fraction(0)), 3)
     assertTrue((complete -- allPaths).toString, complete.subsetOf(allPaths))
     assertTrue(allPaths.size > complete.size)
   }
+
+  /** the proofs of the simple and the complete network, and of all paths; not from ⊥ unless that is the goal */
+  private def assertMultProofs(premises: Seq[MultConstraint], goal: MultConstraint): Unit = {
+    if (goal != MultContradiction)
+      assertTrue("the premises should be consistent", new MultReasoner().consistent(premises))
+    assertMultProof(premises, goal)
+    multProof(premises, goal, 0)
+    multProof(premises, goal, 3)
+  }
+
+  /** 4 * x = x holds for x = 0 */
+  @Test def multZeroFromFactor(): Unit = assertMultProofs(Seq(Multiplication(x, fraction(4), x)), MultEqual(x, fraction(0)))
+
+  /** x = y = 0 satisfy q * x = y for every factor q */
+  @Test def multZeroSatisfiesAllFactors(): Unit =
+    assertMultProofs(Seq(Multiplication(x, fraction(2), y), Multiplication(x, fraction(3), y)), Multiplication(x, fraction(5), y))
+
+  /** 0 < 0 does not hold */
+  @Test def multZeroBelowBound(): Unit =
+    assertMultProofs(Seq(Multiplication(x, fraction(4), x), MultLessThan(x, fraction(0))), MultContradiction)
+
+  /** there is a positive factor between two negative values */
+  @Test def multNegativeValues(): Unit =
+    assertMultProofs(Seq(MultEqual(x, fraction(-2)), MultEqual(y, fraction(-4))), Multiplication(x, fraction(2), y))
 }

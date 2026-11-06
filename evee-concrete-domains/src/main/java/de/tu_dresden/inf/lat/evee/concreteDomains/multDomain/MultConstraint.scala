@@ -67,7 +67,8 @@ case class Multiplication(property1: OWLDataProperty, factor: BigFraction, prope
 
   override def getOWLDataProperties: Set[OWLDataProperty] = Set(property1, property2)
 
-  override def isInconsistent: Boolean = property1.equals(property2) && !factor.getNumerator().equals(factor.getDenominator())
+  /** q * x = x with q ≠ 1 holds for x = 0 */
+  override def isInconsistent: Boolean = false
 
   /** the factor is a number before the first property, without an operator, as in linear constraints */
   override def size: Int = if (property1.equals(property2) && factor.equals(BigFraction.ONE)) 2 else 4

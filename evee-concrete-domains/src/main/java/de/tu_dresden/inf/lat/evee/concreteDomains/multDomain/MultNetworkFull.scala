@@ -14,9 +14,11 @@ import scala.collection.mutable
 /**
  * For proofs: derives every constraint that follows from the given ones along a path that visits no data property
  * twice, and records every step between them (see [[MultSteps.between]]). The paths go along the given factors in
- * both directions and along the factors between the given positive values. If the factors are consistent, these are
- * all constraints the rules derive; otherwise the rules derive infinitely many, e.g. 4 * x = x, 8 * x = x, ... from
- * 2 * x = y and 1 * y = x. The number of paths can grow exponentially with the number of data properties.
+ * both directions and along the factors between the given non-zero values of the same sign. Two paths with
+ * different factors between the same data properties give the value 0, which is propagated along all paths as well.
+ * If the factors along all cycles are 1, these are all constraints the rules derive; otherwise the rules derive
+ * infinitely many, e.g. 4 * x = x, 8 * x = x, ... from 2 * x = y and 1 * y = x. The number of paths can grow
+ * exponentially with the number of data properties.
  */
 class MultNetworkFull extends ConstraintNetwork[MultConstraint] {
 
@@ -36,7 +38,8 @@ class MultNetworkFull extends ConstraintNetwork[MultConstraint] {
     val edges: Map[OWLDataProperty, Seq[(BigFraction, OWLDataProperty)]] =
       (products.flatMap(m => Seq((m.property1, m.factor, m.property2), (m.property2, m.factor.reciprocal(), m.property1))) ++
         (for (e1 <- equals; e2 <- equals
-              if e1.property != e2.property && e1.value > BigFraction.ZERO && e2.value > BigFraction.ZERO)
+              if e1.property != e2.property && e1.value.getNumerator.signum != 0 &&
+                e2.value.getNumerator.signum == e1.value.getNumerator.signum)
           yield (e1.property, e2.value / e1.value, e2.property)))
         .distinct.groupBy(_._1).mapValues(_.map(edge => (edge._2, edge._3))).toMap
 
@@ -54,11 +57,15 @@ class MultNetworkFull extends ConstraintNetwork[MultConstraint] {
 
     val definitions = properties.map(x => Multiplication(x, BigFraction.ONE, x))
     val allProducts = (products ++ paths ++ definitions).toSet
+    // q1 * x = y and q2 * x = y with q1 ≠ q2 (e.g. q * x = x with q ≠ 1 besides def(x)) hold only for x = 0
+    val zeros = allProducts.groupBy(m => (m.property1, m.property2)).collect {
+      case ((x, _), factors) if factors.size > 1 => MultEqual(x, BigFraction.ZERO)
+    }
     val values =
-      (for (e <- equals; m <- allProducts if m.property1 == e.property) yield MultEqual(m.property2, e.value * m.factor)) ++
+      (for (e <- equals ++ zeros; m <- allProducts if m.property1 == e.property) yield MultEqual(m.property2, e.value * m.factor)) ++
         (for (l <- unary.collect { case l: MultLessThan => l }; m <- allProducts if m.property1 == l.property)
           yield MultLessThan(m.property2, l.bound * m.factor))
-    derived = given.toSet ++ allProducts ++ values
+    derived = given.toSet ++ allProducts ++ zeros ++ values
 
     inferences = given.map(c => new Inference[MultConstraint](c, ProofTools.ASSERTED_1, List[MultConstraint]().asJava)).toSet ++
       definitions.filterNot(given.contains).map(d =>

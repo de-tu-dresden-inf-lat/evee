@@ -86,13 +86,13 @@ class MultNetworkSimple extends ConstraintNetwork[MultConstraint] {
   private def deriveEdgesFromUnary() = {
 
     // derive edges from values
-    // only positive values have a factor between them, which has to be positive
+    // only non-zero values of the same sign have a factor between them, which has to be positive
     nodes.keys.foreach(n1 =>
       nodes.get(n1).foreach(p1 => p1 match {
-        case MultEqual(_, v1) if v1.getNumerator().signum()==1 =>
+        case MultEqual(_, v1) if v1.getNumerator().signum() != 0 =>
           nodes.keys.foreach(n2 =>
             nodes.get(n2).foreach(p2 => p2 match {
-              case MultEqual(_, v2) if v2.getNumerator().signum()==1 =>
+              case MultEqual(_, v2) if v2.getNumerator().signum() == v1.getNumerator().signum() =>
                 val newPred = Multiplication(n1, v2.divide(v1), n2)
                 update(n1, n2, newPred)
                 derived += newPred
@@ -206,14 +206,17 @@ class MultNetworkSimple extends ConstraintNetwork[MultConstraint] {
     }
   }
 
-  private def update(d1: OWLDataProperty, d2: OWLDataProperty, p: Multiplication) = {
+  private def update(d1: OWLDataProperty, d2: OWLDataProperty, p: Multiplication): Unit = {
     if(!edges.contains(d1))
       edges.put(d1, new mutable.HashMap[OWLDataProperty, Multiplication]())
     edges(d1).get(d2) match {
       case None => edges(d1).put(d2,p)
       case Some(other) if !other.equals(p) => {
-        inconsistent = true
-        inferences += new Inference(MultContradiction, MultRules.RULE_DIFFERENT_FACTORS, List(other, p).asJava)
+        // q1 * x = y and q2 * x = y with q1 ≠ q2 hold only for x = 0
+        val zero = MultEqual(d1, BigFraction.ZERO)
+        derived += zero
+        inferences += new Inference(zero, MultRules.RULE_DIFFERENT_FACTORS, List(other, p).asJava)
+        update(d1, zero)
       }
       case Some(p) => ;
     }

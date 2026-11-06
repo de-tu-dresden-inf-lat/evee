@@ -72,10 +72,11 @@ class MultNetworkComplete extends ConstraintNetwork[MultConstraint] {
   def derivationStructure() = inferences
 
   private def deriveEdgesFromUnary() =
-    for (n1 <- nodes.keys.toList; e1 <- nodes(n1).toList.collect { case e: MultEqual => e } if e1.value > BigFraction.ZERO;
+    // only non-zero values of the same sign have a factor between them, which has to be positive
+    for (n1 <- nodes.keys.toList; e1 <- nodes(n1).toList.collect { case e: MultEqual => e } if e1.value.getNumerator.signum != 0;
          // def(n1) is derived by addTautologicalEdges, not from n1 = v1 and itself
          n2 <- nodes.keys.toList if n2 != n1;
-         e2 <- nodes(n2).toList.collect { case e: MultEqual => e } if e2.value > BigFraction.ZERO) {
+         e2 <- nodes(n2).toList.collect { case e: MultEqual => e } if e2.value.getNumerator.signum == e1.value.getNumerator.signum) {
       val newPred = Multiplication(n1, e2.value / e1.value, n2)
       update(newPred)
       derived += newPred
@@ -170,10 +171,12 @@ class MultNetworkComplete extends ConstraintNetwork[MultConstraint] {
     edges(d1).get(d2) match {
       case None => edges(d1).put(d2, p)
       case Some(other) if !other.equals(p) =>
-        inconsistent = true
-        // the smaller factor first, as in MultSteps
-        inferences += new Inference(MultContradiction, MultRules.RULE_DIFFERENT_FACTORS,
+        // q1 * x = y and q2 * x = y with q1 ≠ q2 hold only for x = 0; the smaller factor first, as in MultSteps
+        val zero = MultEqual(d1, BigFraction.ZERO)
+        derived += zero
+        inferences += new Inference(zero, MultRules.RULE_DIFFERENT_FACTORS,
           (if (other.factor < p.factor) List[MultConstraint](other, p) else List[MultConstraint](p, other)).asJava)
+        update(zero)
       case Some(_) => ;
     }
   }
