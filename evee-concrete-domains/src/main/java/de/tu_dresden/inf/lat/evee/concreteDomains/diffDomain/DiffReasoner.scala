@@ -51,12 +51,13 @@ class DiffReasoner extends ConstraintPropagationReasoner[DiffConstraint,BigFract
 
       lastReasoningInput = predicates
 
-      lastNetwork = if (allPaths(predicates))
-        new DiffNetworkFull()
-      else if(completeReasoning)
-        new DiffNetworkComplete()
-      else
+      // pure reasoning needs only the simple network; proofs need complete derivation structures
+      lastNetwork = if (!completeReasoning)
         new DiffNetworkSimple()
+      else if (allPaths(predicates))
+        new DiffNetworkFull()
+      else
+        new DiffNetworkComplete()
       if(continueEvenIfInconsistent)
         lastNetwork.setContinueEvenIfInconsistent()
       lastNetwork.fill(predicates)

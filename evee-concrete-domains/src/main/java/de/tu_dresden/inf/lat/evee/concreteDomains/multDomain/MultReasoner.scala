@@ -47,12 +47,13 @@ class MultReasoner extends ConstraintPropagationReasoner[MultConstraint,BigFract
 
     lastReasoningInput = predicates
 
-    lastNetwork = if (allPaths(predicates))
-      new MultNetworkFull()
-    else if (completeReasoning)
-      new MultNetworkComplete()
-    else
+    // pure reasoning needs only the simple network; proofs need complete derivation structures
+    lastNetwork = if (!completeReasoning)
       new MultNetworkSimple()
+    else if (allPaths(predicates))
+      new MultNetworkFull()
+    else
+      new MultNetworkComplete()
     if(continueEvenIfInconsistent)
       lastNetwork.setContinueEvenIfInconsistent()
     lastNetwork.fill(predicates)

@@ -50,10 +50,10 @@ abstract class ConstraintPropagationReasoner[Constraint <: CDConstraint, DOMAIN]
   private var maxVariablesForAllPaths = -1
 
   /**
-   * For proofs: if the constraints have at most this many variables, the derivation structure contains the derivations
-   * along all paths that visit no variable twice (e.g. [[diffDomain.DiffNetworkFull]]), whose number can grow
-   * exponentially with the number of variables; otherwise those of the network chosen by setCompleteReasoning. By
-   * default, it is never used.
+   * For proofs, only with setCompleteReasoning: if the constraints have at most this many variables, the derivation
+   * structure contains the derivations along all paths that visit no variable twice (e.g.
+   * [[diffDomain.DiffNetworkFull]]), whose number can grow exponentially with the number of variables; otherwise those
+   * of the complete network. By default, it is never used.
    */
   def setMaxVariablesForAllPaths(max: Int): Unit = maxVariablesForAllPaths = max
 

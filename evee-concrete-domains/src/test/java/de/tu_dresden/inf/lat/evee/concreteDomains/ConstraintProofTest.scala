@@ -161,6 +161,30 @@ class ConstraintProofTest {
     assertIntegerForm(premises, equation(y -> 2)(6))
   }
 
+  /** the network that saturate uses, with or without complete reasoning, and with the limit for all paths */
+  private def network(reasoner: ConstraintPropagationReasoner[_ <: CDConstraint, _], complete: Boolean, limit: Int,
+                      saturate: => Unit): Class[_] = {
+    if (complete)
+      reasoner.setCompleteReasoning()
+    reasoner.setMaxVariablesForAllPaths(limit)
+    saturate
+    reasoner.lastNetwork.getClass
+  }
+
+  /** pure reasoning uses the simple network, even with a limit for all paths; proofs the complete network or all paths */
+  @Test def networkSelection(): Unit = {
+    val diffPremises = Seq(DiffEqual(x, fraction(0)), DiffSum(x, fraction(1), y))
+    def diff(complete: Boolean, limit: Int) = { val r = new DiffReasoner(); network(r, complete, limit, r.saturate(diffPremises)) }
+    assertEquals(classOf[DiffNetworkSimple], diff(complete = false, 6))
+    assertEquals(classOf[DiffNetworkComplete], diff(complete = true, 0))
+    assertEquals(classOf[DiffNetworkFull], diff(complete = true, 6))
+    val multPremises = Seq(MultEqual(x, fraction(1)), Multiplication(x, fraction(2), y))
+    def mult(complete: Boolean, limit: Int) = { val r = new MultReasoner(); network(r, complete, limit, r.saturate(multPremises)) }
+    assertEquals(classOf[MultNetworkSimple], mult(complete = false, 6))
+    assertEquals(classOf[MultNetworkComplete], mult(complete = true, 0))
+    assertEquals(classOf[MultNetworkFull], mult(complete = true, 6))
+  }
+
   /** the proof of the goal for proofs over OWL, i.e. the complete network, or all paths up to the given limit */
   private def diffProof(premises: Seq[DiffConstraint], goal: DiffConstraint, maxVariablesForAllPaths: Int) = {
     val prover = new DiffReasoner()
