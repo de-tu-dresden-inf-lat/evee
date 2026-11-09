@@ -11,6 +11,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
 import javax.swing.*;
+import java.awt.GraphicsEnvironment;
 import java.util.function.Supplier;
 
 public class ProtegeCDReasonerFactory extends AbstractProtegeOWLReasonerInfo{
@@ -70,8 +71,9 @@ public class ProtegeCDReasonerFactory extends AbstractProtegeOWLReasonerInfo{
             } catch (RuntimeException e) {
                 String message = e instanceof ParsingException ? e.getMessage()
                         : e.getClass().getSimpleName() + ": " + e.getMessage() + "\n(see the log for details)";
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null,
-                        "PACER cannot reason with this ontology:\n" + message, "PACER", JOptionPane.ERROR_MESSAGE));
+                if (!GraphicsEnvironment.isHeadless())
+                    SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null,
+                            "PACER cannot reason with this ontology:\n" + message, "PACER", JOptionPane.ERROR_MESSAGE));
                 throw e;
             }
         }

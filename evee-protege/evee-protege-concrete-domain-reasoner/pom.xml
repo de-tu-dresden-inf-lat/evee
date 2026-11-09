@@ -63,6 +63,25 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!-- the tests run on OWL API 4.5 like the plugin in Protégé, so the OWL API 5 modules that the library
+                     brings are left out of the test classpath -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- no dialogs on the screen while testing -->
+                    <argLine>-Djava.awt.headless=true</argLine>
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-api</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-apibinding</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-impl</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-parsers</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-oboformat</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-rio</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-tools</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>5.1.9</version>
