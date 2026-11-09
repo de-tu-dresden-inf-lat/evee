@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import org.semanticweb.owlapi.formats.PrefixDocumentFormat
 import org.semanticweb.owlapi.model.{IRI, OWLAnnotationSubject, OWLClass, OWLDataProperty, OWLOntology}
@@ -11,6 +12,9 @@ import org.semanticweb.owlapi.model.{IRI, OWLAnnotationSubject, OWLClass, OWLDat
 trait ConstraintParser[+CD <: CDConstraint] {
 
   def ontology: OWLOntology
+
+  /** the concrete domain whose constraints the parser reads */
+  def concreteDomain: ConcreteDomainName
 
   protected lazy val factory = ontology.getOWLOntologyManager.getOWLDataFactory
 
@@ -37,7 +41,9 @@ trait ConstraintParser[+CD <: CDConstraint] {
       try toConstraint(constraint)
       catch {
         case e: ParsingException =>
-          throw new ParsingException(s"""Cannot read the constraint "$constraint" of ${owlClass.getIRI}: ${e.getMessage}""")
+          throw new ParsingException(s"""Cannot read the constraint "$constraint" of ${owlClass.getIRI} in $concreteDomain: """ +
+            s"${e.getMessage}.\nCheck the syntax of the constraint, or whether the annotation cd:concreteDomain of the " +
+            "ontology names the intended concrete domain.")
       }
     owlClass -> parsed
   }

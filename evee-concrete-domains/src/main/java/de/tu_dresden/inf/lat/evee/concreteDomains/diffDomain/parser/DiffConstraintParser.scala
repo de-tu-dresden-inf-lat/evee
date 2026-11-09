@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.parser
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 import de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain.{DiffConstraint, DiffEqual, DiffGreaterThan, DiffSum}
 import de.tu_dresden.inf.lat.evee.concreteDomains.{ConstraintParser, ConstraintTokens}
 import org.apache.commons.math3.fraction.BigFraction
@@ -11,6 +12,8 @@ import org.semanticweb.owlapi.model.OWLOntology
  * constraint as x + 0 = x.
  */
 class DiffConstraintParser(val ontology: OWLOntology) extends ConstraintParser[DiffConstraint] {
+
+  override def concreteDomain: ConcreteDomainName = ConcreteDomainName.QDiff
 
   override protected def parse(tokens: ConstraintTokens): DiffConstraint =
     definedProperty(tokens).map(x => DiffSum(x, BigFraction.ZERO, x)).getOrElse(relation(tokens))

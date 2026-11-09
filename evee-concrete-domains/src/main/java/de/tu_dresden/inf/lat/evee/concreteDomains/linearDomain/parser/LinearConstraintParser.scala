@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.parser
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain.LinearConstraint
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers.FractionOps
@@ -13,6 +14,8 @@ import org.semanticweb.owlapi.model.{OWLDataProperty, OWLOntology}
  * left out. The constraint def(x) says that x has a value; it is represented as 0 * x = 0.
  */
 class LinearConstraintParser(val ontology: OWLOntology) extends ConstraintParser[LinearConstraint[BigFraction]] {
+
+  override def concreteDomain: ConcreteDomainName = ConcreteDomainName.QLinear
 
   override protected def parse(tokens: ConstraintTokens): LinearConstraint[BigFraction] =
     definedProperty(tokens).map(x => LinearConstraint(Map(x -> BigFraction.ZERO), BigFraction.ZERO))

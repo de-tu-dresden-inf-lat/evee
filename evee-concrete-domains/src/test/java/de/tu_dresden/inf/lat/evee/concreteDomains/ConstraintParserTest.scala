@@ -143,7 +143,9 @@ class ConstraintParserTest {
       fail("the constraint should not be readable")
     } catch {
       case e: ParsingException =>
-        assertTrue(e.getMessage, e.getMessage.contains("\":x = five\" of http://ex.org/o#C0"))
+        assertTrue(e.getMessage, e.getMessage.contains("\":x = five\" of http://ex.org/o#C0 in QDiff"))
+        // a hint for constraints written for another concrete domain
+        assertTrue(e.getMessage, e.getMessage.contains("annotation cd:concreteDomain"))
     }
   }
 }

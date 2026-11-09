@@ -1,5 +1,6 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.multDomain.parser
 
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException
 import de.tu_dresden.inf.lat.evee.concreteDomains.multDomain._
 import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers
@@ -13,6 +14,8 @@ import org.semanticweb.owlapi.model.{OWLDataProperty, OWLOntology}
  * x has a value and is the same constraint as x * 1 = x.
  */
 class MultConstraintParser(val ontology: OWLOntology) extends ConstraintParser[MultConstraint] {
+
+  override def concreteDomain: ConcreteDomainName = ConcreteDomainName.QMult
 
   override protected def parse(tokens: ConstraintTokens): MultConstraint =
     definedProperty(tokens).map(x => Multiplication(x, BigFraction.ONE, x)).getOrElse(relation(tokens))
