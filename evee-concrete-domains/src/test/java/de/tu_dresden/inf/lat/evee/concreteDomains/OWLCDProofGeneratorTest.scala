@@ -14,6 +14,7 @@ import de.tu_dresden.inf.lat.evee.proofs.proofGenerators.TreeProofGenerator
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.semanticweb.owlapi.apibinding.OWLManager
+import org.semanticweb.owlapi.io.StringDocumentSource
 import org.semanticweb.owlapi.model.{IRI, OWLAxiom, OWLClass, OWLOntology}
 
 import scala.collection.JavaConverters._
@@ -146,5 +147,19 @@ class OWLCDProofGeneratorTest {
     assertEquals(shown(":x = 1/2"), shownBy("C1", prefixes))
     assertEquals(shown("z = 3"), shownBy("C2", prefixes))
     assertEquals(shown("ex:x = 1/2"), shownBy("C1", Map("ex:" -> TestOntologies.NS)))
+  }
+
+  /** a prefix that only an imported ontology declares is used too; the ontology's own prefixes come first */
+  @Test def prefixesOfImports(): Unit = {
+    val manager = OWLManager.createOWLOntologyManager()
+    manager.loadOntologyFromOntologyDocument(new StringDocumentSource(
+      "Prefix(:=<http://other.org/>)\nPrefix(d:=<http://ex.org/data#>)\nOntology(<http://ex.org/imported>)\n"))
+    val o = TestOntologies.ontology(manager, "http://ex.org/o", "QLinear", Seq("C0" -> "<http://ex.org/data#x> = 5"),
+      "Import(<http://ex.org/imported>)")
+    val prefixes = OWLCDProofGenerator.prefixesOfImportsClosure(o)
+    assertEquals("http://ex.org/data#", prefixes("d:"))
+    assertEquals(TestOntologies.NS, prefixes(":"))
+    val constraint = ExtendedOntologyParser.toExtendedOntology(o).constraintMap(cls("C0"))
+    assertEquals(shown("d:x = 5"), OWLCDProofGenerator.constraintClass(constraint, prefixes))
   }
 }

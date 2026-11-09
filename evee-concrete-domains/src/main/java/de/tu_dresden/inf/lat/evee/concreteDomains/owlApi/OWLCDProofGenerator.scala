@@ -64,7 +64,7 @@ class OWLCDProofGenerator(initialReasoner: ELKCDReasoner[CDConstraint] = null)
   override def setOntology(ontology: OWLOntology): Unit = {
     generator.setOntology(ExtendedOntologyParser.toExtendedOntology(ontology))
     inputConstraints = generator.constraintMap
-    prefixes = prefixesOf(ontology)
+    prefixes = prefixesOfImportsClosure(ontology)
     classConstraints.clear()
     classConstraints ++= inputConstraints
     shownClasses.clear()
@@ -124,6 +124,16 @@ object OWLCDProofGenerator {
   def prefixesOf(ontology: OWLOntology): Map[String, String] =
     Option(ontology.getOWLOntologyManager.getOntologyFormat(ontology))
       .collect { case format: PrefixDocumentFormat => format.getPrefixName2PrefixMap.asScala.toMap }.getOrElse(Map())
+
+  /**
+   * the prefixes for showing data properties: those of the ontology, and those of its imports for the prefix names
+   * that it does not declare itself, as prefixes are not imported in OWL; of two imported ontologies that declare the
+   * same prefix name, the first by ontology ID counts
+   */
+  def prefixesOfImportsClosure(ontology: OWLOntology): Map[String, String] = {
+    val imported = ontology.getImportsClosure().asScala.toSeq.filterNot(_ == ontology).sortBy(_.getOntologyID.toString)
+    (ontology +: imported).foldLeft(Map[String, String]())((earlier, o) => prefixesOf(o) ++ earlier)
+  }
 
   /**
    * the class that shows the constraint: its IRI is [[CONSTRAINT_CLASS_NAMESPACE]] followed by the constraint, with
