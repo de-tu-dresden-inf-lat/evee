@@ -82,6 +82,7 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
     public void initialise(){
     }
 
+    /** the UI elements exist only if the window was opened, which Protégé does not check before disposing of actions */
     @Override
     public void dispose(){
         if (this.classesTree != null){
@@ -90,9 +91,15 @@ public class EveeDynamicProofSignatureSelectionWindow extends ProtegeOWLAction i
         if (this.propertyTree != null){
             this.propertyTree.dispose();
         }
-        this.ontologyIndividualsListModel.dispose();
-        this.selectedSignatureListModel.dispose();
-        this.dialog.dispose();
+        if (this.ontologyIndividualsListModel != null){
+            this.ontologyIndividualsListModel.dispose();
+        }
+        if (this.selectedSignatureListModel != null){
+            this.selectedSignatureListModel.dispose();
+        }
+        if (this.dialog != null){
+            this.dialog.dispose();
+        }
     }
 
 //  directly UI related
