@@ -158,8 +158,8 @@ class ProofCheckerTest {
 
   @Test def linearContradiction(): Unit = {
     val premises = linearPremises :+ linear(y -> 1)(4)
-    val contradiction = linear()(1) // 0 = 1
-    assertProblems(problems(new GaussianEliminationReasoner(), premises, contradiction, premises -> contradiction))
+    assertProblems(problems(new GaussianEliminationReasoner(), premises, LinearConstraint.contradiction,
+      premises -> LinearConstraint.contradiction))
   }
 
   @Test def concreteDomainContradiction(): Unit = {

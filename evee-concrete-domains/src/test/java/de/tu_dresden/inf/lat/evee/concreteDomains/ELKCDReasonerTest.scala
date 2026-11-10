@@ -351,14 +351,4 @@ class ELKCDReasonerTest {
     assertTrue(reasoner.isEntailed(subClassOf("C0", "C1")))
     assertTrue("C0 ⊑ C1 is asserted, not added", concreteDomainAxioms(reasoner).isEmpty)
   }
-
-  @Test def ontologyIsNotChanged(): Unit = {
-    val o = ontology("QDiff", contradicting, "SubClassOf(:A :C0)", "SubClassOf(:A :C1)")
-    val axioms = o.getAxioms()
-    withReasoner(o) { reasoner =>
-      assertFalse(reasoner.isSatisfiable(cls("A")))
-      assertFalse(reasoner.isSatisfiable(factory.getOWLObjectSomeValuesFrom(r, and("C0", "C1"))))
-      assertEquals("the ontology should not be changed by reasoning", axioms, o.getAxioms())
-    }
-  }
 }

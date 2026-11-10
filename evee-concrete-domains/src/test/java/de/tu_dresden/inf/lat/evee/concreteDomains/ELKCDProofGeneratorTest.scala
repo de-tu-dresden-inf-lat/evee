@@ -194,15 +194,6 @@ class ELKCDProofGeneratorTest {
   @Test def expressionNotInOntology(): Unit = assertCorrectProof(ontology("QDiff",
     Seq("C0" -> ":x + 1 = :y", "C1" -> ":x = 0", "C2" -> ":y = 1")), sub(and("C0", "C1"), cls("C2")))
 
-  @Test def ontologyIsNotChanged(): Unit = {
-    val o = load("qdiff/patient.ofn")
-    val axioms = o.getAxioms()
-    val signature = o.getSignature()
-    proof(o, factory.getOWLSubClassOfAxiom(owlClass(o, "CurrentPatient"), owlClass(o, "NeedAttention")))
-    assertEquals("the axioms should not be changed", axioms, o.getAxioms())
-    assertEquals("the signature should not be changed", signature, o.getSignature())
-  }
-
   /** a reasoner for the ontology is used and stays usable; for another ontology, the generator creates its own */
   @Test def reusesTheGivenReasoner(): Unit = {
     val o = ontology("QDiff", Seq("C0" -> ":x = 5", "C1" -> ":x > 3"), "SubClassOf(:A :C0)")

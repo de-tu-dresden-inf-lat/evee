@@ -33,14 +33,18 @@ class OntologyUnchangedTest {
     manager.getOntologies().asScala.map(o => o.getOntologyID -> snapshot(o)).toMap
 
   /**
-   * what Protégé does: classify with PACER (buffering), query, prove with the running reasoner (both renderings, with
-   * minimisation), and also prove with a reasoner of the generator's own
+   * what Protégé does: classify with PACER (buffering), query, also about an expression that is not in the ontology
+   * (as the DL query tab does), prove with the running reasoner (both renderings, with minimisation), and also prove
+   * with a reasoner of the generator's own
    */
   private def reasonAndProve(o: OWLOntology, goal: OWLSubClassOfAxiom): Unit = {
     val reasoner = new OWLCDReasonerFactory().createReasoner(o).asInstanceOf[ELKCDReasoner[CDConstraint]]
     try {
       reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY)
       assertTrue(goal + " should be entailed", reasoner.isEntailed(goal))
+      val r = factory.getOWLObjectProperty(IRI.create(TestOntologies.NS + "r"))
+      assertTrue(reasoner.isSatisfiable(factory.getOWLObjectSomeValuesFrom(r,
+        factory.getOWLObjectIntersectionOf(goal.getSubClass, goal.getSuperClass))))
       prove(o, goal, reasoner)
     } finally reasoner.dispose()
     prove(o, goal, null)

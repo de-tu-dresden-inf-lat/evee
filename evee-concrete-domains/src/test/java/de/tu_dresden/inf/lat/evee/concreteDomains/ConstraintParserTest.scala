@@ -55,6 +55,8 @@ class ConstraintParserTest {
     assertEquals(equation(x -> fraction(1), y -> fraction(-1))(fraction(0)), linear.toConstraint(":x - :y = 0"))
     assertEquals(equation(x -> fraction(-1))(fraction(-3)), linear.toConstraint("-:x = -3"))
     assertEquals(equation(x -> fraction(1, 2), y -> fraction(-1))(fraction(1)), linear.toConstraint("0.5 * :x − :y = 1"))
+    assertEquals(equation(property("http://ex.org/my-onto#x") -> fraction(1), y -> fraction(-1))(fraction(0)),
+      linear.toConstraint("<http://ex.org/my-onto#x> - :y = 0"))
   }
 
   /** the number of symbols, as in the printed constraint, without factors 1 and -1 */
@@ -133,6 +135,17 @@ class ConstraintParserTest {
       fail("a constraint that is not a string should be rejected")
     } catch {
       case e: ParsingException => assertTrue(e.getMessage, e.getMessage.contains("C0 has to be a string"))
+    }
+  }
+
+  /** a class can have only one constraint (B8) */
+  @Test def twoConstraintsOnOneClassAreRejected(): Unit = {
+    val wrong = ontology("QDiff", Seq("C0" -> ":x = 0", "C0" -> ":x > 1"))
+    try {
+      ExtendedOntologyParser.toExtendedOntology(wrong)
+      fail("two constraints on the same class should be rejected")
+    } catch {
+      case e: ParsingException => assertTrue(e.getMessage, e.getMessage.contains("C0 has the constraints"))
     }
   }
 
