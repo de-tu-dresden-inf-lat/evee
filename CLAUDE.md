@@ -33,6 +33,8 @@ If compilation breaks for no obvious reason, delete old local installs of `capi`
 
 Every module containing Scala, and also `evee-data` (which is pure Java), is compiled by `sbt-compiler-maven-plugin` (sbt 0.13), which handles both Java and Scala sources. In `evee-elimination-proofs` and `evee-concrete-domains` the standard `maven-compiler-plugin` is turned off. `evee-concrete-domains` keeps its `.scala` files under `src/main/java`. Scala artifacts use the `_2.12` suffix (e.g. `evee-elimination-proofs-core_2.12`).
 
+After deleting or renaming a source file, build with `clean`: the classes of the old file can stay in `target/`, and a deleted test class then still runs.
+
 ## Architecture
 
 There are two layers with **different OWL API versions**:
@@ -57,7 +59,11 @@ Everything else builds on the generic interfaces in `evee-data`:
   - `evee-lethe-proof-extractor`: proofs from LETHE.
   - `evee-elk-proof-extractor`: ELK proofs minimised for size, depth or weighted size.
   - `evee-nemo-proof-extractor`: shells out to an external `nemo` binary from `NemoReasoner`.
-  - `evee-concrete-domains`: EL with concrete domains (linear, difference and multiplication constraints; `ELKCDReasoner`, `OWLCDReasonerFactory`). This is the current work on the `concreteDomains` branch. An ontology picks its domain through the annotation `http://tu-dresden.de/inf/lat/evee/cd#concreteDomain`, with value `QDiff`, `QMult` or `QLinear`. Each constraint is a class annotated with `...cd#constraint`, whose value is the constraint string (see `CDAnnotationNames`).
+  - `evee-concrete-domains` (the reasoner PACER): EL with concrete domains over the rational numbers, with exact fractions (`BigFraction`): differences (`QDiff`), multiplication (`QMult`) and linear equations (`QLinear`).
+    - `OWLCDReasonerFactory` creates an `ELKCDReasoner`, which runs ELK on an internal copy of the ontology plus the subsumptions that the concrete domain implies between constraint classes. `ELKCDProofGenerator` proves entailments over this extended ontology, and `OWLCDProofGenerator` turns its proofs into proofs over OWL axioms.
+    - An ontology picks its domain through the annotation `http://tu-dresden.de/inf/lat/evee/cd#concreteDomain`, with value `QDiff`, `QMult` or `QLinear`. Without it, the domain named by its imports applies, if they agree; if no ontology names one, PACER reasons like ELK.
+    - Each constraint is a class annotated with `...cd#constraint`, whose value is the constraint string (see `CDAnnotationNames`). A class has at most one constraint; conjunctions are `ObjectIntersectionOf`.
+    - Fresh classes for derived constraints exist only in PACER's internal copy and in proofs. Never add anything to the user's ontology or its manager; `OntologyUnchangedTest` checks this.
 - Non-entailment explainers:
   - `evee-relevant-counterexample`: `counterExampleProvider` and `model-datastructures`. Note the root package is `de.tu_dresden.inf.lat.*`, not `...lat.evee`.
   - `evee-small-model-generator`.
@@ -70,6 +76,7 @@ Everything else builds on the generic interfaces in `evee-data`:
 - Protégé calls `hasProof` (proof services) and `supportsExplanation` (non-entailment services) very often from the UI, so they must stay cheap. `hasProof` only checks whether the service is enabled in the preferences. The real work happens in `getProof` or `computeExplanation`, on a separate thread.
 - Each plugin lists its extensions in `src/main/resources/plugin.xml`, with fully qualified class names and Maven resource filtering on. When you rename or move a service class, update `plugin.xml` too.
 - OSGi packaging: `evee-protege-core` exports the `evee-data` packages (`general.*`, `proofs.*`, `nonEntailment.interfaces`), `dltools` and Jackson, and the plugins import those. Each plugin embeds its own library module's packages through `Private-Package`. If you add a package to a library module, add it to the `Private-Package` of every plugin that embeds that module, or to the core's `Export-Package` if it belongs to `evee-data`. Otherwise the plugin compiles fine, but at Protégé startup the log shows `BundleException: Unable to resolve … missing requirement … osgi.wiring.package=<pkg>`. Fixing these is often trial and error; `resolution:=optional` and `-split-package:=merge-last` are the usual tools.
+- `evee-protege-concrete-domain-reasoner` also registers PACER as a reasoner (`org.protege.editor.owl.inference_reasonerfactory`) and a Tools menu action that sets up the annotations. Its proof services reuse the running PACER reasoner. Its tests (`ProtegeCallsTest`) replay Protégé's calls on OWL API 4.5: surefire's `classpathDependencyExcludes` removes the OWL API 5 modules that the library brings in.
 - Adding a plugin means adding it to `evee-protege/pom.xml` `<modules>` and, to ship it, to the `<dependencies>` in `evee-protege-release/pom.xml`; the zip contains only the plugins listed there. Module directory names don't always match artifactIds: `evee-protege-counterexample-EL/` builds `evee-protege-counterexample-small-model`.
 
 ## External tools and dependencies
