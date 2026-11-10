@@ -49,7 +49,7 @@ class ConstraintParserTest {
 
   @Test def linearConstraints(): Unit = {
     def equation(coefficients: (OWLDataProperty, BigFraction)*)(constant: BigFraction) =
-      LinearConstraint[BigFraction](coefficients.toMap, constant)
+      LinearConstraint(coefficients.toMap, constant)
     assertEquals(equation(x -> fraction(2), y -> fraction(3))(fraction(5)), linear.toConstraint("2 * :x + 3 * :y = 5"))
     assertEquals(equation(x -> fraction(2), y -> fraction(-1))(fraction(5)), linear.toConstraint("2*:x+-1*:y=5"))
     assertEquals(equation(x -> fraction(1), y -> fraction(-1))(fraction(0)), linear.toConstraint(":x - :y = 0"))
@@ -79,7 +79,7 @@ class ConstraintParserTest {
     assertEquals(diff.toConstraint("def(:x)"), diff.toConstraint(":x + 0 = :x"))
     assertEquals(Multiplication(x, fraction(1), x), mult.toConstraint("def( :x )"))
     assertEquals(mult.toConstraint("def(x)"), mult.toConstraint("x * 1 = x"))
-    assertEquals(LinearConstraint[BigFraction](Map(x -> fraction(0)), fraction(0)), linear.toConstraint("def(x)"))
+    assertEquals(LinearConstraint(Map(x -> fraction(0)), fraction(0)), linear.toConstraint("def(x)"))
     for (parser <- Seq(diff, mult, linear))
       assertEquals("def(<" + TestOntologies.NS + "x>)", parser.toConstraint("def(x)").toString)
   }
@@ -90,8 +90,8 @@ class ConstraintParserTest {
     diffs.foreach(c => assertEquals(c, diff.toConstraint(c.toString)))
     val mults = Seq(MultEqual(x, fraction(7, 2)), MultLessThan(x, fraction(1, 3)), Multiplication(x, fraction(2, 3), y))
     mults.foreach(c => assertEquals(c, mult.toConstraint(c.toString)))
-    val linears = Seq(LinearConstraint[BigFraction](Map(x -> fraction(1, 3), y -> fraction(-1)), fraction(5, 2)),
-      LinearConstraint[BigFraction](Map(x -> fraction(0)), fraction(0)))
+    val linears = Seq(LinearConstraint(Map(x -> fraction(1, 3), y -> fraction(-1)), fraction(5, 2)),
+      LinearConstraint(Map(x -> fraction(0)), fraction(0)))
     linears.foreach(c => assertEquals(c, linear.toConstraint(c.toString)))
   }
 

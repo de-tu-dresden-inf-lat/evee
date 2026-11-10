@@ -13,7 +13,7 @@ import java.math.BigInteger
 import scala.collection.JavaConverters
 import scala.collection.mutable.ListBuffer
 
-class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstraint[BigFraction]] {//with CDProver[LinearConstraint[BigFraction]]
+class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstraint] {//with CDProver[LinearConstraint]
   private var numVars: Int = _
   // needed to translate between LinearConstraints and rows in both directions
   // (e.g., for proofs)
@@ -37,11 +37,11 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     variableOrder = order
   }
 
-  override def consistent(predicates: Iterable[LinearConstraint[BigFraction]]): Boolean = {
+  override def consistent(predicates: Iterable[LinearConstraint]): Boolean = {
     consistent(predicates, Option.empty)
   }
 
-  def consistent(predicates: Iterable[LinearConstraint[BigFraction]], tracker: Option[ImplicationTracker]): Boolean = {
+  def consistent(predicates: Iterable[LinearConstraint], tracker: Option[ImplicationTracker]): Boolean = {
     val start = System.nanoTime()
     val res = satisfiable(predicates, Iterable.empty, tracker)
     val time = System.nanoTime() - start
@@ -54,11 +54,11 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     res
   }
 
-  override def implies(premises: Iterable[LinearConstraint[BigFraction]], conclusion: LinearConstraint[BigFraction]): Boolean = {
+  override def implies(premises: Iterable[LinearConstraint], conclusion: LinearConstraint): Boolean = {
     implies(premises, conclusion, Option.empty)
   }
 
-  def implies(premises: Iterable[LinearConstraint[BigFraction]], conclusion: LinearConstraint[BigFraction], tracker: Option[ImplicationTracker]): Boolean = {
+  def implies(premises: Iterable[LinearConstraint], conclusion: LinearConstraint, tracker: Option[ImplicationTracker]): Boolean = {
     val start = System.nanoTime()
     // the data properties of the conclusion need values; for def(x), elimination alone would derive it from nothing
     val valuesExist = conclusion.getOWLDataProperties.subsetOf(premises.flatMap(_.getOWLDataProperties).toSet)
@@ -75,7 +75,7 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     res
   }
 
-  def satisfiable(positive: Iterable[LinearConstraint[BigFraction]], negative: Iterable[LinearConstraint[BigFraction]], tracker: Option[ImplicationTracker] = None) : Boolean = {
+  def satisfiable(positive: Iterable[LinearConstraint], negative: Iterable[LinearConstraint], tracker: Option[ImplicationTracker] = None) : Boolean = {
     collectStatistics(positive, negative)
     gaussianElimination(positive, negative, tracker)
     if (!rows.forall(_.getEntry(numVars).equals(BigFraction.ZERO))) {
@@ -91,7 +91,7 @@ class GaussianEliminationReasoner extends CDReasonerWithStatistics[LinearConstra
     true
   }
 
-  def gaussianElimination(predicates: Iterable[LinearConstraint[BigFraction]], targets: Iterable[LinearConstraint[BigFraction]], tracker: Option[ImplicationTracker]):
+  def gaussianElimination(predicates: Iterable[LinearConstraint], targets: Iterable[LinearConstraint], tracker: Option[ImplicationTracker]):
     (Map[OWLDataProperty, Integer], Iterable[FieldVector[BigFraction]], Iterable[FieldVector[BigFraction]]) = {
 
     keyMap = MatrixConversions.getKeyMap(predicates ++ targets, variableOrder)

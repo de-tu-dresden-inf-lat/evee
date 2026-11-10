@@ -9,16 +9,16 @@ import org.apache.commons.math3.fraction.BigFraction
  * This is another concrete domain in which every constraint is a linear equation
  */
 
-case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDConstraint {
+case class LinearConstraint(lhs: Map[OWLDataProperty, BigFraction], rhs: BigFraction) extends CDConstraint {
   /** whether this is def(x), represented as 0 * x = 0 */
-  def isDef: Boolean = lhs.size == 1 && formatNumber(lhs.values.head) == "0" && formatNumber(rhs) == "0"
+  def isDef: Boolean = lhs.size == 1 && Numbers.format(lhs.values.head) == "0" && Numbers.format(rhs) == "0"
 
   override def toString(): String = {
     if (isDef)
       return "def(" + lhs.keys.head + ")"
     val l = lhs.keys.toList.sortWith(_.toString < _.toString).map{key => format(key, lhs(key))}
       .map(_.replaceAll("\\s","")).mkString(" + ").replaceAll("\\+ -","\u2212 ")//Works better with GraphViz
-    val r = " = " + formatNumber(rhs)
+    val r = " = " + Numbers.format(rhs)
     if (l.nonEmpty) l + r else 0 + r
   }
 
@@ -28,32 +28,21 @@ case class LinearConstraint[T](lhs: Map[OWLDataProperty, T], rhs: T) extends CDC
   override def size: Int =
     if (isDef) 2
     else if (lhs.isEmpty) 3
-    else lhs.values.map(v => if (Set("1", "-1").contains(formatNumber(v))) 1 else 2).sum + lhs.size - 1 + 2
+    else lhs.values.map(v => if (Set("1", "-1").contains(Numbers.format(v))) 1 else 2).sum + lhs.size - 1 + 2
 
-  // TODO find a better solution -> fix T to BigFraction?
-  override def isInconsistent: Boolean = {
-    val ZERO = rhs match {
-      case _: Double => 0d
-      case _: BigFraction => BigFraction.ZERO
-    }
-    lhs.values.forall(_.equals(ZERO)) && !rhs.equals(ZERO)
-  }
+  override def isInconsistent: Boolean = lhs.values.forall(_.equals(BigFraction.ZERO)) && !rhs.equals(BigFraction.ZERO)
 
-  def getType: Class[_ <: T] = {
-    rhs.getClass
-  }
-
-  def format(prop: OWLDataProperty, value: T): String = {
-    formatNumber(value) match {
+  def format(prop: OWLDataProperty, value: BigFraction): String = {
+    Numbers.format(value) match {
       case "1" => prop.toString
       case "-1" => "-" + prop.toString
       case number => number + "*" + prop
     }
   }
 
-  private def formatNumber(value: T): String = value match {
-    case fraction: BigFraction => Numbers.format(fraction)
-    case other => other.toString.replaceAll("\\s", "")
-  }
+}
 
+object LinearConstraint {
+  /** 0 = 1 */
+  val contradiction: LinearConstraint = LinearConstraint(Map.empty, BigFraction.ONE)
 }

@@ -13,15 +13,15 @@ import org.semanticweb.owlapi.model.{OWLDataProperty, OWLOntology}
  * xi are distinct data properties and the ai are non-zero numbers, e.g., 2 * x - y = 0.5. A coefficient 1 can be
  * left out. The constraint def(x) says that x has a value; it is represented as 0 * x = 0.
  */
-class LinearConstraintParser(val ontology: OWLOntology) extends ConstraintParser[LinearConstraint[BigFraction]] {
+class LinearConstraintParser(val ontology: OWLOntology) extends ConstraintParser[LinearConstraint] {
 
   override def concreteDomain: ConcreteDomainName = ConcreteDomainName.QLinear
 
-  override protected def parse(tokens: ConstraintTokens): LinearConstraint[BigFraction] =
+  override protected def parse(tokens: ConstraintTokens): LinearConstraint =
     definedProperty(tokens).map(x => LinearConstraint(Map(x -> BigFraction.ZERO), BigFraction.ZERO))
       .getOrElse(equation(tokens))
 
-  private def equation(tokens: ConstraintTokens): LinearConstraint[BigFraction] = {
+  private def equation(tokens: ConstraintTokens): LinearConstraint = {
     var coefficients = Map[OWLDataProperty, BigFraction]()
     var first = true
     do {

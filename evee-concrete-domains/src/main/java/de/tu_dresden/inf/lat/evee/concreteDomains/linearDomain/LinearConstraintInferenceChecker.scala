@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain
   
-import de.tu_dresden.inf.lat.evee.concreteDomains.CDDefaultContradictionGenerator
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference
 
 import org.apache.commons.math3.fraction.BigFraction
@@ -16,7 +15,7 @@ import scala.collection.JavaConverters.collectionAsScalaIterableConverter
  */
 object LinearConstraintInferenceChecker {
 
-  def correctCDInference(inf: IInference[LinearConstraint[BigFraction]]): Boolean = {
+  def correctCDInference(inf: IInference[LinearConstraint]): Boolean = {
     if (inf.getPremises.size() == 0) return true
     if(inf.getRuleName.equals("[Contradiction]") || inf.getRuleName.equals("Contradiction")) {
       return inf.getPremises.size()==1 && inf.getPremises.iterator().next().isInconsistent && inf.getConclusion
@@ -38,7 +37,7 @@ object LinearConstraintInferenceChecker {
     //Inconsistency check is needed because default contradiction is not necessary the same original inconsistent
     // equation that the bottom concept represents
     if(inf.getConclusion.isInconsistent)
-      !sum.rhs.equals(CDDefaultContradictionGenerator.defaultLCBF.rhs)
+      !sum.rhs.equals(LinearConstraint.contradiction.rhs)
     else
       sum.rhs.equals(BigFraction.ZERO)
   }
@@ -48,9 +47,9 @@ object LinearConstraintInferenceChecker {
     case Array(numerator, denominator) => new BigFraction(new BigInteger(numerator.trim), new BigInteger(denominator.trim))
   }
 
-  private def multiply(a: BigFraction, c: LinearConstraint[BigFraction]) = LinearConstraint[BigFraction](c.lhs.mapValues(a.multiply), a.multiply(c.rhs))
+  private def multiply(a: BigFraction, c: LinearConstraint) = LinearConstraint(c.lhs.mapValues(a.multiply), a.multiply(c.rhs))
 
-  private def add(a: LinearConstraint[BigFraction], b: LinearConstraint[BigFraction]) = {
+  private def add(a: LinearConstraint, b: LinearConstraint) = {
     var map = collection.mutable.Map[OWLDataProperty, BigFraction]()
     for (prop <- a.lhs.keySet ++ b.lhs.keySet) {
       val aValue = a.lhs.getOrElse(prop, BigFraction.ZERO)

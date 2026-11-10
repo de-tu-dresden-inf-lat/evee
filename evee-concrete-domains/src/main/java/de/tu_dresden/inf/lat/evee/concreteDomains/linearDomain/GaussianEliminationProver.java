@@ -1,6 +1,5 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain;
 
-import de.tu_dresden.inf.lat.evee.concreteDomains.CDDefaultContradictionGenerator;
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDProofGenerator;
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDReasoner;
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDRules;
@@ -10,7 +9,6 @@ import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofGenerationExceptio
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IProof;
 import de.tu_dresden.inf.lat.evee.proofs.tools.ProofTools;
-import org.apache.commons.math3.fraction.BigFraction;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 
 import scala.Option;
@@ -25,11 +23,11 @@ import java.util.stream.Collectors;
  *
  * @author Christian Alrabbaa
  */
-public class GaussianEliminationProver implements CDProofGenerator<LinearConstraint<BigFraction>> {
+public class GaussianEliminationProver implements CDProofGenerator<LinearConstraint> {
     /** the default of {@link #setMaxVariablesForAllOrders(int)} */
     public static final int DEFAULT_MAX_VARIABLES_FOR_ALL_ORDERS = 4;
 
-    private Set<LinearConstraint<BigFraction>> constraints;
+    private Set<LinearConstraint> constraints;
     private final GaussianEliminationReasoner cDReasoner;
     private int maxVariablesForAllOrders = DEFAULT_MAX_VARIABLES_FOR_ALL_ORDERS;
 
@@ -52,22 +50,22 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
     }
 
     @Override
-    public CDReasoner<LinearConstraint<BigFraction>> getCDReasoner() {
+    public CDReasoner<LinearConstraint> getCDReasoner() {
         return cDReasoner;
     }
 
     @Override
-    public IProof<LinearConstraint<BigFraction>> proveInconsistency() throws ProofGenerationException {
-        return getProof(CDDefaultContradictionGenerator.defaultLCBF());
+    public IProof<LinearConstraint> proveInconsistency() throws ProofGenerationException {
+        return getProof(LinearConstraint.contradiction());
     }
 
     @Override
-    public void setOntology(Iterable<LinearConstraint<BigFraction>> constraints) {
+    public void setOntology(Iterable<LinearConstraint> constraints) {
         this.constraints = JavaConverters.setAsJavaSet(constraints.toSet());
     }
 
     @Override
-    public boolean supportsProof(LinearConstraint<BigFraction> linearConstraint) {
+    public boolean supportsProof(LinearConstraint linearConstraint) {
         return true;
     }
 
@@ -78,15 +76,15 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
      * @throws ProofGenerationException
      */
     @Override
-    public IProof<LinearConstraint<BigFraction>> getProof(LinearConstraint<BigFraction> conclusion) throws ProofGenerationException {
+    public IProof<LinearConstraint> getProof(LinearConstraint conclusion) throws ProofGenerationException {
         if (conclusion.isDef() && !this.constraints.contains(conclusion))
             return definedProof(conclusion);
 
         // a fixed order of the premises, so that the proofs do not depend on hash codes
-        List<LinearConstraint<BigFraction>> premises = this.constraints.stream()
+        List<LinearConstraint> premises = this.constraints.stream()
                 .sorted(Comparator.comparing(Object::toString)).collect(Collectors.toList());
         List<OWLDataProperty> variables = new ArrayList<>();
-        for (LinearConstraint<BigFraction> constraint : premises)
+        for (LinearConstraint constraint : premises)
             variables.addAll(JavaConverters.setAsJavaSet(constraint.getOWLDataProperties()));
         variables.addAll(JavaConverters.setAsJavaSet(conclusion.getOWLDataProperties()));
         variables = variables.stream().distinct().sorted(Comparator.comparing(v -> v.getIRI().toString()))
@@ -94,14 +92,14 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
         List<List<OWLDataProperty>> orders = variables.size() <= this.maxVariablesForAllOrders ?
                 permutations(variables) : Collections.singletonList(variables);
 
-        Set<IInference<LinearConstraint<BigFraction>>> inferences = new LinkedHashSet<>();
+        Set<IInference<LinearConstraint>> inferences = new LinkedHashSet<>();
         this.cDReasoner.considerAllPivotRows(true);
         for (List<OWLDataProperty> order : orders) {
             this.cDReasoner.variableOrder(JavaConverters.asScalaBuffer(order).toList());
             inferences.addAll(eliminationSteps(premises, conclusion));
         }
 
-        for (LinearConstraint<BigFraction> premise : premises) {
+        for (LinearConstraint premise : premises) {
             inferences.add(new Inference<>(premise, ProofTools.ASSERTED_2, Collections.emptyList()));
         }
         if (inferences.isEmpty())
@@ -110,8 +108,8 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
     }
 
     /** the inferences of one elimination, with the variable order set in the reasoner */
-    private List<IInference<LinearConstraint<BigFraction>>> eliminationSteps(List<LinearConstraint<BigFraction>> premises,
-            LinearConstraint<BigFraction> conclusion) throws ProofGenerationException {
+    private List<IInference<LinearConstraint>> eliminationSteps(List<LinearConstraint> premises,
+            LinearConstraint conclusion) throws ProofGenerationException {
         ImplicationTracker tracker = new ImplicationTracker(new HashSet<>(premises), conclusion);
         boolean implied = this.cDReasoner.implies(JavaConverters.collectionAsScalaIterable(premises), conclusion,
                 Option.apply(tracker));
@@ -119,11 +117,11 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
         if (!implied)
             throw new ProofGenerationException("Linear Constraint is not implied -> " + conclusion + "\nTheory\n"+premises);
 
-        IProof<LinearConstraint<BigFraction>> ds = conclusion.isInconsistent()? tracker.getDerivationStructure():
+        IProof<LinearConstraint> ds = conclusion.isInconsistent()? tracker.getDerivationStructure():
                 tracker.getFlippedDerivationStructure();
 
-        List<IInference<LinearConstraint<BigFraction>>> inferences = new ArrayList<>();
-        for (IInference<LinearConstraint<BigFraction>> inf : ds.getInferences()) {
+        List<IInference<LinearConstraint>> inferences = new ArrayList<>();
+        for (IInference<LinearConstraint> inf : ds.getInferences()) {
             // Filter inferences where premise = conclusion
             if (inf.getPremises().size() != 1 || !inf.getConclusion().equals(inf.getPremises().get(0)))
                 inferences.add(inf);
@@ -159,9 +157,9 @@ public class GaussianEliminationProver implements CDProofGenerator<LinearConstra
     }
 
     /** def(x) does not follow by elimination: x has a value because one of the constraints mentions x */
-    private IProof<LinearConstraint<BigFraction>> definedProof(LinearConstraint<BigFraction> conclusion) throws ProofGenerationException {
+    private IProof<LinearConstraint> definedProof(LinearConstraint conclusion) throws ProofGenerationException {
         OWLDataProperty x = conclusion.lhs().keys().head();
-        Optional<LinearConstraint<BigFraction>> premise = this.constraints.stream()
+        Optional<LinearConstraint> premise = this.constraints.stream()
                 .filter(c -> c.getOWLDataProperties().contains(x))
                 .min(Comparator.comparing(Object::toString));
         if (!premise.isPresent())

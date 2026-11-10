@@ -30,23 +30,23 @@ public class ImplicationTracker {
     /** the prefix of the rule names, which list the factors of the premises */
     public static final String RULE_PREFIX = "Linear combination [";
 
-    private final IProof<LinearConstraint<BigFraction>> derivationStructure;
+    private final IProof<LinearConstraint> derivationStructure;
     /** the factors of the premises of each elimination step: the conclusion is the sum of the premises times these factors */
-    private final java.util.Map<IInference<LinearConstraint<BigFraction>>, BigFraction[]> factors = new HashMap<>();
-    private final LinearConstraint<BigFraction> impliedLinearConstraint;
-    private final Set<LinearConstraint<BigFraction>> theory;
+    private final java.util.Map<IInference<LinearConstraint>, BigFraction[]> factors = new HashMap<>();
+    private final LinearConstraint impliedLinearConstraint;
+    private final Set<LinearConstraint> theory;
     private Map<OWLDataProperty, Integer> varsMap;
     private boolean fromContradiction;
-    private LinearConstraint<BigFraction> contradiction;
+    private LinearConstraint contradiction;
 
-    public ImplicationTracker(Set<LinearConstraint<BigFraction>> linearConstraints, LinearConstraint<BigFraction> impliedLinearConstraint ){
+    public ImplicationTracker(Set<LinearConstraint> linearConstraints, LinearConstraint impliedLinearConstraint ){
         this.impliedLinearConstraint = impliedLinearConstraint;
         this.theory = linearConstraints;
         this.derivationStructure = new Proof<>(impliedLinearConstraint);
         this.fromContradiction = false;
     }
 
-    public LinearConstraint<BigFraction> getImpliedLinearConstraint() {
+    public LinearConstraint getImpliedLinearConstraint() {
         return impliedLinearConstraint;
     }
 
@@ -58,46 +58,46 @@ public class ImplicationTracker {
         return varsMap;
     }
 
-    public Optional<LinearConstraint<BigFraction>> getContradiction() {
+    public Optional<LinearConstraint> getContradiction() {
         if(!fromContradiction)
             return Optional.empty();
         return Optional.of(contradiction);
     }
 
     public void addInference(FieldVector<BigFraction> conclusionVector, FieldVector<BigFraction> pivotVector, FieldVector<BigFraction> other, BigFraction factor1, BigFraction factor2){
-        LinearConstraint<BigFraction> conclusion = MatrixConversions.toLinearConstraint(conclusionVector,this.varsMap);
+        LinearConstraint conclusion = MatrixConversions.toLinearConstraint(conclusionVector,this.varsMap);
 
-        List<LinearConstraint<BigFraction>> premise = new LinkedList<>(Arrays.asList(MatrixConversions.toLinearConstraint(pivotVector, this.varsMap)));
-        LinearConstraint<BigFraction> p2 = MatrixConversions.toLinearConstraint(other,this.varsMap);
+        List<LinearConstraint> premise = new LinkedList<>(Arrays.asList(MatrixConversions.toLinearConstraint(pivotVector, this.varsMap)));
+        LinearConstraint p2 = MatrixConversions.toLinearConstraint(other,this.varsMap);
         premise.add(p2);
 
         if(conclusion.isInconsistent()){
             this.fromContradiction = true;
             this.contradiction = conclusion;
         }
-        IInference<LinearConstraint<BigFraction>> inference = new Inference<>(conclusion, ruleName(factor1, factor2), premise);
+        IInference<LinearConstraint> inference = new Inference<>(conclusion, ruleName(factor1, factor2), premise);
         this.factors.put(inference, new BigFraction[]{factor1, factor2});
         this.derivationStructure.addInference(inference);
     }
 
-    public IProof<LinearConstraint<BigFraction>> getFlippedDerivationStructure() {
-        IProof<LinearConstraint<BigFraction>> ds = new Proof<>(this.impliedLinearConstraint);
+    public IProof<LinearConstraint> getFlippedDerivationStructure() {
+        IProof<LinearConstraint> ds = new Proof<>(this.impliedLinearConstraint);
 
-        Set<LinearConstraint<BigFraction>> toDo = new HashSet<>();
-        Set<LinearConstraint<BigFraction>> tmp = new HashSet<>();
+        Set<LinearConstraint> toDo = new HashSet<>();
+        Set<LinearConstraint> tmp = new HashSet<>();
         toDo.add(this.impliedLinearConstraint);
 
-        Set<LinearConstraint<BigFraction>> done =  Sets.newHashSet(this.theory);
+        Set<LinearConstraint> done =  Sets.newHashSet(this.theory);
         done.remove(this.impliedLinearConstraint);
 
         // TODO: implement this directly in the Proof class?
-        SetMultimap<LinearConstraint<BigFraction>, IInference<LinearConstraint<BigFraction>>> premiseMap = HashMultimap.create();
-        for (IInference<LinearConstraint<BigFraction>> inference : this.derivationStructure.getInferences())
-            for (LinearConstraint<BigFraction> premise : inference.getPremises())
+        SetMultimap<LinearConstraint, IInference<LinearConstraint>> premiseMap = HashMultimap.create();
+        for (IInference<LinearConstraint> inference : this.derivationStructure.getInferences())
+            for (LinearConstraint premise : inference.getPremises())
                 premiseMap.put(premise, inference);
 
         while(!toDo.isEmpty() ){
-            for(LinearConstraint<BigFraction> c : toDo){
+            for(LinearConstraint c : toDo){
                 if(done.contains(c))
                     continue;
                 done.add(c);
@@ -105,10 +105,10 @@ public class ImplicationTracker {
                 //In case there is already an inference with the desired conclusion. To avoid proofs with premises that are not asserted nor tautology
                 ds.addInferences(this.derivationStructure.getInferences(c));
 
-                for (IInference<LinearConstraint<BigFraction>> x : premiseMap.get(c)) {
+                for (IInference<LinearConstraint> x : premiseMap.get(c)) {
 
                     int cIndx = x.getPremises().indexOf(c);
-                    List<LinearConstraint<BigFraction>> newPremise = Lists.newLinkedList(x.getPremises());
+                    List<LinearConstraint> newPremise = Lists.newLinkedList(x.getPremises());
                     String newRuleName;
 
                     BigFraction[] factors = this.factors.get(x).clone();
@@ -138,7 +138,7 @@ public class ImplicationTracker {
         return ds;
     }
 
-    public IProof<LinearConstraint<BigFraction>> getDerivationStructure() {
+    public IProof<LinearConstraint> getDerivationStructure() {
         return this.derivationStructure;
     }
 

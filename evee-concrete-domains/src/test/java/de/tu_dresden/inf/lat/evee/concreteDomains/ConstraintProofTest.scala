@@ -33,7 +33,7 @@ class ConstraintProofTest {
   }
 
   /** also checks that the rule names of the linear combinations give their factors */
-  private def assertLinearProof(premises: Seq[LinearConstraint[BigFraction]], goal: LinearConstraint[BigFraction]): Unit = {
+  private def assertLinearProof(premises: Seq[LinearConstraint], goal: LinearConstraint): Unit = {
     val prover = new GaussianEliminationProver()
     prover.setOntology(premises)
     val proof = prover.getProof(goal)
@@ -46,7 +46,7 @@ class ConstraintProofTest {
 
   /** the linear equation with the given coefficients and constant */
   private def equation(coefficients: (OWLDataProperty, Int)*)(constant: Int) =
-    LinearConstraint[BigFraction](coefficients.map { case (v, c) => v -> fraction(c) }.toMap, fraction(constant))
+    LinearConstraint(coefficients.map { case (v, c) => v -> fraction(c) }.toMap, fraction(constant))
 
   @Test def diffSum(): Unit =
     assertDiffProof(Seq(DiffSum(x, fraction(1), y), DiffSum(y, fraction(2), z)), DiffSum(x, fraction(3), z))
@@ -87,7 +87,7 @@ class ConstraintProofTest {
       equation(z -> 1)(0))
 
   @Test def linearInconsistency(): Unit =
-    assertLinearProof(Seq(equation(x -> 1)(1), equation(x -> 1)(2)), CDDefaultContradictionGenerator.defaultLCBF)
+    assertLinearProof(Seq(equation(x -> 1)(1), equation(x -> 1)(2)), LinearConstraint.contradiction)
 
   /** def(x) is derived from a premise that mentions x */
   @Test def diffDefined(): Unit =
@@ -118,7 +118,7 @@ class ConstraintProofTest {
   private val combination = equation(y -> 3, z -> 1)(-16)
 
   /** the number of linear combinations in a proof of minimal tree size */
-  private def linearSteps(premises: Seq[LinearConstraint[BigFraction]], maxVariablesForAllOrders: Int): Int = {
+  private def linearSteps(premises: Seq[LinearConstraint], maxVariablesForAllOrders: Int): Int = {
     val prover = new GaussianEliminationProver()
     prover.setMaxVariablesForAllOrders(maxVariablesForAllOrders)
     prover.setOntology(premises)
@@ -142,12 +142,12 @@ class ConstraintProofTest {
    * integer coefficients without a common divisor and a positive first coefficient (with the variables sorted by IRI);
    * no constraint occurs twice in different scalings.
    */
-  private def assertIntegerForm(premises: Seq[LinearConstraint[BigFraction]], goal: LinearConstraint[BigFraction]): Unit = {
+  private def assertIntegerForm(premises: Seq[LinearConstraint], goal: LinearConstraint): Unit = {
     val prover = new GaussianEliminationProver()
     prover.setOntology(premises)
     val proof = prover.getProof(goal)
     val constraints = proof.getInferences.asScala.flatMap(i => i.getPremises.asScala :+ i.getConclusion).toSet
-    def entries(c: LinearConstraint[BigFraction]) =
+    def entries(c: LinearConstraint) =
       c.lhs.toSeq.sortBy(_._1.getIRI.toString).map(_._2).filterNot(_ == BigFraction.ZERO) :+ c.rhs
     for (c <- constraints -- premises - goal; values = entries(c).filterNot(_ == BigFraction.ZERO)) {
       assertTrue("not integer: " + c, values.forall(_.getDenominator == java.math.BigInteger.ONE))

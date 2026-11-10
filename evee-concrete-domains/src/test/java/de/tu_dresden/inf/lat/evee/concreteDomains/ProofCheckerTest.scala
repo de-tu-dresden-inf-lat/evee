@@ -144,7 +144,7 @@ class ProofCheckerTest {
   }
 
   private def linear(coefficients: (OWLDataProperty, Int)*)(constant: Int) =
-    LinearConstraint[BigFraction](coefficients.map { case (p, c) => p -> new BigFraction(c) }.toMap, new BigFraction(constant))
+    LinearConstraint(coefficients.map { case (p, c) => p -> new BigFraction(c) }.toMap, new BigFraction(constant))
 
   /** x + y = 5, x = 2 */
   private val linearPremises = Seq(linear(x -> 1, y -> 1)(5), linear(x -> 1)(2))
