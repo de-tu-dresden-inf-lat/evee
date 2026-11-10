@@ -1,8 +1,7 @@
 package de.tu_dresden.inf.lat.evee.concreteDomains.linearDomain
 
 import org.apache.commons.math3.FieldElement
-import org.apache.commons.math3.linear.{Array2DRowRealMatrix, ArrayFieldVector, ArrayRealVector, FieldVector, RealMatrix, RealVector}
-import org.apache.commons.math3.fraction.BigFraction
+import org.apache.commons.math3.linear.{ArrayFieldVector, FieldVector}
 import org.semanticweb.owlapi.model.OWLDataProperty
 
 object MatrixConversions {
@@ -40,53 +39,5 @@ object MatrixConversions {
     val lhs = keyMap.mapValues(row.getEntry(_)).
       filterNot{ case (_,v) => v.equals(zero) }
     LinearConstraint(lhs, rhs)
-  }
-
-  /**
-   * converts constraints to matrix, where the constants are the last column
-   */
-  @deprecated
-  def toMatrix(constraints: Iterable[LinearConstraint[Double]]): RealMatrix = {
-    val constraintKeyMap = getKeyMap(constraints)
-
-    val columns = constraintKeyMap.keys.size +1
-    val rows = constraints.size
-
-    val sortedConstraints = constraints.toList
-
-    val matrix = new Array2DRowRealMatrix(rows,columns)
-    val constants = new ArrayRealVector(rows)
-
-    for(row <- 0 to rows-1) {
-      val constraint = sortedConstraints(row)
-      constraint.lhs.keys.foreach(property =>
-        matrix.setEntry(row, constraintKeyMap(property), constraint.lhs(property))
-      )
-      matrix.setEntry(row, columns-1, constraint.rhs)
-    }
-    matrix
-  }
-
-
-  @deprecated
-  def toMatrixEquationSystem(constraints: Iterable[LinearConstraint[Double]]): (RealMatrix,RealVector) = {
-    val constraintKeyMap = getKeyMap(constraints)
-
-    val columns = constraintKeyMap.keys.size + 1
-    val rows = constraints.size
-
-    val sortedConstraints = constraints.toList
-
-    val matrix = new Array2DRowRealMatrix(rows,columns)
-    val constants = new ArrayRealVector(rows)
-
-    for(row <- 0 to rows-1) {
-      val constraint = sortedConstraints(row)
-      constraint.lhs.keys.foreach(property =>
-        matrix.setEntry(row, constraintKeyMap(property), constraint.lhs(property))
-      )
-      constants.setEntry(row, constraint.rhs)
-    }
-    (matrix,constants)
   }
 }
