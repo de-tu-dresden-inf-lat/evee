@@ -199,6 +199,39 @@ class ELKCDReasonerTest {
       assertTrue(reasoner.isEntailed(subClassOf("A", "C")))
     }
 
+  /** without its own annotation cd:concreteDomain, an ontology uses the concrete domain that its imports name */
+  @Test def concreteDomainOfImports(): Unit = {
+    val manager = OWLManager.createOWLOntologyManager()
+    TestOntologies.ontology(manager, "http://ex.org/imported", "QDiff", Seq("C0" -> ":x = 5", "C1" -> ":x > 1"))
+    val o = TestOntologies.ontology(manager, "http://ex.org/o", null, Seq(), "Import(<http://ex.org/imported>)",
+      "SubClassOf(:A :C0)")
+    withReasoner(o) { reasoner => assertTrue(reasoner.isEntailed(subClassOf("A", "C1"))) }
+  }
+
+  /** imports that name different concrete domains are an error, unless the ontology names its own */
+  @Test def differentConcreteDomainsOfImports(): Unit = {
+    val manager = OWLManager.createOWLOntologyManager()
+    TestOntologies.ontology(manager, "http://ex.org/diff", "QDiff", Seq())
+    TestOntologies.ontology(manager, "http://ex.org/mult", "QMult", Seq())
+    val o = TestOntologies.ontology(manager, "http://ex.org/o", null, Seq(), "Import(<http://ex.org/diff>)",
+      "Import(<http://ex.org/mult>)")
+    val error = creationError(o)
+    assertTrue(error, error.contains("QDiff in http://ex.org/diff, QMult in http://ex.org/mult"))
+    val own = TestOntologies.ontology(manager, "http://ex.org/own", "QDiff", Seq("C0" -> ":x = 5", "C1" -> ":x > 1"),
+      "Import(<http://ex.org/diff>)", "Import(<http://ex.org/mult>)", "SubClassOf(:A :C0)")
+    withReasoner(own) { reasoner => assertTrue(reasoner.isEntailed(subClassOf("A", "C1"))) }
+  }
+
+  /** a wrong annotation cd:concreteDomain of an imported ontology is reported with its IRI */
+  @Test def wrongConcreteDomainOfImport(): Unit = {
+    val manager = OWLManager.createOWLOntologyManager()
+    val imported = TestOntologies.ontology(manager, "http://ex.org/imported", null, Seq())
+    addConcreteDomain(imported, IRI.create(TestOntologies.NS + "QDiff"))
+    val o = TestOntologies.ontology(manager, "http://ex.org/o", null, Seq(), "Import(<http://ex.org/imported>)")
+    val error = creationError(o)
+    assertTrue(error, error.contains("the imported ontology http://ex.org/imported has to be a string"))
+  }
+
   @Test def unsatisfiableConjunctionNotInOntology(): Unit = withReasoner(ontology("QDiff", contradicting)) {
     reasoner => assertFalse("C0 and C1 should be unsatisfiable", reasoner.isSatisfiable(and("C0", "C1")))
   }

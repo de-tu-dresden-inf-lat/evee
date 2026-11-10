@@ -48,12 +48,13 @@ public class OWLCDReasonerFactory implements OWLReasonerFactory {
     }
 
     /**
-     * Without an annotation cd:concreteDomain, the reasoner reasons like ELK. If the concrete domain or a constraint
+     * Without an annotation cd:concreteDomain (in the ontology or, if it has none, in its imports), the reasoner
+     * reasons like ELK. If the concrete domain or a constraint
      * cannot be read, it throws a {@link ParsingException} whose message says what is wrong and where.
      */
     private OWLReasoner createReasoner(OWLOntology ontology, OWLReasonerConfiguration config, boolean buffering) {
         if (!ExtendedOntologyParser.hasConcreteDomain(ontology)) {
-            logger.info("The ontology has no annotation cd:concreteDomain, so PACER reasons like ELK");
+            logger.info("Neither the ontology nor its imports have an annotation cd:concreteDomain, so PACER reasons like ELK");
             return new ELKCDReasonerEmptyDomain(ontology, config, buffering);
         }
         ConcreteDomainName domain = ExtendedOntologyParser.getConcreteDomainName(ontology);

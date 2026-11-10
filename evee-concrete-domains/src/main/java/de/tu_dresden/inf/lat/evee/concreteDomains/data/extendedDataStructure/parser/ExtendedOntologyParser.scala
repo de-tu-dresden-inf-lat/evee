@@ -74,19 +74,45 @@ object ExtendedOntologyParser {
   private def concreteDomainAnnotations(ontology: OWLOntology) =
     ontology.getAnnotations.asScala.toSeq.filter(_.getProperty.getIRI == CONCRETE_DOMAIN_ANNOTATION_PROP_IRI)
 
-  /** whether the ontology names its concrete domain by an annotation cd:concreteDomain */
-  def hasConcreteDomain(ontology: OWLOntology): Boolean = concreteDomainAnnotations(ontology).nonEmpty
+  /** whether the ontology or one of its imports names a concrete domain by an annotation cd:concreteDomain */
+  def hasConcreteDomain(ontology: OWLOntology): Boolean =
+    ontology.getImportsClosure.asScala.exists(concreteDomainAnnotations(_).nonEmpty)
 
-  /** the concrete domain that the annotation cd:concreteDomain of the ontology names */
+  /**
+   * The concrete domain that the annotation cd:concreteDomain of the ontology names. Without such an annotation, the
+   * concrete domain that its imports name, if they agree: ontology annotations are not imported in OWL, but the
+   * constraints of the imports are read too, and so is their concrete domain.
+   */
   def getConcreteDomainName(ontology: OWLOntology): ConcreteDomainName =
+    if (concreteDomainAnnotations(ontology).nonEmpty)
+      domainOf(ontology, "the ontology")
+    else {
+      val imported = ontology.getImportsClosure.asScala.toSeq
+        .filter(o => o != ontology && concreteDomainAnnotations(o).nonEmpty)
+        .map(o => name(o) -> domainOf(o, "the imported ontology " + name(o))).sortBy(_._1)
+      imported.map(_._2).distinct match {
+        case Seq() => throw new ParsingException(
+          s"The ontology has no annotation cd:concreteDomain, which names its concrete domain (${ConcreteDomainName.NAMES})")
+        case Seq(domain) => domain
+        case _ => throw new ParsingException("The ontology has no annotation cd:concreteDomain, and its imports name " +
+          "different concrete domains: " + imported.map { case (o, domain) => s"$domain in $o" }.mkString(", ") +
+          "; name the concrete domain in the ontology")
+      }
+    }
+
+  /** the concrete domain that the annotations cd:concreteDomain of the ontology name, which is described by which */
+  private def domainOf(ontology: OWLOntology, which: String): ConcreteDomainName =
     concreteDomainAnnotations(ontology).map(_.getValue).distinct match {
-      case Seq() => throw new ParsingException(
-        s"The ontology has no annotation cd:concreteDomain, which names its concrete domain (${ConcreteDomainName.NAMES})")
       case Seq(literal: OWLLiteral) => ConcreteDomainName.getConcreteDomainName(literal.getLiteral)
       case Seq(other) => throw new ParsingException(
-        s"The annotation cd:concreteDomain of the ontology has to be a string (${ConcreteDomainName.NAMES}), not $other")
-      case several => throw new ParsingException("The ontology has the annotations cd:concreteDomain " +
+        s"The annotation cd:concreteDomain of $which has to be a string (${ConcreteDomainName.NAMES}), not $other")
+      case several => throw new ParsingException(s"${which.capitalize} has the annotations cd:concreteDomain " +
         several.map { case literal: OWLLiteral => "\"" + literal.getLiteral + "\""; case other => other }.mkString(", ") +
         ", but it can use only one concrete domain")
     }
+
+  /** the IRI of the ontology, for messages (OWLOntologyID.getOntologyIRI differs between OWL API 4 and 5) */
+  private def name(ontology: OWLOntology): String =
+    "OntologyIRI\\(<([^>]*)>\\)".r.findFirstMatchIn(ontology.getOntologyID.toString).map(_.group(1))
+      .getOrElse("(anonymous)")
 }
