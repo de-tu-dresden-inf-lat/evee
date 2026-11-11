@@ -31,7 +31,7 @@ If compilation breaks for no obvious reason, delete old local installs of `capi`
 
 ### Scala compilation
 
-Every module containing Scala, and also `evee-data` (which is pure Java), is compiled by `sbt-compiler-maven-plugin` (sbt 0.13), which handles both Java and Scala sources. In `evee-elimination-proofs` and `evee-concrete-domains` the standard `maven-compiler-plugin` is turned off. `evee-concrete-domains` keeps its `.scala` files under `src/main/java`. Scala artifacts use the `_2.12` suffix (e.g. `evee-elimination-proofs-core_2.12`).
+Every module containing Scala is compiled by `sbt-compiler-maven-plugin` (sbt 0.13), which handles both Java and Scala sources; the pure Java modules, such as `evee-data`, use the standard `maven-compiler-plugin`. In `evee-elimination-proofs` and `evee-concrete-domains` the standard `maven-compiler-plugin` is turned off. `evee-concrete-domains` keeps its `.scala` files under `src/main/java`. Scala artifacts use the `_2.12` suffix (e.g. `evee-elimination-proofs-core_2.12`).
 
 After deleting or renaming a source file, build with `clean`: the classes of the old file can stay in `target/`, and a deleted test class then still runs.
 
