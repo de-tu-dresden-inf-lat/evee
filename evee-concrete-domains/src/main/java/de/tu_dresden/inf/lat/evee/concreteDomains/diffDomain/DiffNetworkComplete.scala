@@ -1,0 +1,380 @@
+package de.tu_dresden.inf.lat.evee.concreteDomains.diffDomain
+
+import de.tu_dresden.inf.lat.evee.concreteDomains.ConstraintNetwork
+
+import de.tu_dresden.inf.lat.evee.proofs.data.Inference
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference
+import de.tu_dresden.inf.lat.evee.proofs.tools.ProofTools
+import de.tu_dresden.inf.lat.evee.concreteDomains.tools.Numbers.FractionOps
+import org.apache.commons.math3.fraction.BigFraction
+import org.semanticweb.owlapi.model.OWLDataProperty
+
+import scala.collection.JavaConverters.seqAsJavaListConverter
+import scala.collection.mutable
+
+/**
+ * Allows more than one unary constraint per node. Should be used for generating complete derivation structures. Beware
+ * however that those may be much larger.
+ *
+ * The constraints are processed in a fixed order (sorted by their text, and in insertion order afterwards), so that
+ * the derivation structure does not depend on hash codes. After the saturation, every step between the derived
+ * constraints is recorded (see [[DiffSteps.between]]), not only the step that first derived a constraint. Of two
+ * different differences for the same pair of data properties, only the first one is propagated further.
+  */
+  class DiffNetworkComplete extends ConstraintNetwork[DiffConstraint] {
+
+  private var continueEvenIfInconsistent = true //false
+
+  private var derived = Set[DiffConstraint]()
+  private var inferences = Set[IInference[DiffConstraint]]()
+
+  /** the constraints the network was filled with */
+  private var given = Seq[DiffConstraint]()
+
+
+  private val nodes = new mutable.LinkedHashMap[OWLDataProperty, mutable.Set[DiffUnaryConstraint]]()
+    with mutable.MultiMap[OWLDataProperty,DiffUnaryConstraint] {
+    override protected def makeSet: mutable.Set[DiffUnaryConstraint] = new mutable.LinkedHashSet[DiffUnaryConstraint]()
+  }
+  private val edges = new mutable.LinkedHashMap[OWLDataProperty,
+    mutable.Map[OWLDataProperty,DiffSum]]()
+
+  private var inconsistent: Boolean = false
+
+
+  def setContinueEvenIfInconsistent() = {
+    this.continueEvenIfInconsistent=true
+  }
+
+  def fill(unsorted: Iterable[DiffConstraint]) = {
+    val predicates = unsorted.toSeq.sortBy(_.toString)
+    given ++= predicates
+    inferences ++= predicates.map(new Inference(_, ProofTools.ASSERTED_1, List[DiffConstraint]().asJava))
+    derived ++= predicates
+    predicates.foreach(p => p match {
+      case DiffContradiction => ;
+      case DiffGreaterThan(d, _) =>
+        update(d, p.asInstanceOf[DiffUnaryConstraint])
+      case DiffEqual(d, _) =>
+        update(d, p.asInstanceOf[DiffUnaryConstraint])
+      case DiffSum(d1, _, d2) =>
+        update(d1, d2, p.asInstanceOf[DiffSum])
+    })
+  }
+
+
+  def propagate(): Unit = {
+
+      deriveEdgesFromUnary()
+
+      mirrorEdges() // add corresponding backward edges
+
+      addTautologicalEdges() // add x+0-x for all used x
+
+      propagateEdges() // derives all implicit edges from existing edges
+      // this does not make new inferences in the previous steps possible:
+      // first depends only on unary predicates,
+      // all edges added by second step are added here as well
+
+      propagateValues() // propagate the values along the edges
+      // this also does not make new inferences in the previous steps possible:
+      // deriveEdgesFromUnary() would just add edges that were already there (we assume all implicit egdes to be derived  by propagateEdges)
+      // the other only depend on binary predicates, which are not added by propagateValues
+
+      // the steps above record only the steps they make, e.g. no value propagated from a value derived later
+      inferences ++= DiffSteps.between(derived)
+      if (inferences.exists(_.getConclusion == DiffContradiction))
+        inconsistent = true
+  }
+
+  def derivedPredicates() = {
+    if(inconsistent)
+      derived + DiffContradiction
+    else
+      derived
+  }
+
+  def derivationStructure() = inferences
+
+  private def deriveEdgesFromUnary() = {
+
+    // derive edges from values
+    nodes.keys.foreach(n1 =>
+      nodes(n1).foreach(p1 => p1 match {
+        case DiffEqual(_, v1) =>
+          // def(n1) is derived by addTautologicalEdges, not from n1 = v1 and itself
+          nodes.keys.filter(_ != n1).foreach(n2 =>
+            nodes(n2).foreach(p2 => p2 match {
+              case DiffEqual(_, v2) =>
+                val newPred = DiffSum(n1, (v2 - v1), n2)
+                update(n1,n2, newPred)
+                derived += newPred
+                inferences += new Inference(newPred, DiffRules.RULE_DIFFERENCE_FROM_CONSTANTS, List(p1,p2).asJava)
+              case _: DiffGreaterThan => ;
+            }))
+        case _: DiffGreaterThan => ;
+      }))
+  }
+
+  private def mirrorEdges(): Unit = {
+    edges.keys.foreach(n1 =>
+    edges(n1).keys.foreach(n2 => {
+      val newPred = DiffSum(n2, -edges(n1)(n2).diff, n1)
+      update(n2,n1,newPred)
+      derived += newPred
+      inferences += new Inference(newPred, DiffRules.RULE_INVERSE, List(edges(n1)(n2)).asJava)
+    }))
+  }
+
+  private def addTautologicalEdges(): Unit = {
+    edges.keySet.union(nodes.keySet).foreach(n1 => {
+      val newPred = DiffSum(n1, BigFraction.ZERO, n1)
+      update(n1,n1,newPred)
+      derived += newPred
+      // def(n1) holds because a given constraint mentions n1; there is nothing to derive if def(n1) is given itself
+      if (!given.contains(newPred))
+        inferences += new Inference(newPred, DiffRules.RULE_ZERO, List(withProperty(n1)).asJava)
+    })
+  }
+
+  /** a given constraint with the data property, which therefore has a value */
+  private def withProperty(property: OWLDataProperty): DiffConstraint =
+    given.filter(_.getOWLDataProperties.contains(property)).minBy(_.toString)
+
+  private def propagateEdges(): Unit = {
+    var added=true
+    while(added && (!inconsistent || continueEvenIfInconsistent)) {
+      added=false
+      edges.keys.foreach(n1 =>
+      edges(n1).keys.foreach(n2 =>
+        edges.get(n2).foreach(_.keys.foreach(n3 => {
+          if(!edges(n1).contains(n3))
+            added = true
+          // proceed in any case since we may derive a contradiction
+          val newPred = propagate(edges(n1)(n2),edges(n2)(n3))
+          derived += newPred
+          inferences += new Inference(newPred, DiffRules.RULE_TRANSITIVITY, List(edges(n1)(n2), edges(n2)(n3)).asJava)
+          update(n1,n3,newPred)
+          }
+        ))))
+    }
+  }
+
+  private def propagateValues(): Unit = {
+    if (!inconsistent||continueEvenIfInconsistent)
+      edges.keys.foreach(n1 =>
+        nodes.getOrElse(n1,Set()).toList.foreach(unary1 =>
+          edges(n1).keys.foreach(n2 => {
+            val newPred = propagate(unary1, edges(n1)(n2))
+            derived += newPred
+            val ruleName = unary1 match {
+              case DiffEqual(_, _) => DiffRules.RULE_PROPAGATE_EQUAL
+              case DiffGreaterThan(_, _) => DiffRules.RULE_PROPAGATE_GREATER_THAN
+            }
+            inferences += new Inference(newPred, ruleName, List(unary1, edges(n1)(n2)).asJava)
+            update(n2, newPred)
+          })))
+  }
+
+  private def propagate(pred1: DiffSum, pred2: DiffSum): DiffSum =
+    DiffSum(
+      pred1.property1,
+      pred1.diff + pred2.diff,
+      pred2.property2)
+
+  private def propagate(unary1: DiffUnaryConstraint,
+                predicate: DiffSum
+               ): DiffUnaryConstraint =
+    unary1 match {
+      case DiffEqual(property1, value1) =>
+        DiffEqual(predicate.property2, value1 + predicate.diff)
+
+      case DiffGreaterThan(property1, value1) =>
+        DiffGreaterThan(predicate.property2, value1 + predicate.diff)
+    }
+
+  private def update(d: OWLDataProperty, predicate: DiffUnaryConstraint): Unit = {
+
+    nodes.getOrElse(d, Set()).foreach { node =>
+      (node, predicate) match {
+        case (same1, same2) if same1.equals(same2) => ; // all good
+        case (e1: DiffEqual, e2: DiffEqual) =>
+          inconsistent = true
+          // the smaller value first, as in DiffSteps
+          inferences += new Inference(DiffContradiction, DiffRules.RULE_DIFFERENT_CONSTANTS,
+            (if (e1.value < e2.value) List[DiffConstraint](e1, e2) else List[DiffConstraint](e2, e1)).asJava)
+
+        case (DiffGreaterThan(_, v1), DiffEqual(_, v2)) =>
+          if (v1 >= v2) {
+            inconsistent = true
+            inferences += new Inference(DiffContradiction, DiffRules.RULE_CONSTANT_TOO_SMALL, List(predicate, node).asJava)
+          }
+        case (DiffEqual(_, v1), DiffGreaterThan(_, v2)) =>
+          if (v2 >= v1) {
+            inferences += new Inference(DiffContradiction, DiffRules.RULE_CONSTANT_TOO_SMALL, List(node, predicate).asJava)
+            inconsistent = true
+          }
+        case other => // no inconsistency, we're fine
+      }
+    }
+
+    nodes.addBinding(d,predicate)
+  }
+
+  private def update(d1: OWLDataProperty, d2: OWLDataProperty, p: DiffSum) = {
+    if(!edges.contains(d1))
+      edges.put(d1, new mutable.LinkedHashMap[OWLDataProperty, DiffSum]())
+    edges(d1).get(d2) match {
+      case None => edges(d1).put(d2,p)
+      case Some(other) if !other.equals(p) => {
+        inconsistent = true
+        // the smaller difference first, as in DiffSteps
+        inferences += new Inference(DiffContradiction, DiffRules.RULE_DIFFERENT_DIFFERENCES,
+          (if (other.diff < p.diff) List[DiffConstraint](other, p) else List[DiffConstraint](p, other)).asJava)
+      }
+      case Some(p) => ;
+    }
+  }
+
+  private var negativeNodes: mutable.Map[OWLDataProperty, mutable.Set[DiffUnaryConstraint]] = _
+  private var negativeEdges: mutable.Map[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[DiffSum]]] = _
+
+  def generateSolution(negativePredicates: Iterable[DiffConstraint]): Map[OWLDataProperty, BigFraction] = {
+    // "complete" the negative constraints w.r.t. the positive edges in the constraint network
+    negativeNodes = new mutable.HashMap[OWLDataProperty, mutable.Set[DiffUnaryConstraint]]()
+    negativeEdges = new mutable.HashMap[OWLDataProperty, mutable.Map[OWLDataProperty, mutable.Set[DiffSum]]]()
+    fillNegativeGraphAndMirror(negativePredicates)
+    applyPositiveEdgesToNegativeGraph()
+
+    var properties = derived.flatMap(_.getOWLDataProperties).union(negativePredicates.flatMap(_.getOWLDataProperties).toSet)
+
+    var solution = Map[OWLDataProperty, BigFraction]()
+
+    while (properties.nonEmpty) {
+      // choose a new value for an un-assigned variable and update the constraints
+      val (x, v) = chooseAssignment(properties)
+      reducePositive(x, v)
+      reduceNegative(x, v)
+      properties -= x
+      solution += (x -> v)
+    }
+
+    return solution
+  }
+
+  private def fillNegativeGraphAndMirror(negative: Iterable[DiffConstraint]): Unit = {
+    negative.foreach {
+      case DiffContradiction => ;
+      case p@DiffGreaterThan(x, _) => updateNegativeNode(x, p)
+      case p@DiffEqual(x, _) => updateNegativeNode(x, p)
+      case p@DiffSum(x, d, y) => {
+        updateNegativeEdge(x, y, p)
+        updateNegativeEdge(y, x, DiffSum(y, -d, x))
+      }
+    }
+  }
+
+  private def updateNegativeNode(x: OWLDataProperty, p: DiffUnaryConstraint): Unit = {
+    if (!negativeNodes.contains(x))
+      negativeNodes.put(x, new mutable.HashSet[DiffUnaryConstraint]())
+    negativeNodes(x).add(p)
+  }
+
+  private def updateNegativeEdge(x: OWLDataProperty, y: OWLDataProperty, p: DiffSum): Unit = {
+    if(!negativeEdges.contains(x))
+      negativeEdges.put(x, new mutable.HashMap[OWLDataProperty, mutable.Set[DiffSum]]())
+    if (!negativeEdges(x).contains(y))
+      negativeEdges(x).put(y, new mutable.HashSet[DiffSum]())
+    negativeEdges(x)(y).add(p)
+  }
+
+  private def applyPositiveEdgesToNegativeGraph(): Unit = {
+    edges.keys.foreach(n1 =>
+      edges(n1).keys.foreach(n2 => {
+        val pos = edges(n1)(n2)
+        if (negativeNodes.contains(n1)) {
+          negativeNodes(n1).foreach(neg =>
+            updateNegativeNode(n1, propagate(neg, pos))
+          )
+        }
+        if (negativeEdges.contains(n2)) {
+          negativeEdges(n2).keys.foreach(n3 =>
+            negativeEdges(n2)(n3).foreach(neg =>
+              updateNegativeEdge(n1, n3, propagate(neg, pos))
+            )
+          )
+        }
+      })
+    )
+  }
+
+  private def chooseAssignment(properties: Set[OWLDataProperty]): (OWLDataProperty, BigFraction) = {
+    // If there is a constraint x=v, then assign v to x
+    for (n1 <- nodes.keys) {
+      nodes(n1).foreach{_ match {
+        case DiffEqual(x, v) => return (x, v)
+        case other => ;
+      }}
+    }
+
+    // If there are no constraints of the form x=v, choose a random variable x
+    // and collect all relevant constraints about x
+    val x = properties.head
+    val lowerBoundExclusive = (nodes.getOrElse(x,Set()) collect { case DiffGreaterThan(_, e) => e })
+      .reduceOption(_ max _)
+    val upperBoundInclusive = (negativeNodes.getOrElse(x, Set.empty) collect { case DiffGreaterThan(_, e) => e })
+      .reduceOption(_ min _)
+    assert(lowerBoundExclusive.isEmpty || upperBoundInclusive.isEmpty || lowerBoundExclusive.get < upperBoundInclusive.get)
+    // Collect all inequalities between the lower and upper bounds (if they exist)
+    // and also disallow the lower bound (which is strict)
+    var forbiddenValues = (negativeNodes.getOrElse(x, Set.empty) collect { case DiffEqual(_, e) if
+      (lowerBoundExclusive.isEmpty || e > lowerBoundExclusive.get) &&
+      (upperBoundInclusive.isEmpty || e <= upperBoundInclusive.get) => e
+    })
+      .union(lowerBoundExclusive.toSet)
+
+    // Find a value in between the lower and upper bounds and not equal to one of the forbidden values
+    def allowedValue: BigFraction = {
+      if (upperBoundInclusive.isDefined && !forbiddenValues.contains(upperBoundInclusive.get))
+        upperBoundInclusive.get
+      else {
+        if (forbiddenValues.size == 0)
+          return BigFraction.ZERO
+        if (forbiddenValues.size == 1)
+          return forbiddenValues.head + BigFraction.ONE
+        val lowest = forbiddenValues.min
+        val nextLowest = forbiddenValues.filter(_ > lowest).min
+        (lowest + nextLowest) / BigFraction.TWO
+      }
+    }
+
+    (x, allowedValue)
+  }
+
+  private def reduceNegative(x: OWLDataProperty, v: BigFraction): Unit = {
+    // Remove all constraints that only talk about x
+    negativeNodes.remove(x)
+    negativeEdges.remove(x)
+    negativeEdges.keys.foreach(y => {
+      negativeEdges(y).getOrElse(x, Set.empty).foreach {
+        // Eliminate x from sum constraints
+        case DiffSum(_, d, _) => updateNegativeNode(y, DiffEqual(y, v - d))
+      }
+      negativeEdges(y).remove(x)
+    })
+  }
+
+  private def reducePositive(x: OWLDataProperty, v: BigFraction): Unit = {
+    // Remove all constraints that only talk about x
+    nodes.remove(x)
+    edges.remove(x)
+    edges.keys.foreach(y => {
+      edges(y).get(x).foreach {
+        // Eliminate x from sum constraints
+        case DiffSum(_, d, _) => update(y, DiffEqual(y, v - d))
+      }
+      edges(y).remove(x)
+    })
+  }
+
+}

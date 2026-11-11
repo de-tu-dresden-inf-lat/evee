@@ -1,0 +1,768 @@
+Prefix(:=<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#>)
+Prefix(cd:=<http://tu-dresden.de/inf/lat/evee/cd#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance>
+Annotation(cd:concreteDomain "QDiff")
+
+Declaration(Class(:ABoxConstraints))
+Declaration(Class(:Big))
+Declaration(Class(:ConstraintsOfPresence))
+Declaration(Class(:Drone))
+Declaration(Class(:Foggy))
+Declaration(Class(:Human))
+Declaration(Class(:LowVisibility))
+Declaration(Class(:MovingObject))
+Declaration(Class(:MyDroneSize))
+Declaration(Class(:MyObj0))
+Declaration(Class(:MyObj1))
+Declaration(Class(:MyObj10))
+Declaration(Class(:MyObj11))
+Declaration(Class(:MyObj12))
+Declaration(Class(:MyObj2))
+Declaration(Class(:MyObj3))
+Declaration(Class(:MyObj4))
+Declaration(Class(:MyObj5))
+Declaration(Class(:MyObj6))
+Declaration(Class(:MyObj7))
+Declaration(Class(:MyObj8))
+Declaration(Class(:MyObj9))
+Declaration(Class(:MyWeight))
+Declaration(Class(:Obj0-d))
+Declaration(Class(:Obj0-e0))
+Declaration(Class(:Obj0-e1))
+Declaration(Class(:Obj0-e2))
+Declaration(Class(:Obj0-e3))
+Declaration(Class(:Obj1-d))
+Declaration(Class(:Obj1-e0))
+Declaration(Class(:Obj1-e1))
+Declaration(Class(:Obj1-e2))
+Declaration(Class(:Obj1-e3))
+Declaration(Class(:Obj10-d))
+Declaration(Class(:Obj10-e0))
+Declaration(Class(:Obj10-e1))
+Declaration(Class(:Obj10-e2))
+Declaration(Class(:Obj10-e3))
+Declaration(Class(:Obj11-d))
+Declaration(Class(:Obj11-e0))
+Declaration(Class(:Obj11-e1))
+Declaration(Class(:Obj11-e2))
+Declaration(Class(:Obj11-e3))
+Declaration(Class(:Obj12-d))
+Declaration(Class(:Obj12-e0))
+Declaration(Class(:Obj12-e1))
+Declaration(Class(:Obj12-e2))
+Declaration(Class(:Obj12-e3))
+Declaration(Class(:Obj2-d))
+Declaration(Class(:Obj2-e0))
+Declaration(Class(:Obj2-e1))
+Declaration(Class(:Obj2-e2))
+Declaration(Class(:Obj2-e3))
+Declaration(Class(:Obj3-d))
+Declaration(Class(:Obj3-e0))
+Declaration(Class(:Obj3-e1))
+Declaration(Class(:Obj3-e2))
+Declaration(Class(:Obj3-e3))
+Declaration(Class(:Obj4-d))
+Declaration(Class(:Obj4-e0))
+Declaration(Class(:Obj4-e1))
+Declaration(Class(:Obj4-e2))
+Declaration(Class(:Obj4-e3))
+Declaration(Class(:Obj5-d))
+Declaration(Class(:Obj5-e0))
+Declaration(Class(:Obj5-e1))
+Declaration(Class(:Obj5-e2))
+Declaration(Class(:Obj5-e3))
+Declaration(Class(:Obj6-d))
+Declaration(Class(:Obj6-e0))
+Declaration(Class(:Obj6-e1))
+Declaration(Class(:Obj6-e2))
+Declaration(Class(:Obj6-e3))
+Declaration(Class(:Obj7-d))
+Declaration(Class(:Obj7-e0))
+Declaration(Class(:Obj7-e1))
+Declaration(Class(:Obj7-e2))
+Declaration(Class(:Obj7-e3))
+Declaration(Class(:Obj8-d))
+Declaration(Class(:Obj8-e0))
+Declaration(Class(:Obj8-e1))
+Declaration(Class(:Obj8-e2))
+Declaration(Class(:Obj8-e3))
+Declaration(Class(:Obj9-d))
+Declaration(Class(:Obj9-e0))
+Declaration(Class(:Obj9-e1))
+Declaration(Class(:Obj9-e2))
+Declaration(Class(:Obj9-e3))
+Declaration(Class(:Object))
+Declaration(Class(:OpDistBig))
+Declaration(Class(:OpDistLowVisBig))
+Declaration(Class(:OpDistLowVisSmall))
+Declaration(Class(:OpDistMovObjBig))
+Declaration(Class(:OpDistMovObjLowVisBig))
+Declaration(Class(:OpDistMovObjLowVisSmall))
+Declaration(Class(:OpDistMovObjSmall))
+Declaration(Class(:OpDistSmall))
+Declaration(Class(:PartiallySafe))
+Declaration(Class(:Rainy))
+Declaration(Class(:SafeBig))
+Declaration(Class(:SafeDistances))
+Declaration(Class(:SafeOpDist))
+Declaration(Class(:SafeOpDistLowVis))
+Declaration(Class(:SafeOpDistMovObj))
+Declaration(Class(:SafeOpDistMovObjLowVis))
+Declaration(Class(:SafeSmall))
+Declaration(Class(:Small))
+Declaration(Class(:Snowy))
+Declaration(Class(:StaticObject))
+Declaration(Class(:Sunny))
+Declaration(Class(:Tree))
+Declaration(Class(:WetDrone))
+Declaration(Class(:World))
+Declaration(ObjectProperty(:environment))
+Declaration(ObjectProperty(:exists))
+Declaration(ObjectProperty(:nearme))
+Declaration(DataProperty(:distance))
+Declaration(DataProperty(:epsilon0))
+Declaration(DataProperty(:epsilon1))
+Declaration(DataProperty(:epsilon2))
+Declaration(DataProperty(:epsilon3))
+Declaration(DataProperty(:hasWeight))
+Declaration(NamedIndividual(:o0))
+Declaration(NamedIndividual(:o1))
+Declaration(NamedIndividual(:o10))
+Declaration(NamedIndividual(:o11))
+Declaration(NamedIndividual(:o12))
+Declaration(NamedIndividual(:o2))
+Declaration(NamedIndividual(:o3))
+Declaration(NamedIndividual(:o4))
+Declaration(NamedIndividual(:o5))
+Declaration(NamedIndividual(:o6))
+Declaration(NamedIndividual(:o7))
+Declaration(NamedIndividual(:o8))
+Declaration(NamedIndividual(:o9))
+Declaration(AnnotationProperty(cd:concreteDomain))
+Declaration(AnnotationProperty(cd:constraint))
+
+
+############################
+#   Data Properties
+############################
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#distance> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#distance>)
+
+DataPropertyDomain(:distance :Object)
+DataPropertyRange(:distance owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#epsilon0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#epsilon0>)
+
+DataPropertyDomain(:epsilon0 :Object)
+DataPropertyRange(:epsilon0 owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#epsilon1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#epsilon1>)
+
+DataPropertyDomain(:epsilon1 :Object)
+DataPropertyRange(:epsilon1 owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#epsilon2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#epsilon2>)
+
+DataPropertyDomain(:epsilon2 :Object)
+DataPropertyRange(:epsilon2 owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#epsilon3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#epsilon3>)
+
+DataPropertyDomain(:epsilon3 :Object)
+DataPropertyRange(:epsilon3 owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#hasWeight> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#hasWeight>)
+
+DataPropertyDomain(:hasWeight :Object)
+DataPropertyRange(:hasWeight owl:real)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Big> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Big>)
+
+AnnotationAssertion(cd:constraint :Big ":hasWeight > 1000")
+SubClassOf(:Big :MyDroneSize)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Drone> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Drone>)
+
+SubClassOf(:Drone :MovingObject)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Foggy> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Foggy>)
+
+SubClassOf(:Foggy :LowVisibility)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Human> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Human>)
+
+SubClassOf(:Human :MovingObject)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#LowVisibility> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#LowVisibility>)
+
+DisjointClasses(:LowVisibility :Object)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MovingObject> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MovingObject>)
+
+SubClassOf(:MovingObject :Object)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj0>)
+
+EquivalentClasses(:MyObj0 ObjectIntersectionOf(:Obj0-d :Obj0-e0 :Obj0-e1 :Obj0-e2 :Obj0-e3 :Tree ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj1>)
+
+EquivalentClasses(:MyObj1 ObjectIntersectionOf(:Drone :Obj1-d :Obj1-e0 :Obj1-e1 :Obj1-e2 :Obj1-e3 ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj10> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj10>)
+
+EquivalentClasses(:MyObj10 ObjectIntersectionOf(:Obj10-d :Obj10-e0 :Obj10-e1 :Obj10-e2 :Obj10-e3 :Tree ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj10 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj11> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj11>)
+
+EquivalentClasses(:MyObj11 ObjectIntersectionOf(:Obj11-d :Obj11-e0 :Obj11-e1 :Obj11-e2 :Obj11-e3 :WetDrone ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj11 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj12> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj12>)
+
+EquivalentClasses(:MyObj12 ObjectIntersectionOf(:Drone :Obj12-d :Obj12-e0 :Obj12-e1 :Obj12-e2 :Obj12-e3 ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj12 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj2>)
+
+EquivalentClasses(:MyObj2 ObjectIntersectionOf(:Drone :Obj2-d :Obj2-e0 :Obj2-e1 :Obj2-e2 :Obj2-e3 ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj3>)
+
+EquivalentClasses(:MyObj3 ObjectIntersectionOf(:Drone :Obj3-d :Obj3-e0 :Obj3-e1 :Obj3-e2 :Obj3-e3 ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj4> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj4>)
+
+EquivalentClasses(:MyObj4 ObjectIntersectionOf(:Drone :Obj4-d :Obj4-e0 :Obj4-e1 :Obj4-e2 :Obj4-e3 ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj4 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj5> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj5>)
+
+EquivalentClasses(:MyObj5 ObjectIntersectionOf(:Obj5-d :Obj5-e0 :Obj5-e1 :Obj5-e2 :Obj5-e3 :WetDrone ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj5 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj6> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj6>)
+
+EquivalentClasses(:MyObj6 ObjectIntersectionOf(:Drone :Obj6-d :Obj6-e0 :Obj6-e1 :Obj6-e2 :Obj6-e3 ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj6 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj7> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj7>)
+
+EquivalentClasses(:MyObj7 ObjectIntersectionOf(:Drone :Obj7-d :Obj7-e0 :Obj7-e1 :Obj7-e2 :Obj7-e3 ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj7 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj8> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj8>)
+
+EquivalentClasses(:MyObj8 ObjectIntersectionOf(:Obj8-d :Obj8-e0 :Obj8-e1 :Obj8-e2 :Obj8-e3 :Tree ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj8 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj9> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyObj9>)
+
+EquivalentClasses(:MyObj9 ObjectIntersectionOf(:Human :Obj9-d :Obj9-e0 :Obj9-e1 :Obj9-e2 :Obj9-e3 ObjectSomeValuesFrom(:environment :Snowy) ObjectSomeValuesFrom(:nearme :MyWeight)))
+SubClassOf(:MyObj9 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyWeight> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#MyWeight>)
+
+AnnotationAssertion(cd:constraint :MyWeight ":hasWeight = 717")
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-d>)
+
+AnnotationAssertion(cd:constraint :Obj0-d ":distance = 2")
+SubClassOf(:Obj0-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-e0>)
+
+AnnotationAssertion(cd:constraint :Obj0-e0 ":epsilon0 = 1")
+SubClassOf(:Obj0-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-e1>)
+
+AnnotationAssertion(cd:constraint :Obj0-e1 ":epsilon1 = -1")
+SubClassOf(:Obj0-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-e2>)
+
+AnnotationAssertion(cd:constraint :Obj0-e2 ":epsilon2 = 0")
+SubClassOf(:Obj0-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj0-e3>)
+
+AnnotationAssertion(cd:constraint :Obj0-e3 ":epsilon3 = -3")
+SubClassOf(:Obj0-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-d>)
+
+AnnotationAssertion(cd:constraint :Obj1-d ":distance = 5")
+SubClassOf(:Obj1-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-e0>)
+
+AnnotationAssertion(cd:constraint :Obj1-e0 ":epsilon0 = 4")
+SubClassOf(:Obj1-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-e1>)
+
+AnnotationAssertion(cd:constraint :Obj1-e1 ":epsilon1 = 2")
+SubClassOf(:Obj1-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-e2>)
+
+AnnotationAssertion(cd:constraint :Obj1-e2 ":epsilon2 = 3")
+SubClassOf(:Obj1-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj1-e3>)
+
+AnnotationAssertion(cd:constraint :Obj1-e3 ":epsilon3 = 0")
+SubClassOf(:Obj1-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-d>)
+
+AnnotationAssertion(cd:constraint :Obj10-d ":distance = 10")
+SubClassOf(:Obj10-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-e0>)
+
+AnnotationAssertion(cd:constraint :Obj10-e0 ":epsilon0 = 9")
+SubClassOf(:Obj10-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-e1>)
+
+AnnotationAssertion(cd:constraint :Obj10-e1 ":epsilon1 = 7")
+SubClassOf(:Obj10-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-e2>)
+
+AnnotationAssertion(cd:constraint :Obj10-e2 ":epsilon2 = 8")
+SubClassOf(:Obj10-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj10-e3>)
+
+AnnotationAssertion(cd:constraint :Obj10-e3 ":epsilon3 = 5")
+SubClassOf(:Obj10-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-d>)
+
+AnnotationAssertion(cd:constraint :Obj11-d ":distance = 13")
+SubClassOf(:Obj11-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-e0>)
+
+AnnotationAssertion(cd:constraint :Obj11-e0 ":epsilon0 = 12")
+SubClassOf(:Obj11-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-e1>)
+
+AnnotationAssertion(cd:constraint :Obj11-e1 ":epsilon1 = 10")
+SubClassOf(:Obj11-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-e2>)
+
+AnnotationAssertion(cd:constraint :Obj11-e2 ":epsilon2 = 11")
+SubClassOf(:Obj11-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj11-e3>)
+
+AnnotationAssertion(cd:constraint :Obj11-e3 ":epsilon3 = 8")
+SubClassOf(:Obj11-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-d>)
+
+AnnotationAssertion(cd:constraint :Obj12-d ":distance = 10")
+SubClassOf(:Obj12-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-e0>)
+
+AnnotationAssertion(cd:constraint :Obj12-e0 ":epsilon0 = 9")
+SubClassOf(:Obj12-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-e1>)
+
+AnnotationAssertion(cd:constraint :Obj12-e1 ":epsilon1 = 7")
+SubClassOf(:Obj12-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-e2>)
+
+AnnotationAssertion(cd:constraint :Obj12-e2 ":epsilon2 = 8")
+SubClassOf(:Obj12-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj12-e3>)
+
+AnnotationAssertion(cd:constraint :Obj12-e3 ":epsilon3 = 5")
+SubClassOf(:Obj12-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-d>)
+
+AnnotationAssertion(cd:constraint :Obj2-d ":distance = 3")
+SubClassOf(:Obj2-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-e0>)
+
+AnnotationAssertion(cd:constraint :Obj2-e0 ":epsilon0 = 2")
+SubClassOf(:Obj2-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-e1>)
+
+AnnotationAssertion(cd:constraint :Obj2-e1 ":epsilon1 = 0")
+SubClassOf(:Obj2-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-e2>)
+
+AnnotationAssertion(cd:constraint :Obj2-e2 ":epsilon2 = 1")
+SubClassOf(:Obj2-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj2-e3>)
+
+AnnotationAssertion(cd:constraint :Obj2-e3 ":epsilon3 = -2")
+SubClassOf(:Obj2-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-d>)
+
+AnnotationAssertion(cd:constraint :Obj3-d ":distance = 4")
+SubClassOf(:Obj3-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-e0>)
+
+AnnotationAssertion(cd:constraint :Obj3-e0 ":epsilon0 = 3")
+SubClassOf(:Obj3-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-e1>)
+
+AnnotationAssertion(cd:constraint :Obj3-e1 ":epsilon1 = 1")
+SubClassOf(:Obj3-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-e2>)
+
+AnnotationAssertion(cd:constraint :Obj3-e2 ":epsilon2 = 2")
+SubClassOf(:Obj3-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj3-e3>)
+
+AnnotationAssertion(cd:constraint :Obj3-e3 ":epsilon3 = -1")
+SubClassOf(:Obj3-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-d>)
+
+AnnotationAssertion(cd:constraint :Obj4-d ":distance = 2")
+SubClassOf(:Obj4-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-e0>)
+
+AnnotationAssertion(cd:constraint :Obj4-e0 ":epsilon0 = 1")
+SubClassOf(:Obj4-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-e1>)
+
+AnnotationAssertion(cd:constraint :Obj4-e1 ":epsilon1 = -1")
+SubClassOf(:Obj4-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-e2>)
+
+AnnotationAssertion(cd:constraint :Obj4-e2 ":epsilon2 = 0")
+SubClassOf(:Obj4-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj4-e3>)
+
+AnnotationAssertion(cd:constraint :Obj4-e3 ":epsilon3 = -3")
+SubClassOf(:Obj4-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-d>)
+
+AnnotationAssertion(cd:constraint :Obj5-d ":distance = 1")
+SubClassOf(:Obj5-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-e0>)
+
+AnnotationAssertion(cd:constraint :Obj5-e0 ":epsilon0 = 0")
+SubClassOf(:Obj5-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-e1>)
+
+AnnotationAssertion(cd:constraint :Obj5-e1 ":epsilon1 = -2")
+SubClassOf(:Obj5-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-e2>)
+
+AnnotationAssertion(cd:constraint :Obj5-e2 ":epsilon2 = -1")
+SubClassOf(:Obj5-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj5-e3>)
+
+AnnotationAssertion(cd:constraint :Obj5-e3 ":epsilon3 = -4")
+SubClassOf(:Obj5-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-d>)
+
+AnnotationAssertion(cd:constraint :Obj6-d ":distance = 15")
+SubClassOf(:Obj6-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-e0>)
+
+AnnotationAssertion(cd:constraint :Obj6-e0 ":epsilon0 = 14")
+SubClassOf(:Obj6-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-e1>)
+
+AnnotationAssertion(cd:constraint :Obj6-e1 ":epsilon1 = 12")
+SubClassOf(:Obj6-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-e2>)
+
+AnnotationAssertion(cd:constraint :Obj6-e2 ":epsilon2 = 13")
+SubClassOf(:Obj6-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj6-e3>)
+
+AnnotationAssertion(cd:constraint :Obj6-e3 ":epsilon3 = 10")
+SubClassOf(:Obj6-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-d>)
+
+AnnotationAssertion(cd:constraint :Obj7-d ":distance = 14")
+SubClassOf(:Obj7-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-e0>)
+
+AnnotationAssertion(cd:constraint :Obj7-e0 ":epsilon0 = 13")
+SubClassOf(:Obj7-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-e1>)
+
+AnnotationAssertion(cd:constraint :Obj7-e1 ":epsilon1 = 11")
+SubClassOf(:Obj7-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-e2>)
+
+AnnotationAssertion(cd:constraint :Obj7-e2 ":epsilon2 = 12")
+SubClassOf(:Obj7-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj7-e3>)
+
+AnnotationAssertion(cd:constraint :Obj7-e3 ":epsilon3 = 9")
+SubClassOf(:Obj7-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-d>)
+
+AnnotationAssertion(cd:constraint :Obj8-d ":distance = 10")
+SubClassOf(:Obj8-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-e0>)
+
+AnnotationAssertion(cd:constraint :Obj8-e0 ":epsilon0 = 9")
+SubClassOf(:Obj8-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-e1>)
+
+AnnotationAssertion(cd:constraint :Obj8-e1 ":epsilon1 = 7")
+SubClassOf(:Obj8-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-e2>)
+
+AnnotationAssertion(cd:constraint :Obj8-e2 ":epsilon2 = 8")
+SubClassOf(:Obj8-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj8-e3>)
+
+AnnotationAssertion(cd:constraint :Obj8-e3 ":epsilon3 = 5")
+SubClassOf(:Obj8-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-d> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-d>)
+
+AnnotationAssertion(cd:constraint :Obj9-d ":distance = 10")
+SubClassOf(:Obj9-d :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-e0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-e0>)
+
+AnnotationAssertion(cd:constraint :Obj9-e0 ":epsilon0 = 9")
+SubClassOf(:Obj9-e0 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-e1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-e1>)
+
+AnnotationAssertion(cd:constraint :Obj9-e1 ":epsilon1 = 7")
+SubClassOf(:Obj9-e1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-e2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-e2>)
+
+AnnotationAssertion(cd:constraint :Obj9-e2 ":epsilon2 = 8")
+SubClassOf(:Obj9-e2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-e3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Obj9-e3>)
+
+AnnotationAssertion(cd:constraint :Obj9-e3 ":epsilon3 = 5")
+SubClassOf(:Obj9-e3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistBig> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistBig>)
+
+AnnotationAssertion(cd:constraint :OpDistBig ":epsilon0 + 3 = :distance")
+SubClassOf(:OpDistBig :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistLowVisBig> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistLowVisBig>)
+
+AnnotationAssertion(cd:constraint :OpDistLowVisBig ":epsilon1 + 5 = :distance")
+SubClassOf(:OpDistLowVisBig :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistLowVisSmall> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistLowVisSmall>)
+
+AnnotationAssertion(cd:constraint :OpDistLowVisSmall ":epsilon1 + 3 = :distance")
+SubClassOf(:OpDistLowVisSmall :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistMovObjBig> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistMovObjBig>)
+
+AnnotationAssertion(cd:constraint :OpDistMovObjBig ":epsilon2 + 4 = :distance")
+SubClassOf(:OpDistMovObjBig :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistMovObjLowVisBig> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistMovObjLowVisBig>)
+
+AnnotationAssertion(cd:constraint :OpDistMovObjLowVisBig ":epsilon3 + 7 = :distance")
+SubClassOf(:OpDistMovObjLowVisBig :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistMovObjLowVisSmall> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistMovObjLowVisSmall>)
+
+AnnotationAssertion(cd:constraint :OpDistMovObjLowVisSmall ":epsilon3 + 5 = :distance")
+SubClassOf(:OpDistMovObjLowVisSmall :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistMovObjSmall> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistMovObjSmall>)
+
+AnnotationAssertion(cd:constraint :OpDistMovObjSmall ":epsilon2 + 2 = :distance")
+SubClassOf(:OpDistMovObjSmall :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistSmall> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#OpDistSmall>)
+
+AnnotationAssertion(cd:constraint :OpDistSmall ":epsilon0 + 1 = :distance")
+SubClassOf(:OpDistSmall :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Rainy> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Rainy>)
+
+SubClassOf(:Rainy :LowVisibility)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#SafeOpDist> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#SafeOpDist>)
+
+AnnotationAssertion(cd:constraint :SafeOpDist ":epsilon0 > 0")
+SubClassOf(:SafeOpDist :SafeDistances)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#SafeOpDistLowVis> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#SafeOpDistLowVis>)
+
+AnnotationAssertion(cd:constraint :SafeOpDistLowVis ":epsilon1 > 0")
+SubClassOf(:SafeOpDistLowVis :SafeDistances)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#SafeOpDistMovObj> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#SafeOpDistMovObj>)
+
+AnnotationAssertion(cd:constraint :SafeOpDistMovObj ":epsilon2 > 0")
+SubClassOf(:SafeOpDistMovObj :SafeDistances)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#SafeOpDistMovObjLowVis> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#SafeOpDistMovObjLowVis>)
+
+AnnotationAssertion(cd:constraint :SafeOpDistMovObjLowVis ":epsilon3 > 0")
+SubClassOf(:SafeOpDistMovObjLowVis :SafeDistances)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Small> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Small>)
+
+AnnotationAssertion(cd:constraint :Small ":hasWeight > 100")
+SubClassOf(:Small :MyDroneSize)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Snowy> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Snowy>)
+
+SubClassOf(:Snowy :LowVisibility)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#StaticObject> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#StaticObject>)
+
+SubClassOf(:StaticObject :Object)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Tree> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#Tree>)
+
+SubClassOf(:Tree :StaticObject)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#WetDrone> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#WetDrone>)
+
+SubClassOf(:WetDrone :Drone)
+SubClassOf(:WetDrone ObjectSomeValuesFrom(:environment :LowVisibility))
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#World> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#World>)
+
+SubClassOf(:World ObjectIntersectionOf(ObjectSomeValuesFrom(:exists :MyObj0) ObjectSomeValuesFrom(:exists :MyObj1) ObjectSomeValuesFrom(:exists :MyObj10) ObjectSomeValuesFrom(:exists :MyObj11) ObjectSomeValuesFrom(:exists :MyObj12) ObjectSomeValuesFrom(:exists :MyObj2) ObjectSomeValuesFrom(:exists :MyObj3) ObjectSomeValuesFrom(:exists :MyObj4) ObjectSomeValuesFrom(:exists :MyObj5) ObjectSomeValuesFrom(:exists :MyObj6) ObjectSomeValuesFrom(:exists :MyObj7) ObjectSomeValuesFrom(:exists :MyObj8) ObjectSomeValuesFrom(:exists :MyObj9)))
+
+
+############################
+#   Named Individuals
+############################
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o0>)
+
+ClassAssertion(:MyObj0 :o0)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o1>)
+
+ClassAssertion(:MyObj1 :o1)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o10> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o10>)
+
+ClassAssertion(:MyObj10 :o10)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o11> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o11>)
+
+ClassAssertion(:MyObj11 :o11)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o12> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o12>)
+
+ClassAssertion(:MyObj12 :o12)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o2>)
+
+ClassAssertion(:MyObj2 :o2)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o3>)
+
+ClassAssertion(:MyObj3 :o3)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o4> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o4>)
+
+ClassAssertion(:MyObj4 :o4)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o5> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o5>)
+
+ClassAssertion(:MyObj5 :o5)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o6> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o6>)
+
+ClassAssertion(:MyObj6 :o6)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o7> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o7>)
+
+ClassAssertion(:MyObj7 :o7)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o8> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o8>)
+
+ClassAssertion(:MyObj8 :o8)
+
+# Individual: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o9> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/drone-distance#o9>)
+
+ClassAssertion(:MyObj9 :o9)
+
+
+SubClassOf(ObjectIntersectionOf(:MovingObject :OpDistMovObjBig :SafeOpDistMovObj ObjectSomeValuesFrom(:environment :Sunny) ObjectSomeValuesFrom(:nearme :Big)) :SafeBig)
+SubClassOf(ObjectIntersectionOf(:MovingObject :OpDistMovObjLowVisBig :SafeOpDistMovObjLowVis ObjectSomeValuesFrom(:environment :LowVisibility) ObjectSomeValuesFrom(:nearme :Big)) :SafeBig)
+SubClassOf(ObjectIntersectionOf(:MovingObject :OpDistMovObjLowVisSmall :SafeOpDistMovObjLowVis ObjectSomeValuesFrom(:environment :LowVisibility) ObjectSomeValuesFrom(:nearme :Small)) :SafeSmall)
+SubClassOf(ObjectIntersectionOf(:MovingObject :OpDistMovObjSmall :SafeOpDistMovObj ObjectSomeValuesFrom(:environment :Sunny) ObjectSomeValuesFrom(:nearme :Small)) :SafeSmall)
+SubClassOf(ObjectIntersectionOf(:OpDistBig :SafeOpDist :Tree ObjectSomeValuesFrom(:environment :Sunny) ObjectSomeValuesFrom(:nearme :Big)) :SafeBig)
+SubClassOf(ObjectIntersectionOf(:OpDistLowVisBig :SafeOpDistLowVis :Tree ObjectSomeValuesFrom(:environment :LowVisibility) ObjectSomeValuesFrom(:nearme :Big)) :SafeBig)
+SubClassOf(ObjectIntersectionOf(:OpDistLowVisSmall :SafeOpDistLowVis :Tree ObjectSomeValuesFrom(:environment :LowVisibility) ObjectSomeValuesFrom(:nearme :Small)) :SafeSmall)
+SubClassOf(ObjectIntersectionOf(:OpDistSmall :SafeOpDist :Tree ObjectSomeValuesFrom(:environment :Sunny) ObjectSomeValuesFrom(:nearme :Small)) :SafeSmall)
+SubClassOf(ObjectIntersectionOf(ObjectSomeValuesFrom(:exists ObjectIntersectionOf(:MyObj10 :SafeSmall)) ObjectSomeValuesFrom(:exists ObjectIntersectionOf(:MyObj11 :SafeSmall)) ObjectSomeValuesFrom(:exists ObjectIntersectionOf(:MyObj12 :SafeSmall)) ObjectSomeValuesFrom(:exists ObjectIntersectionOf(:MyObj6 :SafeSmall)) ObjectSomeValuesFrom(:exists ObjectIntersectionOf(:MyObj7 :SafeSmall)) ObjectSomeValuesFrom(:exists ObjectIntersectionOf(:MyObj8 :SafeSmall)) ObjectSomeValuesFrom(:exists ObjectIntersectionOf(:MyObj9 :SafeSmall))) :PartiallySafe)
+)

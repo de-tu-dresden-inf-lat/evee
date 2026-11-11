@@ -1,0 +1,243 @@
+Prefix(:=<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/>)
+Prefix(cd:=<http://tu-dresden.de/inf/lat/evee/cd#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain>
+Annotation(cd:concreteDomain "QLinear")
+
+Declaration(Class(:ABoxConstraints))
+Declaration(Class(:Americano))
+Declaration(Class(:BlackCoffee))
+Declaration(Class(:Capuccino))
+Declaration(Class(:Coffee))
+Declaration(Class(:ConstraintsOfAbsence))
+Declaration(Class(:ConstraintsOfPresence))
+Declaration(Class(:FlatWhite))
+Declaration(Class(:HalfBlackCoffee))
+Declaration(Class(:HalfSteamedMilk))
+Declaration(Class(:HalfWater))
+Declaration(Class(:Latte))
+Declaration(Class(:Macchiato))
+Declaration(Class(:NinetyPercentBlackCoffee))
+Declaration(Class(:NoMilkFoam))
+Declaration(Class(:NoSteamedMilk))
+Declaration(Class(:NoWater))
+Declaration(Class(:Order))
+Declaration(Class(:Order1-1))
+Declaration(Class(:Order1-2))
+Declaration(Class(:Order1-3))
+Declaration(Class(:Order1-4))
+Declaration(Class(:Order1-5))
+Declaration(Class(:PureCoffee))
+Declaration(Class(:PureEspresso))
+Declaration(Class(:QuarterBlackCoffee))
+Declaration(Class(:QuarterMilkFoam))
+Declaration(Class(:Ristretto))
+Declaration(Class(:SmallAmountOfMilkFoam))
+Declaration(Class(:TenPercentSteamedMilk))
+Declaration(Class(:ThirdBlackCoffee))
+Declaration(Class(:TotalAmount))
+Declaration(Class(:TwoThirdCupWater))
+Declaration(Class(:TwoThirdSteamedMilk))
+Declaration(DataProperty(:containsEspresso))
+Declaration(DataProperty(:containsMilkFoam))
+Declaration(DataProperty(:containsSteamedMilk))
+Declaration(DataProperty(:containsTotalAmount))
+Declaration(DataProperty(:containsWater))
+Declaration(AnnotationProperty(cd:concreteDomain))
+Declaration(AnnotationProperty(cd:constraint))
+
+############################
+#   Data Properties
+############################
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsEspresso> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsEspresso>)
+
+DataPropertyDomain(:containsEspresso :Coffee)
+DataPropertyRange(:containsEspresso owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsMilkFoam> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsMilkFoam>)
+
+DataPropertyDomain(:containsMilkFoam :Coffee)
+DataPropertyRange(:containsMilkFoam owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsSteamedMilk> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsSteamedMilk>)
+
+DataPropertyDomain(:containsSteamedMilk :Coffee)
+DataPropertyRange(:containsSteamedMilk owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsTotalAmount> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsTotalAmount>)
+
+DataPropertyDomain(:containsTotalAmount :Coffee)
+DataPropertyRange(:containsTotalAmount owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsWater> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/containsWater>)
+
+DataPropertyDomain(:containsWater :Coffee)
+DataPropertyRange(:containsWater owl:real)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Americano> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Americano>)
+
+EquivalentClasses(:Americano ObjectIntersectionOf(:NoMilkFoam :NoSteamedMilk :ThirdBlackCoffee :TwoThirdCupWater))
+SubClassOf(:Americano :Coffee)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/BlackCoffee> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/BlackCoffee>)
+
+EquivalentClasses(:BlackCoffee ObjectIntersectionOf(:NoMilkFoam :NoSteamedMilk :NoWater :PureCoffee))
+SubClassOf(:BlackCoffee :Coffee)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Capuccino> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Capuccino>)
+
+EquivalentClasses(:Capuccino ObjectIntersectionOf(:HalfSteamedMilk :NoWater :QuarterBlackCoffee :QuarterMilkFoam))
+SubClassOf(:Capuccino :Coffee)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Coffee> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Coffee>)
+
+SubClassOf(:Coffee ObjectIntersectionOf(DataSomeValuesFrom(:containsEspresso owl:real) DataSomeValuesFrom(:containsMilkFoam owl:real) DataSomeValuesFrom(:containsSteamedMilk owl:real) DataSomeValuesFrom(:containsTotalAmount owl:real) DataSomeValuesFrom(:containsWater owl:real)))
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/FlatWhite> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/FlatWhite>)
+
+EquivalentClasses(:FlatWhite ObjectIntersectionOf(:NoMilkFoam :NoWater :ThirdBlackCoffee :TwoThirdSteamedMilk))
+SubClassOf(:FlatWhite :Coffee)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/HalfBlackCoffee> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/HalfBlackCoffee>)
+
+AnnotationAssertion(cd:constraint :HalfBlackCoffee ":containsEspresso - 0.5 * :containsTotalAmount = 0")
+SubClassOf(:HalfBlackCoffee :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/HalfSteamedMilk> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/HalfSteamedMilk>)
+
+AnnotationAssertion(cd:constraint :HalfSteamedMilk ":containsSteamedMilk - 0.5 * :containsTotalAmount = 0")
+SubClassOf(:HalfSteamedMilk :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/HalfWater> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/HalfWater>)
+
+AnnotationAssertion(cd:constraint :HalfWater ":containsWater - 0.5 * :containsTotalAmount = 0")
+SubClassOf(:HalfWater :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Latte> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Latte>)
+
+EquivalentClasses(:Latte ObjectIntersectionOf(:NoWater :SmallAmountOfMilkFoam :ThirdBlackCoffee :TwoThirdSteamedMilk))
+SubClassOf(:Latte :Coffee)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Macchiato> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Macchiato>)
+
+EquivalentClasses(:Macchiato ObjectIntersectionOf(:NinetyPercentBlackCoffee :NoMilkFoam :NoWater :TenPercentSteamedMilk))
+SubClassOf(:Macchiato :Coffee)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/NinetyPercentBlackCoffee> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/NinetyPercentBlackCoffee>)
+
+AnnotationAssertion(cd:constraint :NinetyPercentBlackCoffee ":containsEspresso - 0.9 * :containsTotalAmount = 0")
+SubClassOf(:NinetyPercentBlackCoffee :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/NoMilkFoam> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/NoMilkFoam>)
+
+AnnotationAssertion(cd:constraint :NoMilkFoam ":containsMilkFoam = 0")
+SubClassOf(:NoMilkFoam :ConstraintsOfAbsence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/NoSteamedMilk> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/NoSteamedMilk>)
+
+AnnotationAssertion(cd:constraint :NoSteamedMilk ":containsSteamedMilk = 0")
+SubClassOf(:NoSteamedMilk :ConstraintsOfAbsence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/NoWater> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/NoWater>)
+
+AnnotationAssertion(cd:constraint :NoWater ":containsWater = 0")
+SubClassOf(:NoWater :ConstraintsOfAbsence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order>)
+
+SubClassOf(:Order :Coffee)
+SubClassOf(:Order ObjectIntersectionOf(:Order1-1 :Order1-2 :Order1-3 :Order1-4 :Order1-5))
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-1> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-1>)
+
+AnnotationAssertion(cd:constraint :Order1-1 ":containsEspresso = 30")
+SubClassOf(:Order1-1 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-2> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-2>)
+
+AnnotationAssertion(cd:constraint :Order1-2 ":containsSteamedMilk = 0")
+SubClassOf(:Order1-2 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-3> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-3>)
+
+AnnotationAssertion(cd:constraint :Order1-3 ":containsWater = 30")
+SubClassOf(:Order1-3 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-4> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-4>)
+
+AnnotationAssertion(cd:constraint :Order1-4 ":containsMilkFoam = 0")
+SubClassOf(:Order1-4 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-5> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Order1-5>)
+
+AnnotationAssertion(cd:constraint :Order1-5 ":containsTotalAmount = 60")
+SubClassOf(:Order1-5 :ABoxConstraints)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/PureCoffee> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/PureCoffee>)
+
+SubClassOf(:PureCoffee :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/PureEspresso> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/PureEspresso>)
+
+AnnotationAssertion(cd:constraint :PureEspresso ":containsEspresso - :containsTotalAmount = 0")
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/QuarterBlackCoffee> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/QuarterBlackCoffee>)
+
+AnnotationAssertion(cd:constraint :QuarterBlackCoffee ":containsEspresso - 0.25 * :containsTotalAmount = 0")
+SubClassOf(:QuarterBlackCoffee :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/QuarterMilkFoam> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/QuarterMilkFoam>)
+
+AnnotationAssertion(cd:constraint :QuarterMilkFoam ":containsMilkFoam - 0.25 * :containsTotalAmount = 0")
+SubClassOf(:QuarterMilkFoam :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Ristretto> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/Ristretto>)
+
+EquivalentClasses(:Ristretto ObjectIntersectionOf(:HalfBlackCoffee :HalfWater :NoMilkFoam :NoSteamedMilk))
+SubClassOf(:Ristretto :Coffee)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/SmallAmountOfMilkFoam> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/SmallAmountOfMilkFoam>)
+
+AnnotationAssertion(cd:constraint :SmallAmountOfMilkFoam ":containsMilkFoam - 0.1 * :containsTotalAmount = 0")
+SubClassOf(:SmallAmountOfMilkFoam :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/TenPercentSteamedMilk> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/TenPercentSteamedMilk>)
+
+AnnotationAssertion(cd:constraint :TenPercentSteamedMilk ":containsSteamedMilk - 0.1 * :containsTotalAmount = 0")
+SubClassOf(:TenPercentSteamedMilk :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/ThirdBlackCoffee> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/ThirdBlackCoffee>)
+
+AnnotationAssertion(cd:constraint :ThirdBlackCoffee "3 * :containsEspresso - :containsTotalAmount = 0")
+SubClassOf(:ThirdBlackCoffee :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/TotalAmount> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/TotalAmount>)
+
+AnnotationAssertion(cd:constraint :TotalAmount ":containsTotalAmount - :containsWater - :containsEspresso - :containsSteamedMilk = 0")
+SubClassOf(:TotalAmount :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/TwoThirdCupWater> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/TwoThirdCupWater>)
+
+AnnotationAssertion(cd:constraint :TwoThirdCupWater "3 * :containsWater - 2 * :containsTotalAmount = 0")
+SubClassOf(:TwoThirdCupWater :ConstraintsOfPresence)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/TwoThirdSteamedMilk> (<http://www.semanticweb.org/alisa/ontologies/2022/concrete-domain/TwoThirdSteamedMilk>)
+
+AnnotationAssertion(cd:constraint :TwoThirdSteamedMilk "3 * :containsSteamedMilk - 2 * :containsTotalAmount = 0")
+SubClassOf(:TwoThirdSteamedMilk :ConstraintsOfPresence)
+
+
+)

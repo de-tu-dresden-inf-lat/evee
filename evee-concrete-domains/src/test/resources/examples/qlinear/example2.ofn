@@ -1,0 +1,69 @@
+Prefix(:=<http://example2#>)
+Prefix(cd:=<http://tu-dresden.de/inf/lat/evee/cd#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://example2>
+Annotation(cd:concreteDomain "QLinear")
+
+Declaration(Class(:A1))
+Declaration(Class(:A2))
+Declaration(Class(:B1))
+Declaration(Class(:B2))
+Declaration(Class(:B3))
+Declaration(Class(:C1))
+Declaration(Class(:C2))
+Declaration(Class(:C3))
+Declaration(Class(:C4))
+Declaration(Class(:C5))
+Declaration(ObjectProperty(:r))
+Declaration(AnnotationProperty(cd:concreteDomain))
+Declaration(AnnotationProperty(cd:constraint))
+
+############################
+#   Object Properties
+############################
+
+# Object Property: <http://example2#r> (<http://example2#r>)
+
+SubObjectPropertyOf(:r owl:topObjectProperty)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://example2#A1> (<http://example2#A1>)
+
+SubClassOf(:A1 :B1)
+SubClassOf(:A1 :B2)
+
+# Class: <http://example2#A2> (<http://example2#A2>)
+
+SubClassOf(:A2 ObjectIntersectionOf(:A1 ObjectSomeValuesFrom(:r :A1)))
+
+# Class: <http://example2#B2> (<http://example2#B2>)
+
+SubClassOf(:B2 ObjectIntersectionOf(:C1 :C2))
+
+# Class: <http://example2#C1> (<http://example2#C1>)
+
+AnnotationAssertion(cd:constraint :C1 "3 * :w + 2 * :u = 5")
+
+# Class: <http://example2#C2> (<http://example2#C2>)
+
+AnnotationAssertion(cd:constraint :C2 "3 * :w + 2 * :u = 10")
+
+# Class: <http://example2#C3> (<http://example2#C3>)
+
+AnnotationAssertion(cd:constraint :C3 "3 * :w - :v = 2")
+
+
+SubClassOf(ObjectIntersectionOf(:A1 :C3) :B3)
+SubClassOf(ObjectSomeValuesFrom(:r :B3) :C4)
+)

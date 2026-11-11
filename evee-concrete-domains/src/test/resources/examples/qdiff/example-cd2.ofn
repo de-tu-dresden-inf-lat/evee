@@ -1,0 +1,94 @@
+Prefix(:=<http://example-cd2#>)
+Prefix(cd:=<http://tu-dresden.de/inf/lat/evee/cd#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://example-cd2#>
+Annotation(cd:concreteDomain "QDiff")
+
+Declaration(Class(:Drone))
+Declaration(Class(:Drone1))
+Declaration(Class(:Drone2))
+Declaration(Class(:Drone3))
+Declaration(Class(:LargeDrone))
+Declaration(Class(:Location))
+Declaration(Class(:SafeLargeDroneLocation))
+Declaration(Class(:SafeLargeDroneLocationMinimum))
+Declaration(Class(:SafeLocation))
+Declaration(Class(:SafeSmallDroneLocation))
+Declaration(Class(:SmallDrone))
+Declaration(Class(:SmallLargeDrone))
+Declaration(ObjectProperty(:locatedIn))
+Declaration(AnnotationProperty(cd:concreteDomain))
+Declaration(AnnotationProperty(cd:constraint))
+
+############################
+#   Object Properties
+############################
+
+# Object Property: <http://example-cd2#locatedIn> (<http://example-cd2#locatedIn>)
+
+SubObjectPropertyOf(:locatedIn owl:topObjectProperty)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://example-cd2#Drone1> (<http://example-cd2#Drone1>)
+
+SubClassOf(:Drone1 :SmallDrone)
+SubClassOf(:Drone1 ObjectSomeValuesFrom(:locatedIn :SafeLocation))
+
+# Class: <http://example-cd2#Drone2> (<http://example-cd2#Drone2>)
+
+SubClassOf(:Drone2 :SmallDrone)
+
+# Class: <http://example-cd2#Drone3> (<http://example-cd2#Drone3>)
+
+SubClassOf(:Drone3 :LargeDrone)
+
+# Class: <http://example-cd2#LargeDrone> (<http://example-cd2#LargeDrone>)
+
+SubClassOf(:LargeDrone :Drone)
+DisjointClasses(:LargeDrone :SmallDrone)
+
+# Class: <http://example-cd2#Location> (<http://example-cd2#Location>)
+
+AnnotationAssertion(cd:constraint :Location ":location = 5")
+
+# Class: <http://example-cd2#SafeLargeDroneLocation> (<http://example-cd2#SafeLargeDroneLocation>)
+
+AnnotationAssertion(cd:constraint :SafeLargeDroneLocation ":sSDroneLocation + 2 = :sLDroneLocation")
+
+# Class: <http://example-cd2#SafeLargeDroneLocationMinimum> (<http://example-cd2#SafeLargeDroneLocationMinimum>)
+
+AnnotationAssertion(cd:constraint :SafeLargeDroneLocationMinimum ":sLDroneLocation > 10")
+
+# Class: <http://example-cd2#SafeLocation> (<http://example-cd2#SafeLocation>)
+
+SubClassOf(:SafeLocation :Location)
+SubClassOf(:SafeLocation :SafeLargeDroneLocation)
+SubClassOf(:SafeLocation :SafeLargeDroneLocationMinimum)
+SubClassOf(:SafeLocation :SafeSmallDroneLocation)
+
+# Class: <http://example-cd2#SafeSmallDroneLocation> (<http://example-cd2#SafeSmallDroneLocation>)
+
+AnnotationAssertion(cd:constraint :SafeSmallDroneLocation ":location + 1 = :sSDroneLocation")
+
+# Class: <http://example-cd2#SmallDrone> (<http://example-cd2#SmallDrone>)
+
+SubClassOf(:SmallDrone :Drone)
+
+# Class: <http://example-cd2#SmallLargeDrone> (<http://example-cd2#SmallLargeDrone>)
+
+EquivalentClasses(:SmallLargeDrone ObjectIntersectionOf(:LargeDrone :SmallDrone))
+SubClassOf(:SmallLargeDrone :Drone)
+
+
+)

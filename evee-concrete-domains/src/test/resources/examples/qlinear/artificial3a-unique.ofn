@@ -1,0 +1,123 @@
+Prefix(:=<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#>)
+Prefix(cd:=<http://tu-dresden.de/inf/lat/evee/cd#>)
+Prefix(owl:=<http://www.w3.org/2002/07/owl#>)
+Prefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)
+Prefix(xml:=<http://www.w3.org/XML/1998/namespace>)
+Prefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)
+Prefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)
+
+
+Ontology(<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#>
+Annotation(cd:concreteDomain "QLinear")
+
+Declaration(Class(:A))
+Declaration(Class(:B))
+Declaration(Class(:C0))
+Declaration(Class(:C0-prime))
+Declaration(Class(:C1))
+Declaration(Class(:C1-prime))
+Declaration(Class(:C2))
+Declaration(Class(:C2-prime))
+Declaration(Class(:LC))
+Declaration(Class(:LC0))
+Declaration(Class(:LC1))
+Declaration(Class(:LC1-prime))
+Declaration(Class(:LC2))
+Declaration(Class(:LC2-prime))
+Declaration(ObjectProperty(:r))
+Declaration(DataProperty(:num0))
+Declaration(DataProperty(:num1))
+Declaration(DataProperty(:num2))
+Declaration(DataProperty(:num3))
+Declaration(DataProperty(:num4))
+Declaration(AnnotationProperty(cd:concreteDomain))
+Declaration(AnnotationProperty(cd:constraint))
+
+
+############################
+#   Data Properties
+############################
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num0>)
+
+DataPropertyRange(:num0 owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num1>)
+
+DataPropertyRange(:num1 owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num2>)
+
+DataPropertyRange(:num2 owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num3> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num3>)
+
+DataPropertyRange(:num3 owl:real)
+
+# Data Property: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num4> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#num4>)
+
+DataPropertyRange(:num4 owl:real)
+
+
+
+############################
+#   Classes
+############################
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#A> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#A>)
+
+SubClassOf(:A ObjectSomeValuesFrom(:r ObjectIntersectionOf(:C0 :LC)))
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C0>)
+
+SubClassOf(:C0 :LC0)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C0-prime> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C0-prime>)
+
+SubClassOf(:C0-prime ObjectSomeValuesFrom(:r ObjectIntersectionOf(:C1 :LC :LC0)))
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C1>)
+
+SubClassOf(:C1 :LC1)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C1-prime> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C1-prime>)
+
+SubClassOf(:C1-prime ObjectSomeValuesFrom(:r ObjectIntersectionOf(:C2 :LC :LC0 :LC1)))
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C2>)
+
+SubClassOf(:C2 :LC2)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C2-prime> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#C2-prime>)
+
+SubClassOf(:C2-prime :B)
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC>)
+
+AnnotationAssertion(cd:constraint :LC "9 * :num0 - 12 * :num2 + 14 * :num3 = 1")
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC0> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC0>)
+
+AnnotationAssertion(cd:constraint :LC0 "-19 * :num1 + 7 * :num2 = 8")
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC1> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC1>)
+
+AnnotationAssertion(cd:constraint :LC1 "-5 * :num1 + 13 * :num3 = -6")
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC1-prime> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC1-prime>)
+
+AnnotationAssertion(cd:constraint :LC1-prime "9 * :num0 - 33 * :num1 + 2 * :num2 + :num3 = 23")
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC2> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC2>)
+
+AnnotationAssertion(cd:constraint :LC2 "19 * :num2 + 4 * :num3 = 2")
+
+# Class: <http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC2-prime> (<http://www.semanticweb.org/alisa/ontologies/2023/concrete-domain/artificial#LC2-prime>)
+
+AnnotationAssertion(cd:constraint :LC2-prime "-18 * :num0 - 14 * :num1 + 69 * :num2 - 33 * :num3 = 16")
+
+
+SubClassOf(ObjectSomeValuesFrom(:r ObjectIntersectionOf(:C0 :LC)) :C0-prime)
+SubClassOf(ObjectSomeValuesFrom(:r ObjectIntersectionOf(:C1 :LC1-prime)) :C1-prime)
+SubClassOf(ObjectSomeValuesFrom(:r ObjectIntersectionOf(:C2 :LC2-prime)) :C2-prime)
+)

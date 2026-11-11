@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+        <artifactId>evee-protege</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>evee-protege-concrete-domain-reasoner</artifactId>
+    <name>evee-protege-concrete-domain-reasoner</name>
+    <packaging>bundle</packaging>
+
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>evee-protege-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.de-tu-dresden-inf-lat</groupId>
+            <artifactId>evee-concrete-domains</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+				<exclusion>
+					<groupId>net.sourceforge.owlapi</groupId>
+					<artifactId>owlapi-distribution</artifactId>
+				</exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- the tests run on OWL API 4.5 like the plugin in Protégé, so the OWL API 5 modules that the library
+                     brings are left out of the test classpath -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- no dialogs on the screen while testing -->
+                    <argLine>-Djava.awt.headless=true</argLine>
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-api</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-apibinding</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-impl</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-parsers</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-oboformat</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-rio</classpathDependencyExclude>
+                        <classpathDependencyExclude>net.sourceforge.owlapi:owlapi-tools</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.9</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
+                        <Import-Package>
+                            de.tu_dresden.inf.lat.evee.data.*;resolution:=optional,
+                            *
+                        </Import-Package>
+                        <Private-Package>
+                            org.apache.commons.math3.*,
+                            de.tu_dresden.inf.lat.evee.concreteDomains.*,
+                            de.tu_dresden.inf.lat.evee.proofGenerators.*,
+                            org.semanticweb.elk.owlapi.*;-split-package:=merge-last,
+                            org.semanticweb.elk.exceptions.*;-split-package:=merge-last,
+                            org.semanticweb.elk.*;-split-package:=merge-last,
+                            org.liveontologies.owlapi.proof.*;-split-package:=merge-last,
+                        </Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+          
+        </plugins>
+    </build>
+
+</project>

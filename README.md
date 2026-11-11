@@ -9,6 +9,15 @@ For questions or feedback, you can contact Stefan Borgwardt ([stefan.borgwardt@t
 ## About Evee
 Evee is developed at the [Chair of Automata Theory at TU Dresden](https://tu-dresden.de/ing/informatik/thi/lat "https://tu-dresden.de/ing/informatik/thi/lat").
 Evee is a Java library and collection of Protégé plugins that support ontology engineers by explaining reasons for (missing) entailments in OWL ontologies.
+- The upcoming release adds the reasoner PACER (p-admissible concrete domain EL reasoner) for OWL EL ontologies with concrete domains (constraints on rational numbers), and proofs for its results, as described in the paper
+
+  C. Alrabbaa, F. Baader, S. Borgwardt, P. Koopmann, A. Kovtunova: **Combining proofs for description logic and concrete domain reasoning**, in: A. Fensel, A. Ozaki, D. Roman, A. Soylu (Eds.), Proceedings of the 7th International Joint Conference on Rules and Reasoning (RuleML+RR), volume 14244 of Lecture Notes in Computer Science, pages 54–69, Oslo, Norway, 2023. Springer.
+  [doi:10.1007/978-3-031-45072-3_4](https://doi.org/10.1007/978-3-031-45072-3_4)
+
+  Extended version: [arXiv:abs/2308.03705](https://arxiv.org/abs/2308.03705)
+
+  How to use PACER is described on the wiki page [Concrete domains](https://github.com/de-tu-dresden-inf-lat/evee/wiki/Concrete-domains).
+
 - version 0.6 overhauls project structure and fixes known issues.
 - Version 0.5 adds support for Protégé 5.6.0 and Java 11. It also introduces significantly easier to use build and release workflows.
 - Version 0.4 introduces new proof generators for fragments of OWL 2 EL using the graph reasoning engine [Nemo](https://github.com/knowsys/nemo), which are described in the paper
