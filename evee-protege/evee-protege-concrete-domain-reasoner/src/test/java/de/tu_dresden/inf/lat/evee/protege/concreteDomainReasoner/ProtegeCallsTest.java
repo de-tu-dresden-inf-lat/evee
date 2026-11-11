@@ -2,7 +2,10 @@ package de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner;
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.CDConstraint;
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.exceptions.ParsingException;
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.CDAnnotationNames;
+import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName;
 import de.tu_dresden.inf.lat.evee.concreteDomains.elkCD.ELKCDReasoner;
+import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.CDSchema;
 import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.ConstraintSizeWeightedTreeSizeMeasure;
 import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.OWLCDProofGenerator;
 import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
@@ -224,6 +227,30 @@ public class ProtegeCallsTest {
         assertEquals(annotations, o.getAnnotations());
         assertEquals(prefixes, ((PrefixDocumentFormat) manager.getOntologyFormat(o)).getPrefixName2PrefixMap());
         assertEquals(ontologies, manager.getOntologies());
+    }
+
+    /**
+     * as the setup action does: the plugin's copy of the schema ontology is loaded and imported, and the concrete domain
+     * is named by its IRI
+     */
+    @Test
+    public void schemaAndDomainIRI() throws Exception {
+        OWLOntology o = ontology(null, CHAIN, "SubClassOf(:A ObjectIntersectionOf(:C0 :C1))");
+        OWLOntologyManager manager = o.getOWLOntologyManager();
+        OWLOntology schema = CDSchema.loadInto(manager);
+        manager.applyChanges(Arrays.asList(
+                new AddImport(o, factory.getOWLImportsDeclaration(CDSchema.ONTOLOGY_IRI)),
+                new AddOntologyAnnotation(o, factory.getOWLAnnotation(
+                        factory.getOWLAnnotationProperty(IRI.create(CDAnnotationNames.CONCRETE_DOMAIN_ANNOTATION_PROP)),
+                        IRI.create(ConcreteDomainName.QDiff.getIRI())))));
+        assertTrue(o.getImportsClosure().contains(schema));
+        OWLReasoner reasoner = reasoner(o);
+        try {
+            reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+            assertTrue(reasoner.isEntailed(subClassOf("A", "C2")));
+        } finally {
+            reasoner.dispose();
+        }
     }
 
     /** a constraint that cannot be read is reported by the factory (with a dialog in Protégé) and passed on */

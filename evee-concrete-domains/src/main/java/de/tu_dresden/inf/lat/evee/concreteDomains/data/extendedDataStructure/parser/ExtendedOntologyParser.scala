@@ -17,6 +17,7 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLOntology
 import org.semanticweb.owlapi.model.OWLAnnotationSubject
 import org.semanticweb.owlapi.model.OWLLiteral
+import org.semanticweb.owlapi.model.OWLAnnotationValue
 import org.semanticweb.owlapi.model.OWLClass
 
 import scala.collection.JavaConverters._
@@ -91,8 +92,8 @@ object ExtendedOntologyParser {
         .filter(o => o != ontology && concreteDomainAnnotations(o).nonEmpty)
         .map(o => name(o) -> domainOf(o, "the imported ontology " + name(o))).sortBy(_._1)
       imported.map(_._2).distinct match {
-        case Seq() => throw new ParsingException(
-          s"The ontology has no annotation cd:concreteDomain, which names its concrete domain (${ConcreteDomainName.NAMES})")
+        case Seq() => throw new ParsingException("The ontology has no annotation cd:concreteDomain, which names its " +
+          s"concrete domain (${ConcreteDomainName.NAMES}, or one of the IRIs ${ConcreteDomainName.IRIS})")
         case Seq(domain) => domain
         case _ => throw new ParsingException("The ontology has no annotation cd:concreteDomain, and its imports name " +
           "different concrete domains: " + imported.map { case (o, domain) => s"$domain in $o" }.mkString(", ") +
@@ -101,15 +102,23 @@ object ExtendedOntologyParser {
     }
 
   /** the concrete domain that the annotations cd:concreteDomain of the ontology name, which is described by which */
-  private def domainOf(ontology: OWLOntology, which: String): ConcreteDomainName =
-    concreteDomainAnnotations(ontology).map(_.getValue).distinct match {
-      case Seq(literal: OWLLiteral) => ConcreteDomainName.getConcreteDomainName(literal.getLiteral)
-      case Seq(other) => throw new ParsingException(
-        s"The annotation cd:concreteDomain of $which has to be a string (${ConcreteDomainName.NAMES}), not $other")
-      case several => throw new ParsingException(s"${which.capitalize} has the annotations cd:concreteDomain " +
-        several.map { case literal: OWLLiteral => "\"" + literal.getLiteral + "\""; case other => other }.mkString(", ") +
+  private def domainOf(ontology: OWLOntology, which: String): ConcreteDomainName = {
+    val values = concreteDomainAnnotations(ontology).map(_.getValue).distinct
+    values.map(domainOfValue(_, which)).distinct match {
+      case Seq(domain) => domain
+      case _ => throw new ParsingException(s"${which.capitalize} has the annotations cd:concreteDomain " +
+        values.map { case literal: OWLLiteral => "\"" + literal.getLiteral + "\""; case other => other }.mkString(", ") +
         ", but it can use only one concrete domain")
     }
+  }
+
+  /** the concrete domain that a value of cd:concreteDomain names: a string such as "QDiff" or an IRI such as cd:QDiff */
+  private def domainOfValue(value: OWLAnnotationValue, which: String): ConcreteDomainName = value match {
+    case literal: OWLLiteral => ConcreteDomainName.getConcreteDomainName(literal.getLiteral)
+    case iri: IRI if ConcreteDomainName.ofIRI(iri.toString) != null => ConcreteDomainName.ofIRI(iri.toString)
+    case other => throw new ParsingException(s"The annotation cd:concreteDomain of $which has to be a string " +
+      s"(${ConcreteDomainName.NAMES}) or one of the IRIs ${ConcreteDomainName.IRIS}, not $other")
+  }
 
   /** the IRI of the ontology, for messages (OWLOntologyID.getOntologyIRI differs between OWL API 4 and 5) */
   private def name(ontology: OWLOntology): String =

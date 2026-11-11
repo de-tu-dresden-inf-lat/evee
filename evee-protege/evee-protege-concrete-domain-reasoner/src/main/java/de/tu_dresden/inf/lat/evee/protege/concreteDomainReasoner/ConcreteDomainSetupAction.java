@@ -2,6 +2,7 @@ package de.tu_dresden.inf.lat.evee.protege.concreteDomainReasoner;
 
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.CDAnnotationNames;
 import de.tu_dresden.inf.lat.evee.concreteDomains.data.names.ConcreteDomainName;
+import de.tu_dresden.inf.lat.evee.concreteDomains.owlApi.CDSchema;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.ui.action.ProtegeOWLAction;
 import org.semanticweb.owlapi.formats.PrefixDocumentFormat;
@@ -15,8 +16,10 @@ import java.util.List;
 
 /**
  * Prepares the active ontology for PACER: declares the annotation properties cd:concreteDomain and cd:constraint,
- * sets the concrete domain chosen in a dialog as the value of cd:concreteDomain, and adds the prefix cd:. The
- * changes of the annotations can be undone; the prefix stays.
+ * sets the concrete domain chosen in a dialog as the value of cd:concreteDomain, and adds the prefix cd:. If chosen
+ * in the dialog, it also imports the schema ontology of PACER, which describes these annotations; the plugin's copy of
+ * it is loaded first, so that this needs no network. The changes of the annotations and the import can be undone; the
+ * prefix stays.
  */
 public class ConcreteDomainSetupAction extends ProtegeOWLAction {
 
@@ -52,11 +55,25 @@ public class ConcreteDomainSetupAction extends ProtegeOWLAction {
             return;
         }
 
-        ConcreteDomainName domain = askForDomain(currentDomain(ontology, concreteDomain));
+        boolean imported = importsSchema(ontology);
+        JCheckBox importSchema = new JCheckBox("Import the schema ontology of PACER, which describes these annotations");
+        importSchema.setSelected(imported);
+        importSchema.setEnabled(!imported);
+        ConcreteDomainName domain = askForDomain(currentDomain(ontology, concreteDomain), importSchema);
         if (domain == null)
             return;
 
         List<OWLOntologyChange> changes = new ArrayList<>();
+        if (importSchema.isSelected() && !imported) {
+            try {
+                CDSchema.loadInto(modelManager.getOWLOntologyManager());
+                changes.add(new AddImport(ontology, factory.getOWLImportsDeclaration(CDSchema.ONTOLOGY_IRI)));
+            } catch (OWLOntologyCreationException e) {
+                JOptionPane.showMessageDialog(getOWLWorkspace(), "The schema ontology cannot be loaded:\n"
+                        + e.getMessage(), TITLE, JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
         for (OWLAnnotationProperty property : new OWLAnnotationProperty[]{concreteDomain, constraint}) {
             OWLDeclarationAxiom declaration = factory.getOWLDeclarationAxiom(property);
             if (!ontology.containsAxiom(declaration))
@@ -76,19 +93,33 @@ public class ConcreteDomainSetupAction extends ProtegeOWLAction {
         }
     }
 
-    /** the concrete domain the ontology has now, or null if it has none or an unknown one */
+    /** whether the ontology imports the schema ontology of PACER directly */
+    private static boolean importsSchema(OWLOntology ontology) {
+        for (OWLImportsDeclaration declaration : ontology.getImportsDeclarations())
+            if (declaration.getIRI().equals(CDSchema.ONTOLOGY_IRI))
+                return true;
+        return false;
+    }
+
+    /** the concrete domain the ontology has now, named by a string or an IRI, or null if it has none or an unknown one */
     private static ConcreteDomainName currentDomain(OWLOntology ontology, OWLAnnotationProperty concreteDomain) {
         for (OWLAnnotation annotation : ontology.getAnnotations())
-            if (annotation.getProperty().equals(concreteDomain) && annotation.getValue() instanceof OWLLiteral) {
-                String name = ((OWLLiteral) annotation.getValue()).getLiteral();
-                if (ConcreteDomainName.isName(name))
-                    return ConcreteDomainName.getConcreteDomainName(name);
+            if (annotation.getProperty().equals(concreteDomain)) {
+                if (annotation.getValue() instanceof OWLLiteral) {
+                    String name = ((OWLLiteral) annotation.getValue()).getLiteral();
+                    if (ConcreteDomainName.isName(name))
+                        return ConcreteDomainName.getConcreteDomainName(name);
+                } else if (annotation.getValue() instanceof IRI) {
+                    ConcreteDomainName domain = ConcreteDomainName.ofIRI(annotation.getValue().toString());
+                    if (domain != null)
+                        return domain;
+                }
             }
         return null;
     }
 
-    /** the concrete domain chosen in the dialog, or null if it was cancelled */
-    private ConcreteDomainName askForDomain(ConcreteDomainName current) {
+    /** the concrete domain chosen in the dialog, or null if it was cancelled; the dialog also shows importSchema */
+    private ConcreteDomainName askForDomain(ConcreteDomainName current, JCheckBox importSchema) {
         JComboBox<ConcreteDomainName> domains = new JComboBox<>(ConcreteDomainName.values());
         if (current != null)
             domains.setSelectedItem(current);
@@ -97,10 +128,14 @@ public class ConcreteDomainSetupAction extends ProtegeOWLAction {
 
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.add(new JLabel("<html>PACER reads the concrete domain from the ontology annotation "
-                + "<tt>cd:concreteDomain</tt>.<br>Constraints are annotations <tt>cd:constraint</tt> of classes; "
+                + "<tt>cd:concreteDomain</tt>, as a string<br>or as one of the IRIs <tt>cd:QDiff</tt>, "
+                + "<tt>cd:QMult</tt> and <tt>cd:QLinear</tt>.<br>Constraints are annotations <tt>cd:constraint</tt> of classes; "
                 + "they name data properties<br>with the prefixes of the ontology.</html>"), BorderLayout.NORTH);
         panel.add(domains, BorderLayout.CENTER);
-        panel.add(syntax, BorderLayout.SOUTH);
+        JPanel bottom = new JPanel(new BorderLayout(0, 10));
+        bottom.add(syntax, BorderLayout.NORTH);
+        bottom.add(importSchema, BorderLayout.SOUTH);
+        panel.add(bottom, BorderLayout.SOUTH);
         int answer = JOptionPane.showConfirmDialog(getOWLWorkspace(), panel, TITLE, JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE);
         return answer == JOptionPane.OK_OPTION ? (ConcreteDomainName) domains.getSelectedItem() : null;

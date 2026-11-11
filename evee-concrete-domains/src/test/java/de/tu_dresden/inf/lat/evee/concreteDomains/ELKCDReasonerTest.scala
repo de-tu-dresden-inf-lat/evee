@@ -184,13 +184,24 @@ class ELKCDReasonerTest {
   /** a wrong concrete domain is reported, instead of reasoning like ELK */
   @Test def wrongConcreteDomain(): Unit = {
     val unknown = creationError(ontology("QDif", Seq()))
-    assertTrue(unknown, unknown.contains("\"QDif\"") && unknown.contains(ConcreteDomainName.NAMES))
+    assertTrue(unknown, unknown.contains("\"QDif\"") && unknown.contains(ConcreteDomainName.NAMES) &&
+      unknown.contains(ConcreteDomainName.IRIS))
     val notString = ontology(null, Seq())
     addConcreteDomain(notString, IRI.create(TestOntologies.NS + "QDiff"))
-    assertTrue(creationError(notString), creationError(notString).contains("has to be a string"))
+    assertTrue(creationError(notString), creationError(notString).contains("has to be a string") &&
+      creationError(notString).contains(ConcreteDomainName.IRIS))
     val two = ontology("QDiff", Seq())
     addConcreteDomain(two, factory.getOWLLiteral("QMult"))
     assertTrue(creationError(two), creationError(two).contains("only one concrete domain"))
+  }
+
+  /** the IRI cd:QMult names the concrete domain like the string "QMult", also both together */
+  @Test def concreteDomainAsIRI(): Unit = {
+    val o = ontology(null, Seq("C0" -> ":x = 5", "C1" -> ":x < 6"), "SubClassOf(:A :C0)")
+    addConcreteDomain(o, IRI.create(ConcreteDomainName.QMult.getIRI))
+    withReasoner(o) { reasoner => assertTrue(reasoner.isEntailed(subClassOf("A", "C1"))) }
+    addConcreteDomain(o, factory.getOWLLiteral("QMult"))
+    withReasoner(o) { reasoner => assertTrue(reasoner.isEntailed(subClassOf("A", "C1"))) }
   }
 
   /** without an annotation cd:concreteDomain, PACER reasons like ELK */
