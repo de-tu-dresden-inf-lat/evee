@@ -91,8 +91,8 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
                                                     cdReasoner: CDReasoner[CD_CONSTRAINT],
                                                     config: OWLReasonerConfiguration,
                                                     bufferingMode: Boolean)
-                                                    extends ReasonerWithStatistics  
-                                                    with OWLReasoner {
+                                                    extends VarargsOWLReasoner
+                                                    with ReasonerWithStatistics {
 
   private val REASONER_NAME = "ELK-CD"
   
@@ -526,7 +526,7 @@ class ELKCDReasoner[CD_CONSTRAINT <: CDConstraint](rootOntology: OWLOntology,
 
   ///// precomputation ////////
 
-  override def precomputeInferences(inferenceTypes: InferenceType*): Unit = {
+  override protected def precompute(inferenceTypes: Array[InferenceType]): Unit = {
     prepare()
     internalReasoner.precomputeInferences(inferenceTypes: _*)
   }

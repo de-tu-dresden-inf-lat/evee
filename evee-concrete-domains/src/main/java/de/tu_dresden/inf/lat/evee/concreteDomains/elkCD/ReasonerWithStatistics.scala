@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
 trait Reasoner {
   def classify()
 }
-abstract class ReasonerWithStatistics extends Reasoner {
+trait ReasonerWithStatistics extends Reasoner {
 
   private val owlClassificationTimes = ListBuffer[Long]()
   private val owlReasonerCalls = ListBuffer[Int]()
