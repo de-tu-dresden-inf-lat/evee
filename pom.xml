@@ -190,27 +190,6 @@
             </modules>
         </profile>
         <profile>
-            <id>protege</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <modules>
-                <module>evee-data/evee-data</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-core</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-fame</module>
-                <module>evee-elimination-proofs/evee-elimination-proofs-lethe</module>
-                <module>evee-lethe-proof-extractor/evee-lethe-proof-extractor</module>
-                <module>evee-elk-proof-extractor/evee-elk-proof-extractor</module>
-                <module>evee-relevant-counterexample/model-datastructures</module>
-                <module>evee-relevant-counterexample/counterExampleProvider</module>
-                <module>evee-small-model-generator/evee-small-model-generator</module>
-                <module>evee-nemo-proof-extractor</module>
-                <module>evee-concrete-domains</module>
-                <module>evee-protege</module>
-                <module>evee-protege-release</module>
-            </modules>
-        </profile>
-        <profile>
             <id>plugin</id>
             <activation>
                 <activeByDefault>false</activeByDefault>

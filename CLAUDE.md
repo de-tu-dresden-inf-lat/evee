@@ -26,7 +26,7 @@ To run every test, use `mvn clean install -DskipTests=false`, not `mvn test`. Ad
 If compilation breaks for no obvious reason, delete old local installs of `capi` and `lethe-*` from `~/.m2`.
 
 - The version is the `revision` property in the root `pom.xml`. `flatten-maven-plugin` resolves it and writes `.flattened-pom.xml` files, which are generated and gitignored.
-- Other profiles: `-Pplugin` builds only the Protégé plugins and the release zip, `-PelExplicator` builds a small EL subset, and `-PsonartypeDeploy` signs and publishes to Maven Central (the release workflow uses it). The `protege` profile lists module paths that no longer exist, so don't use it.
+- Other profiles: `-Pplugin` builds only the Protégé plugins and the release zip, `-PelExplicator` builds a small EL subset, and `-PsonartypeDeploy` signs and publishes to Maven Central (the release workflow uses it).
 - The release zip ends up at `evee-protege-release/target/evee_protege_v_<revision>-evee-protege-release-<revision>.zip`. It holds the plugin jars that go into Protégé's `plugins/` directory.
 
 ### Scala compilation
