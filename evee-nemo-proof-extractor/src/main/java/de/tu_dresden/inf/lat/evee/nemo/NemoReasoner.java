@@ -83,7 +83,7 @@ public class NemoReasoner {
 
         return proof;
     }
-    private String getRuleFileName(ECalculus calculus){
+    String getRuleFileName(ECalculus calculus){
         switch (calculus) {
             case ELK:
                 return ELK_FILENAME;
@@ -96,9 +96,10 @@ public class NemoReasoner {
         }
     }
 
-    private File prepareRuleFile(String ruleFile) throws IOException{
+    File prepareRuleFile(String ruleFile) throws IOException{
         
-            try(InputStream isSrcFile =  getClass().getClassLoader().getResourceAsStream(ruleFile + NEMO_RULE_FILE_SUFFIX)){
+            // the rule files are in the package of this class, so that the Protégé plugin embeds them with it
+            try(InputStream isSrcFile =  NemoReasoner.class.getResourceAsStream(ruleFile + NEMO_RULE_FILE_SUFFIX)){
                 if(isSrcFile == null)
                     throw new FileNotFoundException("Could not locate the rule file");
 

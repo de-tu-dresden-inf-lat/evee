@@ -21,7 +21,7 @@ mvn -pl <module> -am test -DskipTests=false -Dtest=<Class> -Dsurefire.failIfNoSp
 
 Modules depend on their siblings' `${revision}` SNAPSHOT artifacts. With `-pl` and no `-am`, Maven resolves those from `~/.m2`, so upstream changes must be installed first.
 
-To run every test, use `mvn clean install -DskipTests=false`, not `mvn test`. Add `-Dmaven.test.failure.ignore=true` to keep going after failures. `mvn clean test` fails across the reactor because `evee-protege-nemo-proof-extractor` uses `maven-dependency-plugin:unpack` on the `evee-nemo-proof-extractor` jar, which errors with "Artifact has not been packaged yet" (MDEP-98) when the build stops before `package`. Without `clean` it can pass by accident, because it reuses an old jar in `target/`.
+To run every test, use `mvn clean install -DskipTests=false`. Add `-Dmaven.test.failure.ignore=true` to keep going after failures.
 
 If compilation breaks for no obvious reason, delete old local installs of `capi` and `lethe-*` from `~/.m2`.
 
