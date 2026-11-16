@@ -3,12 +3,16 @@ package de.tu_dresden.inf.lat.evee.nemo;
 import de.tu_dresden.inf.lat.evee.nemo.parser.PlaceholderParser;
 import de.tu_dresden.inf.lat.evee.nemo.parser.exceptions.ConceptTranslationError;
 import de.tu_dresden.inf.lat.evee.nemo.parser.tools.ParsingHelper;
+import de.tu_dresden.inf.lat.evee.proofs.data.Inference;
+import de.tu_dresden.inf.lat.evee.proofs.interfaces.IInference;
 import de.tu_dresden.inf.lat.evee.proofs.data.exceptions.ProofNotSupportedException;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +20,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 
@@ -203,4 +210,47 @@ public class ParsingTests {
     }
 
 
+    private static final String NS = "http://www.w3.org/2002/07/";
+
+    private final OWLDataFactory factory = OWLManager.getOWLDataFactory();
+
+    private OWLClassExpression exists(String property, String filler){
+        return factory.getOWLObjectSomeValuesFrom(factory.getOWLObjectProperty(IRI.create(NS + property)),
+                factory.getOWLClass(IRI.create(NS + filler)));
+    }
+
+    private IInference<String> asserted(String triple){
+        return new Inference<>(triple, "Asserted", Collections.emptyList());
+    }
+
+    // Nemo numbers placeholders beyond 999 in larger ontologies
+    @Test
+    public void TestPlaceholderWithManyDigits() throws ConceptTranslationError, ProofNotSupportedException{
+        assertTrue(helper.isPlaceholder("_:1000"));
+
+        Set<List<String>> parsingBase = new HashSet<>();
+        parsingBase.add(helper.getPredicateArguments("TRIPLE(_:1000, <http://www.w3.org/2002/07/owl#someValuesFrom>, <http://www.w3.org/2002/07/A>)"));
+        parsingBase.add(helper.getPredicateArguments("TRIPLE(_:1000, <http://www.w3.org/2002/07/owl#onProperty>, <http://www.w3.org/2002/07/r>)"));
+        PlaceholderParser parser = new PlaceholderParser();
+        parser.setParsingBase(parsingBase);
+        parser.setEquivalentPlaceholders(new HashMap<>());
+
+        assertEquals(exists("r", "A"), parser.parseConceptOrPlaceholder("_:1000"));
+    }
+
+    // each run of Nemo numbers the placeholders anew, so a new parsing base must not reuse parsed placeholders
+    @Test
+    public void TestNewParsingBaseForgetsPlaceholders() throws ConceptTranslationError, ProofNotSupportedException{
+        PlaceholderParser parser = new PlaceholderParser();
+
+        parser.initParsingBase(Arrays.asList(
+            asserted("TRIPLE(_:1, <http://www.w3.org/2002/07/owl#someValuesFrom>, <http://www.w3.org/2002/07/A>)"),
+            asserted("TRIPLE(_:1, <http://www.w3.org/2002/07/owl#onProperty>, <http://www.w3.org/2002/07/r>)")));
+        assertEquals(exists("r", "A"), parser.getConceptFromPlaceholder("_:1"));
+
+        parser.initParsingBase(Arrays.asList(
+            asserted("TRIPLE(_:1, <http://www.w3.org/2002/07/owl#someValuesFrom>, <http://www.w3.org/2002/07/B>)"),
+            asserted("TRIPLE(_:1, <http://www.w3.org/2002/07/owl#onProperty>, <http://www.w3.org/2002/07/s>)")));
+        assertEquals(exists("s", "B"), parser.getConceptFromPlaceholder("_:1"));
+    }
 }

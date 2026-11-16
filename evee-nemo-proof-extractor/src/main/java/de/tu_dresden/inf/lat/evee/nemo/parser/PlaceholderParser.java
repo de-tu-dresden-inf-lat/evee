@@ -95,6 +95,7 @@ public class PlaceholderParser {
         
         this.parsingBase = parsingBase;
 		this.equivalentPlaceholders = equiv;
+		clearCaches();
     }
 	
 	public OWLClassExpression parseConceptOrPlaceholder(String conceptName) throws ConceptTranslationError, ProofNotSupportedException {
@@ -367,10 +368,18 @@ public class PlaceholderParser {
 	//for manually setting parsingBase & equivalentPlaceholders i.e. for testing
 	public void setParsingBase(Set<List<String>> parsingBase){
 		this.parsingBase = new HashSet<>(parsingBase);
+		clearCaches();
 	}
 	
 	public void setEquivalentPlaceholders(Map<String, String> equiv){
 		equivalentPlaceholders = new HashMap<String, String>(equiv);
+		clearCaches();
+	}
+
+	// placeholders are numbered anew in each run of Nemo, so their meaning changes with the parsing base
+	private void clearCaches(){
+		conceptCache.clear();
+		roleChainCache.clear();
 	}
 	
 }
