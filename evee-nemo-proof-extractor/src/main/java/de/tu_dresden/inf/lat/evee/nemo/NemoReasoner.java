@@ -111,14 +111,14 @@ public class NemoReasoner {
         }
     }
 
-    private Path prepareImportDir(OWLOntology ontology, Collection<OWLClassExpression> goalExpressions) throws IOException {
-        updateOntology(ontology, goalExpressions);
+    Path prepareImportDir(OWLOntology ontology, Collection<OWLClassExpression> goalExpressions) throws IOException {
+        OWLOntology extended = extendOntology(ontology, goalExpressions);
 
         Path importDir = Files.createTempDirectory("nemo_exec");
 
         File ontFile = new File(importDir + "/" + ONTOLOGY_EXPORT_FILE_NAME);
         try{
-            ontology.saveOntology(new TurtleDocumentFormat(), IRI.create(ontFile.toURI()));
+            extended.saveOntology(new TurtleDocumentFormat(), IRI.create(ontFile.toURI()));
         }catch(OWLOntologyStorageException e){
             throw new IOException("error saving Ontology to file: ", e);
         }
@@ -126,11 +126,21 @@ public class NemoReasoner {
         return importDir;
     }
 
-    private void updateOntology(OWLOntology ontology, Collection<OWLClassExpression> owlClassExpressions) {
+    // a copy of the ontology with the axioms X SubClassOf X for the goal expressions; the ontology itself stays unchanged
+    private OWLOntology extendOntology(OWLOntology ontology, Collection<OWLClassExpression> owlClassExpressions) throws IOException {
         OWLOntologyManager m = OWLManager.createOWLOntologyManager();
+        OWLOntology extended;
+        try{
+            extended = m.createOntology();
+        }catch(OWLOntologyCreationException e){
+            throw new IOException("error copying the ontology: ", e);
+        }
+        for(OWLAxiom axiom : ontology.getAxioms())
+            m.addAxiom(extended, axiom);
         owlClassExpressions.forEach(expression->{
-            m.addAxiom(ontology,owlHelper.getOWLSubClassOfAxiom(expression, expression));
+            m.addAxiom(extended,owlHelper.getOWLSubClassOfAxiom(expression, expression));
         });
+        return extended;
     }
 
     private int runNemo(String importDir, String exportDir,String ruleFile, String traceFile, String axiom) throws NemoExcecException {
