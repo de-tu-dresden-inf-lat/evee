@@ -74,7 +74,9 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>evee_protege_v_${revision}</finalName>
+                    <!-- the zip is called evee-protege-release-<revision>.zip; it is not the artifact of this module -->
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <attach>false</attach>
                     <descriptors>
                         <descriptor>assembly.xml</descriptor>
                     </descriptors>

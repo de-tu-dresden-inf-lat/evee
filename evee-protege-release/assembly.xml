@@ -4,7 +4,7 @@
     <formats>
         <format>zip</format>
     </formats>
-    <baseDirectory>evee_protege_v_${revision}</baseDirectory>
+    <baseDirectory>evee-protege-release-${revision}</baseDirectory>
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/..</directory>
